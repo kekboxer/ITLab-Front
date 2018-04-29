@@ -1,8 +1,19 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div id="app">
-    <navbar-component v-if="$route.meta.hideNavbar !== true"></navbar-component>
-    <router-view/>
+    <div class="h-100" v-bind:class="{ 'layout-with-sidebar': ($route.meta.hideAllMenus !== true) }">
+      <template v-if="$route.meta.hideAllMenus !== true">
+        <navbar-component></navbar-component>
+      </template>
+
+      <template v-if="$route.meta.hideAllMenus !== true">
+        <sidebar-component></sidebar-component>
+      </template>
+
+      <div class="content-wrapper">
+        <router-view/>
+      </div>
+    </div>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -13,10 +24,12 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import NavbarComponent from "@/components/NavbarComponent.vue";
+import SidebarComponent from "@/components/SidebarComponent.vue";
 
 @Component({
   components: {
-    "navbar-component": NavbarComponent
+    "navbar-component": NavbarComponent,
+    "sidebar-component": SidebarComponent
   }
 })
 export default class App extends Vue {}
@@ -40,8 +53,22 @@ body,
   user-select: none;
 }
 
-.content {
-  margin-top: 56px;
+@media (min-width: 992px) {
+  .layout-with-sidebar {
+    padding-left: 50px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .layout-with-sidebar {
+    padding-left: 220px;
+  }
+}
+
+.content-wrapper {
+  width: 100%;
+  height: 100%;
+  transition: padding 0.3s;
 }
 </style>
 <!-- STYLE END -->

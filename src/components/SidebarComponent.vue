@@ -1,0 +1,150 @@
+<!-- TEMPLATE BEGIN -->
+<template>
+  <div class="sidebar-component">
+    <div class="nav-sidebar">
+      <b-navbar-brand href="/">
+        <b-row>
+          <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> RealityShift</b-col>
+        </b-row>
+      </b-navbar-brand>
+
+      <div v-for="group in sectionGroups" :key="group.name">
+        <hr>
+        <div class="group-name">{{group.name}}</div>
+        <b-nav vertical>
+          <b-nav-item v-for="section in group.sections" :key="section.name" exact v-bind:class="{'active': section.name=='События'}">{{section.name}}</b-nav-item>
+        </b-nav>
+      </div>
+      <hr>
+
+      <div class="exit-button" @click="logout()" style="margin-top: auto">Выход</div>
+
+      <div class="with-love text-muted" v-if="Math.random() < 0.001">
+        <small>From Ivan with</small>
+        <icon name="heart" style="color: rgba(255, 0, 0, 0.6)" scale="0.6"></icon>
+      </div>
+    </div>
+  </div>
+</template>
+<!-- TEMPLATE END -->
+
+
+<!-- SCRIPT BEGIN -->
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import Icon from "vue-awesome/components/Icon";
+import "vue-awesome/icons/heart";
+
+import { sectionGroups, Section, SectionGroup } from "@/general/sectionlayout";
+
+@Component({
+  components: {
+    icon: Icon
+  }
+})
+export default class SidebarComponent extends Vue {
+  sectionGroups: SectionGroup[] = sectionGroups;
+
+  logout() {
+    this.$session.destroy();
+    this.$router.push({ name: "LoginPage" });
+  }
+
+  mounted() {
+    //console.log(generalSection)
+  }
+}
+</script>
+<!-- SCRIPT END -->
+
+
+<!-- STYLE BEGIN -->
+<style>
+.sidebar-component .nav-sidebar {
+  transition: width 0.3s, left 0.3s;
+  position: fixed;
+  z-index: 400;
+  width: 220px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #fafafa;
+  box-shadow: inset -2px 0 0 #e5e5e5;
+  transform: translate3d(0, 0, 0);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sidebar-component .navbar-brand {
+  height: 40px;
+  line-height: 40px;
+  display: inline-block;
+  margin-left: 1rem;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  color: #292929;
+  font-weight: 600;
+}
+
+.sidebar-component .nav-sidebar .group-name {
+  padding: 5px;
+  padding-left: 1rem;
+  font-weight: bold;
+}
+
+.sidebar-component .nav-sidebar .nav-item a {
+  color: #535353;
+  padding-left: 2rem;
+}
+
+.sidebar-component .nav-sidebar .nav-item a:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #2e2e2e;
+}
+
+.sidebar-component .nav-sidebar .nav-item.active {
+  box-shadow: inset 4px 0 0 #0062cc;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-component .nav-sidebar .nav-item.active a {
+  font-weight: 600;
+}
+
+.sidebar-component .with-love {
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  padding: 2px 0px 2px 10px;
+  background-color: #333;
+  box-shadow: inset 0 2px 0 #222;
+}
+
+.sidebar-component .with-love small {
+  color: #aaa;
+}
+
+.sidebar-component .exit-button {
+  width: 218px;
+  transition: width 0.3s;
+  position: fixed;
+  bottom: 0;
+  padding: 16px;
+  background-color: #fafafa;
+  border: 0;
+  border-top: 2px solid #e5e5e5;
+  color: #707070;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.sidebar-component .exit-button:hover {
+  background-color: #e5e5e5;
+  color: #2e2e2e;
+  cursor: pointer;
+}
+</style>
+<!-- STYLE END -->

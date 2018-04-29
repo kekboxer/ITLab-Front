@@ -21,7 +21,7 @@ module.exports = {
       : config.dev.assetsPublicPath
   },
   resolve: {
-    extensions: ['.js', '.ts', '.vue', '.json'],
+    extensions: ['.js', '.js', '.ts', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
@@ -37,7 +37,13 @@ module.exports = {
       {
         test: /\.ts$/,
         loader: 'ts-loader',
-        options: {appendTsSuffixTo: [/\.vue$/]}
+        options: {
+          appendTsSuffixTo: [/\.vue$/], 
+        },
+      },
+      {
+        test: /\.ks$/,
+        loader: 'ts-loader',
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

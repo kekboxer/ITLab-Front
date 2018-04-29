@@ -17,7 +17,6 @@ function createRoute<T extends Vue>(path: string, name: string, page: T,
 }
 
 export default new Router({
-  base: "app/",
   routes: [
     {
       path: "/login",

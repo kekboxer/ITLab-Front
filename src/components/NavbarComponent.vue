@@ -1,15 +1,16 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="navbar-component">
-    <b-navbar toggleable="md" type="dark" variant="dark" fixed="top">
+    <b-navbar toggleable="md" type="dark" variant="dark" fixed="top" class="py-1" v-if="false">
       <b-navbar-brand href="#">{{ name }}</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav-collapse">
         <b-navbar-nav>
-          <b-nav-item v-for="link in links" :key="link.name" :to="link.path" exact>\{{link.name}}</b-nav-item>
+          <!--<b-nav-item v-for="link in links" :key="link.name" :to="link.path" exact>\{{link.name}}</b-nav-item>-->
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+    <div class="content-spacer"></div>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -44,6 +45,8 @@ export default class NavbarComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style>
-
+.navbar-component .content-spacer {
+  height: 56px;
+}
 </style>
 <!-- STYLE END -->
