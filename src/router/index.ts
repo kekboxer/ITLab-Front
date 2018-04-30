@@ -1,23 +1,30 @@
 import Vue from "vue"
-import Router, { Route } from "vue-router"
+import Router, { Route, RawLocation } from "vue-router"
 
 Vue.use(Router);
 
-import AuthPage, { authPageMeta } from "@/views/AuthPage.vue"
-import HomePage, { homePageMeta } from "@/views/HomePage.vue"
+import { routes } from "./PagesInformation"
 
-function createRoute<T extends Vue>(path: string, name: string, page: T, 
-                     props?: boolean | Object | ((route: Route) => Object) | undefined) {
-  return {
-    path: path,
-    name: name,
-    component: page,
-    props: props,
-  }
-}
+import "@/views/AuthPage.vue";
+
+import "@/views/EventsPage.vue";
+import "@/views/EquipmentPage.vue";
+import "@/views/ProjectsPage.vue";
+
+import "@/views/ProfileSettingsPage.vue";
 
 export default new Router({
-  routes: [
+  mode: "history",
+  routes: routes.concat([
+    {
+      path: "*",
+      redirect: {
+        name: "EventsPage" // TODO: redirect to NotFoundPage
+      }
+    }
+  ])
+  /*
+  [
     {
       path: "/login",
       name: "LoginPage",
@@ -25,7 +32,7 @@ export default new Router({
       props: {
         authType: "login",
       },
-      meta: authPageMeta
+      meta: AuthPage.getPageMeta()
     },
     {
       path: "/register",
@@ -34,14 +41,19 @@ export default new Router({
       props: {
         authType: "register",
       },
-      meta: authPageMeta
+      meta: AuthPage.getPageMeta()
     },
     {
-      path: "/",
-      name: "HomePage",
-      component: HomePage,
-      meta: homePageMeta
+      path: "/events",
+      name: "EventsPage",
+      component: EventsPage,
+      meta: mainPagesMeta
+    },
+    {
+      path: "*",
+      redirect: defaultPath
     }
   ]
+  */
 });
 

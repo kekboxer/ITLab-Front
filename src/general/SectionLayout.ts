@@ -1,32 +1,41 @@
 import { RawLocation, } from "vue-router"
 
 export class Section {
-  name: string
+  title: string
   page: RawLocation
 
-  constructor(name: string, page: RawLocation) {
-    this.name = name
+  constructor(title: string, page: RawLocation) {
+    this.title = title
     this.page = page
   }
 }
 
+export enum Group {
+  General,
+  Profile
+}
+
 export class SectionGroup {
-  name: string
+  title: string
   sections: Section[]
   
-  constructor(name: string, sections: Section[]) {
-    this.name = name
+  constructor(title: string, sections: Section[] = []) {
+    this.title = title
     this.sections = sections
   }
 }
 
-export const sectionGroups: SectionGroup[] = [
-  new SectionGroup("Общее", [
-    new Section("События", {name: "EventsPage"}),
-    new Section("Оборудование", {name: "EventsPage"}),
-    new Section("Проекты", {name: "EventsPage"}),
-  ]),
-  new SectionGroup("Профиль", [
-    new Section("Настройки", {name: "ProfilePage"})
-  ])
-]
+export const sectionGroups: Map<Group, SectionGroup> = new Map<Group, SectionGroup>()
+sectionGroups.set(Group.General, new SectionGroup("Общее"))
+sectionGroups.set(Group.Profile, new SectionGroup("Профиль"))
+
+const sections: Map<string, boolean> = new Map<string, boolean>()
+export const registerSection = (group: Group, section: Section) => {
+  if (sections.has(section.title)) return
+
+  const sectionGroup = sectionGroups.get(group)
+  if (sectionGroup != null) {
+    sectionGroup.sections.push(section)
+    sections.set(section.title, true)
+  }
+}

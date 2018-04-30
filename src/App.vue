@@ -1,13 +1,10 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div id="app">
-    <div class="h-100" v-bind:class="{ 'layout-with-sidebar': ($route.meta.hideAllMenus !== true) }">
-      <template v-if="$route.meta.hideAllMenus !== true">
-        <navbar-component></navbar-component>
-      </template>
-
-      <template v-if="$route.meta.hideAllMenus !== true">
+    <div class="h-100" v-bind:class="{ 'layout-with-sidebar': ($route.meta.hideNavigation !== true) }">
+      <template v-if="$route.meta.hideNavigation !== true">
         <sidebar-component></sidebar-component>
+        <div class="content-spacer"></div>
       </template>
 
       <div class="content-wrapper">
@@ -23,12 +20,10 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import NavbarComponent from "@/components/NavbarComponent.vue";
 import SidebarComponent from "@/components/SidebarComponent.vue";
 
 @Component({
   components: {
-    "navbar-component": NavbarComponent,
     "sidebar-component": SidebarComponent
   }
 })
@@ -55,12 +50,6 @@ body,
 
 @media (min-width: 992px) {
   .layout-with-sidebar {
-    padding-left: 50px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .layout-with-sidebar {
     padding-left: 220px;
   }
 }
@@ -69,6 +58,10 @@ body,
   width: 100%;
   height: 100%;
   transition: padding 0.3s;
+}
+
+.content-spacer {
+  height: 50px;
 }
 </style>
 <!-- STYLE END -->

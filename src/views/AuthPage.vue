@@ -15,12 +15,12 @@
               </b-form-row>
 
               <b-form-group id="email-input-group" label="Логин" label-for="email-input">
-                <b-form-input id="email-input" type="email" v-model="loginData.email" required>
+                <b-form-input id="email-input" type="email" v-model="loginData.email">
                 </b-form-input>
               </b-form-group>
 
               <b-form-group id="password-input-group" label="Пароль" label-for="password-input">
-                <b-form-input id="password-input" type="password" v-model="loginData.password" required>
+                <b-form-input id="password-input" type="password" v-model="loginData.password">
                 </b-form-input>
               </b-form-group>
 
@@ -33,7 +33,7 @@
                   </b-form-group>
                 </b-col>
                 <b-col sm="12" lg="6">
-                  <b-button class="submit-button w-100" type="submit" variant="primary">Войти</b-button>
+                  <b-button class="submit-button w-100" type="submit" @click="onSubmitLogin() /* temp solution */" variant="primary">Войти</b-button>
                 </b-col>
               </b-form-row>
 
@@ -48,7 +48,9 @@
           <template v-if="authType == 'register'">
             <b-form @submit="onSubmitRegister">
               <b-row>
-                <b-col align="center"><h2>Регистрация</h2></b-col>
+                <b-col align="center">
+                  <h2>Регистрация</h2>
+                </b-col>
               </b-row>
 
               <b-form-group id="first-name-input-group" label="Имя" label-for="first-name-input">
@@ -77,7 +79,7 @@
               </b-form-group>
 
               <b-form-row>
-                <b-button class="submit-button w-100" type="submit" variant="primary">Подтвердить</b-button>
+                <b-button class="submit-button w-100" type="submit" @click="onSubmitLogin() /* temp solution */" variant="primary">Подтвердить</b-button>
               </b-form-row>
 
               <b-form-row>
@@ -96,11 +98,16 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator"
-import { validationMixin } from "vuelidate"
-import { required, minLength, maxLength, email } from "vuelidate/lib/validators"
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { validationMixin } from "vuelidate";
+import {
+  required,
+  minLength,
+  maxLength,
+  email
+} from "vuelidate/lib/validators";
 
-import { PageMeta } from "@/general/pagemeta"
+import { registerPage } from "@/router/PagesInformation";
 
 class LoginData {
   email: string = "";
@@ -117,7 +124,8 @@ class RegisterData {
 }
 
 @Component({
-  mixins: [ validationMixin ],
+  name: "AuthPage",
+  mixins: [validationMixin],
   validations: {
     registerData: {
       firstName: { required, maxLength: maxLength(32) },
@@ -125,33 +133,54 @@ class RegisterData {
       email: { required, email },
       password: { required, minLength: minLength(8), maxLength: maxLength(32) }
     }
-  },
+  }
 })
-export default class AuthPage extends Vue {
+class AuthPage extends Vue {
   // props
   @Prop({ validator: value => ["login", "register"].indexOf(value) !== -1 })
   authType?: String;
 
   // data
-  loginData = new LoginData
-  registerData = new RegisterData
+  loginData = new LoginData();
+  registerData = new RegisterData();
 
   // methods
-  onSubmitLogin() {    
-    //on success
-    this.$session.start()
-    
-    this.$router.replace({name: "HomePage"})
+  onSubmitLogin() {
+    // on success {
+      this.$session.start()
+      this.$router.replace({ name: "HomePage" });
+    // }
   }
   onSubmitRegister() {
     // Submit register data
   }
 }
 
-export const authPageMeta: PageMeta = new PageMeta({
-  secure: false,
-  hideAllMenus: true,
-})
+registerPage( {
+    path: "/login",
+    name: "LoginPage",
+    component: AuthPage
+  }, {
+    secure: false,
+    hideNavigation: true
+  }, {
+    authType: "login"
+  }
+);
+
+registerPage( {
+    path: "/register",
+    name: "RegistrationPage",
+    component: AuthPage
+  }, {
+    secure: false,
+    hideNavigation: true
+  }, {
+    authType: "register"
+  }
+);
+
+export default AuthPage;
 </script>
 <!-- SCRIPT END -->
 

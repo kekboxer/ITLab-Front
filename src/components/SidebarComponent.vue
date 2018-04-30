@@ -2,26 +2,30 @@
 <template>
   <div class="sidebar-component">
     <div class="nav-sidebar">
-      <b-navbar-brand href="/">
-        <b-row>
-          <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> RealityShift</b-col>
-        </b-row>
-      </b-navbar-brand>
+      <div class="inner-scroll">
+        <b-navbar-brand href="/">
+          <b-row>
+            <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> Reality Shift</b-col>
+          </b-row>
+        </b-navbar-brand>
 
-      <div v-for="group in sectionGroups" :key="group.name">
+        <div v-for="group in sectionGroups" :key="group.title">
+          <hr>
+          <div class="group-name">{{group.title}}</div>
+          <b-nav vertical>
+            <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" exact v-bind:class="{'active': section == $route.meta.baseSection}">
+              {{section.title}}
+            </b-nav-item>
+          </b-nav>
+        </div>
         <hr>
-        <div class="group-name">{{group.name}}</div>
-        <b-nav vertical>
-          <b-nav-item v-for="section in group.sections" :key="section.name" exact v-bind:class="{'active': section.name=='События'}">{{section.name}}</b-nav-item>
-        </b-nav>
-      </div>
-      <hr>
 
-      <div class="exit-button" @click="logout()" style="margin-top: auto">Выход</div>
+        <div class="exit-button" @click="logout()" style="margin-top: auto">Выход</div>
 
-      <div class="with-love text-muted" v-if="Math.random() < 0.001">
-        <small>From Ivan with</small>
-        <icon name="heart" style="color: rgba(255, 0, 0, 0.6)" scale="0.6"></icon>
+        <div class="with-love text-muted" v-if="Math.random() < 0.001">
+          <small>From Ivan with</small>
+          <icon name="heart" style="color: rgba(255, 0, 0, 0.6)" scale="0.6"></icon>
+        </div>
       </div>
     </div>
   </div>
@@ -35,7 +39,7 @@ import { Component, Vue } from "vue-property-decorator";
 import Icon from "vue-awesome/components/Icon";
 import "vue-awesome/icons/heart";
 
-import { sectionGroups, Section, SectionGroup } from "@/general/sectionlayout";
+import { sectionGroups, Section, SectionGroup, Group } from "@/general/SectionLayout";
 
 @Component({
   components: {
@@ -43,15 +47,13 @@ import { sectionGroups, Section, SectionGroup } from "@/general/sectionlayout";
   }
 })
 export default class SidebarComponent extends Vue {
-  sectionGroups: SectionGroup[] = sectionGroups;
+  sectionGroups: SectionGroup[] = Array.from(sectionGroups).map(
+    value => value[1]
+  );
 
   logout() {
     this.$session.destroy();
     this.$router.push({ name: "LoginPage" });
-  }
-
-  mounted() {
-    //console.log(generalSection)
   }
 }
 </script>
@@ -68,12 +70,20 @@ export default class SidebarComponent extends Vue {
   top: 0;
   bottom: 0;
   left: 0;
+  margin: 0;
   background-color: #fafafa;
   box-shadow: inset -2px 0 0 #e5e5e5;
   transform: translate3d(0, 0, 0);
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+
+.sidebar-component .nav-sidebar .inner-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  margin-bottom: calc(49px - 1rem);
 }
 
 .sidebar-component .navbar-brand {
