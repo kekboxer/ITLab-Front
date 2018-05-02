@@ -38,6 +38,7 @@ html,
 body,
 #app {
   height: 100%;
+  background-color: #f8f9f9;
 }
 
 .noselect {

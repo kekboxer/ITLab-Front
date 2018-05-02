@@ -1,6 +1,10 @@
 import Vue from "vue";
 import router from "./router";
 
+// Importing VueMoment
+import VueMoment from "vue-moment"
+import "moment/locale/ru"
+
 // Importing VueSession
 import VueSession from "vue-session"
 
@@ -11,6 +15,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import App from "./App.vue";
 
+Vue.use(VueMoment)
 Vue.use(VueSession)
 Vue.use(BootstrapVue)
 

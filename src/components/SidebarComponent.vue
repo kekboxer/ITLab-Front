@@ -15,6 +15,7 @@
           <b-nav vertical>
             <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" exact v-bind:class="{'active': section == $route.meta.baseSection}">
               {{section.title}}
+              <b-badge variant="primary" pill v-if="section.title == 'События'" style="margin-right: 0">1</b-badge>
             </b-nav-item>
           </b-nav>
         </div>
@@ -37,6 +38,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Icon from "vue-awesome/components/Icon";
+
 import "vue-awesome/icons/heart";
 
 import { sectionGroups, Section, SectionGroup, Group } from "@/general/SectionLayout";
@@ -71,7 +73,7 @@ export default class SidebarComponent extends Vue {
   bottom: 0;
   left: 0;
   margin: 0;
-  background-color: #fafafa;
+  background-color: #ffffff;
   box-shadow: inset -2px 0 0 #e5e5e5;
   transform: translate3d(0, 0, 0);
   display: flex;
@@ -141,7 +143,7 @@ export default class SidebarComponent extends Vue {
   position: fixed;
   bottom: 0;
   padding: 16px;
-  background-color: #fafafa;
+  background-color: #ffffff;
   border: 0;
   border-top: 2px solid #e5e5e5;
   color: #707070;
