@@ -7,7 +7,7 @@
 
           <!-- LOGIN TEMPLATE BEGIN -->
           <template v-if="authType == 'login'">
-            <b-form @submit="onSubmitLogin">
+            <b-form @submit.prevent="onSubmitLogin">
               <b-form-row>
                 <b-col align="center">
                   <b-img rounded="circle" width="200" src="static/logo.jpg" :center="true" class="m-1" />
@@ -33,7 +33,7 @@
                   </b-form-group>
                 </b-col>
                 <b-col sm="12" lg="6">
-                  <b-button class="submit-button w-100" type="submit" @click="onSubmitLogin()" variant="primary">Войти</b-button>
+                  <b-button class="submit-button w-100" type="submit" variant="primary">Войти</b-button>
                 </b-col>
               </b-form-row>
 
@@ -46,7 +46,7 @@
 
           <!-- REGISTER TEMPLATE BEGIN -->
           <template v-if="authType == 'register'">
-            <b-form @submit="onSubmitRegister">
+            <b-form @submit.prevent="onSubmitRegister">
               <b-row>
                 <b-col align="center">
                   <h2>Регистрация</h2>
@@ -83,7 +83,7 @@
               </b-form-group>
 
               <b-form-row>
-                <b-button class="submit-button w-100" type="submit" @click="onSubmitRegister()" variant="primary">Подтвердить</b-button>
+                <b-button class="submit-button w-100" type="submit" variant="primary">Подтвердить</b-button>
               </b-form-row>
 
               <b-form-row>
@@ -102,15 +102,14 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { validationMixin } from "vuelidate";
-import { required, minLength, maxLength, email } from "vuelidate/lib/validators";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { validationMixin } from "vuelidate"
+import { required, minLength, maxLength, email } from "vuelidate/lib/validators"
+import { Action, Getter } from "vuex-class"
 
-import { registerPage } from "@/router/PagesInformation";
-import { HTTP, setAuthorizationToken } from "@/general/Request"
-import { IAccountLoginRequest, IAccountCreateRequest } from "@/general/requests/Account"
-import { ILoginResponse } from "@/general/responses/Login"
-
+import { registerPage } from "@/router/PagesInformation"
+import { AUTH_REQUEST } from "@/store/actions/authorization";
+import { AuthorizationData } from "@/store/modules/authorization/types"
 
 @Component({
   name: "AuthPage",
@@ -130,11 +129,18 @@ class AuthPage extends Vue {
   authType?: String;
 
   // data
-  loginData: IAccountLoginRequest = {}
-  registerData: IAccountCreateRequest = {
-    userType: "SimpleUser"
+  loginData: AuthorizationData = {
+    username: "",
+    password: ""
   }
-
+  registerData = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    userType: "",
+    studentId: ""
+  }
   userTypeOptions = [
     { value: "SimpleUser", text: "Сотрудник" },
     { value: "Student", text: "Студент" }
@@ -142,16 +148,10 @@ class AuthPage extends Vue {
 
   // methods
   onSubmitLogin() {
-    HTTP.post("Authentication/login", this.loginData).then(response => {
-      if (response.status == 200) {
-        const data = response.data as ILoginResponse
-        console.log(data)
-
-        this.$session.start()
-        this.$router.replace({ name: "EventsPage" });
-      }
-    }).catch(response => {
-      console.log(response);
+    this.$store.dispatch(AUTH_REQUEST, this.loginData).then(result => {
+      console.log("RESULT", result)
+    }).catch(error => {
+      console.log("ERROR", error)
     })
   }
   onSubmitRegister() {

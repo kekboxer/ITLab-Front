@@ -54,7 +54,6 @@ export default class SidebarComponent extends Vue {
   );
 
   logout() {
-    this.$session.destroy();
     this.$router.push({ name: "LoginPage" });
   }
 }

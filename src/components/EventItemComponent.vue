@@ -44,8 +44,7 @@ import Icon from "vue-awesome/components/Icon";
 
 import "vue-awesome/icons/clock";
 
-import { IUserParams } from "@/general/User";
-import { IEventParams } from "@/general/Event";
+import { Event } from "@/store/modules/events/types"
 
 @Component({
   components: {
@@ -53,7 +52,7 @@ import { IEventParams } from "@/general/Event";
   }
 })
 export default class EventItemComponent extends Vue {
-  @Prop() eventParams?: IEventParams;
+  @Prop() eventParams?: Event;
 }
 </script>
 <!-- SCRIPT END -->

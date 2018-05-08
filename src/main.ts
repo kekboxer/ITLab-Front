@@ -1,40 +1,26 @@
-import Vue from "vue";
-import router from "./router";
+import Vue from "vue"
 
-// Importing VueMoment
+// VueMoment
 import VueMoment from "vue-moment"
 import "moment/locale/ru"
 
-// Importing VueSession
-import VueSession from "vue-session"
-
-// Importing Bootstrap and its styles
+// Bootstrap
 import BootstrapVue from "bootstrap-vue"
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+import store from "./store"
+import router from "./router"
+
 import App from "./App.vue";
 
+// Vue initialization
 Vue.use(VueMoment)
-Vue.use(VueSession)
 Vue.use(BootstrapVue)
-
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.secure === true)) {
-    if (router.app.$session.exists()) {
-      next()
-    } else {
-      next({
-        name: 'LoginPage'
-      })
-    }
-  } else {
-    next()
-  }
-})
 
 new Vue({
   el: "#app",
+  store,
   router,
   template: "<App/>",
   components: { App },

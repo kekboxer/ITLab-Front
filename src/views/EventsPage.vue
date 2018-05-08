@@ -29,7 +29,7 @@ import { Section, Group, registerSection } from "@/general/SectionLayout"
 
 import EventItemComponent from "@/components/EventItemComponent.vue"
 
-import { IEventParams } from "@/general/Event"
+import { Event } from "@/store/modules/events/types"
 
 
 export const eventsPageName: string = "EventsPage"
@@ -46,12 +46,13 @@ export const eventsSection: Section = new Section("События", {
   }
 })
 class EventsPage extends Vue {
-  events: IEventParams[] = [
+  events: Event[] = [
     {
+      id: "test",
       title: "Выезд в школу",
-      date: new Date(),
+      //date: new Date(),
       description: "Test description as",
-      duration: "2 часа",
+      //duration: "2 часа",
       address: "Пролетарский проспект, д.7",
 
       participantsNeeded: 10,
