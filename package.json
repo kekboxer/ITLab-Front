@@ -6,13 +6,10 @@
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0",
-    "start": "npm run prod",
-    "prod": "npm run build && serve -s dist -p 8080",
-    "build": "node build/build.js",
-    "serv":"serve help"
+    "start": "npm run dev",
+    "build": "node build/build.js"
   },
   "dependencies": {
-    "serve": "^6.5.6",
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.9",
     "connect-history-api-fallback": "^1.5.0",
@@ -29,6 +26,7 @@
     "vuelidate": "^0.6.2",
     "vuex": "^3.0.1",
     "vuex-class": "^0.3.0",
+    "shelljs": "^0.7.6",
     "vuex-typescript": "^3.0.2"
   },
   "devDependencies": {
@@ -48,7 +46,6 @@
     "semver": "^5.3.0",
     "ts-loader": "^2.0.1",
     "typescript": "^2.2.1",
-    "shelljs": "^0.7.6",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "ora": "^1.3.0",
     "rimraf": "^2.6.0",
