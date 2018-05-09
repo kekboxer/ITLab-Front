@@ -14,5 +14,6 @@ export interface Section {
 }
 
 export interface RootState {
+  systemName: string
   //sectionGroups: Map<Group, SectionGroup>
 }

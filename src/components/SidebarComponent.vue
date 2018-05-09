@@ -5,7 +5,7 @@
       <div class="inner-scroll">
         <b-navbar-brand href="/">
           <b-row>
-            <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> Reality Shift</b-col>
+            <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> {{ systemName }}</b-col>
           </b-row>
         </b-navbar-brand>
 
@@ -41,8 +41,14 @@ import Icon from "vue-awesome/components/Icon";
 
 import "vue-awesome/icons/heart";
 
-import { sectionGroups, Section, SectionGroup, Group } from "@/general/SectionLayout";
+import {
+  sectionGroups,
+  Section,
+  SectionGroup,
+  Group
+} from "@/general/SectionLayout";
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
+import { SYSTEM_NAME } from "@/store/actions/global";
 
 @Component({
   components: {
@@ -56,8 +62,12 @@ export default class SidebarComponent extends Vue {
 
   logout() {
     this.$store.dispatch(AUTH_LOGOUT).then(result => {
-      this.$router.push({ name: "LoginPage" })
-    })
+      this.$router.push({ name: "LoginPage" });
+    });
+  }
+
+  get systemName(): string {
+    return this.$store.getters[SYSTEM_NAME];
   }
 }
 </script>
