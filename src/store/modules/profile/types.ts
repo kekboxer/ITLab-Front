@@ -7,10 +7,10 @@ export interface User {
 
 export interface RegistrationData extends User {
   studentId?: string
-  userType: number
+  userType: string
   password: string
 }
 
 export interface ProfileState {
-  profile: User
+  profile: User | undefined
 }

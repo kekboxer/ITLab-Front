@@ -6,8 +6,7 @@ import { AuthorizationState } from "./types"
 import { RootState } from "@/store/types"
 
 export const state: AuthorizationState = {
-  token: localStorage.getItem("user-token") || undefined,
-  status: undefined
+  token: localStorage.getItem("user-token") || undefined
 }
 
 export const authorization: Module<AuthorizationState, RootState> = {

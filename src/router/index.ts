@@ -5,22 +5,19 @@ import Router, { Route, RawLocation } from "vue-router"
 import { routes } from "./PagesInformation"
 
 import "@/views/AuthPage.vue";
-
 import "@/views/EventsPage.vue";
-import "@/views/EquipmentPage.vue";
 import "@/views/ProjectsPage.vue";
-
+import "@/views/EquipmentPage.vue";
 import "@/views/ProfileSettingsPage.vue";
+import "@/views/ProcessingAgreementPage.vue"
 
 import store from "@/store"
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
 
 Vue.use(Router);
 
-axios.defaults.baseURL = "http://labworkback.azurewebsites.net/api/"
-axios.defaults.headers.post['Content-Type'] = "application/x-www-form-urlencoded"
-axios.defaults.headers['Access-Control-Allow-Origin'] = "*"
-axios.defaults.withCredentials = true
+axios.defaults.baseURL = "https://labworkback.azurewebsites.net/api/"
+axios.defaults.headers.post['Content-Type'] = "application/json";//"application/x-www-form-urlencoded"
 
 const token = localStorage.getItem("user-token")
 if (token) { // load token on start
@@ -30,9 +27,7 @@ if (token) { // load token on start
 axios.interceptors.response.use(undefined, function (err) {
   return new Promise(function (resolve, reject) {
     if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-    // if you ever get an unauthorized, logout the user
       store.dispatch(AUTH_LOGOUT)
-    // you can also redirect to /login if needed !
     }
     throw err;
   });
@@ -51,6 +46,7 @@ const router: Router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log("auth check", store.getters.isAuthenticated)
   if (to.matched.some(record => record.meta.secure === true)) {
     if (store.getters.isAuthenticated) {
       next()

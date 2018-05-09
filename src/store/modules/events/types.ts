@@ -1,9 +1,9 @@
 
 export interface Event {
-  id?: string
-  beginTime?: Date
-  endTime?: Date
-  address?: string
+  id: string
+  beginTime: Date
+  endTime: Date
+  address: string
 
   title?: string,
   description?: string,

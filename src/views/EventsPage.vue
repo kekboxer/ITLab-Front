@@ -30,6 +30,8 @@ import { Section, Group, registerSection } from "@/general/SectionLayout"
 import EventItemComponent from "@/components/EventItemComponent.vue"
 
 import { Event } from "@/store/modules/events/types"
+import { EVENTS_FETCH, EVENTS_GET } from "@/store/actions/events"
+import { Getter } from "vuex-class/lib/bindings";
 
 
 export const eventsPageName: string = "EventsPage"
@@ -43,22 +45,16 @@ export const eventsSection: Section = new Section("События", {
   baseSection: eventsSection,
   components: {
     "event-item-component": EventItemComponent
-  }
+  },
 })
 class EventsPage extends Vue {
-  events: Event[] = [
-    {
-      id: "test",
-      title: "Выезд в школу",
-      //date: new Date(),
-      description: "Test description as",
-      //duration: "2 часа",
-      address: "Пролетарский проспект, д.7",
+  beforeMount() {
+    this.$store.dispatch(EVENTS_FETCH)
+    console.log(this.events)
+  }
 
-      participantsNeeded: 10,
-      participantCount: 4
-    }
-  ]
+  @Getter(EVENTS_GET)
+  events?: Event[]
 }
 
 registerSection(Group.General, eventsSection)

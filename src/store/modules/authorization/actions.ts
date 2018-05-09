@@ -2,40 +2,36 @@ import { ActionTree } from "vuex"
 import axios from "axios"
 import { AuthorizationState, AuthorizationData } from "./types"
 import { RootState } from "@/store/types"
-import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT } from "@/store/actions/authorization";
+import { AUTH_LOGIN, AUTH_LOGOUT } from "@/store/actions/authorization";
 
 interface LoginResponse {
   id: string
   token: string
   firstName: string
   lastName: string
-  studentId?: string
+  studentID?: string
 }
 
 export const actions: ActionTree<AuthorizationState, RootState> = {
-  [AUTH_REQUEST]: ({commit, dispatch}, authorizationData: AuthorizationData) => {
+  [AUTH_LOGIN]: ({commit, dispatch}, authorizationData: AuthorizationData) => {
     return new Promise((resolve, reject) => {
-      commit(AUTH_REQUEST)
-
       axios.post("Authentication/login", authorizationData).then(response => {
-        const data: LoginResponse = response && response.data
+        const body = response && response.data
+        const data: LoginResponse = body && body.data
 
-        console.log(data)
-
-        if (data.token) {
+        if (body.statusCode == 1 && data.token) {
           localStorage.setItem("user-token", data.token)
           axios.defaults.headers.common['Authorization'] = data.token
 
-          commit(AUTH_SUCCESS)
-          resolve(response)
+          commit(AUTH_LOGIN, data.token)
+          resolve(body)
         }
         else {
           reject({
-            err: 'No token in response'
+            err: "Login failed"
           })
         }
       }).catch(err => {
-        commit(AUTH_ERROR, err)
         localStorage.removeItem("user-token")
         reject(err)
       })
@@ -46,7 +42,7 @@ export const actions: ActionTree<AuthorizationState, RootState> = {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT)
       localStorage.removeItem("user-token")
-      delete axios.defaults.headers.common['Authorization']
+      axios.defaults.headers.common['Authorization'] = undefined
       resolve()
     })
   }

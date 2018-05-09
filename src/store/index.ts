@@ -3,16 +3,17 @@ import Vuex, { StoreOptions } from "vuex"
 import { RootState } from "./types"
 
 import { authorization } from "./modules/authorization"
+import { profile } from "./modules/profile"
 import { events } from "./modules/events"
 
 Vue.use(Vuex)
 
 const store: StoreOptions<RootState> = {
   state: {
-    version: "0.0.1"
   },
   modules: {
     authorization,
+    profile,
     events
   }
 }

@@ -1,0 +1,2 @@
+export const PROFILE_CREATE = "PROFILE_CREATE"
+export const PROFILE_SET = "PROFILE_SET"

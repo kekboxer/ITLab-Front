@@ -15,7 +15,7 @@
           <b-nav vertical>
             <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" exact v-bind:class="{'active': section == $route.meta.baseSection}">
               {{section.title}}
-              <b-badge variant="primary" pill v-if="section.title == 'События'" style="margin-right: 0">1</b-badge>
+              <!--<b-badge variant="primary" pill v-if="section.title == 'События'" style="margin-right: 0">1</b-badge>-->
             </b-nav-item>
           </b-nav>
         </div>
@@ -42,6 +42,7 @@ import Icon from "vue-awesome/components/Icon";
 import "vue-awesome/icons/heart";
 
 import { sectionGroups, Section, SectionGroup, Group } from "@/general/SectionLayout";
+import { AUTH_LOGOUT } from "@/store/actions/authorization";
 
 @Component({
   components: {
@@ -54,7 +55,9 @@ export default class SidebarComponent extends Vue {
   );
 
   logout() {
-    this.$router.push({ name: "LoginPage" });
+    this.$store.dispatch(AUTH_LOGOUT).then(result => {
+      this.$router.push({ name: "LoginPage" })
+    })
   }
 }
 </script>

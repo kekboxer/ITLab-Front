@@ -9,6 +9,9 @@ import BootstrapVue from "bootstrap-vue"
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// Notifications
+import VueNotifications from "vue-notification"
+
 import store from "./store"
 import router from "./router"
 
@@ -17,6 +20,7 @@ import App from "./App.vue";
 // Vue initialization
 Vue.use(VueMoment)
 Vue.use(BootstrapVue)
+Vue.use(VueNotifications)
 
 new Vue({
   el: "#app",

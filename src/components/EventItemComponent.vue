@@ -5,7 +5,7 @@
       <b-row>
         <b-col cols="10">
           <strong>
-            <icon name="clock" style="position: relative; bottom: -2px"></icon> {{ eventParams.date | moment("calendar") }}</strong>
+            <icon name="clock" style="position: relative; bottom: -2px"></icon> {{ eventParams.beginTime | moment("calendar") }}</strong>
         </b-col>
       </b-row>
       <hr>
@@ -29,6 +29,11 @@
               
             </b-col>
           </b-row>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <b-button variant="outline-primary">Хочу пойти</b-button>
         </b-col>
       </b-row>
     </div>
@@ -65,6 +70,7 @@ export default class EventItemComponent extends Vue {
   box-shadow: -4px 0 0 #007bff;
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.125);
+  margin: 10px;
 }
 </style>
 <!-- STYLE END -->

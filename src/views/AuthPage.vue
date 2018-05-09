@@ -1,4 +1,4 @@
-<!-- TEMPALTE BEGIN -->
+<!-- TEMPLATE BEGIN -->
 <template>
   <div class="auth-page h-100">
     <b-container class="h-100">
@@ -15,7 +15,7 @@
               </b-form-row>
 
               <b-form-group id="username-input-group" label="Логин" label-for="username-input">
-                <b-form-input id="username-input" type="email" v-model="loginData.username" required>
+                <b-form-input id="username-input" type="email" v-model.trim="loginData.username" required>
                 </b-form-input>
               </b-form-group>
 
@@ -54,17 +54,17 @@
               </b-row>
 
               <b-form-group id="first-name-input-group" label="Имя" label-for="first-name-input">
-                <b-form-input id="first-name-input" type="text" v-model="registerData.firstName" :state="!$v.registerData.firstName.$invalid" required>
+                <b-form-input id="first-name-input" type="text" v-model.trim="registerData.firstName" :state="!$v.registerData.firstName.$invalid" required>
                 </b-form-input>
               </b-form-group>
 
               <b-form-group id="last-name-input-group" label="Фамилия" label-for="last-name-input">
-                <b-form-input id="last-name-input" type="text" v-model="registerData.lastName" :state="!$v.registerData.lastName.$invalid" required>
+                <b-form-input id="last-name-input" type="text" v-model.trim="registerData.lastName" :state="!$v.registerData.lastName.$invalid" required>
                 </b-form-input>
               </b-form-group>
 
               <b-form-group id="email-input-group" label="Почта" label-for="email-input">
-                <b-form-input id="email-input" type="email" v-model="registerData.email" :state="!$v.registerData.email.$invalid" required>
+                <b-form-input id="email-input" type="email" v-model.trim="registerData.email" :state="!$v.registerData.email.$invalid" required>
                 </b-form-input>
               </b-form-group>
 
@@ -78,12 +78,23 @@
               </b-form-group>
 
               <b-form-group id="student-id-input-group" label="Номер студенческого билета" label-for="student-id-name-input" v-if="registerData.userType == 'Student'">
-                <b-form-input id="student-id-name-input" type="text" v-model="registerData.studentId" required>
+                <b-form-input id="student-id-name-input" type="text" v-model.trim="registerData.studentId" :state="!$v.registerData.studentId.$invalid" required>
                 </b-form-input>
               </b-form-group>
 
               <b-form-row>
-                <b-button class="submit-button w-100" type="submit" variant="primary">Подтвердить</b-button>
+                <b-col>
+                  <span class="text-secondary">
+                    Подтверждая регистрацию вы принимаете
+                    <router-link to="/processing_agreement" class="text-secondary">соглашение об обработке персональных данных</router-link>.
+                  </span>
+                </b-col>
+              </b-form-row>
+
+              <b-form-row>
+                <b-col>
+                  <b-button class="submit-button w-100 mt-2" type="submit" :disabled="$v.registerData.$invalid" variant="primary">Подтвердить</b-button>
+                </b-col>
               </b-form-row>
 
               <b-form-row>
@@ -102,24 +113,37 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator"
-import { validationMixin } from "vuelidate"
-import { required, minLength, maxLength, email } from "vuelidate/lib/validators"
-import { Action, Getter } from "vuex-class"
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { validationMixin } from "vuelidate";
+import { required, minLength, maxLength, email, numeric } from "vuelidate/lib/validators";
+import { Action, Getter } from "vuex-class";
 
-import { registerPage } from "@/router/PagesInformation"
-import { AUTH_REQUEST } from "@/store/actions/authorization";
-import { AuthorizationData } from "@/store/modules/authorization/types"
+import { registerPage } from "@/router/PagesInformation";
+import { AUTH_LOGIN } from "@/store/actions/authorization";
+import { AuthorizationData } from "@/store/modules/authorization/types";
+import { PROFILE_CREATE } from "@/store/actions/profile";
+import { RegistrationData } from "@/store/modules/profile/types";
+
+const baseValidations = {
+  firstName: { required, maxLength: maxLength(32) },
+  lastName: { required, maxLength: maxLength(32) },
+  email: { required, email },
+  password: { required, minLength: minLength(6), maxLength: maxLength(32) }
+}
 
 @Component({
   name: "AuthPage",
   mixins: [validationMixin],
-  validations: {
-    registerData: {
-      firstName: { required, maxLength: maxLength(32) },
-      lastName: { required, maxLength: maxLength(32) },
-      email: { required, email },
-      password: { required, minLength: minLength(8), maxLength: maxLength(32) }
+  validations() {
+    const registerData = (this as any).registerData
+    if (registerData.userType == "Student") {
+      return { registerData: {
+        ...baseValidations,
+        studentId: { required }
+      }}
+    }
+    else {
+      return { registerData: baseValidations }
     }
   }
 })
@@ -132,53 +156,71 @@ class AuthPage extends Vue {
   loginData: AuthorizationData = {
     username: "",
     password: ""
-  }
-  registerData = {
+  };
+  registerData: RegistrationData = {
     firstName: "",
     lastName: "",
     email: "",
     password: "",
-    userType: "",
+    userType: "SimpleUser",
     studentId: ""
-  }
+  };
   userTypeOptions = [
     { value: "SimpleUser", text: "Сотрудник" },
     { value: "Student", text: "Студент" }
-  ]
+  ];
+  rulesAccepted: boolean = false;
 
   // methods
   onSubmitLogin() {
-    this.$store.dispatch(AUTH_REQUEST, this.loginData).then(result => {
-      console.log("RESULT", result)
+    this.$store.dispatch(AUTH_LOGIN, this.loginData).then(result => {
+      console.log("login");
+      this.$router.push("events");
     }).catch(error => {
-      console.log("ERROR", error)
-    })
+      this.$notify({
+        type: "error",
+        title: "Неправильный логин или пароль"
+      })
+    });
   }
   onSubmitRegister() {
-    // Submit register data
+    this.$store.dispatch(PROFILE_CREATE, this.registerData).then(result => {
+      this.$router.push({ name: "EventsPage" });
+    }).catch(error => {
+      this.$notify({
+        type: "error",
+        title: "Невозможно создать такого пользователя"
+      })
+    });
   }
 }
 
-registerPage( {
+registerPage(
+  {
     path: "/login",
     name: "LoginPage",
     component: AuthPage
-  }, {
+  },
+  {
     secure: false,
     hideNavigation: true
-  }, {
+  },
+  {
     authType: "login"
   }
 );
 
-registerPage( {
+registerPage(
+  {
     path: "/register",
     name: "RegistrationPage",
     component: AuthPage
-  }, {
+  },
+  {
     secure: false,
     hideNavigation: true
-  }, {
+  },
+  {
     authType: "register"
   }
 );

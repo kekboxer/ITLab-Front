@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div id="app">
+    <notifications position="top right"></notifications>
     <div class="h-100" v-bind:class="{ 'layout-with-sidebar': ($route.meta.hideNavigation !== true) }">
       <template v-if="$route.meta.hideNavigation !== true">
         <sidebar-component></sidebar-component>
@@ -63,6 +64,10 @@ body,
 
 .content-spacer {
   height: 50px;
+}
+
+.notifications {
+  padding: 10px;
 }
 </style>
 <!-- STYLE END -->
