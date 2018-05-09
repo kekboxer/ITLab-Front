@@ -16,4 +16,7 @@ npm run build
 
 # build for production and view the bundle analyzer report
 npm run build --report
+
+# run production server
+node server
 ```
