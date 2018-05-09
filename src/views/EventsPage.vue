@@ -50,11 +50,11 @@ export const eventsSection: Section = new Section("События", {
 class EventsPage extends Vue {
   beforeMount() {
     this.$store.dispatch(EVENTS_FETCH)
-    console.log(this.events)
   }
 
-  @Getter(EVENTS_GET)
-  events?: Event[]
+  get events(): Event[] {
+    return this.$store.getters[EVENTS_GET]
+  }
 }
 
 registerSection(Group.General, eventsSection)
