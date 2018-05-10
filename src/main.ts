@@ -9,6 +9,9 @@ import BootstrapVue from "bootstrap-vue"
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// Touch
+import Vue2TouchEvents from "vue2-touch-events"
+
 // Notifications
 import VueNotifications from "vue-notification"
 
@@ -20,6 +23,7 @@ import App from "./App.vue";
 // Vue initialization
 Vue.use(VueMoment)
 Vue.use(BootstrapVue)
+Vue.use(Vue2TouchEvents)
 Vue.use(VueNotifications)
 
 new Vue({

@@ -3,9 +3,12 @@
   <div class="event-item-component">
     <div class="title-row">
       <b-row>
-        <b-col>
+        <b-col @mouseover="dateHovered=true" @mouseleave="dateHovered=false">
           <strong>
-            <icon name="clock" style="position: relative; bottom: -2px"></icon> {{ eventParams.beginTime | moment("calendar") }}</strong>
+            <icon name="clock" style="position: relative; bottom: -2px"></icon> 
+            <span v-if="dateHovered">{{ eventParams.beginTime | moment("DD.MM.YYYY, HH:mm")}}</span>
+            <span v-else>{{ eventParams.beginTime | moment("calendar") }}</span>
+          </strong>
         </b-col>
         <b-col cols="auto">
           <b-button variant="warning" :to="'event/' + eventParams.id"><icon name="edit"></icon> Изменить</b-button>
@@ -67,6 +70,8 @@ import { Event } from "@/store/modules/events/types"
 })
 export default class EventItemComponent extends Vue {
   @Prop() eventParams?: Event
+
+  dateHovered: boolean = false
 
   get duration(): string {
     const beginTime = this.eventParams && this.eventParams.beginTime
