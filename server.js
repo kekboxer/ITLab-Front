@@ -5,9 +5,9 @@ var history = require('connect-history-api-fallback');
 
 app = express()
 app.use(history())
-app.use(serverStatic(__dirname + "/dist"))
+app.use(serverStatic(__dirname))
 
-var port = process.env.PORT || 8080;
+var port = 8080;
 app.listen(port, function() {
   console.log("Running server on " + port)
 })
