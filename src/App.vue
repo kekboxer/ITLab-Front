@@ -69,5 +69,9 @@ body,
 .notifications {
   padding: 10px;
 }
+
+.page {
+  min-height: 100%;
+}
 </style>
 <!-- STYLE END -->

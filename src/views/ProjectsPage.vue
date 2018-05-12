@@ -7,6 +7,9 @@
           <h1>Проекты</h1>
         </b-col>
       </b-row>
+      <br>
+
+      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
     </b-container>
   </div>
 </template>
@@ -20,6 +23,8 @@ import { Component, Vue } from "vue-property-decorator"
 import { registerPage } from "@/router/PagesInformation"
 import { Section, Group, registerSection } from "@/general/SectionLayout"
 
+import LoadingStubComponent from "@/components/LoadingStubComponent.vue"
+
 export const projectsPageName: string = "ProjectsPage"
 
 export const projectsSection: Section = new Section("Проекты", {
@@ -28,9 +33,17 @@ export const projectsSection: Section = new Section("Проекты", {
 
 @Component({
   name: projectsPageName,
-  baseSection: projectsSection
+  baseSection: projectsSection,
+  components: {
+    "loading-stub-component": LoadingStubComponent
+  }
 })
 class ProjectsPage extends Vue {
+  loadingInProcess: boolean = true
+
+  bedoreMount() {
+    this.loadingInProcess = true
+  }
 }
 
 registerSection(Group.General, projectsSection)

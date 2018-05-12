@@ -11,8 +11,15 @@ export const actions: ActionTree<EventsState, RootState> = {
         const body = response && response.data
         const data: Event[] = body.data
 
-        commit(EVENTS_SET, data)
-        resolve()
+        if (body.statusCode == 1) {
+          commit(EVENTS_SET, data)
+          resolve()
+        }
+        else {
+          reject({
+            err: "Unable to fetch events"
+          })
+        }
       }).catch((error) => {
         console.log(error)
         reject(error)

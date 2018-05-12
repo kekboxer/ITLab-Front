@@ -9,31 +9,28 @@
           <template v-if="authType == 'login'">
             <b-form @submit.prevent="onSubmitLogin">
               <b-form-row>
-                <b-col align="center">
-                  <b-img rounded="circle" width="200" src="static/logo.jpg" :center="true" class="m-1" />
+                <b-col align="center" style="min-height: 230px">
+                  <b-img rounded="circle" height="230" src="static/logo.jpg" :center="true" class="m-1" />
                 </b-col>
               </b-form-row>
 
+              <b-alert :show="isLoginOrPasswordInvalid" variant="danger" dismissible>
+                Неправильный логин или пароль
+              </b-alert>
+
               <b-form-group id="username-input-group" label="Логин" label-for="username-input">
-                <b-form-input id="username-input" type="email" v-model.trim="loginData.username" required>
+                <b-form-input id="username-input" type="email" v-model.trim="authData.username" key="login" required>
                 </b-form-input>
               </b-form-group>
 
               <b-form-group id="password-input-group" label="Пароль" label-for="password-input">
-                <b-form-input id="password-input" type="password" v-model="loginData.password" required>
+                <b-form-input id="password-input" type="password" v-model="authData.password" key="password" required ref="password-input">
                 </b-form-input>
               </b-form-group>
 
               <b-form-row>
-                <b-col sm="12" lg="6" class="checkbox-centered-wrapper">
-                  <b-form-group id="remember-input-group">
-                    <b-form-checkbox id="remember-input" class="noselect" v-model="loginData.remember" :value="true" :unchecked-value="false">
-                      Запомнить меня
-                    </b-form-checkbox>
-                  </b-form-group>
-                </b-col>
-                <b-col sm="12" lg="6">
-                  <b-button class="submit-button w-100" type="submit" variant="primary">Войти</b-button>
+                <b-col>
+                  <b-button class="submit-button w-100" type="submit" variant="primary" :disabled="isInProcess">Войти</b-button>
                 </b-col>
               </b-form-row>
 
@@ -85,8 +82,9 @@
               <b-form-row>
                 <b-col>
                   <span class="text-secondary">
-                    Подтверждая регистрацию вы принимаете
-                    <router-link to="/processing_agreement" class="text-secondary">соглашение об обработке персональных данных</router-link>.
+                    <small>
+                      Подтверждая регистрацию вы даёте своё <router-link to="/processing_agreement" class="text-secondary"><u>согласие на обработку персональных данных</u></router-link>.
+                    </small>
                   </span>
                 </b-col>
               </b-form-row>
@@ -115,7 +113,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { validationMixin } from "vuelidate";
-import { required, minLength, maxLength, email, numeric } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  email,
+  numeric
+} from "vuelidate/lib/validators";
 import { Action, Getter } from "vuex-class";
 
 import { registerPage } from "@/router/PagesInformation";
@@ -124,26 +128,33 @@ import { AuthorizationData } from "@/store/modules/authorization/types";
 import { PROFILE_CREATE } from "@/store/actions/profile";
 import { RegistrationData } from "@/store/modules/profile/types";
 
+enum AuthState {
+  None,
+  InProcess,
+  Error
+}
+
 const baseValidations = {
   firstName: { required, maxLength: maxLength(32) },
   lastName: { required, maxLength: maxLength(32) },
   email: { required, email },
   password: { required, minLength: minLength(6), maxLength: maxLength(32) }
-}
+};
 
 @Component({
   name: "AuthPage",
   mixins: [validationMixin],
   validations() {
-    const registerData = (this as any).registerData
+    const registerData = (this as any).registerData;
     if (registerData.userType == "Student") {
-      return { registerData: {
-        ...baseValidations,
-        studentId: { required }
-      }}
-    }
-    else {
-      return { registerData: baseValidations }
+      return {
+        registerData: {
+          ...baseValidations,
+          studentId: { required }
+        }
+      };
+    } else {
+      return { registerData: baseValidations };
     }
   }
 })
@@ -153,7 +164,7 @@ class AuthPage extends Vue {
   authType?: String;
 
   // data
-  loginData: AuthorizationData = {
+  authData: AuthorizationData = {
     username: "",
     password: ""
   };
@@ -169,29 +180,47 @@ class AuthPage extends Vue {
     { value: "SimpleUser", text: "Сотрудник" },
     { value: "Student", text: "Студент" }
   ];
-  rulesAccepted: boolean = false;
+  authState: AuthState = AuthState.None;
+
+  // computed
+  get isLoginOrPasswordInvalid(): boolean {
+    return this.authState == AuthState.Error;
+  }
+
+  get isInProcess(): boolean {
+    return this.authState == AuthState.InProcess;
+  }
 
   // methods
   onSubmitLogin() {
-    this.$store.dispatch(AUTH_LOGIN, this.loginData).then(result => {
-      console.log("login");
-      this.$router.push("events");
-    }).catch(error => {
-      this.$notify({
-        type: "error",
-        title: "Неправильный логин или пароль"
+    this.authState = AuthState.InProcess;
+    this.$store
+      .dispatch(AUTH_LOGIN, this.authData)
+      .then(result => {
+        this.authState = AuthState.None;
+        this.authData = {
+          username: "",
+          password: ""
+        }
+        this.$router.push("events");
       })
-    });
+      .catch(error => {
+        this.authState = AuthState.Error;
+        this.authData.password = ""
+
+        const passwordInput = this.$refs["password-input"] as HTMLElement
+        passwordInput.focus()
+      });
   }
   onSubmitRegister() {
-    this.$store.dispatch(PROFILE_CREATE, this.registerData).then(result => {
-      this.$router.push({ name: "EventsPage" });
-    }).catch(error => {
-      this.$notify({
-        type: "error",
-        title: "Невозможно создать такого пользователя"
+    this.$store
+      .dispatch(PROFILE_CREATE, this.registerData)
+      .then(result => {
+        this.$router.push({ name: "EventsPage" });
       })
-    });
+      .catch(error => {
+        console.log(error)
+      });
   }
 }
 

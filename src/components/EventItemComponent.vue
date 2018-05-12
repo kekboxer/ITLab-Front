@@ -13,9 +13,6 @@
         <b-col cols="auto">
           <b-button variant="warning" :to="'event/' + eventParams.id"><icon name="edit"></icon> Изменить</b-button>
         </b-col>
-        <b-col cols="auto">
-          <b-button variant="outline-secondary"><icon name="eye-slash"></icon> Скрыть</b-button>
-        </b-col>
       </b-row>
       <hr>
       <b-row>
