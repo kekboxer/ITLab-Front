@@ -1,13 +1,13 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="sidebar-component">
+  <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
+    <img src="static/bars.svg" class="menu-open" @click="isMobileMenuHidden = false">
     <div class="nav-sidebar">
       <div class="inner-scroll">
-        <b-navbar-brand href="/">
-          <b-row>
-            <b-col align="center"><img class="rounded-circle" :src="require('@/assets/logo_dog.png')" :center="true" height="40" /> {{ systemName }}</b-col>
-          </b-row>
-        </b-navbar-brand>
+        <div class="home">
+          <div class="text">{{ systemName }}</div>
+          <img src="static/bars.svg" class="menu-toggle" @click="isMobileMenuHidden = true">
+        </div>
 
         <div v-for="group in sectionGroups" :key="group.title">
           <hr>
@@ -22,11 +22,6 @@
         <hr>
 
         <div class="exit-button" @click="logout()" style="margin-top: auto">Выход</div>
-
-        <div class="with-love text-muted" v-if="Math.random() < 0.001">
-          <small>From Ivan with</small>
-          <icon name="heart" style="color: rgba(255, 0, 0, 0.6)" scale="0.6"></icon>
-        </div>
       </div>
     </div>
   </div>
@@ -37,9 +32,6 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Icon from "vue-awesome/components/Icon";
-
-import "vue-awesome/icons/heart";
 
 import {
   sectionGroups,
@@ -50,15 +42,20 @@ import {
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
 import { SYSTEM_NAME } from "@/store/actions/global";
 
-@Component({
-  components: {
-    icon: Icon
-  }
-})
+@Component
 export default class SidebarComponent extends Vue {
   sectionGroups: SectionGroup[] = Array.from(sectionGroups).map(
     value => value[1]
   );
+  isMobileMenuHidden: boolean = true;
+
+  toggleMenu(event: any) {
+    if (event.target.className !== "sidebar-component") {
+      return;
+    }
+    
+    this.isMobileMenuHidden = !this.isMobileMenuHidden;
+  }
 
   logout() {
     this.$store.dispatch(AUTH_LOGOUT).then(result => {
@@ -76,17 +73,44 @@ export default class SidebarComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style>
-.sidebar-component .nav-sidebar {
-  transition: width 0.3s, left 0.3s;
+.sidebar-component {
+  z-index: 5000;
   position: fixed;
-  z-index: 400;
-  width: 220px;
+  width: 100%;
   top: 0;
   bottom: 0;
   left: 0;
+  background-color: #29292949;
+}
+
+.sidebar-component.mobile-hidden {
+  width: 0px;
+}
+
+.sidebar-component.mobile-hidden .nav-sidebar {
+  display: none;
+}
+
+.sidebar-component .menu-open {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+}
+
+.sidebar-component:not(.mobile-hidden) .menu-open {
+  display: none;
+}
+
+.sidebar-component .nav-sidebar {
+  z-index: 1;
+  position: fixed;
+  width: 220px;
+  top: 0;
+  bottom: 0;
+  right: 0;
   margin: 0;
   background-color: #ffffff;
-  box-shadow: inset -2px 0 0 #e5e5e5;
+  box-shadow: inset 2px 0 0 #e5e5e5;
   transform: translate3d(0, 0, 0);
   display: flex;
   flex-direction: column;
@@ -100,15 +124,26 @@ export default class SidebarComponent extends Vue {
   margin-bottom: calc(49px - 1rem);
 }
 
-.sidebar-component .navbar-brand {
-  height: 40px;
-  line-height: 40px;
-  display: inline-block;
-  margin-left: 1rem;
+.sidebar-component .home {
+  width: 100%;
+  display: inline-flex;
+  padding: 1rem 1rem 0 1rem;
   font-size: 1.25rem;
   white-space: nowrap;
   color: #292929;
   font-weight: 600;
+}
+
+.sidebar-component .home .text {
+  font-size: 1.25rem;
+  white-space: nowrap;
+  color: #292929;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.sidebar-component .home .menu-toggle {
+  margin-left: auto;
 }
 
 .sidebar-component .nav-sidebar .group-name {
@@ -136,19 +171,6 @@ export default class SidebarComponent extends Vue {
   font-weight: 600;
 }
 
-.sidebar-component .with-love {
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  padding: 2px 0px 2px 10px;
-  background-color: #333;
-  box-shadow: inset 0 2px 0 #222;
-}
-
-.sidebar-component .with-love small {
-  color: #aaa;
-}
-
 .sidebar-component .exit-button {
   width: 218px;
   transition: width 0.3s;
@@ -163,12 +185,44 @@ export default class SidebarComponent extends Vue {
   align-items: center;
   line-height: 1;
   font-weight: bold;
+  box-shadow: inset 2px 0 0 #e5e5e5;
 }
 
 .sidebar-component .exit-button:hover {
   background-color: #e5e5e5;
   color: #2e2e2e;
   cursor: pointer;
+}
+
+@media (min-width: 992px) {
+  .sidebar-component {
+    width: 0px;
+  }
+
+  .sidebar-component.mobile-hidden {
+    width: 0px;
+  }
+
+  .sidebar-component.mobile-hidden .nav-sidebar {
+    display: block;
+  }
+
+  .sidebar-component .nav-sidebar {
+    box-shadow: inset -2px 0 0 #e5e5e5;
+    left: 0;
+  }
+
+  .sidebar-component .menu-open {
+    display: none;
+  }
+
+  .sidebar-component .exit-button {
+    box-shadow: none;
+  }
+
+  .sidebar-component .home .menu-toggle {
+    display: none;
+  }
 }
 </style>
 <!-- STYLE END -->

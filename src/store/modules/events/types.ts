@@ -7,7 +7,7 @@ export interface Event {
 
   title?: string,
   description?: string,
-  participantsNeeded?: number,
+  neededParticipantsCount?: number,
   participantCount?: number
 }
 
