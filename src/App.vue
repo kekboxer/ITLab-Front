@@ -38,7 +38,7 @@ export default class App extends Vue {}
 html,
 body,
 #app {
-  height: 100%;
+  height: calc(100% - 50px);
   background-color: #f8f9f9;
 }
 
@@ -53,6 +53,27 @@ body,
 @media (min-width: 992px) {
   .layout-with-sidebar {
     padding-left: 220px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .page-title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background-color: white;
+    font-size: 20pt;
+    height: calc(2rem + 32px);
+    line-height: calc(2rem + 32px);
+    padding-left: 1rem;
+    border-bottom: 2px solid #e5e5e5;
+  }
+
+  .page-title .btn {
+    position: relative;
+    top: -2px;
   }
 }
 

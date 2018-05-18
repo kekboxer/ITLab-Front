@@ -4,7 +4,7 @@
     <b-container class="content">
       <b-row>
         <b-col>
-          <h1>Проекты</h1>
+          <h1 class="page-title">Проекты</h1>
         </b-col>
       </b-row>
       <br>

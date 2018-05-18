@@ -11,16 +11,16 @@
           </strong>
         </b-col>
         <b-col cols="auto">
-          <b-button variant="warning" :to="'event/' + eventParams.id"><icon name="edit"></icon> Изменить</b-button>
+          <b-button variant="outline-secondary" :to="'event/' + eventParams.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
       <b-row>
-        <b-col cols="8">
+        <b-col md="8">
           <h3>{{ eventParams.title || "Template title" }}</h3>
           <p>{{ eventParams.description || "Template description" }}</p>
         </b-col>
-        <b-col cols="4">
+        <b-col md="4">
           <b-row>
             <b-col>
               Участники:
@@ -38,7 +38,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col>
+        <b-col class="mt-2">
           <b-button variant="outline-primary">Хочу пойти</b-button>
         </b-col>
       </b-row>

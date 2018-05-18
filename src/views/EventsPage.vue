@@ -3,8 +3,10 @@
   <div class="events-page">
     <b-container class="content">
       <b-row>
-        <b-col>
-          <h1>События</h1>
+        <b-col class="page-title">
+          <h1 class="page-title">События
+            <b-button variant="success" to="event/new">Добавить</b-button>
+          </h1>
         </b-col>
       </b-row>
       <br>
@@ -52,13 +54,16 @@ export const eventsSection: Section = new Section("События", {
   }
 })
 class EventsPage extends Vue {
-  loadingInProcess: boolean = true
+  loadingInProcess: boolean = true;
 
   beforeMount() {
-    this.loadingInProcess = this.$store.getters[EVENTS_GET] == 0
-    this.$store.dispatch(EVENTS_FETCH).then(result => {
-      this.loadingInProcess = false
-    }).catch(result => {})
+    this.loadingInProcess = this.$store.getters[EVENTS_GET] == 0;
+    this.$store
+      .dispatch(EVENTS_FETCH)
+      .then(result => {
+        this.loadingInProcess = false;
+      })
+      .catch(result => {});
   }
 
   get events(): Event[] {
@@ -86,6 +91,5 @@ export default EventsPage;
 
 <!-- STYLE BEGIN -->
 <style>
-
 </style>
 <!-- STYLE END -->

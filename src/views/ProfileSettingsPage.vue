@@ -4,7 +4,7 @@
     <b-container class="content">
       <b-row>
         <b-col>
-          <h1>Настройки профиля</h1>
+          <h1 class="page-title">Настройки профиля</h1>
         </b-col>
       </b-row>
     </b-container>
