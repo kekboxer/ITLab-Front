@@ -5,6 +5,7 @@ import Router, { Route, RawLocation } from "vue-router"
 import { routes } from "./PagesInformation"
 
 import "@/views/AuthPage.vue";
+import "@/views/EventPage.vue";
 import "@/views/EventsPage.vue";
 import "@/views/ProjectsPage.vue";
 import "@/views/EquipmentPage.vue";

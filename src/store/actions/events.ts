@@ -1,3 +1,6 @@
 export const EVENTS_FETCH = "EVENTS_FETCH"
+export const EVENT_FETCH = "EVENT_FETCH"
 export const EVENTS_SET = "EVENTS_SET"
+export const EVENT_SET = "EVENT_SET"
 export const EVENTS_GET = "EVENTS_GET"
+export const EVENT_GET = "EVENT_GET"

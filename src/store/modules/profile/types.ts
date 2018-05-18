@@ -7,7 +7,7 @@ export interface User {
 
 export interface RegistrationData extends User {
   studentId?: string
-  userType: string
+  //userType: string
   password: string
 }
 

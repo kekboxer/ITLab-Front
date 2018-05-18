@@ -38,7 +38,7 @@ export default class App extends Vue {}
 html,
 body,
 #app {
-  height: calc(100% - 50px);
+  height: 100%;
   background-color: #f8f9f9;
 }
 
@@ -74,6 +74,10 @@ body,
   .page-title .btn {
     position: relative;
     top: -2px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
   }
 }
 

@@ -70,14 +70,14 @@
                 </b-form-input>
               </b-form-group>
 
-              <b-form-group id="user-type-select-group" label="Тип аккаунта">
+              <!--<b-form-group id="user-type-select-group" label="Тип аккаунта">
                 <b-form-select v-model="registerData.userType" :options="userTypeOptions"></b-form-select>
               </b-form-group>
 
               <b-form-group id="student-id-input-group" label="Номер студенческого билета" label-for="student-id-name-input" v-if="registerData.userType == 'Student'">
                 <b-form-input id="student-id-name-input" type="text" v-model.trim="registerData.studentId" :state="!$v.registerData.studentId.$invalid" required>
                 </b-form-input>
-              </b-form-group>
+              </b-form-group>-->
 
               <b-form-row>
                 <b-col>
@@ -173,13 +173,13 @@ class AuthPage extends Vue {
     lastName: "",
     email: "",
     password: "",
-    userType: "SimpleUser",
+    //userType: "SimpleUser",
     studentId: ""
   };
-  userTypeOptions = [
+  /*userTypeOptions = [
     { value: "SimpleUser", text: "Сотрудник" },
     { value: "Student", text: "Студент" }
-  ];
+  ];*/
   authState: AuthState = AuthState.None;
 
   // computed

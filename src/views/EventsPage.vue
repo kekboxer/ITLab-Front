@@ -39,6 +39,10 @@ import { Event } from "@/store/modules/events/types";
 import { EVENTS_FETCH, EVENTS_GET } from "@/store/actions/events";
 import { Getter } from "vuex-class/lib/bindings";
 
+import Icon from "vue-awesome/components/Icon"
+
+import "vue-awesome/icons/plus"
+
 export const eventsPageName: string = "EventsPage";
 
 export const eventsSection: Section = new Section("События", {
@@ -49,6 +53,7 @@ export const eventsSection: Section = new Section("События", {
   name: eventsPageName,
   baseSection: eventsSection,
   components: {
+    "icon": Icon,
     "event-item-component": EventItemComponent,
     "loading-stub-component": LoadingStubComponent
   }
