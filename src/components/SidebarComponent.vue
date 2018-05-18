@@ -13,7 +13,7 @@
           <hr>
           <div class="group-name">{{group.title}}</div>
           <b-nav vertical>
-            <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" exact v-bind:class="{'active': section == $route.meta.baseSection}">
+            <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section == $route.meta.baseSection}">
               {{section.title}}
               <!--<b-badge variant="primary" pill v-if="section.title == 'События'" style="margin-right: 0">1</b-badge>-->
             </b-nav-item>
