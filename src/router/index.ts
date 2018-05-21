@@ -22,13 +22,18 @@ axios.defaults.headers.post['Content-Type'] = "application/json"
 
 const token = localStorage.getItem("user-token")
 if (token) { // load token on start
-  axios.defaults.headers.common["Authorization"] = token
+  axios.defaults.headers.common["Authorization"] = "Bearer " + token
 }
 
 axios.interceptors.response.use((response) => {
   const body = response.data
   if (body.statusCode != 1) {
-    store.dispatch(AUTH_LOGOUT)
+    if (body.statusCode == 12) {
+      store.dispatch(AUTH_LOGOUT)
+    }
+    else {
+      throw { err: { statusCode: body.statusCode } }
+    }
   }
   return response
 }, (err) => {

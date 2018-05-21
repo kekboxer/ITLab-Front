@@ -1,12 +1,12 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
-    <img src="static/bars.svg" class="menu-open" @click="isMobileMenuHidden = false">
+    <img src="/static/bars.svg" class="menu-open" @click="isMobileMenuHidden = false">
     <div class="nav-sidebar">
       <div class="inner-scroll">
         <div class="home">
           <div class="text">{{ systemName }}</div>
-          <img src="static/bars.svg" class="menu-toggle" @click="isMobileMenuHidden = true">
+          <img src="/static/bars.svg" class="menu-toggle" @click="isMobileMenuHidden = true">
         </div>
 
         <div v-for="group in sectionGroups" :key="group.title">
@@ -15,7 +15,6 @@
           <b-nav vertical>
             <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section == $route.meta.baseSection}">
               {{section.title}}
-              <!--<b-badge variant="primary" pill v-if="section.title == 'События'" style="margin-right: 0">1</b-badge>-->
             </b-nav-item>
           </b-nav>
         </div>

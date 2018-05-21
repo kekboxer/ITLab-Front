@@ -1,7 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="loading-stub-component">
-    <img src="static/loading.svg" alt="Loading...">
+    <img src="/static/loading.svg" alt="Loading...">
   </div>
 </template>
 <!-- TEMPALTE END -->

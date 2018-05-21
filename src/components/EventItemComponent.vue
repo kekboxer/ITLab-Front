@@ -89,11 +89,6 @@ export default class EventItemComponent extends Vue {
   dateHovered: boolean = false
 
   get currentState(): any {
-    if (this.eventParams) {
-      this.eventParams.neededParticipantsCount = 10
-      this.eventParams.participantCount = Math.floor(Math.random() * this.eventParams.neededParticipantsCount)
-    }
-
     const state: State = State.Default // TODO: delete this
 
     switch(+state) {
