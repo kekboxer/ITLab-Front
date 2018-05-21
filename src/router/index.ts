@@ -18,20 +18,21 @@ import { AUTH_LOGOUT } from "@/store/actions/authorization";
 Vue.use(Router);
 
 axios.defaults.baseURL = "https://labworkback.azurewebsites.net/api/"
-axios.defaults.headers.post['Content-Type'] = "application/json";//"application/x-www-form-urlencoded"
+axios.defaults.headers.post['Content-Type'] = "application/json"
 
 const token = localStorage.getItem("user-token")
 if (token) { // load token on start
   axios.defaults.headers.common["Authorization"] = token
 }
 
-axios.interceptors.response.use(undefined, function (err) {
-  return new Promise(function (resolve, reject) {
-    if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-      store.dispatch(AUTH_LOGOUT)
-    }
-    throw err;
-  });
+axios.interceptors.response.use((response) => {
+  const body = response.data
+  if (body.statusCode != 1) {
+    store.dispatch(AUTH_LOGOUT)
+  }
+  return response
+}, (err) => {
+  return Promise.reject(err)
 });
 
 const router: Router = new Router({

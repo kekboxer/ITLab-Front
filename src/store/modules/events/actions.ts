@@ -11,6 +11,8 @@ export const actions: ActionTree<EventsState, RootState> = {
         const body = response && response.data
         const data: Event[] = body.data
 
+        console.log(body)
+
         if (body.statusCode == 1) {
           commit(EVENTS_SET, data)
           resolve()

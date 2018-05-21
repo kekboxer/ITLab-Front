@@ -35,6 +35,11 @@
           </b-row>
           <b-row>
             <b-col>
+              Начало: <b>{{ eventParams.beginTime | moment("HH:mm")}}</b>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
               Длительность: <b>{{ duration }}</b>
             </b-col>
           </b-row>

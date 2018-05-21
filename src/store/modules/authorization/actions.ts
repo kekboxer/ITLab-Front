@@ -21,7 +21,8 @@ export const actions: ActionTree<AuthorizationState, RootState> = {
 
         if (body.statusCode == 1 && data.token) {
           localStorage.setItem("user-token", data.token)
-          axios.defaults.headers.common['Authorization'] = data.token
+          console.log("TOKEN", data.token)
+          axios.defaults.headers.common['Authorization'] = "Bearer " + data.token
 
           commit(AUTH_LOGIN, data.token)
           resolve(body)
