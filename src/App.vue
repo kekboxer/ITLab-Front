@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div id="app" class="theme-dark">
+  <div id="app" v-bind:class="{ 'theme-dark': darkTheme }">
     <notifications position="top right"></notifications>
     <div class="layout" v-bind:class="{ 'with-sidebar': ($route.meta.hideNavigation !== true) }">
       <template v-if="$route.meta.hideNavigation !== true">
@@ -21,13 +21,18 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import SidebarComponent from "@/components/SidebarComponent.vue";
+import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
 
 @Component({
   components: {
     "sidebar-component": SidebarComponent
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  get darkTheme(): boolean {
+    return this.$store.getters[SETTINGS_DARK_THEME_GET];
+  }
+}
 </script>
 <!-- SCRIPT END -->
 
@@ -115,6 +120,11 @@ html, body {
 
 .page {
   min-height: 100%;
+}
+
+
+.theme-dark .form-control {
+  background-color: #efefef;
 }
 </style>
 <!-- STYLE END -->

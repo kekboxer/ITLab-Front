@@ -255,8 +255,13 @@ export default class SidebarComponent extends Vue {
   }
 
   .sidebar-component .nav-sidebar {
-    box-shadow: inset -2px 0 0;
     left: 0;
+
+    box-shadow: inset 2px 0 0 #e5e5e5;
+  }
+
+  .theme-dark .sidebar-component .nav-sidebar {
+    box-shadow: inset 2px 0 0 #252526;
   }
 
   .sidebar-component .menu-open {

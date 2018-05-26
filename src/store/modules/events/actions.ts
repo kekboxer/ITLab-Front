@@ -2,7 +2,9 @@ import { ActionTree } from "vuex"
 import axios from "axios"
 import { EventsState, Event } from "./types"
 import { RootState } from "@/store/types"
-import { EVENTS_FETCH, EVENT_FETCH, EVENT_COMMIT, EVENTS_SET, EVENT_SET } from "@/store/actions/events";
+import { 
+  EVENTS_FETCH, EVENT_FETCH, EVENT_COMMIT, EVENTS_SET, EVENT_SET 
+} from "@/store/actions/events";
 
 export const actions: ActionTree<EventsState, RootState> = {
   [EVENTS_FETCH]: ({ commit, dispatch }) => {

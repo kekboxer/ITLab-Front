@@ -12,7 +12,7 @@
         </b-col>
         <b-col cols="auto">
           <!--<strong>Иванов Иван</strong>-->
-          <b-button variant="warning" class="btn-sm" :to="'event/' + eventParams.id">Изменить</b-button>
+          <b-button variant="outline-warning" class="btn-sm" :to="'event/' + eventParams.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
