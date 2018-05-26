@@ -3,17 +3,16 @@
   <div class="event-item-component" v-bind:class="currentState">
     <div class="title-row">
       <b-row>
-        <b-col cols="auto" @mouseover="dateHovered=true" @mouseleave="dateHovered=false" style="min-width: 300px">
-          <strong>
-            <icon name="clock" style="position: relative; bottom: -2px"></icon> 
-            <span v-if="dateHovered" >{{ eventParams.beginTime | moment("DD.MM.YYYY, HH:mm")}}</span>
+        <b-col cols="auto mr-auto">
+          <strong style="line-height: 31px">
+            <span @click="dateHovered=!dateHovered"><icon name="clock" style="position: relative; bottom: -2px"></icon></span>
+            <span v-if="dateHovered" >{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
             <span v-else>{{ eventParams.beginTime | moment("calendar") }}</span>
           </strong>
         </b-col>
-        <b-col></b-col>
         <b-col cols="auto">
           <!--<strong>Иванов Иван</strong>-->
-          <b-button variant="outline-secondary" :to="'event/' + eventParams.id">Изменить</b-button>
+          <b-button variant="outline-warning" class="btn-sm" :to="'event/' + eventParams.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
@@ -45,13 +44,15 @@
           </b-row>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col class="mt-2">
-          <b-button variant="outline-primary">Хочу пойти</b-button>
-          <b-button variant="link" class="text-danger">Не могу пойти</b-button>
+      <b-row class="mt-2 buttons">
+        <b-col cols="12" md="auto" class="order-md-3">
+          <b-button variant="primary" class="w-100">Подробнее</b-button>
         </b-col>
-        <b-col cols="auto">
-          <b-button variant="primary" :to="'/event/' + eventParams.id">Подробнее</b-button>
+        <b-col cols="12" md="auto" class="order-md-1">
+          <b-button variant="outline-primary" class="w-100" >Хочу пойти</b-button>
+        </b-col>
+        <b-col cols="12" md="auto mr-auto" class="order-md-2">
+          <b-button variant="link" class="w-100 text-danger">Не могу пойти</b-button>
         </b-col>
       </b-row>
     </div>
@@ -117,6 +118,14 @@ export default class EventItemComponent extends Vue {
   margin: 10px;
 }
 
+.theme-dark .event-item-component {
+  background-color: #333333;
+}
+
+.theme-dark .event-item-component .progress {
+  background-color: #adadad;
+}
+
 .event-item-component.default {
   box-shadow: -4px 0 0 #007bff;
 }
@@ -127,6 +136,16 @@ export default class EventItemComponent extends Vue {
 
 .event-item-component.success {
   box-shadow: -4px 0 0 #28a745;
+}
+
+@media (max-width: 767.98px) {
+  .event-item-component .buttons > div {
+    margin-bottom: 0.5rem;
+  }
+
+  .event-item-component .buttons > div:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>
 <!-- STYLE END -->

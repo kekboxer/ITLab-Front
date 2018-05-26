@@ -7,6 +7,18 @@
           <h1 class="page-title">Настройки профиля</h1>
         </b-col>
       </b-row>
+      <br>
+
+      <b-row>
+        <b-col>
+          <b-form @submit.prevent="onSubmitEvent">
+          <b-form-group id="dark-theme-group" label="Тёмная тема" label-for="dark-theme-input">
+            <b-form-checkbox id="dark-theme-input" v-model="darkTheme" :value="true">
+            </b-form-checkbox>
+          </b-form-group>
+        </b-form>
+        </b-col>
+      </b-row>
     </b-container>
   </div>
 </template>
@@ -15,33 +27,44 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator"
+import { Component, Vue } from "vue-property-decorator";
 
-import { registerPage } from "@/router/PagesInformation"
-import { Section, Group, registerSection } from "@/general/SectionLayout"
+import { registerPage } from "@/router/PagesInformation";
+import { Section, Group, registerSection } from "@/general/SectionLayout";
+import { SETTINGS_DARK_THEME_SET, SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
 
-export const profileSettingsPageName: string = "ProfileSettingsPage"
+export const profileSettingsPageName: string = "ProfileSettingsPage";
 
 export const profileSettingsSection: Section = new Section("Настройки", {
   name: profileSettingsPageName
-})
+});
 
 @Component({
   name: profileSettingsPageName,
   baseSection: profileSettingsSection
 })
 class ProfileSettingsPage extends Vue {
+  set darkTheme(enabled: boolean) {
+    this.$store.commit(SETTINGS_DARK_THEME_SET, enabled);
+  }
+
+  get darkTheme(): boolean {
+    return this.$store.getters[SETTINGS_DARK_THEME_GET];
+  }
 }
 
-registerSection(Group.Profile, profileSettingsSection)
+registerSection(Group.Profile, profileSettingsSection);
 
-registerPage({
-  path: "/settings",
-  name: profileSettingsPageName,
-  component: ProfileSettingsPage
-}, {
-  baseSection: profileSettingsSection
-});
+registerPage(
+  {
+    path: "/settings",
+    name: profileSettingsPageName,
+    component: ProfileSettingsPage
+  },
+  {
+    baseSection: profileSettingsSection
+  }
+);
 
 export default ProfileSettingsPage;
 </script>
@@ -50,6 +73,5 @@ export default ProfileSettingsPage;
 
 <!-- STYLE BEGIN -->
 <style>
-
 </style>
 <!-- STYLE END -->

@@ -11,7 +11,7 @@
 
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
-        <b-row>
+        <b-row v-if="!isNewEvent">
           <b-col v-bind:title="'Это временно'">
             ID: <span style="font-family: monospace">{{ event.id }}</span>
             <hr>
@@ -53,10 +53,16 @@ import { registerPage } from "@/router/PagesInformation";
 import { eventsSection } from "./EventsPage.vue";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
-import { EVENT_FETCH, EVENTS_GET } from "@/store/actions/events";
+import { EVENT_FETCH, EVENT_COMMIT, EVENTS_GET } from "@/store/actions/events";
 import { Event, createDefaultEvent } from "@/store/modules/events/types";
 
 export const eventPageName: string = "EventPageName";
+
+enum State {
+  None,
+  InProcess,
+  Error
+}
 
 @Component({
   name: eventPageName,
@@ -66,25 +72,38 @@ export const eventPageName: string = "EventPageName";
   }
 })
 class EventPage extends Vue {
-  loadingInProcess: boolean = true;
+  loadingInProcess: boolean = false;
   event: Event = createDefaultEvent();
 
-  onSubmitEvent() {}
+  pageState: State = State.None;
+  isNewEvent: boolean = false;
 
   mounted() {
     const eventId = this.$route.params.id;
-    if (eventId) {
+    if (eventId && eventId != "new") {
+      this.loadingInProcess = true;
       this.$store
         .dispatch(EVENT_FETCH, eventId)
         .then(event => {
           this.event = event;
-
           this.loadingInProcess = false;
         })
-        .catch(result => {});
+        .catch(error => {});
     } else {
-      console.log("ASD");
+      this.isNewEvent = true;
     }
+  }
+
+  onSubmitEvent() {
+    this.$store.dispatch(EVENT_COMMIT, this.event).then(event => {
+      if (this.isNewEvent) {
+        this.$router.replace("event/" + event.id);
+      }
+    }).catch(error => {})
+  }
+
+  get isInProcess(): boolean {
+    return this.pageState == State.InProcess;
   }
 
   /*

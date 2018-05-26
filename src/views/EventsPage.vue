@@ -13,7 +13,7 @@
 
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
-        <b-row v-for="event in events" :key="event.title">
+        <b-row v-for="event in events" :key="event.id">
           <b-col>
             <event-item-component :event-params="event"></event-item-component>
           </b-col>

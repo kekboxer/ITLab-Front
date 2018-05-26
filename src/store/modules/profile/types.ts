@@ -7,8 +7,16 @@ export interface User {
 
 export interface RegistrationData extends User {
   studentId?: string
-  //userType: string
   password: string
+}
+
+export const createDefaultRegistrationData = (): RegistrationData => {
+  return {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  }
 }
 
 export interface ProfileState {

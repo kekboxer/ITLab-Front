@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
-    <img src="/static/bars.svg" class="menu-open" @click="isMobileMenuHidden = false">
+    <img src="/static/bars.svg" class="menu-open bars" @click="isMobileMenuHidden = false">
     <div class="nav-sidebar">
       <div class="inner-scroll">
         <div class="home">
@@ -79,7 +79,16 @@ export default class SidebarComponent extends Vue {
   top: 0;
   bottom: 0;
   left: 0;
+
   background-color: #29292949;
+}
+
+.sidebar-component .bars {
+  fill: #000000;
+}
+
+.theme-dark .sidebar-component .bars {
+  fill: #adadad;
 }
 
 .sidebar-component.mobile-hidden {
@@ -108,12 +117,18 @@ export default class SidebarComponent extends Vue {
   bottom: 0;
   right: 0;
   margin: 0;
-  background-color: #ffffff;
-  box-shadow: inset 2px 0 0 #e5e5e5;
   transform: translate3d(0, 0, 0);
   display: flex;
   flex-direction: column;
   align-items: stretch;
+
+  background-color: #ffffff;
+  box-shadow: inset 2px 0 0 #e5e5e5;
+}
+
+.theme-dark .sidebar-component .nav-sidebar {
+  background-color: #333333;
+  box-shadow: inset 2px 0 0 #252526;
 }
 
 .sidebar-component .nav-sidebar .inner-scroll {
@@ -129,16 +144,26 @@ export default class SidebarComponent extends Vue {
   padding: 1rem 1rem 0 1rem;
   font-size: 1.25rem;
   white-space: nowrap;
-  color: #292929;
   font-weight: 600;
+
+  color: #292929;
+}
+
+.theme-dark .sidebar-component .home {
+  color: #cccccc;
 }
 
 .sidebar-component .home .text {
   font-size: 1.25rem;
   white-space: nowrap;
-  color: #292929;
   font-weight: 600;
   display: inline-block;
+
+  color: #292929;
+}
+
+.theme-dark .sidebar-component .home .text {
+  color: #cccccc;
 }
 
 .sidebar-component .home .menu-toggle {
@@ -152,13 +177,22 @@ export default class SidebarComponent extends Vue {
 }
 
 .sidebar-component .nav-sidebar .nav-item a {
-  color: #535353;
   padding-left: 2rem;
+
+  color: #535353;
+}
+
+.theme-dark .sidebar-component .nav-sidebar .nav-item a {
+  color: #adadad;
 }
 
 .sidebar-component .nav-sidebar .nav-item a:hover {
   background: rgba(0, 0, 0, 0.04);
   color: #2e2e2e;
+}
+
+.theme-dark .sidebar-component .nav-sidebar .nav-item a:hover {
+  color: #999999;
 }
 
 .sidebar-component .nav-sidebar .nav-item.active {
@@ -171,26 +205,40 @@ export default class SidebarComponent extends Vue {
 }
 
 .sidebar-component .exit-button {
-  width: 218px;
-  transition: width 0.3s;
+  width: 100%;
   position: fixed;
   bottom: 0;
   padding: 16px;
-  background-color: #ffffff;
   border: 0;
-  border-top: 2px solid #e5e5e5;
-  color: #707070;
+  border-top: 2px solid;
   display: flex;
   align-items: center;
   line-height: 1;
   font-weight: bold;
+  
+  color: #707070;
+  background-color: #ffffff;
+  border-color: #e5e5e5;
   box-shadow: inset 2px 0 0 #e5e5e5;
 }
 
+.theme-dark .sidebar-component .exit-button {
+  color: #adadad;
+  background-color: #333333;
+  border-color: #252526;
+  box-shadow: inset 2px 0 0 #252526;
+}
+
 .sidebar-component .exit-button:hover {
-  background-color: #e5e5e5;
-  color: #2e2e2e;
   cursor: pointer;
+
+  color: #2e2e2e;
+  background-color: #e5e5e5;
+}
+
+.theme-dark .sidebar-component .exit-button:hover {
+  color: #999999;
+  background-color: #292929;
 }
 
 @media (min-width: 992px) {
@@ -207,8 +255,13 @@ export default class SidebarComponent extends Vue {
   }
 
   .sidebar-component .nav-sidebar {
-    box-shadow: inset -2px 0 0 #e5e5e5;
     left: 0;
+
+    box-shadow: inset 2px 0 0 #e5e5e5;
+  }
+
+  .theme-dark .sidebar-component .nav-sidebar {
+    box-shadow: inset 2px 0 0 #252526;
   }
 
   .sidebar-component .menu-open {

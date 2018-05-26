@@ -1,11 +1,10 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div id="app">
+  <div id="app" v-bind:class="{ 'theme-dark': darkTheme }">
     <notifications position="top right"></notifications>
-    <div class="h-100" v-bind:class="{ 'layout-with-sidebar': ($route.meta.hideNavigation !== true) }">
+    <div class="layout" v-bind:class="{ 'with-sidebar': ($route.meta.hideNavigation !== true) }">
       <template v-if="$route.meta.hideNavigation !== true">
         <sidebar-component></sidebar-component>
-        <div class="content-spacer"></div>
       </template>
 
       <div class="content-wrapper">
@@ -22,24 +21,44 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import SidebarComponent from "@/components/SidebarComponent.vue";
+import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
 
 @Component({
   components: {
     "sidebar-component": SidebarComponent
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  get darkTheme(): boolean {
+    return this.$store.getters[SETTINGS_DARK_THEME_GET];
+  }
+}
 </script>
 <!-- SCRIPT END -->
 
 
 <!-- STYLE BEGIN -->
 <style>
-html,
-body,
-#app {
+html, body {
   height: 100%;
+  min-height: 100%;
+}
+
+#app {
+  display: table;
+  height: inherit;
+  min-height: inherit;
+  width: 100%;
   background-color: #f8f9f9;
+}
+
+.theme-dark#app {
+  background-color: #1e1e1e;
+  color: #cccccc;
+}
+
+#app .layout {
+  display: table-cell;
 }
 
 .noselect {
@@ -51,7 +70,7 @@ body,
 }
 
 @media (min-width: 992px) {
-  .layout-with-sidebar {
+  .with-sidebar {
     padding-left: 220px;
   }
 }
@@ -63,12 +82,19 @@ body,
     left: 0;
     width: 100%;
     z-index: 100;
-    background-color: white;
     font-size: 20pt;
     height: calc(2rem + 32px);
     line-height: calc(2rem + 32px);
     padding-left: 1rem;
-    border-bottom: 2px solid #e5e5e5;
+    border-bottom: 2px solid;
+
+    background-color: white;
+    border-color: #e5e5e5;
+  }
+
+  .theme-dark .page-title {
+    background-color: #333333;
+    border-color: #252526;
   }
 
   .page-title .btn {
@@ -84,11 +110,8 @@ body,
 .content-wrapper {
   width: 100%;
   height: 100%;
+  padding-top: 50px;
   transition: padding 0.3s;
-}
-
-.content-spacer {
-  height: 50px;
 }
 
 .notifications {
@@ -97,6 +120,11 @@ body,
 
 .page {
   min-height: 100%;
+}
+
+
+.theme-dark .form-control {
+  background-color: #efefef;
 }
 </style>
 <!-- STYLE END -->
