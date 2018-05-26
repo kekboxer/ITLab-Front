@@ -12,7 +12,32 @@
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <b-row>
-          <b-col><h3>{{ eventId }}</h3></b-col>
+          <b-col v-bind:title="'Это временно'">
+            ID: <span style="font-family: monospace">{{ event.id }}</span>
+            <hr>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col>
+            <b-form @submit.prevent="onSubmitEvent">
+              <b-form-group id="event-title-group" label="Название" label-for="title-input">
+                <b-form-input id="title-input" type="text" v-model.trim="event.title">
+                </b-form-input>
+              </b-form-group>
+
+              <b-form-group id="event-description-group" label="Описание" label-for="description-input">
+                <b-form-textarea id="description-input" :rows="3" :max-rows="6" v-model="event.description">
+                </b-form-textarea>
+              </b-form-group>
+
+              <b-form-row>
+                <b-col>
+                  <b-button class="submit-button" type="submit" variant="primary">Подтвердить</b-button>
+                </b-col>
+              </b-form-row>
+            </b-form>
+          </b-col>
         </b-row>
       </div>
     </b-container>
@@ -29,7 +54,7 @@ import { eventsSection } from "./EventsPage.vue";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
 import { EVENT_FETCH, EVENTS_GET } from "@/store/actions/events";
-import { Event } from "@/store/modules/events/types";
+import { Event, createDefaultEvent } from "@/store/modules/events/types";
 
 export const eventPageName: string = "EventPageName";
 
@@ -42,36 +67,27 @@ export const eventPageName: string = "EventPageName";
 })
 class EventPage extends Vue {
   loadingInProcess: boolean = true;
+  event: Event = createDefaultEvent();
+
+  onSubmitEvent() {}
 
   mounted() {
-    if (this.eventId) {
+    const eventId = this.$route.params.id;
+    if (eventId) {
       this.$store
-        .dispatch(EVENT_FETCH, this.eventId)
-        .then(result => {
+        .dispatch(EVENT_FETCH, eventId)
+        .then(event => {
+          this.event = event;
+
           this.loadingInProcess = false;
         })
         .catch(result => {});
     } else {
-      console.log("ASD")
+      console.log("ASD");
     }
   }
 
-  get eventId(): string {
-    return this.$route.params.id;
-  }
-
-  get titleItems(): any[] {
-    return [
-      {
-        text: "События",
-        href: "/events"
-      },
-      {
-        text: this.event.id
-      }
-    ];
-  }
-
+  /*
   get event(): Event {
     return this.$store.getters[EVENTS_GET].find(
       (value: any, index: any, obj: any) => {
@@ -79,6 +95,7 @@ class EventPage extends Vue {
       }
     );
   }
+  */
 }
 
 registerPage(

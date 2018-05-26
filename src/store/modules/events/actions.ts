@@ -12,7 +12,7 @@ export const actions: ActionTree<EventsState, RootState> = {
         const data: Event[] = body.data
 
         commit(EVENTS_SET, data)
-        resolve()
+        resolve(data)
       }).catch((error) => {
         console.log(error)
         reject(error)
@@ -27,7 +27,7 @@ export const actions: ActionTree<EventsState, RootState> = {
 
         if (body.statusCode == 1) {
           commit(EVENT_SET, data)
-          resolve()
+          resolve(data)
         }
         else {
           reject({

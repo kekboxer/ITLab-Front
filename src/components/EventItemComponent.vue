@@ -19,9 +19,9 @@
       <hr>
       <b-row>
         <b-col md="8">
-          <h3 style="margin-bottom: 0">{{ eventParams.title || "Template title" }}</h3>
+          <h3 style="margin-bottom: 0">{{ eventParams.title }}</h3>
           <small style="position: relative; top: -5px">event type</small>
-          <p>{{ eventParams.description || "Template description" }}</p>
+          <p>{{ eventParams.description }}</p>
         </b-col>
         <b-col md="4">
           <b-row>

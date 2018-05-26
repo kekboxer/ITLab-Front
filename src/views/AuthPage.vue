@@ -164,13 +164,9 @@ class AuthPage extends Vue {
     lastName: "",
     email: "",
     password: "",
-    //userType: "SimpleUser",
     studentId: ""
   };
-  /*userTypeOptions = [
-    { value: "SimpleUser", text: "Сотрудник" },
-    { value: "Student", text: "Студент" }
-  ];*/
+  
   authState: AuthState = AuthState.None;
 
   // computed
