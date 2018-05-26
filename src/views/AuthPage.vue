@@ -74,7 +74,10 @@
                 <b-col>
                   <span class="text-secondary">
                     <small>
-                      Подтверждая регистрацию вы даёте своё <router-link to="/processing_agreement" class="text-secondary"><u>согласие на обработку персональных данных</u></router-link>.
+                      Подтверждая регистрацию вы даёте своё
+                      <router-link to="/processing_agreement" class="text-secondary">
+                        <u>согласие на обработку персональных данных</u>
+                      </router-link>.
                     </small>
                   </span>
                 </b-col>
@@ -82,7 +85,7 @@
 
               <b-form-row>
                 <b-col>
-                  <b-button class="submit-button w-100 mt-2" type="submit" :disabled="$v.registerData.$invalid" variant="primary">Подтвердить</b-button>
+                  <b-button class="submit-button w-100 mt-2" type="submit" :disabled="$v.registerData.$invalid || isInProcess" variant="primary">Подтвердить</b-button>
                 </b-col>
               </b-form-row>
 
@@ -115,11 +118,17 @@ import { Action, Getter } from "vuex-class";
 
 import { registerPage } from "@/router/PagesInformation";
 import { AUTH_LOGIN } from "@/store/actions/authorization";
-import { AuthorizationData } from "@/store/modules/authorization/types";
+import {
+  AuthorizationData,
+  createDefaultAuthorizationData
+} from "@/store/modules/authorization/types";
 import { PROFILE_CREATE } from "@/store/actions/profile";
-import { RegistrationData } from "@/store/modules/profile/types";
+import {
+  RegistrationData,
+  createDefaultRegistrationData
+} from "@/store/modules/profile/types";
 
-enum AuthState {
+enum State {
   None,
   InProcess,
   Error
@@ -155,58 +164,51 @@ class AuthPage extends Vue {
   authType?: String;
 
   // data
-  authData: AuthorizationData = {
-    username: "",
-    password: ""
-  };
-  registerData: RegistrationData = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    studentId: ""
-  };
-  
-  authState: AuthState = AuthState.None;
+  authData: AuthorizationData = createDefaultAuthorizationData();
+  registerData: RegistrationData = createDefaultRegistrationData();
+
+  authState: State = State.None;
+  registrationState: State = State.None;
 
   // computed
   get isLoginOrPasswordInvalid(): boolean {
-    return this.authState == AuthState.Error;
+    return this.authState == State.Error;
   }
 
   get isInProcess(): boolean {
-    return this.authState == AuthState.InProcess;
+    return this.authState == State.InProcess;
   }
 
   // methods
   onSubmitLogin() {
-    this.authState = AuthState.InProcess;
+    this.authState = State.InProcess;
     this.$store
       .dispatch(AUTH_LOGIN, this.authData)
       .then(result => {
-        this.authState = AuthState.None;
+        this.authState = State.None;
         this.authData = {
           username: "",
           password: ""
-        }
+        };
         this.$router.push("events");
       })
       .catch(error => {
-        this.authState = AuthState.Error;
-        this.authData.password = ""
+        this.authState = State.Error;
+        this.authData.password = "";
 
-        const passwordInput = this.$refs["password-input"] as HTMLElement
-        passwordInput.focus()
+        const passwordInput = this.$refs["password-input"] as HTMLElement;
+        passwordInput.focus();
       });
   }
   onSubmitRegister() {
+    this.registrationState = State.InProcess;
     this.$store
       .dispatch(PROFILE_CREATE, this.registerData)
       .then(result => {
         this.$router.push({ name: "EventsPage" });
       })
       .catch(error => {
-        console.log(error)
+        console.log(error);
       });
   }
 }
