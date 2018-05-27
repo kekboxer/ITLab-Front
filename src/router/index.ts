@@ -25,21 +25,6 @@ if (token) { // load token on start
   axios.defaults.headers.common["Authorization"] = "Bearer " + token
 }
 
-axios.interceptors.response.use((response) => {
-  const body = response.data
-  if (body.statusCode != 1) {
-    if (body.statusCode == 12) {
-      store.dispatch(AUTH_LOGOUT)
-    }
-    else {
-      throw { err: { statusCode: body.statusCode } }
-    }
-  }
-  return response
-}, (err) => {
-  return Promise.reject(err)
-});
-
 const router: Router = new Router({
   mode: "history",
   routes: routes.concat([
@@ -50,6 +35,22 @@ const router: Router = new Router({
       }
     }
   ])
+});
+
+axios.interceptors.response.use((response) => {
+  const body = response.data
+  if (body.statusCode != 1) {
+    if (body.statusCode == 12) {
+      store.dispatch(AUTH_LOGOUT)
+      router.replace({ name: "AuthPage" })
+    }
+    else {
+      throw { err: { statusCode: body.statusCode } }
+    }
+  }
+  return response
+}, (err) => {
+  return Promise.reject(err)
 });
 
 router.beforeEach((to, from, next) => {

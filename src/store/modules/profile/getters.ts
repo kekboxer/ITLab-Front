@@ -5,7 +5,6 @@ import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
 
 export const getters: GetterTree<ProfileState, RootState> = {
   [SETTINGS_DARK_THEME_GET]: (state) => {
-    console.log(localStorage.getItem("dark-theme"))
-    return localStorage.getItem("dark-theme") != null;
+    return state.settings.darkTheme
   }
 }

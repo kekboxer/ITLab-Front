@@ -4,7 +4,7 @@ import { SETTINGS_DARK_THEME_SET } from "@/store/actions/profile"
 
 export const mutations: MutationTree<ProfileState> = {
   [SETTINGS_DARK_THEME_SET]: (state, darkTheme : boolean) => {
-    console.log(darkTheme)
+    state.settings.darkTheme = darkTheme
     if (darkTheme) {
       localStorage.setItem("dark-theme", "theme");
     }

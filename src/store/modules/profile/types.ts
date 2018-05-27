@@ -19,6 +19,11 @@ export const createDefaultRegistrationData = (): RegistrationData => {
   }
 }
 
+export interface Settings {
+  darkTheme: boolean
+}
+
 export interface ProfileState {
-  profile: User | undefined
+  profile: User | undefined,
+  settings: Settings
 }
