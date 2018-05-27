@@ -6,7 +6,10 @@ import { ProfileState } from "./types"
 import { RootState } from "@/store/types"
 
 export const state: ProfileState = {
-  profile: undefined
+  profile: undefined,
+  settings: {
+    darkTheme: localStorage.getItem("dark-theme") != null
+  }
 }
 
 export const profile: Module<ProfileState, RootState> = {
