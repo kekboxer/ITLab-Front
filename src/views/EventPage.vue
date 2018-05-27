@@ -134,6 +134,6 @@ export default EventPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
 </style>
 <!-- STYLE END -->

@@ -62,7 +62,6 @@ export default ProjectsPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
-
+<style lang="scss">
 </style>
 <!-- STYLE END -->

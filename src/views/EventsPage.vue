@@ -3,7 +3,7 @@
   <div class="events-page">
     <b-container class="content">
       <b-row>
-        <b-col class="page-title">
+        <b-col>
           <h1 class="page-title">События
             <b-button variant="success" to="event/new">Добавить</b-button>
           </h1>
@@ -95,6 +95,6 @@ export default EventsPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
 </style>
 <!-- STYLE END -->

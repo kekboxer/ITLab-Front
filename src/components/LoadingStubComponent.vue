@@ -19,20 +19,20 @@ export default class LoadingStubComponent extends Vue {}
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
 .loading-stub-component {
   text-align: center;
   height: 100%;
-}
-
-.loading-stub-component img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translateX(-50%) translateY(-50%);
-  -moz-transform: translateX(-50%) translateY(-50%);
-  -ms-transform: translateX(-50%) translateY(-50%);
-  transform: translateX(-50%) translateY(-50%);
+  
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+  }
 }
 </style>
 <!-- STYLE END -->
