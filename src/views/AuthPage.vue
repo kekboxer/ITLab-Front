@@ -1,8 +1,8 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="auth-page h-100">
-    <b-container class="h-100">
-      <b-row align-v="center" align-h="center" style="min-height: 100%">
+  <div class="auth-page fullscreen-height">
+    <b-container class="fullscreen-height">
+      <b-row align-v="center" align-h="center" class="fullscreen-height">
         <b-col class="card" cols="10" md="5" lg="4">
 
           <!-- LOGIN TEMPLATE BEGIN -->
@@ -249,32 +249,29 @@ export default AuthPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
-.auth-page .card {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0;
-}
+<style lang="scss">
+@import "@/styles/theme.scss";
 
-.auth-page .checkbox-centered-wrapper .noselect {
-  margin-right: 0;
-}
+.auth-page {
+  .card {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0;
 
-@media (max-width: 575.98px) {
-  .auth-page .card {
-    border: none;
-  }
-}
+    @include media-breakpoint-down(sm) {
+      border: none;
+    }
 
-@media (min-width: 992px) {
-  .auth-page .checkbox-centered-wrapper {
-    display: flex;
-    align-items: center;
+    @include theme-specific() {
+      background-color: getstyle(auth-card-background-color);
+    }
   }
 
-  .auth-page #remember-input-group {
-    margin-bottom: 0;
+  @include media-breakpoint-down(sm) {
+    @include theme-specific() {
+      background-color: getstyle(auth-card-background-color);
+    }
   }
 }
 </style>

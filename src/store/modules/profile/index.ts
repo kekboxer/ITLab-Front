@@ -8,7 +8,7 @@ import { RootState } from "@/store/types"
 export const state: ProfileState = {
   profile: undefined,
   settings: {
-    darkTheme: localStorage.getItem("dark-theme") != null
+    theme: localStorage.getItem("theme") || "light"
   }
 }
 

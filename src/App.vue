@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div id="app" v-bind:class="{ 'theme-dark': darkTheme }">
+  <div id="app" v-bind:class="theme">
     <notifications position="top right"></notifications>
     <div class="layout" v-bind:class="{ 'with-sidebar': ($route.meta.hideNavigation !== true) }">
       <template v-if="$route.meta.hideNavigation !== true">
@@ -21,7 +21,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import SidebarComponent from "@/components/SidebarComponent.vue";
-import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
+import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile";
 
 @Component({
   components: {
@@ -29,8 +29,9 @@ import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
   }
 })
 export default class App extends Vue {
-  get darkTheme(): boolean {
-    return this.$store.getters[SETTINGS_DARK_THEME_GET];
+  get theme() {
+    const themeName = this.$store.getters[SETTINGS_DARK_THEME_GET];
+    return "theme-" + themeName;
   }
 }
 </script>
@@ -38,45 +39,55 @@ export default class App extends Vue {
 
 
 <!-- STYLE BEGIN -->
-<style>
-html, body {
-  height: 100%;
+<style lang="scss">
+@import "@/styles/theme.scss";
+@import "@/../node_modules/bootstrap/scss/bootstrap.scss";
+
+html,
+body {
   min-height: 100%;
 }
 
 #app {
-  display: table;
   height: inherit;
   min-height: inherit;
   width: 100%;
-  background-color: #f8f9f9;
-}
+  min-height: 100vh;
 
-.theme-dark#app {
-  background-color: #1e1e1e;
-  color: #cccccc;
-}
+  .layout {
+    min-height: 100vh;
 
-#app .layout {
-  display: table-cell;
-}
+    .content-wrapper {
+      min-height: 100vh;
+      width: 100%;
+      height: 100%;
+    }
 
-.noselect {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
+    &.with-sidebar {
+      @include media-breakpoint-up(lg) {
+        padding-left: $sidebar-width;
+      }
 
-@media (min-width: 992px) {
-  .with-sidebar {
-    padding-left: 220px;
+      .content-wrapper {
+        padding-top: 50px;
+      }
+    }
+  }
+
+  @each $theme, $map in $themes {
+    &.#{$theme} {
+      background-color: map-get($map, page-background-color);
+      color: map-get($map, page-font-color);
+    }
   }
 }
 
-@media (max-width: 991.98px) {
-  .page-title {
+.notifications {
+  padding: 10px;
+}
+
+.page-title {
+  @include media-breakpoint-down(md) {
     position: fixed;
     top: 0;
     left: 0;
@@ -88,43 +99,38 @@ html, body {
     padding-left: 1rem;
     border-bottom: 2px solid;
 
-    background-color: white;
-    border-color: #e5e5e5;
-  }
+    .btn {
+      position: relative;
+      top: -2px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      border-radius: 0.2rem;
+    }
 
-  .theme-dark .page-title {
-    background-color: #333333;
-    border-color: #252526;
-  }
-
-  .page-title .btn {
-    position: relative;
-    top: -2px;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    border-radius: 0.2rem;
+    @include theme-specific() {
+      background-color: getstyle(title-background-color);
+      border-color: getstyle(title-border-color);
+    }
   }
 }
 
-.content-wrapper {
-  width: 100%;
-  height: 100%;
-  padding-top: 50px;
-  transition: padding 0.3s;
+.form-control {
+  @include theme-specific() {
+    background-color: getstyle(form-control-background-color);
+  }
 }
 
-.notifications {
-  padding: 10px;
+.noselect {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 
-.page {
-  min-height: 100%;
-}
-
-
-.theme-dark .form-control {
-  background-color: #efefef;
+.fullscreen-height {
+  min-height: 100vh;
 }
 </style>
 <!-- STYLE END -->

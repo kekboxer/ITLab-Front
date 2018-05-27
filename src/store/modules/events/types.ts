@@ -17,12 +17,13 @@ export interface Event {
 }
 
 export const createDefaultEvent = (): Event => {
+  const date = new Date();
   return {
     id: "",
     title: "",
     description: "",
-    beginTime: new Date(),
-    endTime: new Date(),
+    beginTime: date,
+    endTime: new Date(date.getTime() + 2*60*60*1000),
     address: "",
     neededParticipantsCount: 0,
     eventTypeId: "",

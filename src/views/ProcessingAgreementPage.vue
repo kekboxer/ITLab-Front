@@ -1,8 +1,8 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="processing-agreement-page h-100">
-    <b-container class="h-100">
-      <b-row align-v="center" align-h="center" style="min-height: 100%">
+  <div class="processing-agreement-page fullscreen-height">
+    <b-container class="fullscreen-height">
+      <b-row align-v="center" align-h="center" class="fullscreen-height">
         <b-col class="card">
           <b-container>
             <b-row>
@@ -91,11 +91,17 @@ export default ProcessingAgreementPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
+@import "@/styles/theme.scss";
+
 .processing-agreement-page .card {
   padding: 30px;
-  border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+
+  @include theme-specific() {
+    background-color: getstyle(auth-card-background-color);
+  }
 }
 </style>
 <!-- STYLE END -->

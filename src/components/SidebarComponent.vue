@@ -2,7 +2,7 @@
 <template>
   <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
     <img src="/static/bars.svg" class="menu-open bars" @click="isMobileMenuHidden = false">
-    <div class="nav-sidebar">
+    <div class="nav-sidebar noselect">
       <div class="inner-scroll">
         <div class="home">
           <div class="text">{{ systemName }}</div>
@@ -19,9 +19,9 @@
           </b-nav>
         </div>
         <hr>
-
-        <div class="exit-button" @click="logout()" style="margin-top: auto">Выход</div>
       </div>
+
+      <div class="exit-button" @click="logout()">Выход</div>
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default class SidebarComponent extends Vue {
     if (event.target.className !== "sidebar-component") {
       return;
     }
-    
+
     this.isMobileMenuHidden = !this.isMobileMenuHidden;
   }
 
@@ -71,209 +71,169 @@ export default class SidebarComponent extends Vue {
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
+@import "@/styles/theme.scss";
+
 .sidebar-component {
-  z-index: 5000;
   position: fixed;
-  width: 100%;
   top: 0;
   bottom: 0;
   left: 0;
-
+  width: 100%;
+  z-index: 200;
   background-color: #29292949;
-}
 
-.sidebar-component .bars {
-  fill: #000000;
-}
+  .home {
+    width: 100%;
+    display: inline-flex;
+    padding: 1rem 1rem 0 1rem;
 
-.theme-dark .sidebar-component .bars {
-  fill: #adadad;
-}
+    .text {
+      font-size: 1.25rem;
+      white-space: nowrap;
+      font-weight: 600;
+      display: inline-block;
+    }
 
-.sidebar-component.mobile-hidden {
-  width: 0px;
-}
+    .menu-toggle {
+      margin-left: auto;
 
-.sidebar-component.mobile-hidden .nav-sidebar {
-  display: none;
-}
+      @include media-breakpoint-up(lg) {
+        display: none;
+      }
+    }
+  }
 
-.sidebar-component .menu-open {
-  position: fixed;
-  right: 1rem;
-  top: 1rem;
-}
+  .nav-sidebar {
+    z-index: 1;
+    position: fixed;
+    width: $sidebar-width;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: 0;
+    transform: translate3d(0, 0, 0);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 
-.sidebar-component:not(.mobile-hidden) .menu-open {
-  display: none;
-}
+    .inner-scroll {
+      width: 100%;
+      height: calc(100% - 50px + 1rem);
+      overflow-y: auto;
 
-.sidebar-component .nav-sidebar {
-  z-index: 1;
-  position: fixed;
-  width: 220px;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  margin: 0;
-  transform: translate3d(0, 0, 0);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+      .group-name {
+        padding: 5px;
+        padding-left: 1rem;
+        font-weight: bold;
 
-  background-color: #ffffff;
-  box-shadow: inset 2px 0 0 #e5e5e5;
-}
+        @include theme-specific() {
+          color: getstyle(sidebar-group-font-color);
+        }
+      }
 
-.theme-dark .sidebar-component .nav-sidebar {
-  background-color: #333333;
-  box-shadow: inset 2px 0 0 #252526;
-}
+      .nav-item {
+        a {
+          padding-left: 2rem;
 
-.sidebar-component .nav-sidebar .inner-scroll {
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
-  margin-bottom: calc(49px - 1rem);
-}
+          @include theme-specific() {
+            color: getstyle(sidebar-section-font-color);
+          }
 
-.sidebar-component .home {
-  width: 100%;
-  display: inline-flex;
-  padding: 1rem 1rem 0 1rem;
-  font-size: 1.25rem;
-  white-space: nowrap;
-  font-weight: 600;
+          &:hover {
+            @include theme-specific() {
+              background: getstyle(sidebar-section-background-color);
+            }
+          }
+        }
 
-  color: #292929;
-}
+        &.active {
+          @include theme-specific() {
+            box-shadow: inset 4px 0 0
+              getstyle(sidebar-active-section-highlight-color);
+            background: getstyle(sidebar-section-background-color);
+          }
+        }
 
-.theme-dark .sidebar-component .home {
-  color: #cccccc;
-}
+        &.active a {
+          font-weight: 600;
+        }
+      }
+    }
 
-.sidebar-component .home .text {
-  font-size: 1.25rem;
-  white-space: nowrap;
-  font-weight: 600;
-  display: inline-block;
+    .exit-button {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      padding: 16px;
+      border: none;
+      line-height: 1;
+      font-weight: bold;
+      margin-top: auto;
+      border-top: 2px solid;
+      border-right: 2px solid;
+      cursor: pointer;
 
-  color: #292929;
-}
+      @include media-breakpoint-down(md) {
+        border-left: 2px solid;
+        border-right: 0px;
+      }
 
-.theme-dark .sidebar-component .home .text {
-  color: #cccccc;
-}
+      @include theme-specific {
+        color: getstyle(sidebar-section-font-color);
+        border-color: getstyle(sidebar-shadow-color);
+        background-color: getstyle(sidebar-background-color);
 
-.sidebar-component .home .menu-toggle {
-  margin-left: auto;
-}
+        &:hover {
+          background: getstyle(sidebar-shadow-color);
+        }
+      }
+    }
 
-.sidebar-component .nav-sidebar .group-name {
-  padding: 5px;
-  padding-left: 1rem;
-  font-weight: bold;
-}
+    @include theme-specific() {
+      background-color: getstyle(sidebar-background-color);
+      box-shadow: inset 2px 0 0 getstyle(sidebar-shadow-color);
+    }
+  }
 
-.sidebar-component .nav-sidebar .nav-item a {
-  padding-left: 2rem;
+  .menu-open {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+  }
 
-  color: #535353;
-}
+  &:not(.mobile-hidden) {
+    .menu-open {
+      display: none;
+    }
+  }
 
-.theme-dark .sidebar-component .nav-sidebar .nav-item a {
-  color: #adadad;
-}
-
-.sidebar-component .nav-sidebar .nav-item a:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #2e2e2e;
-}
-
-.theme-dark .sidebar-component .nav-sidebar .nav-item a:hover {
-  color: #999999;
-}
-
-.sidebar-component .nav-sidebar .nav-item.active {
-  box-shadow: inset 4px 0 0 #0062cc;
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.sidebar-component .nav-sidebar .nav-item.active a {
-  font-weight: 600;
-}
-
-.sidebar-component .exit-button {
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  padding: 16px;
-  border: 0;
-  border-top: 2px solid;
-  display: flex;
-  align-items: center;
-  line-height: 1;
-  font-weight: bold;
-  
-  color: #707070;
-  background-color: #ffffff;
-  border-color: #e5e5e5;
-  box-shadow: inset 2px 0 0 #e5e5e5;
-}
-
-.theme-dark .sidebar-component .exit-button {
-  color: #adadad;
-  background-color: #333333;
-  border-color: #252526;
-  box-shadow: inset 2px 0 0 #252526;
-}
-
-.sidebar-component .exit-button:hover {
-  cursor: pointer;
-
-  color: #2e2e2e;
-  background-color: #e5e5e5;
-}
-
-.theme-dark .sidebar-component .exit-button:hover {
-  color: #999999;
-  background-color: #292929;
-}
-
-@media (min-width: 992px) {
-  .sidebar-component {
+  &.mobile-hidden {
     width: 0px;
+
+    .nav-sidebar {
+      display: none;
+    }
   }
 
-  .sidebar-component.mobile-hidden {
-    width: 0px;
-  }
+  @include media-breakpoint-up(lg) {
+    width: 0;
 
-  .sidebar-component.mobile-hidden .nav-sidebar {
-    display: block;
-  }
+    .menu-open {
+      display: none;
+    }
 
-  .sidebar-component .nav-sidebar {
-    left: 0;
+    .nav-sidebar {
+      left: 0;
 
-    box-shadow: inset 2px 0 0 #e5e5e5;
-  }
+      @include theme-specific() {
+        box-shadow: inset -2px 0 0 getstyle(sidebar-shadow-color);
+      }
+    }
 
-  .theme-dark .sidebar-component .nav-sidebar {
-    box-shadow: inset 2px 0 0 #252526;
-  }
-
-  .sidebar-component .menu-open {
-    display: none;
-  }
-
-  .sidebar-component .exit-button {
-    box-shadow: none;
-  }
-
-  .sidebar-component .home .menu-toggle {
-    display: none;
+    &.mobile-hidden .nav-sidebar {
+      display: block;
+    }
   }
 }
 </style>

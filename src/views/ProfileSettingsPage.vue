@@ -12,11 +12,10 @@
       <b-row>
         <b-col>
           <b-form @submit.prevent="onSubmitEvent">
-          <b-form-group id="dark-theme-group" label="Тёмная тема" label-for="dark-theme-input">
-            <b-form-checkbox id="dark-theme-input" v-model="darkTheme" :value="true">
-            </b-form-checkbox>
-          </b-form-group>
-        </b-form>
+            <b-form-group horizontal label="Тема интерфейса:" abel-for="theme-input" class="noselect">
+              <b-form-radio-group id="theme-input" v-model="theme" class="pt-2" :options="themes" />
+            </b-form-group>
+          </b-form>
         </b-col>
       </b-row>
     </b-container>
@@ -31,7 +30,10 @@ import { Component, Vue } from "vue-property-decorator";
 
 import { registerPage } from "@/router/PagesInformation";
 import { Section, Group, registerSection } from "@/general/SectionLayout";
-import { SETTINGS_DARK_THEME_SET, SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
+import {
+  SETTINGS_DARK_THEME_SET,
+  SETTINGS_DARK_THEME_GET
+} from "@/store/actions/profile";
 
 export const profileSettingsPageName: string = "ProfileSettingsPage";
 
@@ -44,12 +46,19 @@ export const profileSettingsSection: Section = new Section("Настройки",
   baseSection: profileSettingsSection
 })
 class ProfileSettingsPage extends Vue {
-  set darkTheme(enabled: boolean) {
-    this.$store.commit(SETTINGS_DARK_THEME_SET, enabled);
+  set theme(themeName: string) {
+    this.$store.commit(SETTINGS_DARK_THEME_SET, themeName);
   }
 
-  get darkTheme(): boolean {
+  get theme(): string {
     return this.$store.getters[SETTINGS_DARK_THEME_GET];
+  }
+
+  get themes() {
+    return {
+      "light": "Светлая", 
+      "dark": "Тёмная"
+    };
   }
 }
 
@@ -72,6 +81,6 @@ export default ProfileSettingsPage;
 
 
 <!-- STYLE BEGIN -->
-<style>
+<style lang="scss">
 </style>
 <!-- STYLE END -->
