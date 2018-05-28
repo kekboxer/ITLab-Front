@@ -10,7 +10,7 @@
             <b-form @submit.prevent="onSubmitLogin">
               <b-form-row>
                 <b-col align="center" style="min-height: 230px">
-                  <b-img rounded="circle" height="230" src="static/logo.jpg" :center="true" class="m-1" />
+                  <svgicon class="logo" name="logo" height="230"></svgicon>
                 </b-col>
               </b-form-row>
 
@@ -127,6 +127,8 @@ import {
   RegistrationData,
   createDefaultRegistrationData
 } from "@/store/modules/profile/types";
+
+import "@/icons/logo";
 
 enum State {
   None,
@@ -265,6 +267,10 @@ export default AuthPage;
 
     @include theme-specific() {
       background-color: getstyle(auth-card-background-color);
+
+      .logo {
+        fill: getstyle(auth-logo-color);
+      }
     }
   }
 

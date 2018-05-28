@@ -4,6 +4,9 @@ import Vue from "vue"
 import VueMoment from "vue-moment"
 import "moment/locale/ru"
 
+// SvgIcon
+import * as svgicon from "vue-svgicon"
+
 // Bootstrap
 import BootstrapVue from "bootstrap-vue"
 import 'bootstrap/dist/css/bootstrap.css'
@@ -25,6 +28,10 @@ Vue.use(VueMoment)
 Vue.use(BootstrapVue)
 Vue.use(Vue2TouchEvents)
 Vue.use(VueNotifications)
+
+Vue.use(svgicon, {
+    tagName: 'svgicon'
+})
 
 new Vue({
   el: "#app",

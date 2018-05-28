@@ -21,6 +21,10 @@
         <b-row>
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
+              <b-form-group id="event-type-group" label="Тип события">
+                <autocomplete-input-component></autocomplete-input-component>
+              </b-form-group>
+
               <b-form-group id="event-title-group" label="Название" label-for="title-input">
                 <b-form-input id="title-input" type="text" v-model.trim="event.title">
                 </b-form-input>
@@ -51,6 +55,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { registerPage } from "@/router/PagesInformation";
 import { eventsSection } from "./EventsPage.vue";
+import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
 import { EVENT_FETCH, EVENT_COMMIT, EVENTS_GET } from "@/store/actions/events";
@@ -68,7 +73,8 @@ enum State {
   name: eventPageName,
   baseSection: eventsSection,
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    "autocomplete-input-component": AutocompleteInputComponent,
   }
 })
 class EventPage extends Vue {
@@ -105,16 +111,6 @@ class EventPage extends Vue {
   get isInProcess(): boolean {
     return this.pageState == State.InProcess;
   }
-
-  /*
-  get event(): Event {
-    return this.$store.getters[EVENTS_GET].find(
-      (value: any, index: any, obj: any) => {
-        return value.id == this.eventId;
-      }
-    );
-  }
-  */
 }
 
 registerPage(
