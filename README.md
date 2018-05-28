@@ -1,6 +1,6 @@
-# reality-shift
+# ITLab-Front
 
-> Laboratory managing system
+> Laboratory managing system frontend
 
 ## Build Setup
 
@@ -10,6 +10,9 @@ npm install
 
 # serve with hot reload at localhost:8080
 npm run dev
+
+# translate svg into scripts
+npm run svg
 
 # build for production with minification
 npm run build
