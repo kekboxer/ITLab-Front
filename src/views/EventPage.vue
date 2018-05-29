@@ -24,7 +24,7 @@
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
                 <div class="autocomplete-input" v-bind:class="{ 'hide-results': eventTypeResultsHidden }">
-                  <input type="text" v-model="eventTypeModel" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
+                  <input type="text" v-model="eventTypeSearchString" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
                   <ul class="results" v-show="!eventTypeResultsHidden && (eventTypeSearchString.length > 1 || eventTypeResults.length > 0)">
                     <li v-for="result in eventTypeResults" :key="result.id" class="result-item" @mousedown.prevent="selectEventType(result)">
                       {{ result.title}}
@@ -120,11 +120,12 @@ class EventPage extends Vue {
           this.event = event;
 
           try {
-            const eventType: EventType = this.findEventType(this.event.eventTypeId);
-            console.log(eventType);
+            const eventType: EventType = this.findEventType(
+              this.event.eventTypeId
+            );
+
             this.selectEventType(eventType);
-          }
-          catch(e) {}
+          } catch (e) {}
 
           this.loadingInProcess = false;
         });
@@ -142,11 +143,10 @@ class EventPage extends Vue {
 
   onBlurEventType() {
     this.eventTypeResultsHidden = true;
-    if (
-      this.eventTypeSelected &&
-      this.eventTypeSearchString != this.eventTypeSelected.title
-    ) {
+    if (this.eventTypeSelected) {
       this.eventTypeSearchString = this.eventTypeSelected.title;
+    } else {
+      this.eventTypeSearchString = "";
     }
   }
 
@@ -156,28 +156,15 @@ class EventPage extends Vue {
     this.eventTypeResultsHidden = true;
   }
 
-  set eventTypeModel(title: string) {
-    this.eventTypeSearchString = title;
-  }
-
-  get eventTypeModel(): string {
-    if (this.eventTypeResultsHidden) {
-      console.log(this.eventTypeSelected)
-      return this.eventTypeSelected ? this.eventTypeSelected.title : "";
-    } else {
-      return this.eventTypeSearchString;
-    }
-  }
-
   onSubmitEvent() {
-    this.$store
-      .dispatch(EVENT_COMMIT, this.event)
-      .then(event => {
+    if (this.eventTypeSelected) {
+      this.event.eventTypeId = this.eventTypeSelected.id;
+      this.$store.dispatch(EVENT_COMMIT, this.event).then(event => {
         if (this.isNewEvent) {
-          this.$router.replace("event/" + event.id);
+          this.$router.push("event/" + event.id);
         }
-      })
-      .catch(error => {});
+      });
+    }
   }
 
   fetchEventTypes(match: string = "", all: boolean = true) {

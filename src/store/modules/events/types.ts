@@ -30,7 +30,7 @@ export const createDefaultEvent = (): Event => {
     description: "",
     beginTime: date,
     endTime: new Date(date.getTime() + 2*60*60*1000),
-    address: "",
+    address: "пр. Вернадского, 78",
     neededParticipantsCount: 0,
     eventTypeId: "",
     equipmentIds: [],
