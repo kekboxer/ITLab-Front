@@ -72,7 +72,7 @@ export default class SidebarComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/theme.scss";
+@import "@/styles/general.scss";
 
 .sidebar-component {
   position: fixed;

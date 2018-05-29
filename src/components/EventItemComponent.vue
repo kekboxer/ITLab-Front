@@ -118,8 +118,7 @@ export default class EventItemComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/theme.scss";
-@import "@/../node_modules/bootstrap/scss/bootstrap.scss";
+@import "@/styles/general.scss";
 
 .event-item-component {
   padding: 20px;

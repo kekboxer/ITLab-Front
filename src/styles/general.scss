@@ -1,0 +1,80 @@
+@import "@/styles/theme.scss";
+
+
+/* Input field with autocomplete */
+.autocomplete-input {
+  position: relative;
+
+  .results {
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+    padding: 0;
+    margin: 0;
+
+    .result-item {
+      list-style: none;
+      text-align: left;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+
+    .result-item:hover {
+      background-color: $primary;
+      color: white;
+    }
+
+    .add-item {
+      list-style: none;
+      text-align: left;
+      padding: 4px 10px;
+      cursor: pointer;
+      border-top: 1px solid getcolor(white, base);
+      
+      border-bottom-left-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    .add-item:hover {
+      @include theme-specific() {
+        background-color: darken(getstyle(form-control-background-color), 10%);
+      }
+    }
+
+    border: 1px solid;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+
+    @include theme-specific() {
+      border-color: darken(getstyle(form-control-background-color), 10%);
+      background-color: white;
+      color: #495057;
+    }
+  }
+
+  &.hide-results {
+    .autocomplete-results {
+      display: none;
+    }
+  }
+}
+
+/* Theme adaptive form control */
+.form-control {
+  @include theme-specific() {
+    background-color: getstyle(form-control-background-color);
+  }
+}
+
+/* Usefull stuff */
+.noselect {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.fullscreen-height {
+  min-height: 100vh;
+}

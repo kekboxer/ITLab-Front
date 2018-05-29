@@ -40,8 +40,7 @@ export default class App extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/theme.scss";
-@import "@/../node_modules/bootstrap/scss/bootstrap.scss";
+@import "@/styles/general.scss";
 
 html,
 body {
@@ -113,24 +112,6 @@ body {
       border-color: getstyle(title-border-color);
     }
   }
-}
-
-.form-control {
-  @include theme-specific() {
-    background-color: getstyle(form-control-background-color);
-  }
-}
-
-.noselect {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-
-.fullscreen-height {
-  min-height: 100vh;
 }
 </style>
 <!-- STYLE END -->

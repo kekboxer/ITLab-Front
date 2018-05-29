@@ -92,7 +92,7 @@ export default ProcessingAgreementPage;
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/theme.scss";
+@import "@/styles/general.scss";
 
 .processing-agreement-page .card {
   padding: 30px;

@@ -20,6 +20,8 @@ export default class LoadingStubComponent extends Vue {}
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+@import "@/styles/general.scss";
+
 .loading-stub-component {
   text-align: center;
   height: 100%;

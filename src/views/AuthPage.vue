@@ -252,7 +252,7 @@ export default AuthPage;
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/theme.scss";
+@import "@/styles/general.scss";
 
 .auth-page {
   .card {

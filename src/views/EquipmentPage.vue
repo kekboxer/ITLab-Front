@@ -63,6 +63,5 @@ export default EquipmentPage;
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-
 </style>
 <!-- STYLE END -->

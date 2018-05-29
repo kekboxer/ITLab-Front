@@ -16,6 +16,12 @@ export interface Event {
   participantsIds: string[]
 }
 
+export interface EventType {
+  id: string,
+  title: string,
+  description: string
+}
+
 export const createDefaultEvent = (): Event => {
   const date = new Date();
   return {
