@@ -1,1 +1,4 @@
 export const SYSTEM_NAME = "SYSTEM_NAME"
+
+export const LAYOUT_STUFF_PAGES = "LAYOUT_STUFF_PAGES"
+export const LAYOUT_GROUPS = "LAYOUT_GROUPS"

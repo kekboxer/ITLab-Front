@@ -66,8 +66,8 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { registerPage } from "@/router/PagesInformation";
-import { eventsSection } from "./EventsPage.vue";
+import { RouteConfig } from "vue-router";
+
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import axios from "axios";
 
@@ -78,8 +78,6 @@ import {
   createDefaultEvent
 } from "@/store/modules/events/types";
 
-export const eventPageName: string = "EventPageName";
-
 enum State {
   None,
   InProcess,
@@ -87,13 +85,11 @@ enum State {
 }
 
 @Component({
-  name: eventPageName,
-  baseSection: eventsSection,
   components: {
     "loading-stub-component": LoadingStubComponent
   }
 })
-class EventPage extends Vue {
+export default class EventPage extends Vue {
   loadingInProcess: boolean = false;
   event: Event = createDefaultEvent();
 
@@ -196,18 +192,11 @@ class EventPage extends Vue {
   }
 }
 
-registerPage(
-  {
-    path: "/event/:id",
-    name: eventPageName,
-    component: EventPage
-  },
-  {
-    baseSection: eventsSection
-  }
-);
-
-export default EventPage;
+export const eventPageRoute = <RouteConfig>{
+  path: "/event/:id",
+  name: "EventPage",
+  component: EventPage
+};
 </script>
 <!-- SCRIPT END -->
 

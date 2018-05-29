@@ -1,19 +1,24 @@
-import { RawLocation } from "vue-router";
-
-export enum Group {
-  General,
-  Profile
-}
-export const groupTitles: Map<Group, string> = new Map<Group, string>()
-groupTitles.set(Group.General, "Общее")
-groupTitles.set(Group.Profile, "Профиль")
+import { RawLocation, RouteConfig } from "vue-router";
 
 export interface Section {
-  title: string,
-  parentGroup: Group
+  name: string
+  title: string
+  homeURL: RawLocation
+  pages: RouteConfig[]
+}
+
+export interface Group {
+  name: string
+  title: string
+  sections: Section[]
+}
+
+export interface SystemLayout {
+  stuff: RouteConfig[],
+  groups: Group[]
 }
 
 export interface RootState {
-  systemName: string
-  //sectionGroups: Map<Group, SectionGroup>
+  name: string
+  layout: SystemLayout
 }

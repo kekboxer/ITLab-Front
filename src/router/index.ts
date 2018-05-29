@@ -1,16 +1,6 @@
 import Vue from "vue"
 import axios from "axios"
-import Router, { Route, RawLocation } from "vue-router"
-
-import { routes } from "./PagesInformation"
-
-import "@/views/AuthPage.vue";
-import "@/views/EventPage.vue";
-import "@/views/EventsPage.vue";
-import "@/views/ProjectsPage.vue";
-import "@/views/EquipmentPage.vue";
-import "@/views/ProfileSettingsPage.vue";
-import "@/views/ProcessingAgreementPage.vue"
+import Router, { Route, RawLocation, RouteConfig } from "vue-router"
 
 import store from "@/store"
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
@@ -25,9 +15,22 @@ if (token) { // load token on start
   axios.defaults.headers.common["Authorization"] = "Bearer " + token
 }
 
+
+const generateRoutes = (): RouteConfig[] => {
+  let result = store.state.layout.stuff.concat()
+  store.state.layout.groups.forEach((group, i, arr) => {
+    group.sections.forEach((section, j, arr) => {
+      result = result.concat(section.pages);
+    })
+  })
+
+  return result
+}
+
+
 const router: Router = new Router({
   mode: "history",
-  routes: routes.concat([
+  routes: generateRoutes().concat([
     {
       path: "*",
       redirect: {
@@ -42,7 +45,7 @@ axios.interceptors.response.use((response) => {
   if (body.statusCode != 1) {
     if (body.statusCode == 12) {
       store.dispatch(AUTH_LOGOUT)
-      router.replace({ name: "AuthPage" })
+      router.replace({ name: "LoginPage" })
     }
     else {
       throw { err: { statusCode: body.statusCode } }

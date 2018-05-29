@@ -9,11 +9,11 @@
           <img src="/static/bars.svg" class="menu-toggle" @click="isMobileMenuHidden = true">
         </div>
 
-        <div v-for="group in sectionGroups" :key="group.title">
+        <div v-for="group in groups" :key="group.name">
           <hr>
           <div class="group-name">{{group.title}}</div>
           <b-nav vertical>
-            <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section == $route.meta.baseSection}">
+            <b-nav-item v-for="section in group.sections" :key="section.name" :to="section.homeURL" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section == $route.meta.baseSection}">
               {{section.title}}
             </b-nav-item>
           </b-nav>
@@ -32,20 +32,12 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import {
-  sectionGroups,
-  Section,
-  SectionGroup,
-  Group
-} from "@/general/SectionLayout";
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
-import { SYSTEM_NAME } from "@/store/actions/global";
+import { SYSTEM_NAME, LAYOUT_GROUPS } from "@/store/actions/global";
+import { Group } from "@/store/types";
 
 @Component
 export default class SidebarComponent extends Vue {
-  sectionGroups: SectionGroup[] = Array.from(sectionGroups).map(
-    value => value[1]
-  );
   isMobileMenuHidden: boolean = true;
 
   toggleMenu(event: any) {
@@ -64,6 +56,10 @@ export default class SidebarComponent extends Vue {
 
   get systemName(): string {
     return this.$store.getters[SYSTEM_NAME];
+  }
+
+  get groups(): Group[] {
+    return this.$store.getters[LAYOUT_GROUPS];
   }
 }
 </script>

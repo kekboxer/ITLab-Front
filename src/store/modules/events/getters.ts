@@ -5,7 +5,7 @@ import { EVENTS_GET, EVENT_GET } from "@/store/actions/events";
 
 export const getters: GetterTree<EventsState, RootState> = {
   [EVENTS_GET]: (state) => {
-    return state.events
+    return state.events.reverse();
   },
   [EVENT_GET]: (state, id) => {
     return state.events.find((value, index, obj) => {
