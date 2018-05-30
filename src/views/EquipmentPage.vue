@@ -19,26 +19,16 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-
-import { registerPage } from "@/router/PagesInformation"
-import { Section, Group, registerSection } from "@/general/SectionLayout"
+import { RouteConfig } from "vue-router";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue"
 
-export const equipmentPageName: string = "EquipmentPage"
-
-export const equipmentSection: Section = new Section("Оборудование", {
-  name: equipmentPageName
-})
-
 @Component({
-  name: equipmentPageName,
-  baseSection: equipmentSection,
   components: {
     "loading-stub-component": LoadingStubComponent
   }
 })
-class EquipmentPage extends Vue {
+export default class EquipmentPage extends Vue {
   loadingInProcess: boolean = true
 
   bedoreMount() {
@@ -46,17 +36,11 @@ class EquipmentPage extends Vue {
   }
 }
 
-registerSection(Group.General, equipmentSection)
-
-registerPage({
+export const equipmentPageRoute = <RouteConfig>{
   path: "/equipment",
-  name: equipmentPageName,
+  name: "EquipmentPage",
   component: EquipmentPage
-}, {
-  baseSection: equipmentSection
-});
-
-export default EquipmentPage;
+};
 </script>
 <!-- SCRIPT END -->
 

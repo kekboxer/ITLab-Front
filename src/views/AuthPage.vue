@@ -9,7 +9,7 @@
           <template v-if="authType == 'login'">
             <b-form @submit.prevent="onSubmitLogin">
               <b-form-row>
-                <b-col align="center" style="min-height: 230px">
+                <b-col align="center" class="pt-2">
                   <svgicon class="logo" name="logo" height="230"></svgicon>
                 </b-col>
               </b-form-row>
@@ -116,7 +116,6 @@ import {
 } from "vuelidate/lib/validators";
 import { Action, Getter } from "vuex-class";
 
-import { registerPage } from "@/router/PagesInformation";
 import { AUTH_LOGIN } from "@/store/actions/authorization";
 import {
   AuthorizationData,
@@ -127,6 +126,7 @@ import {
   RegistrationData,
   createDefaultRegistrationData
 } from "@/store/modules/profile/types";
+import { RawLocation, RouteConfig } from "vue-router";
 
 import "@/icons/logo";
 
@@ -160,7 +160,7 @@ const baseValidations = {
     }
   }
 })
-class AuthPage extends Vue {
+export default class AuthPage extends Vue {
   // props
   @Prop({ validator: value => ["login", "register"].indexOf(value) !== -1 })
   authType?: String;
@@ -215,37 +215,31 @@ class AuthPage extends Vue {
   }
 }
 
-registerPage(
-  {
-    path: "/login",
-    name: "LoginPage",
-    component: AuthPage
-  },
-  {
+export const loginPageRoute = <RouteConfig>{
+  path: "/login",
+  name: "LoginPage",
+  component: AuthPage,
+  meta: {
     secure: false,
     hideNavigation: true
   },
-  {
+  props: {
     authType: "login"
   }
-);
+};
 
-registerPage(
-  {
-    path: "/register",
-    name: "RegistrationPage",
-    component: AuthPage
-  },
-  {
+export const registerPageRoute = <RouteConfig>{
+  path: "/register",
+  name: "RegistrationPage",
+  component: AuthPage,
+  meta: {
     secure: false,
     hideNavigation: true
   },
-  {
+  props: {
     authType: "register"
   }
-);
-
-export default AuthPage;
+};
 </script>
 <!-- SCRIPT END -->
 

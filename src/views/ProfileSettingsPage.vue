@@ -27,25 +27,15 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { RouteConfig } from "vue-router";
 
-import { registerPage } from "@/router/PagesInformation";
-import { Section, Group, registerSection } from "@/general/SectionLayout";
 import {
   SETTINGS_DARK_THEME_SET,
   SETTINGS_DARK_THEME_GET
 } from "@/store/actions/profile";
 
-export const profileSettingsPageName: string = "ProfileSettingsPage";
-
-export const profileSettingsSection: Section = new Section("Настройки", {
-  name: profileSettingsPageName
-});
-
-@Component({
-  name: profileSettingsPageName,
-  baseSection: profileSettingsSection
-})
-class ProfileSettingsPage extends Vue {
+@Component
+export default class ProfileSettingsPage extends Vue {
   set theme(themeName: string) {
     this.$store.commit(SETTINGS_DARK_THEME_SET, themeName);
   }
@@ -56,26 +46,17 @@ class ProfileSettingsPage extends Vue {
 
   get themes() {
     return {
-      "light": "Светлая", 
-      "dark": "Тёмная"
+      light: "Светлая",
+      dark: "Тёмная"
     };
   }
 }
 
-registerSection(Group.Profile, profileSettingsSection);
-
-registerPage(
-  {
-    path: "/settings",
-    name: profileSettingsPageName,
-    component: ProfileSettingsPage
-  },
-  {
-    baseSection: profileSettingsSection
-  }
-);
-
-export default ProfileSettingsPage;
+export const profileSettingsPageRoute = <RouteConfig>{
+  path: "/settings",
+  name: "ProfileSettings",
+  component: ProfileSettingsPage
+};
 </script>
 <!-- SCRIPT END -->
 

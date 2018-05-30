@@ -5,26 +5,28 @@ import { RootState } from "./types"
 import { authorization } from "./modules/authorization"
 import { profile } from "./modules/profile"
 import { events } from "./modules/events"
+import { layout } from "./modules/layout"
 
 import { SYSTEM_NAME } from "./actions/global"
 
 Vue.use(Vuex)
 
 const state: RootState = {
-  systemName: "ITlab"
+  name: "ITlab"
 }
 
 const store: StoreOptions<RootState> = {
   modules: {
     authorization,
     profile,
-    events
+    events,
+    layout
   },
   state,
-  
+
   getters: {
     [SYSTEM_NAME]: (state) => {
-      return state.systemName
+      return state.name
     }
   }
 }

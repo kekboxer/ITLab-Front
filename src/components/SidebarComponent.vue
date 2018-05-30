@@ -1,19 +1,23 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
-    <img src="/static/bars.svg" class="menu-open bars" @click="isMobileMenuHidden = false">
+    <span class="menu-open" @click="isMobileMenuHidden = false">
+      <svgicon name="bars" height="32" class="bars"></svgicon>
+    </span>
     <div class="nav-sidebar noselect">
       <div class="inner-scroll">
         <div class="home">
           <div class="text">{{ systemName }}</div>
-          <img src="/static/bars.svg" class="menu-toggle" @click="isMobileMenuHidden = true">
+          <span class="menu-toggle" @click="isMobileMenuHidden = true">
+            <svgicon name="bars" height="32" class="bars"></svgicon>
+          </span>
         </div>
 
-        <div v-for="group in sectionGroups" :key="group.title">
+        <div v-for="group in groups" :key="group.name">
           <hr>
           <div class="group-name">{{group.title}}</div>
           <b-nav vertical>
-            <b-nav-item v-for="section in group.sections" :key="section.title" :to="section.page" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section == $route.meta.baseSection}">
+            <b-nav-item v-for="section in group.sections" :key="section.name" :to="section.homeURL" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section.name == $route.meta.parentSection}">
               {{section.title}}
             </b-nav-item>
           </b-nav>
@@ -32,20 +36,15 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import {
-  sectionGroups,
-  Section,
-  SectionGroup,
-  Group
-} from "@/general/SectionLayout";
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
 import { SYSTEM_NAME } from "@/store/actions/global";
+import { LAYOUT_GROUPS_GET } from "@/store/actions/layout";
+import { Group } from "@/store/modules/layout/types";
+
+import "@/icons/bars";
 
 @Component
 export default class SidebarComponent extends Vue {
-  sectionGroups: SectionGroup[] = Array.from(sectionGroups).map(
-    value => value[1]
-  );
   isMobileMenuHidden: boolean = true;
 
   toggleMenu(event: any) {
@@ -65,6 +64,10 @@ export default class SidebarComponent extends Vue {
   get systemName(): string {
     return this.$store.getters[SYSTEM_NAME];
   }
+
+  get groups(): Group[] {
+    return this.$store.getters[LAYOUT_GROUPS_GET];
+  }
 }
 </script>
 <!-- SCRIPT END -->
@@ -83,6 +86,12 @@ export default class SidebarComponent extends Vue {
   z-index: 200;
   background-color: #29292949;
 
+  .bars {
+    @include theme-specific() {
+      fill: getstyle(page-font-color);
+    }
+  }
+
   .home {
     width: 100%;
     display: inline-flex;
@@ -97,6 +106,7 @@ export default class SidebarComponent extends Vue {
 
     .menu-toggle {
       margin-left: auto;
+      height: 32px;
 
       @include media-breakpoint-up(lg) {
         display: none;
@@ -198,6 +208,7 @@ export default class SidebarComponent extends Vue {
 
   .menu-open {
     position: fixed;
+    height: 32px;
     right: 1rem;
     top: 1rem;
   }

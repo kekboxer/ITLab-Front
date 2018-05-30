@@ -1,7 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="loading-stub-component">
-    <img src="/static/loading.svg" alt="Loading...">
+    <svgicon class="spinner" name="loading" height="200"></svgicon>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -10,6 +10,7 @@
 <!-- SCRIPT BEGTIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import "@/icons/loading";
 
 @Component
 export default class LoadingStubComponent extends Vue {}
@@ -26,7 +27,7 @@ export default class LoadingStubComponent extends Vue {}
   text-align: center;
   height: 100%;
   
-  img {
+  .spinner {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -34,6 +35,7 @@ export default class LoadingStubComponent extends Vue {}
     -moz-transform: translateX(-50%) translateY(-50%);
     -ms-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
+    fill: #e2e2e2;
   }
 }
 </style>

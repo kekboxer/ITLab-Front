@@ -63,29 +63,24 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-
-import { registerPage } from "@/router/PagesInformation";
+import { RouteConfig } from "vue-router";
 
 @Component
-class ProcessingAgreementPage extends Vue {
+export default class ProcessingAgreementPage extends Vue {
   navigateBack() {
-    this.$router.go(-1)
+    this.$router.go(-1);
   }
 }
 
-registerPage(
-  {
-    path: "/processing_agreement",
-    name: "ProcessingAgreement",
-    component: ProcessingAgreementPage
-  },
-  {
+export const processingAgreementPageRoute = <RouteConfig>{
+  path: "/processing_agreement",
+  name: "ProcessingAgreement",
+  component: ProcessingAgreementPage,
+  meta: {
     secure: false,
     hideNavigation: true
   }
-);
-
-export default ProcessingAgreementPage;
+};
 </script>
 <!-- SCRIPT END -->
 
