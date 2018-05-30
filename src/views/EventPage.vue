@@ -48,9 +48,19 @@
                 </b-form-textarea>
               </b-form-group>
 
+              <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
+                <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
+                </b-form-textarea>
+              </b-form-group>
+
+              <b-form-group id="event-address-group" label="Кол-во участников" label-for="participants-count-input">
+                <b-form-input id="participants-count-input" type="number" v-model.trim="event.neededParticipantsCount">
+                </b-form-input>
+              </b-form-group>
+
               <b-form-row>
                 <b-col>
-                  <b-button class="submit-button" type="submit" variant="primary">Подтвердить</b-button>
+                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isInProcess">Подтвердить</b-button>
                 </b-col>
               </b-form-row>
             </b-form>
@@ -154,10 +164,17 @@ export default class EventPage extends Vue {
 
   onSubmitEvent() {
     if (this.eventTypeSelected) {
+      this.pageState = State.InProcess;
       this.event.eventTypeId = this.eventTypeSelected.id;
       this.$store.dispatch(EVENT_COMMIT, this.event).then(event => {
         if (this.isNewEvent) {
           this.$router.push("event/" + event.id);
+        } else {
+          this.$notify({
+            title: "Изменения успешно сохранены",
+            duration: 500
+          });
+          this.pageState = State.None;
         }
       });
     }
