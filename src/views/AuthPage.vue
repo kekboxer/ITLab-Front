@@ -9,7 +9,7 @@
           <template v-if="authType == 'login'">
             <b-form @submit.prevent="onSubmitLogin">
               <b-form-row>
-                <b-col align="center" style="min-height: 230px">
+                <b-col align="center" class="pt-2">
                   <svgicon class="logo" name="logo" height="230"></svgicon>
                 </b-col>
               </b-form-row>
