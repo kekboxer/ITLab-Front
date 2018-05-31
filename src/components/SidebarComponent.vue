@@ -35,6 +35,7 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import Hammer from "hammerjs";
 
 import { AUTH_LOGOUT } from "@/store/actions/authorization";
 import { SYSTEM_NAME } from "@/store/actions/global";
@@ -46,6 +47,18 @@ import "@/icons/bars";
 @Component
 export default class SidebarComponent extends Vue {
   isMobileMenuHidden: boolean = true;
+
+  created() {
+    const swipe = new Hammer(document.body);
+    swipe.on("swiperight swipeleft", e => {
+      e.preventDefault();
+      if (e.type == "swipeleft" && this.isMobileMenuHidden) {
+        this.isMobileMenuHidden = false;
+      } else {
+        this.isMobileMenuHidden = true;
+      }
+    });
+  }
 
   toggleMenu(event: any) {
     if (event.target.className !== "sidebar-component") {
@@ -80,9 +93,9 @@ export default class SidebarComponent extends Vue {
 .sidebar-component {
   position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   z-index: 200;
   background-color: #29292949;
 
