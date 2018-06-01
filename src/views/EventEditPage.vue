@@ -23,7 +23,6 @@
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
-                <!--
                 <div class="autocomplete-input" v-bind:class="{ 'hide-results': eventTypeResultsHidden }">
                   <input type="text" v-model="eventTypeSearchString" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
                   <ul class="results" v-show="!eventTypeResultsHidden && (eventTypeSearchString.length > 1 || eventTypeResults.length > 0)">
@@ -37,8 +36,6 @@
                     </li>
                   </ul>
                 </div>
-                -->
-                
               </b-form-group>
 
               <b-form-group id="event-title-group" label="Название" label-for="title-input">

@@ -15,7 +15,6 @@ import "@/icons/loading";
 @Component
 export default class LoadingStubComponent extends Vue {}
 </script>
-
 <!-- SCRIPT END -->
 
 
