@@ -23,6 +23,7 @@
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
+                <!--
                 <div class="autocomplete-input" v-bind:class="{ 'hide-results': eventTypeResultsHidden }">
                   <input type="text" v-model="eventTypeSearchString" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
                   <ul class="results" v-show="!eventTypeResultsHidden && (eventTypeSearchString.length > 1 || eventTypeResults.length > 0)">
@@ -36,6 +37,8 @@
                     </li>
                   </ul>
                 </div>
+                -->
+                
               </b-form-group>
 
               <b-form-group id="event-title-group" label="Название" label-for="title-input">
@@ -80,6 +83,7 @@ import { RouteConfig } from "vue-router";
 import axios from "axios";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
 import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
 import {
@@ -96,7 +100,8 @@ enum State {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    "autocomplete-input-component": AutocompleteInputComponent
   }
 })
 export default class EventEditPage extends Vue {
