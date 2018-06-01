@@ -5,12 +5,11 @@
       <b-row>
         <b-col>
           <h1 class="page-title">События
-            <b-button variant="success" to="event/new">Добавить</b-button>
+            <b-button variant="success" to="events/new">Добавить</b-button>
           </h1>
         </b-col>
       </b-row>
       <br>
-
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <b-row v-for="event in events" :key="event.id">
@@ -29,20 +28,17 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
+import axios from "axios";
 
 import EventItemComponent from "@/components/EventItemComponent.vue";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
-import { Event } from "@/store/modules/events/types";
-import { EVENTS_FETCH, EVENTS_GET } from "@/store/actions/events";
+import { Event, EventType } from "@/store/modules/events/types";
+import { EVENTS_FETCH_ALL, EVENTS_GET_ALL } from "@/store/actions/events";
 import { Getter } from "vuex-class/lib/bindings";
-
-import Icon from "vue-awesome/components/Icon";
-import "vue-awesome/icons/plus";
 
 @Component({
   components: {
-    icon: Icon,
     "event-item-component": EventItemComponent,
     "loading-stub-component": LoadingStubComponent
   }
@@ -50,18 +46,28 @@ import "vue-awesome/icons/plus";
 export default class EventsPage extends Vue {
   loadingInProcess: boolean = true;
 
+  eventTypes: EventType[] = [];
+
   beforeMount() {
-    this.loadingInProcess = this.$store.getters[EVENTS_GET] == 0;
-    this.$store
-      .dispatch(EVENTS_FETCH)
+    this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
+    axios
+      .get("EventType?all=true")
+      .then(result => {
+        const body = result && result.data;
+        this.eventTypes = body.data;
+        return this.$store.dispatch(EVENTS_FETCH_ALL);
+      })
       .then(result => {
         this.loadingInProcess = false;
       })
       .catch(result => {});
   }
 
-  get events(): Event[] {
-    return this.$store.getters[EVENTS_GET];
+  get events() {
+    return this.$store.getters[EVENTS_GET_ALL].map((value: any) => {
+      value.eventType = this.eventTypes.find(v => v.id == value.eventTypeId);
+      return value;
+    })
   }
 }
 

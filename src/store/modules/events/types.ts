@@ -1,4 +1,10 @@
 
+export interface EventType {
+  id: string,
+  title: string,
+  description: string
+}
+
 export interface Event {
   id: string
   title: string,
@@ -12,14 +18,10 @@ export interface Event {
   participantCount?: number, //TODO: remove it
   
   eventTypeId: string,
+  eventType? : EventType
+
   equipmentIds: string[],
   participantsIds: string[]
-}
-
-export interface EventType {
-  id: string,
-  title: string,
-  description: string
 }
 
 export const createDefaultEvent = (): Event => {

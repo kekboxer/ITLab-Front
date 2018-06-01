@@ -10,9 +10,10 @@ import { loginPageRoute, registerPageRoute } from "@/views/AuthPage.vue";
 import { processingAgreementPageRoute } from "@/views/ProcessingAgreementPage.vue";
 
 import { eventsPageRoute } from "@/views/EventsPage.vue";
-import { eventPageRoute } from "@/views/EventPage.vue";
+import { eventEditPageRoute } from "@/views/EventEditPage.vue";
 
 import { equipmentPageRoute } from "@/views/EquipmentPage.vue";
+import { equipmentEditPageRoute } from "@/views/EquipmentEditPage.vue";
 
 import { projectsPageRoute } from "@/views/ProjectsPage.vue";
 
@@ -33,14 +34,14 @@ export const state: LayoutState = {
         title: "События",
         homeURL: "/events",
         pages: [
-          eventsPageRoute, eventPageRoute
+          eventsPageRoute, eventEditPageRoute
         ]
       }, {
         name: "equipment",
         title: "Оборудование",
         homeURL: "/equipment",
         pages: [
-          equipmentPageRoute
+          equipmentPageRoute, equipmentEditPageRoute
         ]
       }, {
         name: "projects",

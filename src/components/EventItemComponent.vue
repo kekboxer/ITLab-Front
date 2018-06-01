@@ -14,14 +14,14 @@
         </b-col>
         <b-col cols="auto">
           <!--<strong>Иванов Иван</strong>-->
-          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'event/' + eventParams.id">Изменить</b-button>
+          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/' + eventParams.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
       <b-row>
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ eventParams.title }}</h3>
-          <small style="position: relative; top: -5px">event type</small>
+          <small style="position: relative; top: -5px" v-if="eventParams.eventType">{{ eventParams.eventType.title }}</small>
           <p>{{ eventParams.description }}</p>
         </b-col>
         <b-col md="4">

@@ -3,17 +3,17 @@ import axios from "axios"
 import { EventsState, Event } from "./types"
 import { RootState } from "@/store/types"
 import { 
-  EVENTS_FETCH, EVENT_FETCH, EVENT_COMMIT, EVENTS_SET, EVENT_SET 
+  EVENTS_FETCH_ALL, EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE, EVENTS_SET_ALL, EVENTS_SET_ONE
 } from "@/store/actions/events";
 
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENTS_FETCH]: ({ commit, dispatch }) => {
+  [EVENTS_FETCH_ALL]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       axios.get('event').then((response) => {
         const body = response && response.data
         const data: Event[] = body.data
 
-        commit(EVENTS_SET, data)
+        commit(EVENTS_SET_ALL, data)
         resolve(data)
       }).catch((error) => {
         console.log(error)
@@ -22,21 +22,14 @@ export const actions: ActionTree<EventsState, RootState> = {
     })
   },
 
-  [EVENT_FETCH]: ({ commit, dispatch }, id: string) => {
+  [EVENTS_FETCH_ONE]: ({ commit, dispatch }, id: string) => {
     return new Promise((resolve, reject) => {
-      axios.get('event/' + id).then((response) => {
+      axios.get("event/" + id).then((response) => {
         const body = response && response.data
         const data: Event = body.data
 
-        if (body.statusCode == 1) {
-          commit(EVENT_SET, data)
-          resolve(data)
-        }
-        else {
-          reject({
-            err: "Unable to fetch event"
-          })
-        }
+        commit(EVENTS_SET_ONE, data)
+        resolve(data)
       }).catch((error) => {
         console.log(error)
         reject(error)
@@ -44,22 +37,15 @@ export const actions: ActionTree<EventsState, RootState> = {
     })
   },
 
-  [EVENT_COMMIT]: ({ commit, dispatch }, event: Event) => {
+  [EVENTS_COMMIT_ONE]: ({ commit, dispatch }, event: Event) => {
     return new Promise((resolve, reject) => {
-      let request = event.id == "" ? axios.post('event', event) : axios.put('event', event);
+      let request = event.id == "" ? axios.post("event", event) : axios.put("event", event);
       request.then((response) => {
         const body = response && response.data
         const data: Event = body.data
 
-        if (body.statusCode == 1) {
-          commit(EVENT_SET, data)
-          resolve(data)
-        }
-        else {
-          reject({
-            err: "Unable to add/change event"
-          })
-        }
+        commit(EVENTS_SET_ONE, data)
+        resolve(data)
       }).catch((error) => {
         console.log(error)
         reject(error)

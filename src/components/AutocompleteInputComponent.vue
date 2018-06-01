@@ -1,8 +1,29 @@
-@import "@/styles/themes.scss";
+<!-- TEMPALTE BEGIN -->
+<template>
+  <div class="autocomplete-input-component">
+
+  </div>
+</template>
+<!-- TEMPLATE END -->
 
 
-/* Input field with autocomplete */
-.autocomplete-input {
+<!-- SCRIPT BEGIN -->
+<script lang="typescript">
+import { Component, Vue } from "vue-property-decorator";
+
+@Component
+export default class AutocompleteInputComponent extends Vue {
+
+}
+</script>
+<!-- SCRIPT END -->
+
+
+<!-- STYLE BEGIN -->
+<style lang="scss">
+@import "@/styles/general.scss";
+
+.autocomplete-input-component {
   position: relative;
 
   .results {
@@ -58,29 +79,5 @@
     }
   }
 }
-
-/* Theme adaptive form control */
-.form-control {
-  @include theme-specific() {
-    background-color: getstyle(form-control-background-color);
-  }
-}
-
-.table th, .table td {
-  @include theme-specific() {
-    border-color: getstyle(table-border-color);
-  }
-}
-
-/* Usefull stuff */
-.noselect {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-
-.fullscreen-height {
-  min-height: 100vh;
-}
+</style>
+<!-- STYLE END -->

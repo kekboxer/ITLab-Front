@@ -33,6 +33,7 @@ $themes: (
     title-background-color: getcolor(white, lighter),
     title-border-color: getcolor(white, base),
     form-control-background-color: getcolor(white, lighter),
+    table-border-color: getcolor(white, base),
 
     sidebar-background-color: getcolor(white, lighter),
     sidebar-shadow-color: getcolor(white, base),
@@ -58,6 +59,7 @@ $themes: (
     title-background-color: getcolor(black, light),
     title-border-color: getcolor(black, base),
     form-control-background-color: getcolor(white, base),
+    table-border-color: getcolor(black, darker),
 
     sidebar-background-color: getcolor(black, light),
     sidebar-shadow-color: getcolor(black, base),

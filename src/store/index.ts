@@ -6,6 +6,7 @@ import { authorization } from "./modules/authorization"
 import { profile } from "./modules/profile"
 import { events } from "./modules/events"
 import { layout } from "./modules/layout"
+import { equipment } from "./modules/equipment"
 
 import { SYSTEM_NAME } from "./actions/global"
 
@@ -20,6 +21,7 @@ const store: StoreOptions<RootState> = {
     authorization,
     profile,
     events,
+    equipment,
     layout
   },
   state,
