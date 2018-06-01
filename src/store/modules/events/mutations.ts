@@ -1,9 +1,9 @@
 import { MutationTree } from "vuex"
 import { EventsState, Event } from "./types"
-import { EVENTS_SET, EVENT_SET } from "@/store/actions/events";
+import { EVENTS_SET_ALL, EVENTS_SET_ONE } from "@/store/actions/events";
 
 export const mutations: MutationTree<EventsState> = {
-  [EVENTS_SET]: (state, events: Event[]) => {
+  [EVENTS_SET_ALL]: (state, events: Event[]) => {
     state.events = events.sort((a, b) => {
       if (a.beginTime < b.beginTime) {
         return 1
@@ -16,15 +16,15 @@ export const mutations: MutationTree<EventsState> = {
       }
     })
   },
-  [EVENT_SET]: (state, event: Event) => {
-    const currentEventIndex = state.events.findIndex((value, index, obj) => {
+
+  [EVENTS_SET_ONE]: (state, event: Event) => {
+    const currentEventIndex = state.events.findIndex((value) => {
       return value.id == event.id
     })
 
-    if (currentEventIndex == 1) {
+    if (currentEventIndex == -1) {
       state.events.push(event)
-    }
-    else {
+    } else {
       state.events[currentEventIndex] = event
     }
   }

@@ -1,14 +1,14 @@
 import { GetterTree } from "vuex"
 import { EventsState } from "./types"
 import { RootState } from "@/store/types"
-import { EVENTS_GET, EVENT_GET } from "@/store/actions/events";
+import { EVENTS_GET_ALL, EVENTS_GET_ONE } from "@/store/actions/events";
 
 export const getters: GetterTree<EventsState, RootState> = {
-  [EVENTS_GET]: (state) => {
-    return state.events.reverse();
+  [EVENTS_GET_ALL]: (state) => {
+    return state.events
   },
-  [EVENT_GET]: (state, id) => {
-    return state.events.find((value, index, obj) => {
+  [EVENTS_GET_ONE]: (state, id) => {
+    return state.events.find((value) => {
       return value.id == id
     })
   }

@@ -1,6 +1,6 @@
 <!-- TEMPALTE BEGIN -->
 <template>
-  <div class="event-page">
+  <div class="event-edit-page">
     <b-container class="content">
       <b-row>
         <b-col>
@@ -23,6 +23,7 @@
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
+                <!--
                 <div class="autocomplete-input" v-bind:class="{ 'hide-results': eventTypeResultsHidden }">
                   <input type="text" v-model="eventTypeSearchString" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
                   <ul class="results" v-show="!eventTypeResultsHidden && (eventTypeSearchString.length > 1 || eventTypeResults.length > 0)">
@@ -36,6 +37,8 @@
                     </li>
                   </ul>
                 </div>
+                -->
+                
               </b-form-group>
 
               <b-form-group id="event-title-group" label="Название" label-for="title-input">
@@ -77,11 +80,12 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
-
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import axios from "axios";
 
-import { EVENT_FETCH, EVENT_COMMIT, EVENTS_GET } from "@/store/actions/events";
+import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+
+import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
 import {
   Event,
   EventType,
@@ -96,10 +100,11 @@ enum State {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    "autocomplete-input-component": AutocompleteInputComponent
   }
 })
-export default class EventPage extends Vue {
+export default class EventEditPage extends Vue {
   loadingInProcess: boolean = false;
   event: Event = createDefaultEvent();
 
@@ -120,7 +125,7 @@ export default class EventPage extends Vue {
       this.fetchEventTypes("", true)
         .then(eventTypes => {
           this.eventTypes = eventTypes as EventType[];
-          return this.$store.dispatch(EVENT_FETCH, eventId);
+          return this.$store.dispatch(EVENTS_FETCH_ONE, eventId);
         })
         .then(event => {
           this.event = event;
@@ -166,7 +171,7 @@ export default class EventPage extends Vue {
     if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
       this.event.eventTypeId = this.eventTypeSelected.id;
-      this.$store.dispatch(EVENT_COMMIT, this.event).then(event => {
+      this.$store.dispatch(EVENTS_COMMIT_ONE, this.event).then(event => {
         if (this.isNewEvent) {
           this.$router.push("event/" + event.id);
         } else {
@@ -209,10 +214,10 @@ export default class EventPage extends Vue {
   }
 }
 
-export const eventPageRoute = <RouteConfig>{
-  path: "/event/:id",
-  name: "EventPage",
-  component: EventPage
+export const eventEditPageRoute = <RouteConfig>{
+  path: "/events/:id",
+  name: "EventEditPage",
+  component: EventEditPage
 };
 </script>
 <!-- SCRIPT END -->

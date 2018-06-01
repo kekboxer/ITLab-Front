@@ -66,6 +66,12 @@
   }
 }
 
+.table th, .table td {
+  @include theme-specific() {
+    border-color: getstyle(table-border-color);
+  }
+}
+
 /* Usefull stuff */
 .noselect {
   -moz-user-select: none;
