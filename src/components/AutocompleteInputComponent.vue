@@ -4,10 +4,12 @@
     <input type="text" v-model="searchString" @input="onChange" @blur="onBlur" class="form-control">
     <ul class="results" v-show="!resultsHidden && (searchString.length > 1 || results.length > 0)">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown.prevent="onSelect(result)">
-        <slot v-bind:result="result">{{ stringify(result) }}</slot>
+        <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
-      <li class="add-item" v-show="searchString.length > 1">
-        <slot v-bind:search="searchString">Добавить {{ searchString }}</slot>
+      <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="onAdd()">
+        <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
+          <b>{{ searchString }}</b>
+        </slot>
       </li>
     </ul>
   </div>
@@ -25,22 +27,44 @@ export default class AutocompleteInputComponent extends Vue {
   searchString: string = "";
   results: Object[] = [];
 
-  @Model() selectedElement: Object | undefined;
+  @Prop() value?: Object;
 
-  @Prop()
-  stringify: Function = (v: Object) => {
-    return v.toString();
-  };
+  @Prop({
+    default: (v: Object) => {
+      return v ? v.toString() : "";
+    }
+  })
+  stringify?: Function;
 
-  @Prop()
-  fetch: Function = (s: string, cb: Function) => {
-    cb([]);
-  };
+  @Prop({
+    default: (s: string, cb: Function) => {
+      if (cb) {
+        console.log(cb);
+        cb([]);
+      }
+    }
+  })
+  fetch?: Function;
+
+  @Prop({
+    default: (title: string) => {}
+  })
+  add?: Function;
+
+  mounted() {
+    this.$watch("value", (value?: Object) => {
+      this.searchString = value ? this.stringify && this.stringify(value) : "";
+    });
+
+    this.searchString = this.value
+      ? this.stringify && this.stringify(this.value)
+      : "";
+  }
 
   onBlur() {
     this.resultsHidden = true;
-    if (this.selectedElement != undefined) {
-      this.searchString = this.stringify(this.selectedElement);
+    if (this.value != undefined) {
+      this.searchString = this.stringify && this.stringify(this.value);
     } else {
       this.searchString = "";
     }
@@ -48,15 +72,40 @@ export default class AutocompleteInputComponent extends Vue {
 
   onChange() {
     this.resultsHidden = false;
-    this.fetch(this.searchString, (results: Object[]) => {
-      this.results = results;
-    });
+    if (this.fetch) {
+      this.fetch(this.searchString, (results: Object[]) => {
+        this.results = results;
+      });
+    }
   }
 
   onSelect(selected: Object) {
-    this.searchString = this.stringify(this.selectedElement);
-    this.selectedElement = selected;
+    this.searchString = this.stringify && this.stringify(selected);
     this.resultsHidden = true;
+    this.$emit("input", selected);
+  }
+
+  onAdd() {
+    this.add && this.add(this.searchString);
+  }
+
+  get checkExistence(): boolean {
+    if (!this.stringify || this.searchString.length == 0) {
+      return false;
+    }
+
+    const search = this.searchString.trim().toLocaleLowerCase();
+    for (let result of this.results) {
+      const title = (this.stringify(result) as string)
+        .trim()
+        .toLocaleLowerCase();
+
+      if (title.localeCompare(search) == 0) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 </script>

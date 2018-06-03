@@ -3,13 +3,18 @@
   <div class="event-item-component" v-bind:class="currentState">
     <div class="title-row">
       <b-row>
-        <b-col cols="auto mr-auto" @click="dateHovered=!dateHovered">
+        <b-col cols="auto mr-auto" @mouseup="checkDateHover">
           <strong style="line-height: 31px">
             <span>
               <icon name="clock" style="position: relative; bottom: -2px"></icon>
             </span>
-            <span v-if="dateHovered">{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
-            <span v-else>{{ eventParams.beginTime | moment("calendar") }}</span>
+            <span class="date desktop">
+              <span v-if="dateHovered">{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
+              <span v-else>{{ eventParams.beginTime | moment("calendar") }}</span>
+            </span>
+            <span class="date mobile">
+              <span>{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
+            </span>
           </strong>
         </b-col>
         <b-col cols="auto">
@@ -93,6 +98,12 @@ export default class EventItemComponent extends Vue {
 
   dateHovered: boolean = false;
 
+  checkDateHover() {
+    if (!window.getSelection() || window.getSelection().toString().length == 0) {
+      this.dateHovered = !this.dateHovered;
+    }
+  }
+
   get currentState(): any {
     const state: State = State.Default; // TODO: delete this
 
@@ -124,6 +135,20 @@ export default class EventItemComponent extends Vue {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;
+
+  .date {
+    &.desktop {
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
+    }
+
+    &.mobile {
+      @include media-breakpoint-up(lg) {
+        display: none;
+      }
+    }
+  }
 
   .progress {
     @include theme-specific() {

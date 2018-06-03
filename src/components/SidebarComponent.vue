@@ -1,14 +1,14 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
-    <span class="menu-open" @click="isMobileMenuHidden = false">
+    <span class="menu-open" @click="toggleMenu($event, false)">
       <svgicon name="bars" height="32" class="bars"></svgicon>
     </span>
     <div class="nav-sidebar noselect">
       <div class="inner-scroll">
         <div class="home">
           <div class="text">{{ systemName }}</div>
-          <span class="menu-toggle" @click="isMobileMenuHidden = true">
+          <span class="menu-toggle" @click="toggleMenu($event, true)">
             <svgicon name="bars" height="32" class="bars"></svgicon>
           </span>
         </div>
@@ -17,7 +17,7 @@
           <hr>
           <div class="group-name">{{group.title}}</div>
           <b-nav vertical>
-            <b-nav-item v-for="section in group.sections" :key="section.name" :to="section.homeURL" @click="isMobileMenuHidden = true" exact v-bind:class="{'active': section.name == $route.meta.parentSection}">
+            <b-nav-item v-for="section in group.sections" :key="section.name" :to="section.homeURL" @click="toggleMenu($event, true)" exact v-bind:class="{'active': section.name == $route.meta.parentSection}">
               {{section.title}}
             </b-nav-item>
           </b-nav>
@@ -61,12 +61,16 @@ export default class SidebarComponent extends Vue {
     });
   }
 
-  toggleMenu(event: any) {
-    if (event.target.className !== "sidebar-component") {
+  toggleMenu(event: any, force: boolean | undefined) {
+    if (event.target.className !== "sidebar-component" && force == undefined) {
       return;
     }
 
-    this.isMobileMenuHidden = !this.isMobileMenuHidden;
+    const value: boolean =
+      force == undefined ? !this.isMobileMenuHidden : force;
+
+    this.isMobileMenuHidden = value;
+    document.body.classList.toggle("sidebar-open", !value);
   }
 
   logout() {
@@ -258,6 +262,14 @@ export default class SidebarComponent extends Vue {
 
     &.mobile-hidden .nav-sidebar {
       display: block;
+    }
+  }
+}
+
+body {
+  @include media-breakpoint-down(md) {
+    &.sidebar-open {
+      overflow: hidden;
     }
   }
 }

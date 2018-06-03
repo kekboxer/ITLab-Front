@@ -1,7 +1,8 @@
 
 export interface EquipmentType {
   id: string,
-  title: string
+  title: string,
+  description: string
 }
 
 export interface Equipment {

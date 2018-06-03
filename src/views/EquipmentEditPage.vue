@@ -22,6 +22,17 @@
         <b-row>
           <b-col>
             <b-form @submit.prevent="onSubmitEquipment">
+              <b-form-group id="equipment-type-group" label="Тип оборудования">
+                <autocomplete-input-component :stringify="onStringifyEquipmentType" :fetch="onChangeEquipmentType" :add="showEquipmentTypeModal" v-model="equipmentTypeSelected">
+                  <template slot="result-item" slot-scope="data">
+                    {{ data.item.title }}
+                  </template>
+                  <template slot="add-item" slot-scope="data">
+                    Добавить
+                    <b>{{ data.search }}</b>
+                  </template>
+                </autocomplete-input-component>
+              </b-form-group>
 
               <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
                 <b-form-input id="serial-number-input" type="text" v-model.trim="equipment.serialNumber">
@@ -35,7 +46,7 @@
 
               <b-form-row>
                 <b-col>
-                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isInProcess">Подтвердить</b-button>
+                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
                 </b-col>
               </b-form-row>
             </b-form>
@@ -43,6 +54,27 @@
         </b-row>
       </div>
     </b-container>
+
+    <b-modal v-model="equipmentTypeModalShow">
+      <template slot="modal-title">
+        Новый тип оборудования
+      </template>
+
+      <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
+        <b-form-input id="type-title-input" type="text" v-model.trim="equipmentTypeModalData.title">
+        </b-form-input>
+      </b-form-group>
+
+      <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
+        <b-form-input id="type-description-input" type="text" v-model.trim="equipmentTypeModalData.description">
+        </b-form-input>
+      </b-form-group>
+
+      <template slot="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="equipmentTypeModalShow = false">Отменить</button>
+        <button type="button" class="btn btn-primary" :disabled="isEquipmentTypeModalInProcess" @click="onSubmitEquipmentType">Подтвердить</button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -55,6 +87,7 @@ import { RouteConfig } from "vue-router";
 import axios from "axios";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
 import {
   EQUIPMENT_FETCH_ONE,
@@ -74,46 +107,143 @@ enum State {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    "autocomplete-input-component": AutocompleteInputComponent
   }
 })
 export default class EquipmentEditPage extends Vue {
   loadingInProcess: boolean = false;
   equipment: Equipment = createDefaultEquipment();
 
+  equipmentTypes: EquipmentType[] = [];
+  equipmentTypeSelected: EquipmentType = { id: "", title: "", description: "" };
+
+  equipmentTypeModalShow: boolean = false;
+  equipmentTypeModalData: EquipmentType = {
+    id: "",
+    title: "",
+    description: ""
+  };
+  equipmentTypeModalState: State = State.None;
+
   pageState: State = State.None;
   isNewEquipment: boolean = false;
 
   mounted() {
-    const equipmentId = this.$route.params.id;
-    if (equipmentId && equipmentId != "new") {
-      this.loadingInProcess = true;
+    this.loadingInProcess = true;
 
-      this.$store.dispatch(EQUIPMENT_FETCH_ONE, equipmentId).then(equipment => {
-        this.equipment = equipment;
-        this.loadingInProcess = false;
-      });
-    } else {
-      this.isNewEquipment = true;
-    }
-  }
+    axios.get("EquipmentType").then(response => {
+      const body = response && response.data;
+      this.equipmentTypes = body.data;
 
-  onSubmitEquipment() {
-    this.$store.dispatch(EQUIPMENT_COMMIT_ONE, this.equipment).then(equipment => {
-      if (this.isNewEquipment) {
-        this.$router.push("/equipment/" + equipment.id);
+      const equipmentId = this.$route.params.id;
+      if (equipmentId && equipmentId != "new") {
+        this.$store
+          .dispatch(EQUIPMENT_FETCH_ONE, equipmentId)
+          .then(equipment => {
+            this.updateEquipment(equipment);
+            this.loadingInProcess = false;
+          });
       } else {
-        this.$notify({
-          title: "Изменения успешно сохранены",
-          duration: 500
-        });
-        this.pageState = State.None;
+        this.isNewEquipment = true;
+        this.loadingInProcess = false;
       }
     });
   }
 
-  get isInProcess(): boolean {
+  onStringifyEquipmentType(equipmentType: EquipmentType): string {
+    return equipmentType.title;
+  }
+
+  onChangeEquipmentType(title: string, cb: Function) {
+    const filterString = title.toLocaleLowerCase();
+
+    cb(
+      this.equipmentTypes.filter(
+        v =>
+          filterString == "" ||
+          v.title.toLocaleLowerCase().indexOf(filterString) > -1
+      )
+    );
+  }
+
+  showEquipmentTypeModal(search: string) {
+    this.equipmentTypeModalData.title = search;
+    this.equipmentTypeModalShow = true;
+  }
+
+  onSubmitEquipmentType() {
+    this.equipmentTypeModalState = State.InProcess;
+    axios
+      .post("EquipmentType", {
+        title: this.equipmentTypeModalData.title,
+        description: this.equipmentTypeModalData.description
+      })
+      .then(response => {
+        const body = response.data;
+        this.equipmentTypeSelected = body.data as EquipmentType;
+
+        this.equipmentTypeModalState = State.None;
+        this.equipmentTypeModalShow = false;
+
+        this.equipmentTypeModalData.title = "";
+        this.equipmentTypeModalData.description = "";
+      })
+      .catch(error => {
+        console.log(error);
+        this.equipmentTypeModalState = State.Error;
+      });
+  }
+
+  onSubmitEquipment() {
+    if (this.equipmentTypeSelected) {
+      this.pageState = State.InProcess;
+      this.equipment.equipmentTypeId = this.equipmentTypeSelected.id;
+      this.$store
+        .dispatch(EQUIPMENT_COMMIT_ONE, this.equipment)
+        .then(equipment => {
+          this.updateEquipment(equipment);
+          
+          this.pageState = State.None;
+          if (this.isNewEquipment) {
+            this.isNewEquipment = false;
+            this.$router.push({ path: "/equipment/" + equipment.id });
+          } else {
+            this.$notify({
+              title: "Изменения успешно сохранены",
+              duration: 500
+            });
+          }
+        })
+        .catch(error => {
+          this.pageState = State.Error;
+        });
+    }
+  }
+
+  findEquipmentType(id: string): EquipmentType {
+    const index = this.equipmentTypes.findIndex(e => e.id === id);
+    return this.equipmentTypes[index];
+  }
+
+  updateEquipment(equipment: Equipment) {
+    this.equipment = equipment;
+
+    try {
+      const equipmentType: EquipmentType = this.findEquipmentType(
+        this.equipment.equipmentTypeId
+      );
+
+      this.equipmentTypeSelected = equipmentType;
+    } catch (e) {}
+  }
+
+  get isPageInProcess(): boolean {
     return this.pageState == State.InProcess;
+  }
+
+  get isEquipmentTypeModalInProcess(): boolean {
+    return this.equipmentTypeModalState == State.InProcess;
   }
 }
 

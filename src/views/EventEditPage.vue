@@ -23,19 +23,15 @@
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
-                <div class="autocomplete-input" v-bind:class="{ 'hide-results': eventTypeResultsHidden }">
-                  <input type="text" v-model="eventTypeSearchString" @input="onChangeEventType" @blur="onBlurEventType" class="form-control">
-                  <ul class="results" v-show="!eventTypeResultsHidden && (eventTypeSearchString.length > 1 || eventTypeResults.length > 0)">
-                    <li v-for="result in eventTypeResults" :key="result.id" class="result-item" @mousedown.prevent="selectEventType(result)">
-                      {{ result.title}}
-                      <small>{{ result.description }}</small>
-                    </li>
-                    <li class="add-item" v-show="eventTypeSearchString.length > 1">
-                      Добавить
-                      <b>{{ eventTypeSearchString }}</b> как тип события
-                    </li>
-                  </ul>
-                </div>
+                <autocomplete-input-component :stringify="onStringifyEventType" :fetch="onChangeEventType" :add="showEventTypeModal" v-model="eventTypeSelected">
+                  <template slot="result-item" slot-scope="data">
+                    {{ data.item.title }}
+                  </template>
+                  <template slot="add-item" slot-scope="data">
+                    Добавить
+                    <b>{{ data.search }}</b>
+                  </template>
+                </autocomplete-input-component>
               </b-form-group>
 
               <b-form-group id="event-title-group" label="Название" label-for="title-input">
@@ -60,7 +56,7 @@
 
               <b-form-row>
                 <b-col>
-                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isInProcess">Подтвердить</b-button>
+                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
                 </b-col>
               </b-form-row>
             </b-form>
@@ -68,6 +64,27 @@
         </b-row>
       </div>
     </b-container>
+
+    <b-modal v-model="eventTypeModalShow">
+      <template slot="modal-title">
+        Новый тип события
+      </template>
+
+      <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
+        <b-form-input id="type-title-input" type="text" v-model.trim="eventTypeModalData.title">
+        </b-form-input>
+      </b-form-group>
+
+      <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
+        <b-form-input id="type-description-input" type="text" v-model.trim="eventTypeModalData.description">
+        </b-form-input>
+      </b-form-group>
+
+      <template slot="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="eventTypeModalShow = false">Отменить</button>
+        <button type="button" class="btn btn-primary" :disabled="isEventTypeModalInProcess" @click="onSubmitEventType">Подтвердить</button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -106,79 +123,95 @@ export default class EventEditPage extends Vue {
   event: Event = createDefaultEvent();
 
   eventTypes: EventType[] = [];
-  eventTypeSearchString: string = "";
-  eventTypeResults: EventType[] = [];
-  eventTypeResultsHidden: boolean = true;
-  eventTypeSelected?: EventType;
+  eventTypeSelected: EventType = { id: "", title: "", description: "" };
+
+  eventTypeModalShow: boolean = false;
+  eventTypeModalData: EventType = { id: "", title: "", description: "" };
+  eventTypeModalState: State = State.None;
 
   pageState: State = State.None;
   isNewEvent: boolean = false;
 
   mounted() {
-    const eventId = this.$route.params.id;
-    if (eventId && eventId != "new") {
-      this.loadingInProcess = true;
+    this.loadingInProcess = true;
 
-      this.fetchEventTypes("", true)
-        .then(eventTypes => {
-          this.eventTypes = eventTypes as EventType[];
-          return this.$store.dispatch(EVENTS_FETCH_ONE, eventId);
-        })
-        .then(event => {
-          this.event = event;
+    this.fetchEventTypes("", true).then(eventTypes => {
+      this.eventTypes = eventTypes as EventType[];
 
-          try {
-            const eventType: EventType = this.findEventType(
-              this.event.eventTypeId
-            );
-
-            this.selectEventType(eventType);
-          } catch (e) {}
-
+      const eventId = this.$route.params.id;
+      if (eventId && eventId != "new") {
+        this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then(event => {
+          this.updateEvent(event);
           this.loadingInProcess = false;
         });
-    } else {
-      this.isNewEvent = true;
-    }
-  }
-
-  onChangeEventType() {
-    this.eventTypeResultsHidden = false;
-    this.fetchEventTypes(this.eventTypeSearchString, false).then(eventTypes => {
-      this.eventTypeResults = eventTypes as EventType[];
+      } else {
+        this.isNewEvent = true;
+        this.loadingInProcess = false;
+      }
     });
   }
 
-  onBlurEventType() {
-    this.eventTypeResultsHidden = true;
-    if (this.eventTypeSelected) {
-      this.eventTypeSearchString = this.eventTypeSelected.title;
-    } else {
-      this.eventTypeSearchString = "";
-    }
+  onStringifyEventType(eventType: EventType): string {
+    return eventType.title;
   }
 
-  selectEventType(eventType: EventType) {
-    this.eventTypeSearchString = eventType.title;
-    this.eventTypeSelected = eventType;
-    this.eventTypeResultsHidden = true;
+  onChangeEventType(title: string, cb: Function) {
+    this.fetchEventTypes(title, false).then(eventTypes => {
+      cb(eventTypes as EventType[]);
+    });
+  }
+
+  showEventTypeModal(search: string) {
+    this.eventTypeModalData.title = search;
+    this.eventTypeModalShow = true;
+  }
+
+  onSubmitEventType() {
+    this.eventTypeModalState = State.InProcess;
+    axios
+      .post("EventType", {
+        title: this.eventTypeModalData.title,
+        description: this.eventTypeModalData.description
+      })
+      .then(response => {
+        const body = response.data;
+        this.eventTypeSelected = body.data as EventType;
+
+        this.eventTypeModalState = State.None;
+        this.eventTypeModalShow = false;
+
+        this.eventTypeModalData.title = "";
+        this.eventTypeModalData.description = "";
+      })
+      .catch(error => {
+        console.log(error);
+        this.eventTypeModalState = State.Error;
+      });
   }
 
   onSubmitEvent() {
     if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
       this.event.eventTypeId = this.eventTypeSelected.id;
-      this.$store.dispatch(EVENTS_COMMIT_ONE, this.event).then(event => {
-        if (this.isNewEvent) {
-          this.$router.push("event/" + event.id);
-        } else {
-          this.$notify({
-            title: "Изменения успешно сохранены",
-            duration: 500
-          });
+      this.$store
+        .dispatch(EVENTS_COMMIT_ONE, this.event)
+        .then(event => {
+          this.updateEvent(event);
+
           this.pageState = State.None;
-        }
-      });
+          if (this.isNewEvent) {
+            this.isNewEvent = false;
+            this.$router.push({ path: "/events/" + event.id });
+          } else {
+            this.$notify({
+              title: "Изменения успешно сохранены",
+              duration: 500
+            });
+          }
+        })
+        .catch(error => {
+          this.pageState = State.Error;
+        });
     }
   }
 
@@ -206,8 +239,22 @@ export default class EventEditPage extends Vue {
     return this.eventTypes[index];
   }
 
-  get isInProcess(): boolean {
+  updateEvent(event: Event) {
+    this.event = event;
+
+    try {
+      const eventType: EventType = this.findEventType(this.event.eventTypeId);
+
+      this.eventTypeSelected = eventType;
+    } catch (e) {}
+  }
+
+  get isPageInProcess(): boolean {
     return this.pageState == State.InProcess;
+  }
+
+  get isEventTypeModalInProcess(): boolean {
+    return this.eventTypeModalState == State.InProcess;
   }
 }
 

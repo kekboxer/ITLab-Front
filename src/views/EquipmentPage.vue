@@ -4,7 +4,9 @@
     <b-container class="content">
       <b-row>
         <b-col>
-          <h1 class="page-title">Оборудование</h1>
+          <h1 class="page-title">Оборудование
+            <b-button variant="success" to="equipment/new">Добавить</b-button>
+          </h1>
         </b-col>
       </b-row>
       <br>
@@ -27,12 +29,12 @@
           <template slot="serialNumber" slot-scope="data">
             {{ data.item.serialNumber }}
           </template>
-          <template slot="actions" slot-scope="data">
-            <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2">
-              {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
-            </b-button>
-            <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2">
+          <template slot="actions" slot-scope="data" style="overflow: auto">
+            <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
               Изменить
+            </b-button>
+            <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
+              {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
             </b-button>
           </template>
 
@@ -105,8 +107,8 @@ export default class EquipmentPage extends Vue {
 
   onEquipmentTableSort(a: any, b: any, key: string) {
     if (key == "type") {
-      return (
-        a.equipmentType.title.localeCompare(b.equipmentType.title),
+      return a.equipmentType.title.localeCompare(
+        b.equipmentType.title,
         undefined,
         {
           numeric: true

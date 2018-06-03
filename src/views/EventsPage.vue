@@ -50,6 +50,7 @@ export default class EventsPage extends Vue {
 
   beforeMount() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
+
     axios
       .get("EventType?all=true")
       .then(result => {
