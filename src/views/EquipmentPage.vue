@@ -13,41 +13,62 @@
 
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
-        <b-table :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort">
-          <template slot="HEAD_actions" slot-scope="data">
-            <b-input-group>
+        <b-row class="d-lg-none">
+          <b-col></b-col>
+          <b-col cols="12" md="6 mr-auto">
+            <b-input-group class="mb-2 pr-3">
               <b-form-input v-model="equipmentFilterString" placeholder="Поиск" />
               <b-input-group-append>
-                <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">Очистить</b-btn>
+                <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
+                  <icon name="times" style="position: relative; bottom: -3px;"></icon>
+                </b-btn>
               </b-input-group-append>
             </b-input-group>
-          </template>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
+              <template slot="HEAD_actions" slot-scope="data">
+                <b-input-group class="actions-head">
+                  <b-form-input v-model="equipmentFilterString" placeholder="Поиск" />
+                  <b-input-group-append>
+                    <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
+                      <icon name="times" style="position: relative; bottom: -3px;"></icon>
+                    </b-btn>
+                  </b-input-group-append>
+                </b-input-group>
+              </template>
 
-          <template slot="type" slot-scope="data">
-            {{ data.item.equipmentType.title }}
-          </template>
-          <template slot="serialNumber" slot-scope="data">
-            {{ data.item.serialNumber }}
-          </template>
-          <template slot="actions" slot-scope="data" style="overflow: auto">
-            <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
-              Изменить
-            </b-button>
-            <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
-              {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
-            </b-button>
-          </template>
+              <template slot="type" slot-scope="data">
+                {{ data.item.equipmentType.title }}
+              </template>
+              <template slot="serialNumber" slot-scope="data">
+                <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+              </template>
+              <template slot="actions" slot-scope="data" style="overflow: auto">
+                <span class="actions-cell">
+                  <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
+                    Изменить
+                  </b-button>
+                  <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
+                    {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
+                  </b-button>
+                </span>
+              </template>
 
-          <template slot="row-details" slot-scope="data">
-            <b-card>
-              <b-row class="mb-2">
-                <b-col sm="3" class="text-sm-right">
-                  <b style="font-family: monospace">//TODO: add more information</b>
-                </b-col>
-              </b-row>
-            </b-card>
-          </template>
-        </b-table>
+              <template slot="row-details" slot-scope="data">
+                <b-card>
+                  <b-row class="mb-2">
+                    <b-col sm="3" class="text-sm-right">
+                      <b style="font-family: monospace">//TODO: add more information</b>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </template>
+            </b-table>
+          </b-col>
+        </b-row>
       </div>
     </b-container>
   </div>
@@ -63,6 +84,9 @@ import axios from "axios";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
+import Icon from "vue-awesome/components/Icon";
+import "vue-awesome/icons/times";
+
 import { Equipment, EquipmentType } from "@/store/modules/equipment/types";
 import {
   EQUIPMENT_FETCH_ALL,
@@ -71,7 +95,8 @@ import {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    Icon
   }
 })
 export default class EquipmentPage extends Vue {
@@ -116,6 +141,12 @@ export default class EquipmentPage extends Vue {
       );
     } else {
       return 0;
+    }
+  }
+
+  onEquipmentTableRowClicked(data: Equipment) {
+    if (window.innerWidth < 1170) {
+      this.$router.push("/equipment/" + data.id);
     }
   }
 
@@ -166,5 +197,21 @@ export const equipmentPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+@import "@/styles/general.scss";
+
+.equipment-page {
+  .equipment-table {
+    @include media-breakpoint-down(md) {
+      .actions-head {
+        display: none;
+      }
+
+      th[aria-colindex="3"],
+      td[aria-colindex="3"] {
+        display: none;
+      }
+    }
+  }
+}
 </style>
 <!-- STYLE END -->
