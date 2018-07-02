@@ -19,7 +19,7 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Model, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class AutocompleteInputComponent extends Vue {

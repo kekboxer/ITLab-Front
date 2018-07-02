@@ -5,7 +5,7 @@
       <b-row>
         <b-col>
           <h1 class="page-title">События
-            <b-button variant="success" to="events/new">Добавить</b-button>
+            <b-button variant="success" to="events/edit/new">Добавить</b-button>
           </h1>
         </b-col>
       </b-row>
@@ -46,18 +46,10 @@ import { Getter } from "vuex-class/lib/bindings";
 export default class EventsPage extends Vue {
   loadingInProcess: boolean = true;
 
-  eventTypes: EventType[] = [];
-
   beforeMount() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
-
-    axios
-      .get("EventType?all=true")
-      .then(result => {
-        const body = result && result.data;
-        this.eventTypes = body.data;
-        return this.$store.dispatch(EVENTS_FETCH_ALL);
-      })
+    
+    this.$store.dispatch(EVENTS_FETCH_ALL)
       .then(result => {
         this.loadingInProcess = false;
       })
@@ -65,10 +57,7 @@ export default class EventsPage extends Vue {
   }
 
   get events() {
-    return this.$store.getters[EVENTS_GET_ALL].map((value: any) => {
-      value.eventType = this.eventTypes.find(v => v.id == value.eventTypeId);
-      return value;
-    })
+    return this.$store.getters[EVENTS_GET_ALL];
   }
 }
 

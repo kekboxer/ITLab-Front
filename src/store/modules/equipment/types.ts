@@ -1,26 +1,38 @@
 
+// EquipmentType //
+//////////////////
+
 export interface EquipmentType {
-  id: string,
-  title: string,
+  id: string
+  title: string
   description: string
 }
+
+export class EquipmentTypeDefault implements EquipmentType {
+  id: string = ""
+  title: string = ""
+  description: string = ""
+}
+
+// Equipment //
+//////////////
 
 export interface Equipment {
-  id: string,
-  equipmentTypeId: string,
-  equipmentType?: EquipmentType,
-  serialNumber: string,
-  description: string
+  id: string
+  equipmentTypeId: string
+  equipmentType?: EquipmentType
+  serialNumber: string
+  description?: string
 }
 
-export const createDefaultEquipment = (): Equipment => {
-  return {
-    id: "",
-    equipmentTypeId: "",
-    serialNumber: "",
-    description: ""
-  }
+export class EquipmentDefault implements Equipment {
+  id: string = ""
+  equipmentTypeId: string = ""
+  serialNumber: string = ""
 }
+
+// State //
+//////////
 
 export interface EquipmentState {
   equipment: Equipment[]

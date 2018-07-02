@@ -44,6 +44,19 @@
                 </b-form-textarea>
               </b-form-group>
 
+              <b-form-row class="range-selection">
+                <b-col cols="12" sm="6">
+                  <b-form-group id="event-begin-time-group" label="Начало" label-for="begin-time-input">
+                    <date-picker id="begin-time-input" :first-day-of-week="1" input-class="form-control" v-model="eventBeginTimeInput" :format="DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12" sm="6">
+                  <b-form-group id="event-end-time-group" label="Конец" label-for="end-time-input">
+                    <date-picker id="end-time-input" :first-day-of-week="1" input-class="form-control" v-model="eventEndTimeInput" :format="DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+
               <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
                 <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
                 </b-form-textarea>
@@ -94,61 +107,67 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
+import moment from "moment-timezone";
 import axios from "axios";
 
+import DatePicker from "vue2-datepicker";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
 import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
 import {
   Event,
+  EventDefault,
   EventType,
-  createDefaultEvent
+  EventTypeDefault
 } from "@/store/modules/events/types";
 
 enum State {
-  None,
+  Default,
   InProcess,
   Error
 }
 
 @Component({
   components: {
+    "date-picker": DatePicker,
     "loading-stub-component": LoadingStubComponent,
     "autocomplete-input-component": AutocompleteInputComponent
   }
 })
 export default class EventEditPage extends Vue {
-  loadingInProcess: boolean = false;
-  event: Event = createDefaultEvent();
+  DATETIME_FORMAT = "DD.MM.YYYY HH:mm";
+  DATETIME_REGEXP = /^\d{2}.\d{2}.\d{4} \d{2}:\d{2}$/;
 
-  eventTypes: EventType[] = [];
-  eventTypeSelected: EventType = { id: "", title: "", description: "" };
+  loadingInProcess: boolean = false;
+  event: Event = new EventDefault();
+
+  eventBeginTimeInput: Date = new Date(0);
+  eventEndTimeInput: Date = new Date(0);
+
+  eventTypeSelected: EventType = new EventTypeDefault();
 
   eventTypeModalShow: boolean = false;
-  eventTypeModalData: EventType = { id: "", title: "", description: "" };
-  eventTypeModalState: State = State.None;
+  eventTypeModalData: EventType = new EventTypeDefault();
+  eventTypeModalState: State = State.Default;
 
-  pageState: State = State.None;
+  pageState: State = State.Default;
   isNewEvent: boolean = false;
 
   mounted() {
     this.loadingInProcess = true;
 
-    this.fetchEventTypes("", true).then(eventTypes => {
-      this.eventTypes = eventTypes as EventType[];
+    const eventId = this.$route.params.id;
+    if (eventId && eventId != "new") {
+      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then(event => {
+        this.setEvent(event);
 
-      const eventId = this.$route.params.id;
-      if (eventId && eventId != "new") {
-        this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then(event => {
-          this.updateEvent(event);
-          this.loadingInProcess = false;
-        });
-      } else {
-        this.isNewEvent = true;
         this.loadingInProcess = false;
-      }
-    });
+      });
+    } else {
+      this.isNewEvent = true;
+      this.loadingInProcess = false;
+    }
   }
 
   onStringifyEventType(eventType: EventType): string {
@@ -177,7 +196,7 @@ export default class EventEditPage extends Vue {
         const body = response.data;
         this.eventTypeSelected = body.data as EventType;
 
-        this.eventTypeModalState = State.None;
+        this.eventTypeModalState = State.Default;
         this.eventTypeModalShow = false;
 
         this.eventTypeModalData.title = "";
@@ -190,15 +209,22 @@ export default class EventEditPage extends Vue {
   }
 
   onSubmitEvent() {
-    if (this.eventTypeSelected) {
+    if (
+      this.eventTypeSelected &&
+      this.eventBeginTimeInput != null &&
+      this.eventEndTimeInput != null
+    ) {
       this.pageState = State.InProcess;
       this.event.eventTypeId = this.eventTypeSelected.id;
+      this.event.beginTime = moment(this.eventBeginTimeInput).toDate();
+      this.event.endTime = moment(this.eventEndTimeInput).toDate();
+
       this.$store
         .dispatch(EVENTS_COMMIT_ONE, this.event)
         .then(event => {
-          this.updateEvent(event);
+          this.setEvent(event);
 
-          this.pageState = State.None;
+          this.pageState = State.Default;
           if (this.isNewEvent) {
             this.isNewEvent = false;
             this.$router.push({ path: "/events/" + event.id });
@@ -234,19 +260,13 @@ export default class EventEditPage extends Vue {
     });
   }
 
-  findEventType(id: string): EventType {
-    const index = this.eventTypes.findIndex(e => e.id === id);
-    return this.eventTypes[index];
-  }
-
-  updateEvent(event: Event) {
+  setEvent(event: Event) {
     this.event = event;
-
-    try {
-      const eventType: EventType = this.findEventType(this.event.eventTypeId);
-
-      this.eventTypeSelected = eventType;
-    } catch (e) {}
+    this.eventBeginTimeInput = moment(this.event.beginTime).toDate();
+    this.eventEndTimeInput = moment(this.event.endTime).toDate();
+    this.eventTypeSelected = event.eventType
+      ? event.eventType
+      : new EventTypeDefault();
   }
 
   get isPageInProcess(): boolean {
@@ -259,7 +279,7 @@ export default class EventEditPage extends Vue {
 }
 
 export const eventEditPageRoute = <RouteConfig>{
-  path: "/events/:id",
+  path: "/events/edit/:id",
   name: "EventEditPage",
   component: EventEditPage
 };
@@ -269,5 +289,14 @@ export const eventEditPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+@import "@/styles/general.scss";
+
+.event-edit-page {
+  .mx-input-append {
+    @include theme-specific() {
+      background-color: getstyle(form-control-background-color);
+    }
+  }
+}
 </style>
 <!-- STYLE END -->

@@ -28,6 +28,10 @@ import store from "./store";
 
 import App from "./App.vue";
 
+// Initialize timezone
+import moment from "moment-timezone";
+moment.tz.setDefault("Europe/Moscow");
+
 // Initialize axios
 axios.defaults.baseURL = "https://labworkback.azurewebsites.net/api/";
 axios.defaults.headers.post['Content-Type'] = "application/json";
@@ -68,7 +72,7 @@ router.beforeEach((to, from, next) => {
 
 // Vue initialization
 Vue.use(Router);
-Vue.use(VueMoment);
+Vue.use(VueMoment, { moment });
 Vue.use(VueHammer);
 Vue.use(BootstrapVue);
 Vue.use(VueNotifications);

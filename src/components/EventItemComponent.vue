@@ -19,7 +19,7 @@
         </b-col>
         <b-col cols="auto">
           <!--<strong>Иванов Иван</strong>-->
-          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/' + eventParams.id">Изменить</b-button>
+          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + eventParams.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
@@ -54,15 +54,17 @@
         </b-col>
       </b-row>
       <b-row class="mt-2 buttons">
-        <b-col cols="12" md="auto" class="order-md-3">
-          <b-button variant="primary" class="w-100">Подробнее</b-button>
+        <b-col cols="12" md="auto">
+          <b-button :to="'events/' + eventParams.id" variant="primary" class="w-100">Подробнее</b-button>
         </b-col>
-        <b-col cols="12" md="auto" class="order-md-1">
+        <b-col cols="12" md="auto">
           <b-button variant="outline-primary" class="w-100">Хочу пойти</b-button>
         </b-col>
+        <!--
         <b-col cols="12" md="auto mr-auto" class="order-md-2">
           <b-button variant="link" class="w-100 text-danger">Не могу пойти</b-button>
         </b-col>
+        -->
       </b-row>
     </div>
   </div>
@@ -99,7 +101,10 @@ export default class EventItemComponent extends Vue {
   dateHovered: boolean = false;
 
   checkDateHover() {
-    if (!window.getSelection() || window.getSelection().toString().length == 0) {
+    if (
+      !window.getSelection() ||
+      window.getSelection().toString().length == 0
+    ) {
       this.dateHovered = !this.dateHovered;
     }
   }

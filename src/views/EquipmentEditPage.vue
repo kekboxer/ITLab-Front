@@ -95,8 +95,9 @@ import {
 } from "@/store/actions/equipment";
 import {
   Equipment,
+  EquipmentDefault,
   EquipmentType,
-  createDefaultEquipment
+  EquipmentTypeDefault
 } from "@/store/modules/equipment/types";
 
 enum State {
@@ -113,17 +114,13 @@ enum State {
 })
 export default class EquipmentEditPage extends Vue {
   loadingInProcess: boolean = false;
-  equipment: Equipment = createDefaultEquipment();
+  equipment: Equipment = new EquipmentDefault;
 
   equipmentTypes: EquipmentType[] = [];
   equipmentTypeSelected: EquipmentType = { id: "", title: "", description: "" };
 
   equipmentTypeModalShow: boolean = false;
-  equipmentTypeModalData: EquipmentType = {
-    id: "",
-    title: "",
-    description: ""
-  };
+  equipmentTypeModalData: EquipmentType = new EquipmentTypeDefault;
   equipmentTypeModalState: State = State.None;
 
   pageState: State = State.None;

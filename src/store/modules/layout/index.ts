@@ -7,9 +7,11 @@ import { RootState } from "@/store/types"
 
 // used pages
 import { loginPageRoute, registerPageRoute } from "@/views/AuthPage.vue";
+
 import { processingAgreementPageRoute } from "@/views/ProcessingAgreementPage.vue";
 
 import { eventsPageRoute } from "@/views/EventsPage.vue";
+import { eventDetailPage } from "@/views/EventDetailPage.vue";
 import { eventEditPageRoute } from "@/views/EventEditPage.vue";
 
 import { equipmentPageRoute } from "@/views/EquipmentPage.vue";
@@ -34,7 +36,7 @@ export const state: LayoutState = {
         title: "События",
         homeURL: "/events",
         pages: [
-          eventsPageRoute, eventEditPageRoute
+          eventsPageRoute, eventDetailPage, eventEditPageRoute
         ]
       }, {
         name: "equipment",

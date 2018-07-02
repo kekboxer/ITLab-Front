@@ -119,12 +119,12 @@ import { Action, Getter } from "vuex-class";
 import { AUTH_LOGIN } from "@/store/actions/authorization";
 import {
   AuthorizationData,
-  createDefaultAuthorizationData
+  AuthorizationDataDefault
 } from "@/store/modules/authorization/types";
 import { PROFILE_CREATE } from "@/store/actions/profile";
 import {
   RegistrationData,
-  createDefaultRegistrationData
+  RegistrationDataDefault
 } from "@/store/modules/profile/types";
 import { RawLocation, RouteConfig } from "vue-router";
 
@@ -166,8 +166,8 @@ export default class AuthPage extends Vue {
   authType?: String;
 
   // data
-  authData: AuthorizationData = createDefaultAuthorizationData();
-  registerData: RegistrationData = createDefaultRegistrationData();
+  authData: AuthorizationData = new AuthorizationDataDefault;
+  registerData: RegistrationData = new RegistrationDataDefault;
 
   authState: State = State.None;
   registrationState: State = State.None;

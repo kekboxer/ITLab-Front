@@ -1,9 +1,21 @@
 
+// EventType //
+//////////////
+
 export interface EventType {
   id: string,
   title: string,
   description: string
 }
+
+export class EventTypeDefault implements EventType {
+  id: string = ""
+  title: string = ""
+  description: string = ""
+}
+
+// Event //
+//////////
 
 export interface Event {
   id: string
@@ -17,28 +29,29 @@ export interface Event {
   neededParticipantsCount: number,
   participantCount?: number, //TODO: remove it
   
-  eventTypeId: string,
+  eventTypeId?: string,
   eventType? : EventType
 
   equipmentIds: string[],
   participantsIds: string[]
 }
 
-export const createDefaultEvent = (): Event => {
-  const date = new Date();
-  return {
-    id: "",
-    title: "",
-    description: "",
-    beginTime: date,
-    endTime: new Date(date.getTime() + 2*60*60*1000),
-    address: "пр. Вернадского, 78",
-    neededParticipantsCount: 0,
-    eventTypeId: "",
-    equipmentIds: [],
-    participantsIds: []
-  }
+export class EventDefault implements Event {
+  id: string = ""
+  title: string = ""
+  description: string = ""
+  beginTime: Date = new Date(0)
+  endTime: Date = new Date(0)
+  address: string = ""
+
+  neededParticipantsCount: number = 0
+
+  equipmentIds: string[] = []
+  participantsIds: string[] = []
 }
+
+// State //
+//////////
 
 export interface EventsState {
   events: Event[]

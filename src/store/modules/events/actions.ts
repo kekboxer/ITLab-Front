@@ -6,12 +6,22 @@ import {
   EVENTS_FETCH_ALL, EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE, EVENTS_SET_ALL, EVENTS_SET_ONE
 } from "@/store/actions/events";
 
+import moment from "moment-timezone";
+
+const fixDates = (event: Event) => {
+  event.beginTime = moment(event.beginTime).toDate();
+  event.endTime = moment(event.endTime).toDate();
+}
+
 export const actions: ActionTree<EventsState, RootState> = {
   [EVENTS_FETCH_ALL]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       axios.get('event').then((response) => {
         const body = response && response.data
         const data: Event[] = body.data
+        
+        console.log(body);
+        data.forEach(fixDates);
 
         commit(EVENTS_SET_ALL, data)
         resolve(data)
@@ -27,6 +37,8 @@ export const actions: ActionTree<EventsState, RootState> = {
       axios.get("event/" + id).then((response) => {
         const body = response && response.data
         const data: Event = body.data
+        
+        fixDates(data);
 
         commit(EVENTS_SET_ONE, data)
         resolve(data)
