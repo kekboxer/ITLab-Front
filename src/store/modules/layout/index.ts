@@ -6,7 +6,8 @@ import { LayoutState } from "./types"
 import { RootState } from "@/store/types"
 
 // used pages
-import { loginPageRoute, registerPageRoute } from "@/views/AuthPage.vue";
+import { loginPageRoute } from "@/views/LoginPage.vue";
+import { registrationPageRoute } from "@/views/RegistrationPage.vue";
 
 import { processingAgreementPageRoute } from "@/views/ProcessingAgreementPage.vue";
 
@@ -24,7 +25,7 @@ import { profileSettingsPageRoute } from "@/views/ProfileSettingsPage.vue";
 
 export const state: LayoutState = {
   stuff: [
-    loginPageRoute, registerPageRoute,
+    loginPageRoute, registrationPageRoute,
     processingAgreementPageRoute
   ],
   groups: [

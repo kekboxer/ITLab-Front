@@ -84,3 +84,22 @@
 .fullscreen-height {
   min-height: 100vh;
 }
+
+.form-card {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0;
+
+  @include media-breakpoint-down(sm) {
+    border: Default;
+  }
+
+  @include theme-specific() {
+    background-color: getstyle(form-card-background-color);
+
+    .logo {
+      fill: getstyle(auth-logo-color);
+    }
+  }
+}

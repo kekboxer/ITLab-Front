@@ -26,7 +26,7 @@ $colorscheme: (
 $themes: (
   theme-light: (
     auth-logo-color: getcolor(black, dark),
-    auth-card-background-color: getcolor(white, lighter),
+    form-card-background-color: getcolor(white, lighter),
 
     page-font-color: getcolor(black, dark),
     page-background-color: getcolor(white, light),
@@ -52,7 +52,7 @@ $themes: (
 
   theme-dark: (
     auth-logo-color: getcolor(white, base),
-    auth-card-background-color: getcolor(black, dark),
+    form-card-background-color: getcolor(black, dark),
 
     page-font-color: getcolor(white, base),
     page-background-color: getcolor(black, dark),
