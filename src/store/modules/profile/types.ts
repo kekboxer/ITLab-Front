@@ -3,15 +3,24 @@
 /////////
 
 export interface User {
+  id: string
   firstName: string
   lastName: string
   email: string
 }
 
+
+export class UserDefault implements User {
+  id: string = ""
+  firstName: string = ""
+  lastName: string = ""
+  email: string = ""
+}
+
 // RegistractionData //
 //////////////////////
 
-export interface RegistrationData extends User {
+export interface RegistrationData extends Pick<User, Exclude<keyof User, "id">> {
   studentId?: string
   password: string
 }

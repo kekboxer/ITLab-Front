@@ -83,6 +83,7 @@ import axios from "axios";
 
 import DatePicker from "vue2-datepicker";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import EventScheduleComponent from "@/components/EventScheduleComponent.vue";
 import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
 
 import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
@@ -103,6 +104,7 @@ enum State {
   components: {
     "date-picker": DatePicker,
     "loading-stub-component": LoadingStubComponent,
+    "event-schedule-component": EventScheduleComponent,
     "event-type-selection-component": EventTypeSelectionComponent
   }
 })
@@ -177,25 +179,6 @@ export default class EventEditPage extends Vue {
           this.pageState = State.Error;
         });
     }
-  }
-
-  fetchEventTypes(match: string = "", all: boolean = true) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`EventType?all=${all}&match=${match}`)
-        .then(response => {
-          const body = response.data;
-          if (body.statusCode == 1) {
-            const eventTypes: EventType[] = body.data;
-            resolve(eventTypes);
-          } else {
-            reject();
-          }
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
   }
 
   setEvent(event: Event) {

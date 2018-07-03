@@ -5,10 +5,22 @@ import { EVENTS_GET_ALL, EVENTS_GET_ONE } from "@/store/actions/events";
 
 export const getters: GetterTree<EventsState, RootState> = {
   [EVENTS_GET_ALL]: (state, getters: any) => {
-    return (dateBegin?: Date, dateEnd?: Date) => {
+    return (dateBegin?: Date, dateEnd?: Date, invert: boolean = false) => {
       return state.events.filter((event) => {
-        return (dateBegin == undefined || event.endTime > dateBegin) &&
-          (dateEnd == undefined || event.beginTime < dateEnd)
+        /*
+        const condition = (dateBegin == undefined || event.endTime > dateBegin) &&
+          (dateEnd == undefined || event.beginTime < dateEnd);
+        */
+
+        const condition = (dateBegin == undefined || event.beginTime > dateBegin) &&
+          (dateEnd == undefined || event.endTime < dateEnd);
+
+        if (invert) {
+          return !condition;
+        }
+        else {
+          return condition;
+        }
       });
     }
   },

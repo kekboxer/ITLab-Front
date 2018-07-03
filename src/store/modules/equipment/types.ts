@@ -19,7 +19,7 @@ export class EquipmentTypeDefault implements EquipmentType {
 
 export interface Equipment {
   id: string
-  equipmentTypeId: string
+  equipmentTypeId?: string
   equipmentType?: EquipmentType
   serialNumber: string
   description?: string

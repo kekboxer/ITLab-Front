@@ -101,7 +101,7 @@ export default class EventsPage extends Vue {
   }
 
   get eventsPast() {
-    return this.$store.getters[EVENTS_GET_ALL](undefined, this.currentDate);
+    return this.$store.getters[EVENTS_GET_ALL](this.currentDate, undefined, true);
   }
 }
 
