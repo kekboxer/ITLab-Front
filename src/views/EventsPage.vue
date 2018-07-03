@@ -12,11 +12,30 @@
       <br>
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
-        <b-row v-for="event in events" :key="event.id">
+        <b-row v-for="event in eventsCurrent" :key="event.id">
           <b-col>
             <event-item-component :event-params="event"></event-item-component>
           </b-col>
         </b-row>
+
+        <b-row>
+          <b-col>
+            <div class="load-more" @click="togglePastEvents">
+              <strong>
+                {{ eventsShowPast ? "Скрыть" : "Показать" }} прошедшие события
+              </strong>
+            </div>
+          </b-col>
+        </b-row>
+
+        <div v-if="eventsShowPast">
+          <b-row v-for="event in eventsPast" :key="event.id">
+            <b-col>
+              <event-item-component :event-params="event"></event-item-component>
+            </b-col>
+          </b-row>
+        </div>
+
       </div>
     </b-container>
   </div>
@@ -46,18 +65,43 @@ import { Getter } from "vuex-class/lib/bindings";
 export default class EventsPage extends Vue {
   loadingInProcess: boolean = true;
 
+  currentDate: Date = new Date();
+
+  pastEventsLoaded: boolean = false;
+  eventsShowPast: boolean = false;
+
   beforeMount() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
-    
-    this.$store.dispatch(EVENTS_FETCH_ALL)
+
+    this.$store
+      .dispatch(
+        EVENTS_FETCH_ALL,
+        this.eventsShowPast ? undefined : this.currentDate
+      )
       .then(result => {
         this.loadingInProcess = false;
       })
       .catch(result => {});
   }
 
-  get events() {
-    return this.$store.getters[EVENTS_GET_ALL];
+  togglePastEvents() {
+    if (!this.pastEventsLoaded && !this.eventsShowPast) {
+      this.$store
+        .dispatch(EVENTS_FETCH_ALL)
+        .then(result => {})
+        .catch(result => {});
+      this.pastEventsLoaded = true;
+    }
+
+    this.eventsShowPast = !this.eventsShowPast;
+  }
+
+  get eventsCurrent() {
+    return this.$store.getters[EVENTS_GET_ALL](this.currentDate);
+  }
+
+  get eventsPast() {
+    return this.$store.getters[EVENTS_GET_ALL](undefined, this.currentDate);
   }
 }
 
@@ -72,5 +116,32 @@ export const eventsPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+@import "@/styles/general.scss";
+
+.events-page {
+  .load-more {
+    @extend .noselect;
+
+    cursor: pointer;
+
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: -4px 0 0 rgba(0, 0, 0, 0.125);
+
+    text-align: center;
+
+    @include theme-specific() {
+      background-color: getstyle(event-list-item-background-color);
+
+      &:hover {
+        background-color: darken(
+          getstyle(event-list-item-background-color),
+          5%
+        );
+      }
+    }
+  }
+}
 </style>
 <!-- STYLE END -->

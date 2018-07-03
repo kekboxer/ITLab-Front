@@ -2,25 +2,34 @@ import { ActionTree } from "vuex"
 import axios from "axios"
 import { EventsState, Event } from "./types"
 import { RootState } from "@/store/types"
-import { 
+import {
   EVENTS_FETCH_ALL, EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE, EVENTS_SET_ALL, EVENTS_SET_ONE
 } from "@/store/actions/events";
 
-import moment from "moment-timezone";
+import moment from "moment";
+
+const DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 
 const fixDates = (event: Event) => {
-  event.beginTime = moment(event.beginTime).toDate();
-  event.endTime = moment(event.endTime).toDate();
+  event.beginTime = moment(event.beginTime, DATETIME_FORMAT).toDate();
+  event.endTime = moment(event.endTime, DATETIME_FORMAT).toDate();
 }
 
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENTS_FETCH_ALL]: ({ commit, dispatch }) => {
+  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, dateBegin?: Date, dateEnd?: Date) => {
     return new Promise((resolve, reject) => {
-      axios.get('event').then((response) => {
+      let url: string = "event/";
+      if (dateBegin || dateEnd) {
+        url += "?";
+        if (dateBegin) url += `begin=${moment(dateBegin).format(DATETIME_FORMAT)}`;
+        if (dateBegin && dateEnd) url += "&";
+        if (dateEnd) url += `end=${moment(dateBegin).format(DATETIME_FORMAT)}`;
+      }
+
+      axios.get(url).then((response) => {
         const body = response && response.data
         const data: Event[] = body.data
-        
-        console.log(body);
+
         data.forEach(fixDates);
 
         commit(EVENTS_SET_ALL, data)
@@ -37,7 +46,7 @@ export const actions: ActionTree<EventsState, RootState> = {
       axios.get("event/" + id).then((response) => {
         const body = response && response.data
         const data: Event = body.data
-        
+
         fixDates(data);
 
         commit(EVENTS_SET_ONE, data)

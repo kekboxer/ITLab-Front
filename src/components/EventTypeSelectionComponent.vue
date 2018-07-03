@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-type-selection-component">
-    <autocomplete-input-component :stringify="onStringifyEventType" :fetch="onChangeEventType" :add="showEventTypeModal" v-model="eventTypeSelected" @change="onChange">
+    <autocomplete-input-component :stringify="onStringifyEventType" :fetch="onChangeEventType" :add="showEventTypeModal" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -38,7 +38,7 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Model, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import axios from "axios";
 
 import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
@@ -71,17 +71,18 @@ export default class EventTypeSelectionComponent extends Vue {
   eventTypeModalData: EventType = new EventTypeDefault();
   eventTypeModalState: State = State.Default;
 
+  // Component methods //
+  //////////////////////
+
   mounted() {
     this.$watch("value", (value?: EventType) => {
-      console.log("value changed outside");
       this.eventTypeSelected = value ? value : new EventTypeDefault();
     });
 
     this.eventTypeSelected = this.value ? this.value : new EventTypeDefault();
   }
 
-  onChange() {
-    console.log("input changed inside");
+  onInput() {
     this.$emit("input", this.eventTypeSelected);
   }
 
@@ -130,12 +131,12 @@ export default class EventTypeSelectionComponent extends Vue {
       .then(response => {
         const body = response.data;
         this.eventTypeSelected = body.data as EventType;
+        this.onInput();
 
         this.eventTypeModalState = State.Default;
         this.eventTypeModalShow = false;
 
-        this.eventTypeModalData.title = "";
-        this.eventTypeModalData.description = "";
+        this.eventTypeModalData = new EventTypeDefault();
       })
       .catch(error => {
         console.log(error);

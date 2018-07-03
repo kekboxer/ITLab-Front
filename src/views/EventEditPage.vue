@@ -23,15 +23,7 @@
           <b-col>
             <b-form @submit.prevent="onSubmitEvent">
               <b-form-group id="event-type-group" label="Тип события">
-                <autocomplete-input-component :stringify="onStringifyEventType" :fetch="onChangeEventType" :add="showEventTypeModal" v-model="eventTypeSelected">
-                  <template slot="result-item" slot-scope="data">
-                    {{ data.item.title }}
-                  </template>
-                  <template slot="add-item" slot-scope="data">
-                    Добавить
-                    <b>{{ data.search }}</b>
-                  </template>
-                </autocomplete-input-component>
+                <event-type-selection-component v-model="eventTypeSelected"></event-type-selection-component>
               </b-form-group>
 
               <b-form-group id="event-title-group" label="Название" label-for="title-input">
@@ -77,27 +69,6 @@
         </b-row>
       </div>
     </b-container>
-
-    <b-modal v-model="eventTypeModalShow">
-      <template slot="modal-title">
-        Новый тип события
-      </template>
-
-      <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="eventTypeModalData.title">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
-        <b-form-input id="type-description-input" type="text" v-model.trim="eventTypeModalData.description">
-        </b-form-input>
-      </b-form-group>
-
-      <template slot="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="eventTypeModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isEventTypeModalInProcess" @click="onSubmitEventType">Подтвердить</button>
-      </template>
-    </b-modal>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -112,7 +83,7 @@ import axios from "axios";
 
 import DatePicker from "vue2-datepicker";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
-import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
 
 import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
 import {
@@ -132,27 +103,29 @@ enum State {
   components: {
     "date-picker": DatePicker,
     "loading-stub-component": LoadingStubComponent,
-    "autocomplete-input-component": AutocompleteInputComponent
+    "event-type-selection-component": EventTypeSelectionComponent
   }
 })
 export default class EventEditPage extends Vue {
   DATETIME_FORMAT = "DD.MM.YYYY HH:mm";
-  DATETIME_REGEXP = /^\d{2}.\d{2}.\d{4} \d{2}:\d{2}$/;
 
-  loadingInProcess: boolean = false;
-  event: Event = new EventDefault();
-
-  eventBeginTimeInput: Date = new Date(0);
-  eventEndTimeInput: Date = new Date(0);
-
-  eventTypeSelected: EventType = new EventTypeDefault();
-
-  eventTypeModalShow: boolean = false;
-  eventTypeModalData: EventType = new EventTypeDefault();
-  eventTypeModalState: State = State.Default;
+  // Page properties //
+  ////////////////////
 
   pageState: State = State.Default;
   isNewEvent: boolean = false;
+  loadingInProcess: boolean = false;
+
+  // Event properties //
+  /////////////////////
+
+  event: Event = new EventDefault();
+  eventBeginTimeInput: Date = new Date(0);
+  eventEndTimeInput: Date = new Date(0);
+  eventTypeSelected: EventType = new EventTypeDefault();
+
+  // Component methods //
+  //////////////////////
 
   mounted() {
     this.loadingInProcess = true;
@@ -170,43 +143,8 @@ export default class EventEditPage extends Vue {
     }
   }
 
-  onStringifyEventType(eventType: EventType): string {
-    return eventType.title;
-  }
-
-  onChangeEventType(title: string, cb: Function) {
-    this.fetchEventTypes(title, false).then(eventTypes => {
-      cb(eventTypes as EventType[]);
-    });
-  }
-
-  showEventTypeModal(search: string) {
-    this.eventTypeModalData.title = search;
-    this.eventTypeModalShow = true;
-  }
-
-  onSubmitEventType() {
-    this.eventTypeModalState = State.InProcess;
-    axios
-      .post("EventType", {
-        title: this.eventTypeModalData.title,
-        description: this.eventTypeModalData.description
-      })
-      .then(response => {
-        const body = response.data;
-        this.eventTypeSelected = body.data as EventType;
-
-        this.eventTypeModalState = State.Default;
-        this.eventTypeModalShow = false;
-
-        this.eventTypeModalData.title = "";
-        this.eventTypeModalData.description = "";
-      })
-      .catch(error => {
-        console.log(error);
-        this.eventTypeModalState = State.Error;
-      });
-  }
+  // Event methods //
+  //////////////////
 
   onSubmitEvent() {
     if (
@@ -227,7 +165,7 @@ export default class EventEditPage extends Vue {
           this.pageState = State.Default;
           if (this.isNewEvent) {
             this.isNewEvent = false;
-            this.$router.push({ path: "/events/" + event.id });
+            this.$router.push({ path: "/events/edit/" + event.id });
           } else {
             this.$notify({
               title: "Изменения успешно сохранены",
@@ -271,10 +209,6 @@ export default class EventEditPage extends Vue {
 
   get isPageInProcess(): boolean {
     return this.pageState == State.InProcess;
-  }
-
-  get isEventTypeModalInProcess(): boolean {
-    return this.eventTypeModalState == State.InProcess;
   }
 }
 

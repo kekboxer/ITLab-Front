@@ -1,7 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
-    <input type="text" v-model="searchString" @input="onChange" @blur="onBlur" class="form-control">
+    <input type="text" v-model="searchString" @input="onInput" @blur="onBlur" class="form-control">
     <ul class="results" v-show="!resultsHidden && (searchString.length > 1 || results.length > 0)">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown.prevent="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
@@ -70,7 +70,7 @@ export default class AutocompleteInputComponent extends Vue {
     }
   }
 
-  onChange() {
+  onInput() {
     this.resultsHidden = false;
     if (this.fetch) {
       this.fetch(this.searchString, (results: Object[]) => {
