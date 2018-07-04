@@ -1,16 +1,26 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
-    <input type="text" v-model="searchString" @input="onInput" @blur="onBlur" class="form-control">
+    <b-input-group>
+      <input type="text" v-model="searchString" @input="onInput" @blur="onBlur" class="form-control">
+      <b-input-group-append v-if="canClear">
+        <b-btn :disabled="!searchString" @click="onClear">
+          <icon name="times" style="position: relative; bottom: -3px;"></icon>
+        </b-btn>
+      </b-input-group-append>
+    </b-input-group>
+
     <ul class="results" v-show="!resultsHidden && (searchString.length > 1 || results.length > 0)">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown.prevent="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
-      <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="onAdd()">
-        <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
-          <b>{{ searchString }}</b>
-        </slot>
-      </li>
+      <template v-if="withoutAdding == undefined || !withoutAdding">
+        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="onAdd()">
+          <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
+            <b>{{ searchString }}</b>
+          </slot>
+        </li>
+      </template>
     </ul>
   </div>
 </template>
@@ -21,13 +31,30 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
-@Component
+import Icon from "vue-awesome/components/Icon";
+import "vue-awesome/icons/times";
+
+@Component({
+  components: {
+    Icon
+  }
+})
 export default class AutocompleteInputComponent extends Vue {
   resultsHidden: boolean = true;
   searchString: string = "";
   results: Object[] = [];
 
   @Prop() value?: Object;
+
+  @Prop({
+    default: false
+  })
+  withoutAdding?: boolean;
+
+  @Prop({
+    default: false
+  })
+  canClear?: boolean;
 
   @Prop({
     default: (v: Object) => {
@@ -89,6 +116,12 @@ export default class AutocompleteInputComponent extends Vue {
     this.add && this.add(this.searchString);
   }
 
+  onClear() {
+    this.searchString = "";
+    this.resultsHidden = true;
+    this.$emit("input", null);
+  }
+
   get checkExistence(): boolean {
     if (!this.stringify || this.searchString.length == 0) {
       return false;
@@ -122,7 +155,7 @@ export default class AutocompleteInputComponent extends Vue {
   .results {
     position: absolute;
     width: 100%;
-    z-index: 1;
+    z-index: 2;
     padding: 0;
     margin: 0;
 

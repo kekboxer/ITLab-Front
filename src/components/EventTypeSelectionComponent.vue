@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-type-selection-component">
-    <autocomplete-input-component :stringify="onStringifyEventType" :fetch="onChangeEventType" :add="showEventTypeModal" v-model="eventTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -28,7 +28,7 @@
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="eventTypeModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitEventType">Подтвердить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmit">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -89,12 +89,12 @@ export default class EventTypeSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringifyEventType(eventType: EventType): string {
+  onStringify(eventType: EventType): string {
     return eventType.title;
   }
 
-  onChangeEventType(title: string, cb: Function) {
-    this.fetchEventTypes(title, false).then(eventTypes => {
+  onChange(input: string, cb: Function) {
+    this.fetchEventTypes(input, false).then(eventTypes => {
       cb(eventTypes as EventType[]);
     });
   }
@@ -121,7 +121,7 @@ export default class EventTypeSelectionComponent extends Vue {
   // Modal window methods //
   /////////////////////////
 
-  onSubmitEventType() {
+  onSubmit() {
     this.eventTypeModalState = State.InProcess;
     axios
       .post("EventType", {
@@ -144,7 +144,7 @@ export default class EventTypeSelectionComponent extends Vue {
       });
   }
 
-  showEventTypeModal(search: string) {
+  showModal(search: string) {
     this.eventTypeModalData.title = search;
     this.eventTypeModalShow = true;
   }

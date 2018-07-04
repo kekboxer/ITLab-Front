@@ -14,10 +14,9 @@
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <b-row class="d-lg-none">
-          <b-col></b-col>
           <b-col cols="12" md="6 mr-auto">
             <b-input-group class="mb-2 pr-3">
-              <b-form-input v-model="equipmentFilterString" placeholder="Поиск" />
+              <input class="form-control" v-model="equipmentFilterString" placeholder="Поиск" type="text">
               <b-input-group-append>
                 <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
                   <icon name="times" style="position: relative; bottom: -3px;"></icon>
@@ -31,7 +30,7 @@
             <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
               <template slot="HEAD_actions" slot-scope="data">
                 <b-input-group class="actions-head">
-                  <b-form-input v-model="equipmentFilterString" placeholder="Поиск" />
+                  <b-form-input v-model="equipmentFilterString" placeholder="Поиск" type="text"></b-form-input>
                   <b-input-group-append>
                     <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
                       <icon name="times" style="position: relative; bottom: -3px;"></icon>
@@ -59,9 +58,17 @@
 
               <template slot="row-details" slot-scope="data">
                 <b-card>
-                  <b-row class="mb-2">
+                  <b-row>
                     <b-col sm="3" class="text-sm-right">
-                      <b style="font-family: monospace">//TODO: add more information</b>
+                      Находится у:
+                    </b-col>
+                    <b-col sm="9">
+                      <template v-if="data.item.owner">
+                        <b>{{ data.item.owner.email }}</b>, {{ data.item.owner.firstName }} {{ data.item.owner.lastName }}
+                      </template>
+                      <template v-else>
+                        Лаборатория
+                      </template>
                     </b-col>
                   </b-row>
                 </b-card>
@@ -70,6 +77,7 @@
           </b-col>
         </b-row>
       </div>
+      <br>
     </b-container>
   </div>
 </template>
@@ -92,6 +100,7 @@ import {
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_GET_ALL
 } from "@/store/actions/equipment";
+import { User } from "@/store/modules/profile/types";
 
 @Component({
   components: {
@@ -102,17 +111,18 @@ import {
 export default class EquipmentPage extends Vue {
   loadingInProcess: boolean = true;
 
-  equipmentTypes: EquipmentType[] = [];
+  users: User[] = [];
   equipmentFilterString: string = "";
 
   beforeMount() {
     this.loadingInProcess = this.$store.getters[EQUIPMENT_GET_ALL].length == 0;
 
     axios
-      .get("EquipmentType")
+      .get("user")
       .then(result => {
         const body = result && result.data;
-        this.equipmentTypes = body.data;
+        this.users = body.data;
+
         return this.$store.dispatch(EQUIPMENT_FETCH_ALL);
       })
       .then(result => {
@@ -122,11 +132,22 @@ export default class EquipmentPage extends Vue {
   }
 
   onEquipmentTableFilter(v: any) {
-    const filterString = this.equipmentFilterString.toLocaleLowerCase();
+    const filterStrings = this.equipmentFilterString
+      .toLocaleLowerCase()
+      .split(" ");
+
     return (
       this.equipmentFilterString == "" ||
-      v.equipmentType.title.toLocaleLowerCase().indexOf(filterString) > -1 ||
-      v.serialNumber.toLocaleLowerCase().indexOf(filterString) > -1
+      filterStrings.find(
+        filter => v.equipmentType.title.toLocaleLowerCase().indexOf(filter) > -1
+      ) ||
+      filterStrings.find(
+        filter => v.serialNumber.toLocaleLowerCase().indexOf(filter) > -1
+      ) ||
+      filterStrings.find(
+        filter =>
+          v.owner && v.owner.email.toLocaleLowerCase().indexOf(filter) > -1
+      )
     );
   }
 
@@ -169,20 +190,17 @@ export default class EquipmentPage extends Vue {
   }
 
   get items() {
-    return this.$store.getters[EQUIPMENT_GET_ALL].map((value: Equipment) => {
-      const equipmentType = this.equipmentTypes.find(
-        v => v.id == value.equipmentTypeId
-      );
+    return this.$store.getters[EQUIPMENT_GET_ALL].map(
+      (equipment: Equipment) => {
+        const owner = this.users.find(user => user.id == equipment.ownerId);
 
-      return {
-        id: value.id,
-        equipmentType: equipmentType
-          ? equipmentType
-          : <EquipmentType>{ id: "", title: "unknown" },
-        serialNumber: value.serialNumber,
-        _showDetails: false
-      };
-    });
+        return {
+          ...equipment,
+          owner,
+          _showDetails: false
+        };
+      }
+    );
   }
 }
 

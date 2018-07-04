@@ -23,6 +23,7 @@ export interface Equipment {
   equipmentType?: EquipmentType
   serialNumber: string
   description?: string
+  ownerId?: string
 }
 
 export class EquipmentDefault implements Equipment {

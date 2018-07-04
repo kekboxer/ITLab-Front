@@ -16,7 +16,7 @@ const fixDates = (event: Event) => {
 }
 
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, dateBegin?: Date, dateEnd?: Date) => {
+  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, [ dateBegin, dateEnd ]: [ Date | undefined, Date | undefined ]) => {
     return new Promise((resolve, reject) => {
       let url: string = "event/";
       if (dateBegin || dateEnd) {
