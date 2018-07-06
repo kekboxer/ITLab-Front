@@ -21,6 +21,7 @@
     "npm": "^6.0.0",
     "server-static": "^2.0.5",
     "shelljs": "^0.7.6",
+    "trello": "^0.9.0",
     "vue": "^2.5.2",
     "vue-awesome": "^3.0.0",
     "vue-class-component": "^6.2.0",
