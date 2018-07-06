@@ -74,7 +74,7 @@ export default class ProjectsPage extends Vue {
   getStyle(board: any) {
     return {
       backgroundColor: board.prefs.backgroundColor,
-      backgroundImage: board.prefs.backgroundImageScaled ? `url(${board.prefs.backgroundImageScaled[0].url})` : undefined
+      backgroundImage: board.prefs.backgroundImageScaled ? `url(${board.prefs.backgroundImageScaled[1].url})` : undefined
     }
   }
 }
