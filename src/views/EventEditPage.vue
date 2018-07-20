@@ -59,6 +59,14 @@
                 </b-form-input>
               </b-form-group>
 
+              <b-form-group id="event-schedule-group" label="Расписание">
+                <event-schedule-component 
+                  :event-begin-time="eventBeginTimeInput" 
+                  :event-end-time="eventEndTimeInput"
+                  :editable="true">
+                </event-schedule-component>
+              </b-form-group>
+
               <b-form-row>
                 <b-col>
                   <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
