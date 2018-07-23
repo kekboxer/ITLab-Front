@@ -1,3 +1,4 @@
+import { Vue } from "vue-property-decorator";
 import { MutationTree } from "vuex"
 import { EquipmentState, Equipment } from "./types"
 import { EQUIPMENT_SET_ALL, EQUIPMENT_SET_ONE } from "@/store/actions/equipment";
@@ -15,7 +16,8 @@ export const mutations: MutationTree<EquipmentState> = {
     if (currentEquipmentIndex == -1) {
       state.equipment.push(equipment)
     } else {
-      state.equipment[currentEquipmentIndex] = equipment
+      Vue.set(state.equipment, currentEquipmentIndex, 
+        Object.assign({}, state.equipment[currentEquipmentIndex], equipment));
     }
   }
 }

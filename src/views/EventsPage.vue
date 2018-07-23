@@ -14,7 +14,7 @@
       <div v-else>
         <b-row v-for="event in eventsCurrent" :key="event.id">
           <b-col>
-            <event-item-component :event-params="event"></event-item-component>
+            <event-item-component :event="event"></event-item-component>
           </b-col>
         </b-row>
 
@@ -31,7 +31,7 @@
         <div v-if="eventsShowPast">
           <b-row v-for="event in eventsPast" :key="event.id">
             <b-col>
-              <event-item-component :event-params="event"></event-item-component>
+              <event-item-component :event="event"></event-item-component>
             </b-col>
           </b-row>
         </div>

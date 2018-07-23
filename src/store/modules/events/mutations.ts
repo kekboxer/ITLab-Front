@@ -1,3 +1,4 @@
+import { Vue } from "vue-property-decorator";
 import { MutationTree } from "vuex"
 import { EventsState, Event } from "./types"
 import { EVENTS_SET_ALL, EVENTS_SET_ONE } from "@/store/actions/events";
@@ -10,7 +11,7 @@ const setOneEvent = (events: Event[], event: Event) =>{
   if (currentEventIndex == -1) {
     events.push(event);
   } else {
-    events[currentEventIndex] = event;
+    Vue.set(events, currentEventIndex, Object.assign({}, events[currentEventIndex], event));
   }
 }
 
@@ -26,10 +27,10 @@ export const mutations: MutationTree<EventsState> = {
     }
 
     state.events = state.events.sort((a, b) => {
-      if (a.beginTime < b.beginTime) {
+      if (a.beginTime && b.beginTime && a.beginTime < b.beginTime) {
         return 1
       }
-      else if (a.beginTime > b.beginTime) {
+      else if (a.beginTime && b.beginTime && a.beginTime > b.beginTime) {
         return -1
       }
       else {

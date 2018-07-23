@@ -36,19 +36,6 @@
                 </b-form-textarea>
               </b-form-group>
 
-              <b-form-row class="range-selection">
-                <b-col cols="12" sm="6">
-                  <b-form-group id="event-begin-time-group" label="Начало" label-for="begin-time-input">
-                    <date-picker id="begin-time-input" :first-day-of-week="1" input-class="form-control" v-model="eventBeginTimeInput" :format="DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12" sm="6">
-                  <b-form-group id="event-end-time-group" label="Конец" label-for="end-time-input">
-                    <date-picker id="end-time-input" :first-day-of-week="1" input-class="form-control" v-model="eventEndTimeInput" :format="DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-
               <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
                 <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
                 </b-form-textarea>
@@ -84,7 +71,7 @@ import axios from "axios";
 
 import DatePicker from "vue2-datepicker";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
-import EventScheduleComponent from "@/components/EventScheduleComponent.vue";
+import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
 
 import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
@@ -105,7 +92,7 @@ enum State {
   components: {
     "date-picker": DatePicker,
     "loading-stub-component": LoadingStubComponent,
-    "event-schedule-component": EventScheduleComponent,
+    "event-shifts-component": EventShiftsComponent,
     "event-type-selection-component": EventTypeSelectionComponent
   }
 })
@@ -123,8 +110,6 @@ export default class EventEditPage extends Vue {
   /////////////////////
 
   event: Event = new EventDefault();
-  eventBeginTimeInput: Date = new Date(0);
-  eventEndTimeInput: Date = new Date(0);
   eventTypeSelected: EventType = new EventTypeDefault();
 
   // Component methods //
@@ -150,15 +135,9 @@ export default class EventEditPage extends Vue {
   //////////////////
 
   onSubmitEvent() {
-    if (
-      this.eventTypeSelected &&
-      this.eventBeginTimeInput != null &&
-      this.eventEndTimeInput != null
-    ) {
+    if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
       this.event.eventTypeId = this.eventTypeSelected.id;
-      this.event.beginTime = moment(this.eventBeginTimeInput).toDate();
-      this.event.endTime = moment(this.eventEndTimeInput).toDate();
 
       this.$store
         .dispatch(EVENTS_COMMIT_ONE, this.event)
@@ -184,8 +163,6 @@ export default class EventEditPage extends Vue {
 
   setEvent(event: Event) {
     this.event = event;
-    this.eventBeginTimeInput = moment(this.event.beginTime).toDate();
-    this.eventEndTimeInput = moment(this.event.endTime).toDate();
     this.eventTypeSelected = event.eventType
       ? event.eventType
       : new EventTypeDefault();

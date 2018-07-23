@@ -12,8 +12,8 @@ export const getters: GetterTree<EventsState, RootState> = {
           (dateEnd == undefined || event.beginTime < dateEnd);
         */
 
-        const condition = (dateBegin == undefined || event.beginTime > dateBegin) &&
-          (dateEnd == undefined || event.endTime < dateEnd);
+        const condition = (dateBegin == undefined || event.beginTime && event.beginTime > dateBegin) /* &&
+          (dateEnd == undefined || event.endTime < dateEnd);*/
 
         if (invert) {
           return !condition;

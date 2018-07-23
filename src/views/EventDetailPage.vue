@@ -27,7 +27,7 @@
               <b-col cols="12" md="4">
                 <div style="font-size: 1.2em">
                   <b>Начало:</b> {{ event.beginTime | moment("DD.MM.YYYY HH:mm") }}<br>
-                  <b>Конец:&nbsp;&nbsp;</b> {{ event.endTime | moment("DD.MM.YYYY HH:mm") }}<br>
+                  <!--<b>Конец:&nbsp;&nbsp;</b> {{ event.endTime | moment("DD.MM.YYYY HH:mm") }}<br>-->
                   <template v-if="showElapsed">
                     (До события {{ elapsedTime }})<br>
                   </template>
@@ -85,7 +85,9 @@ export default class EventDetailPage extends Vue {
   }
 
   get showElapsed(): boolean {
-    return (new Date()) < this.event.beginTime;
+    return (
+      this.event.beginTime != undefined && new Date() < this.event.beginTime
+    );
   }
 
   get elapsedTime() {

@@ -11,12 +11,13 @@ import moment from "moment-timezone";
 const DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 
 const fixDates = (event: Event) => {
-  event.beginTime = moment(event.beginTime, DATETIME_FORMAT + "Z").toDate();
-  event.endTime = moment(event.endTime, DATETIME_FORMAT + "Z").toDate();
+  if (event.beginTime) {
+    event.beginTime = moment(event.beginTime, DATETIME_FORMAT + "Z").toDate();
+  }
 }
 
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, [ dateBegin, dateEnd ]: [ Date | undefined, Date | undefined ]) => {
+  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, [dateBegin, dateEnd]: [Date | undefined, Date | undefined]) => {
     return new Promise((resolve, reject) => {
       let url: string = "event/";
       if (dateBegin || dateEnd) {

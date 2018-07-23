@@ -9,40 +9,39 @@
               <icon name="clock" style="position: relative; bottom: -2px"></icon>
             </span>
             <span class="date desktop">
-              <span v-if="dateHovered">{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
-              <span v-else>{{ eventParams.beginTime | moment("calendar") }}</span>
+              <span v-if="dateHovered">{{ beginTime }}</span>
+              <span v-else>{{ beginTimeCalendar }}</span>
             </span>
             <span class="date mobile">
-              <span>{{ eventParams.beginTime | moment("DD.MM.YYYY HH:mm")}}</span>
+              <span>{{ beginTime }}</span>
             </span>
           </strong>
         </b-col>
         <b-col cols="auto">
           <!--<strong>Иванов Иван</strong>-->
-          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + eventParams.id">Изменить</b-button>
+          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + event.id">Изменить</b-button>
         </b-col>
       </b-row>
       <hr>
       <b-row>
         <b-col md="8">
-          <h3 style="margin-bottom: 0">{{ eventParams.title }}</h3>
-          <small style="position: relative; top: -5px" v-if="eventParams.eventType">{{ eventParams.eventType.title }}</small>
-          <p>{{ eventParams.description }}</p>
+          <h3 style="margin-bottom: 0">{{ event.title }}</h3>
+          <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
+          <p>{{ event.description }}</p>
         </b-col>
         <b-col md="4">
           <b-row>
             <b-col>
-              Участники:
-              <b-progress class="w-100 mb-2" height="2rem" :max="eventParams.neededParticipantsCount" show-value>
-                <b-progress-bar :value="eventParams.participantCount || 0" :label="eventParams.participantCount || 0+ ' из ' + eventParams.neededParticipantsCount">
-                </b-progress-bar>
+              Готовность:
+              <b-progress class="w-100 mb-2" height="2rem" :max="100">
+                <b-progress-bar :value="event.сompleteness || 0"></b-progress-bar>
               </b-progress>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               Начало:
-              <b>{{ eventParams.beginTime | moment("HH:mm")}}</b>
+              <b>{{ beginTimeShort }}</b>
             </b-col>
           </b-row>
           <b-row>
@@ -55,16 +54,11 @@
       </b-row>
       <b-row class="mt-2 buttons">
         <b-col cols="12" md="auto">
-          <b-button :to="'events/' + eventParams.id" variant="primary" class="w-100">Подробнее</b-button>
+          <b-button :to="'events/' + event.id" variant="primary" class="w-100">Подробнее</b-button>
         </b-col>
         <b-col cols="12" md="auto">
           <b-button variant="outline-primary" class="w-100">Хочу пойти</b-button>
         </b-col>
-        <!--
-        <b-col cols="12" md="auto mr-auto" class="order-md-2">
-          <b-button variant="link" class="w-100 text-danger">Не могу пойти</b-button>
-        </b-col>
-        -->
       </b-row>
     </div>
   </div>
@@ -96,7 +90,10 @@ enum State {
   }
 })
 export default class EventItemComponent extends Vue {
-  @Prop() eventParams?: Event;
+  DATE_FORMAT: string = "DD.MM.YYYY HH:mm";
+  TIME_FORMAT: string = "HH:mm";
+
+  @Prop() event?: Event;
 
   dateHovered: boolean = false;
 
@@ -122,10 +119,38 @@ export default class EventItemComponent extends Vue {
     }
   }
 
+  get beginTime(): string {
+    if (!this.event || !this.event.beginTime) {
+      return "";
+    }
+
+    return moment(this.event.beginTime).format(this.DATE_FORMAT);
+  }
+
+  get beginTimeCalendar(): string {
+    if (!this.event || !this.event.beginTime) {
+      return "";
+    }
+
+    return moment(this.event.beginTime).calendar();
+  }
+
+  get beginTimeShort(): string {
+    if (!this.event || !this.event.beginTime) {
+      return "";
+    }
+
+    return moment(this.event.beginTime).format(this.TIME_FORMAT);
+  }
+
   get duration(): string {
-    const beginTime = this.eventParams && this.eventParams.beginTime;
-    const endTime = this.eventParams && this.eventParams.endTime;
-    return moment.duration(moment(beginTime).diff(endTime)).humanize();
+    if (!this.event || !this.event.totalDurationInMinutes) {
+      return "";
+    }
+
+    return moment
+      .duration(this.event && this.event.totalDurationInMinutes, "minutes")
+      .humanize();
   }
 }
 </script>
