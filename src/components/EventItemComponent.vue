@@ -93,7 +93,7 @@ export default class EventItemComponent extends Vue {
   DATE_FORMAT: string = "DD.MM.YYYY HH:mm";
   TIME_FORMAT: string = "HH:mm";
 
-  @Prop() event?: Event;
+  @Prop() event!: Event;
 
   dateHovered: boolean = false;
 
@@ -120,7 +120,7 @@ export default class EventItemComponent extends Vue {
   }
 
   get beginTime(): string {
-    if (!this.event || !this.event.beginTime) {
+    if (!this.event.beginTime) {
       return "";
     }
 
@@ -128,7 +128,7 @@ export default class EventItemComponent extends Vue {
   }
 
   get beginTimeCalendar(): string {
-    if (!this.event || !this.event.beginTime) {
+    if (!this.event.beginTime) {
       return "";
     }
 
@@ -136,7 +136,7 @@ export default class EventItemComponent extends Vue {
   }
 
   get beginTimeShort(): string {
-    if (!this.event || !this.event.beginTime) {
+    if (!this.event.beginTime) {
       return "";
     }
 
@@ -144,12 +144,12 @@ export default class EventItemComponent extends Vue {
   }
 
   get duration(): string {
-    if (!this.event || !this.event.totalDurationInMinutes) {
+    if (!this.event.totalDurationInMinutes) {
       return "";
     }
 
     return moment
-      .duration(this.event && this.event.totalDurationInMinutes, "minutes")
+      .duration(this.event.totalDurationInMinutes, "minutes")
       .humanize();
   }
 }

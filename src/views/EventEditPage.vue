@@ -41,9 +41,9 @@
                 </b-form-textarea>
               </b-form-group>
 
-              <b-form-group id="event-address-group" label="Кол-во участников" label-for="participants-count-input">
-                <b-form-input id="participants-count-input" type="number" v-model.trim="event.neededParticipantsCount">
-                </b-form-input>
+              <b-form-group id="event-shifts-group" label="Смены" label-for="shifts-input">
+                <event-shifts-component v-model="eventShifts">
+                </event-shifts-component>
               </b-form-group>
 
               <b-form-row>
@@ -79,7 +79,8 @@ import {
   Event,
   EventDefault,
   EventType,
-  EventTypeDefault
+  EventTypeDefault,
+  EventShift
 } from "@/store/modules/events/types";
 
 enum State {
@@ -110,6 +111,7 @@ export default class EventEditPage extends Vue {
   /////////////////////
 
   event: Event = new EventDefault();
+  eventShifts: EventShift[] = [];
   eventTypeSelected: EventType = new EventTypeDefault();
 
   // Component methods //
@@ -137,6 +139,14 @@ export default class EventEditPage extends Vue {
   onSubmitEvent() {
     if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
+      this.event.shifts = this.eventShifts;
+      this.event.shifts.forEach(shift => {
+        shift.places.forEach(place => {
+          if (place.id == "") {
+            delete place.id;
+          }
+        })
+      })
       this.event.eventTypeId = this.eventTypeSelected.id;
 
       this.$store
@@ -163,6 +173,7 @@ export default class EventEditPage extends Vue {
 
   setEvent(event: Event) {
     this.event = event;
+    this.eventShifts = event.shifts || [];
     this.eventTypeSelected = event.eventType
       ? event.eventType
       : new EventTypeDefault();
