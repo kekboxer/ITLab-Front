@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-type-selection-component">
-    <autocomplete-input-component :stringify="onStringifyEquipmentType" :fetch="onChangeEquipmentType" :add="showEquipmentTypeModal" v-model="equipmentTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -28,7 +28,7 @@
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="equipmentTypeModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitEquipmentType">Подтвердить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmit">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -94,11 +94,11 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringifyEquipmentType(equipmentType: EquipmentType) {
+  onStringify(equipmentType: EquipmentType) {
     return equipmentType.title;
   }
 
-  onChangeEquipmentType(title: string, cb: Function) {
+  onChange(title: string, cb: Function) {
     this.fetchEquipmentTypes(title, false).then(equipmentTypes => {
       cb(equipmentTypes as EquipmentType[]);
     });
@@ -126,7 +126,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   // Modal window methods //
   /////////////////////////
 
-  onSubmitEquipmentType() {
+  onSubmit() {
     this.equipmentTypeModalState = State.InProcess;
     axios
       .post("EquipmentType", {
@@ -149,7 +149,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
       });
   }
 
-  showEquipmentTypeModal(search: string) {
+  showModal(search: string) {
     this.equipmentTypeModalData.title = search;
     this.equipmentTypeModalShow = true;
   }

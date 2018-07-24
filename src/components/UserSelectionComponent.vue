@@ -35,22 +35,11 @@ export default class UserSelectionComponent extends Vue {
   ///////////////
 
   userSelected: User = new UserDefault();
-  users: User[] = [];
 
   // Component mthods //
   /////////////////////
 
   mounted() {
-    axios
-      .get("user")
-      .then(result => {
-        const body = result && result.data;
-        this.users = body && body.data;
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
     this.$watch("value", (value?: User) => {
       this.userSelected = value ? value : new UserDefault();
     });
@@ -77,19 +66,20 @@ export default class UserSelectionComponent extends Vue {
 
   fetchUsers(match: string = "", all: boolean = true) {
     return new Promise((resolve, reject) => {
-      let counter = 0;
-
-      resolve(
-        this.users.filter(v => {
-          const condition =
-            v.email.toLowerCase().indexOf(match.toLowerCase()) != -1;
-          if (condition && !all) {
-            counter++;
+      axios
+        .get(`user?count=${all ? 0 : 5}&email=${match}`)
+        .then(response => {
+          const body = response.data;
+          if (body.statusCode == 1) {
+            const users: User[] = body.data;
+            resolve(users);
+          } else {
+            reject();
           }
-
-          return condition && counter < 5;
         })
-      );
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 }

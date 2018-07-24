@@ -160,6 +160,8 @@ export default class EventShiftsComponent extends Vue {
         padding: 0.375rem 0.75rem;
 
         .text {
+          @extend .noselect;
+
           line-height: 31px;
           margin-left: 15px;
         }
