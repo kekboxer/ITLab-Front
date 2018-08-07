@@ -95,7 +95,7 @@ export const processingAgreementPageRoute = <RouteConfig>{
   border: 1px solid rgba(0, 0, 0, 0.125);
 
   @include theme-specific() {
-    background-color: getstyle(auth-card-background-color);
+    background-color: getstyle(form-card-background-color);
   }
 }
 </style>

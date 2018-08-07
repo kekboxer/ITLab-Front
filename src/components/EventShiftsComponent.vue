@@ -6,7 +6,7 @@
       <b>{{ getShiftEndTime(shift) }}</b> ({{ getShiftDuration(shift) }})
       <hr>
       <draggable :list="shift.places" :options="{handle:'.drag-handle'}">
-        <div v-for="(place, placeIndex) in shift.places" :key="`place-${placeIndex}`" class="place">
+        <div v-for="(place, placeIndex) in shift.places" :key="`place-${placeIndex}`" class="place" v-if="!place.delete">
           <div class="place-title drag-handle">
             <b-row>
               <b-col cols="auto mr-auto" class="text">
@@ -29,7 +29,7 @@
           </div>
         </div>
       </draggable>
-      <b-button variant="outline-success" class="mb-2 w-100" v-bind:class="{ 'mt-2': shift.places.length != 0 }" @click="onAddPlace(shift)">Добавить место</b-button>
+      <b-button variant="outline-success" class="mb-2 w-100" v-bind:class="{ 'mt-2': shift.places.filter(p => !p.delete).length != 0 }" @click="onAddPlace(shift)">Добавить место</b-button>
     </div>
   </div>
 </template>
@@ -88,7 +88,9 @@ export default class EventShiftsComponent extends Vue {
   }
 
   onRemovePlace(shift: EventShift, placeIndex: number) {
-    shift.places.splice(placeIndex, 1);
+    const place = shift.places[placeIndex];
+    place.delete = true;
+    Vue.set(shift.places, placeIndex, place);
     this.onInput();
   }
 

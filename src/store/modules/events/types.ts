@@ -52,6 +52,8 @@ export interface EventPlace {
 
   equipment: Equipment[]
   users: EventParticipant[]
+
+  delete?: boolean
 }
 
 export class EventPlaceDefault implements EventPlace {
