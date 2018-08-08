@@ -12,7 +12,7 @@
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <b-row v-if="!isNewEvent">
-          <b-col v-bind:title="'Это временно'">
+          <b-col>
             ID:
             <span style="font-family: monospace">{{ event.id }}</span>
             <hr>
@@ -42,7 +42,7 @@
               </b-form-group>
 
               <b-form-group id="event-shifts-group" label="Смены" label-for="shifts-input">
-                <event-shifts-component v-model="eventShifts">
+                <event-shifts-component v-model="eventShifts" :editable="true">
                 </event-shifts-component>
               </b-form-group>
 
@@ -69,7 +69,6 @@ import { RouteConfig } from "vue-router";
 import moment from "moment-timezone";
 import axios from "axios";
 
-import DatePicker from "vue2-datepicker";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
@@ -91,7 +90,6 @@ enum State {
 
 @Component({
   components: {
-    "date-picker": DatePicker,
     "loading-stub-component": LoadingStubComponent,
     "event-shifts-component": EventShiftsComponent,
     "event-type-selection-component": EventTypeSelectionComponent
@@ -141,12 +139,16 @@ export default class EventEditPage extends Vue {
       this.pageState = State.InProcess;
       this.event.shifts = this.eventShifts;
       this.event.shifts.forEach(shift => {
+        if (shift.id == "") {
+          delete shift.id;
+        }
+
         shift.places.forEach(place => {
           if (place.id == "") {
             delete place.id;
           }
-        })
-      })
+        });
+      });
       this.event.eventTypeId = this.eventTypeSelected.id;
 
       this.$store

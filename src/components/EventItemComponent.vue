@@ -6,7 +6,7 @@
         <b-col cols="auto mr-auto" @mouseup="checkDateHover">
           <strong style="line-height: 31px">
             <span>
-              <icon name="clock" style="position: relative; bottom: -2px"></icon>
+              <icon name="clock" style="position: relative; top: -2px"></icon>
             </span>
             <span class="date desktop">
               <span v-if="dateHovered">{{ beginTime }}</span>

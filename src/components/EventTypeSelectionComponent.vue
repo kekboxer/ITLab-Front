@@ -102,7 +102,7 @@ export default class EventTypeSelectionComponent extends Vue {
   fetchEventTypes(match: string = "", all: boolean = true) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`EventType?all=${all}&match=${match}`)
+        .get(`EventType?all=${all}&match=${encodeURIComponent(match)}`)
         .then(response => {
           const body = response.data;
           if (body.statusCode == 1) {

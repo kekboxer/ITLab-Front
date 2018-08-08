@@ -5,7 +5,7 @@
       <input type="text" v-model="searchString" @input="onInput" @blur="onBlur" class="form-control">
       <b-input-group-append v-if="canClear">
         <b-btn :disabled="!searchString" @click="onClear">
-          <icon name="times" style="position: relative; bottom: -3px;"></icon>
+          <icon name="times" style="position: relative; top: -2px;"></icon>
         </b-btn>
       </b-input-group-append>
     </b-input-group>

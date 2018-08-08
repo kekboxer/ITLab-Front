@@ -72,13 +72,15 @@ export interface EventShift {
   beginTime: Date
   endTime: Date
   places: EventPlace[]
+
+  delete?: boolean
 }
 
 export class EventShiftDefault implements EventShift {
   id: string = ""
   beginTime: Date = new Date(0)
   endTime: Date = new Date(0)
-  places: EventPlace[] = []
+  places: EventPlace[] = [new EventPlaceDefault()]
 }
 
 // Event //
@@ -107,6 +109,8 @@ export class EventDefault implements Event {
   title: string = ""
   description: string = ""
   address: string = ""
+
+  shifts: EventShift[] = [new EventShiftDefault()]
 }
 
 // State //

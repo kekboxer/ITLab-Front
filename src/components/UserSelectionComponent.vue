@@ -67,7 +67,7 @@ export default class UserSelectionComponent extends Vue {
   fetchUsers(match: string = "", all: boolean = true) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`user?count=${all ? 0 : 5}&email=${match}`)
+        .get(`user?count=${all ? 0 : 5}&email=${encodeURIComponent(match)}`)
         .then(response => {
           const body = response.data;
           if (body.statusCode == 1) {

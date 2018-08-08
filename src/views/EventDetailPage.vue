@@ -39,7 +39,8 @@
             <hr>
             <b-row>
               <b-col>
-                <span style="font-family: monospace; font-size: 1.2em">//NOTE: Здесь будет таблица со сменами и оборудованием</span>
+                <event-shifts-component v-model="event.shifts" :editable="false">
+                </event-shifts-component>
               </b-col>
             </b-row>
           </b-col>
@@ -58,13 +59,15 @@ import { RouteConfig, Route } from "vue-router";
 import moment from "moment-timezone";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 
 import { EVENTS_FETCH_ONE } from "@/store/actions/events";
 import { Event, EventDefault } from "@/store/modules/events/types";
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    "loading-stub-component": LoadingStubComponent,
+    "event-shifts-component": EventShiftsComponent
   }
 })
 export default class EventDetailPage extends Vue {

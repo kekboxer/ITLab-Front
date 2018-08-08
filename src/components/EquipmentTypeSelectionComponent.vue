@@ -107,7 +107,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   fetchEquipmentTypes(match: string = "", all: boolean) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`EquipmentType?all=${all}&match=${match}`)
+        .get(`EquipmentType?all=${all}&match=${encodeURIComponent(match)}`)
         .then(response => {
           const body = response.data;
           if (body.statusCode == 1) {
