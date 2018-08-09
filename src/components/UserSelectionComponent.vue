@@ -3,7 +3,7 @@
   <div class="user-selection-component">
     <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
-        <b>{{ data.item.email}}</b><br> {{ data.item.firstName }} {{ data.item.lastName }}
+        <b>{{ data.item.email}}</b><br>{{ data.item.firstName }} {{ data.item.lastName }}
       </div>
     </autocomplete-input-component>
   </div>
@@ -67,7 +67,7 @@ export default class UserSelectionComponent extends Vue {
   fetchUsers(match: string = "", all: boolean = true) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`user?count=${all ? 0 : 5}&email=${encodeURIComponent(match)}`)
+        .get(`user?count=${all ? 0 : 5}&match=${encodeURIComponent(match)}`)
         .then(response => {
           const body = response.data;
           if (body.statusCode == 1) {

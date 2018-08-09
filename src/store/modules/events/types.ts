@@ -1,4 +1,5 @@
-import { Equipment } from "@/store/modules/equipment/types";
+import { Equipment, EquipmentDefault } from "@/store/modules/equipment/types";
+import { User, UserDefault } from "@/store/modules/profile/types";
 
 // EventType //
 //////////////
@@ -34,13 +35,22 @@ export class EventUserRoleDefault implements EventUserRole {
 /////////////////////
 
 export interface EventParticipant {
-  userId: string
+  user: User
   role: EventUserRole
+
+  delete?: boolean
 }
 
 export class EventParticipantDefault implements EventParticipant {
-  userId: string = ""
+  user: User = new UserDefault
   role: EventUserRole = new EventUserRoleDefault
+}
+
+// EventEquipment //
+///////////////////
+
+export interface EventEquipment extends Equipment {
+  delete?: boolean
 }
 
 // EventPlace //
@@ -50,8 +60,8 @@ export interface EventPlace {
   id: string
   targetParticipantsCount: number
 
-  equipment: Equipment[]
-  users: EventParticipant[]
+  equipment: EventEquipment[]
+  participants: EventParticipant[]
 
   delete?: boolean
 }
@@ -60,8 +70,8 @@ export class EventPlaceDefault implements EventPlace {
   id: string = ""
   targetParticipantsCount: number = 0
 
-  equipment: Equipment[] = []
-  users: EventParticipant[] = []
+  equipment: EventEquipment[] = []
+  participants: EventParticipant[] = []
 }
 
 // EventShift //

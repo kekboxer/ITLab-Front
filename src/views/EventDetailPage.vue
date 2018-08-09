@@ -45,6 +45,7 @@
             </b-row>
           </b-col>
         </b-row>
+        <br>
       </div>
     </b-container>
   </div>

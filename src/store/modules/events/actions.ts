@@ -13,21 +13,21 @@ const DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 const fixDates = (event: Event) => {
   if (event.shifts) {
     event.shifts.forEach(shift => {
-       shift.beginTime = moment(shift.beginTime, DATETIME_FORMAT + "Z").toDate();
-       shift.endTime = moment(shift.endTime, DATETIME_FORMAT + "Z").toDate();
+      shift.beginTime = moment(shift.beginTime, DATETIME_FORMAT + "Z").toDate();
+      shift.endTime = moment(shift.endTime, DATETIME_FORMAT + "Z").toDate();
     })
   }
 }
 
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, [dateBegin, dateEnd]: [Date | undefined, Date | undefined]) => {
+  [EVENTS_FETCH_ALL]: ({ commit, dispatch }, range: { dateBegin: Date | undefined, dateEnd: Date | undefined } | undefined) => {
     return new Promise((resolve, reject) => {
       let url: string = "event/";
-      if (dateBegin || dateEnd) {
+      if (range && (range.dateBegin || range.dateEnd)) {
         url += "?";
-        if (dateBegin) url += `begin=${moment(dateBegin).utc().format(DATETIME_FORMAT)}`;
-        if (dateBegin && dateEnd) url += "&";
-        if (dateEnd) url += `end=${moment(dateEnd).utc().format(DATETIME_FORMAT)}`;
+        if (range.dateBegin) url += `begin=${moment(range.dateBegin).utc().format(DATETIME_FORMAT)}`;
+        if (range.dateBegin && range.dateEnd) url += "&";
+        if (range.dateEnd) url += `end=${moment(range.dateEnd).utc().format(DATETIME_FORMAT)}`;
       }
 
       axios.get(url).then((response) => {

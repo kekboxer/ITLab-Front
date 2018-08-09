@@ -223,10 +223,10 @@ export default class EquipmentEditPage extends Vue {
 
     const assignEquipment = () => {
       return this.$store
-        .dispatch(PROFILE_ASSIGN_EQUIPMENT, [
-          this.equipment,
-          this.equipmentOwnerModalData
-        ])
+        .dispatch(PROFILE_ASSIGN_EQUIPMENT, {
+          equipment: this.equipment,
+          owner: this.equipmentOwnerModalData
+        })
         .then((equipment: Equipment) => {
           onSuccess();
         })
@@ -238,10 +238,10 @@ export default class EquipmentEditPage extends Vue {
 
     if (this.equipment.ownerId) {
       this.$store
-        .dispatch(PROFILE_REMOVE_EQUIPMENT, [
-          this.equipment,
-          this.equipment.ownerId
-        ])
+        .dispatch(PROFILE_REMOVE_EQUIPMENT, {
+          equipment: this.equipment,
+          owner: this.equipment.ownerId
+        })
         .then((equipment: Equipment) => {
           if (this.equipmentOwnerModalData) {
             assignEquipment();

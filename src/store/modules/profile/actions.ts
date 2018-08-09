@@ -27,7 +27,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     })
   },
 
-  [PROFILE_ASSIGN_EQUIPMENT]: ({ commit, dispatch }, [equipment, user]: [Equipment, User | string | null]) => {
+  [PROFILE_ASSIGN_EQUIPMENT]: ({ commit, dispatch }, { equipment, user }: { equipment: Equipment, user: User | string | null }) => {
     return new Promise((resolve, reject) => {
       let url: string = "Equipment/user";
       if (user) {
@@ -44,7 +44,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
         .then(result => {
           const body = result && result.data;
           const equipment: Equipment = body && body.data;
-          
+
           resolve(equipment);
         })
         .catch(err => {
@@ -54,15 +54,15 @@ export const actions: ActionTree<ProfileState, RootState> = {
     });
   },
 
-  [PROFILE_REMOVE_EQUIPMENT]: ({ commit, dispatch }, [equipment, user]: [Equipment, User | string | null]) => {
+  [PROFILE_REMOVE_EQUIPMENT]: ({ commit, dispatch }, { equipment, owner }: { equipment: Equipment, owner: User | string | null }) => {
     return new Promise((resolve, reject) => {
       let url: string = "Equipment/user";
-      if (user) {
-        if (typeof user === "string") {
-          url += `/${user as string}`;
+      if (owner) {
+        if (typeof owner === "string") {
+          url += `/${owner as string}`;
         }
-        else if ("id" in (user as any)) {
-          url += `/${(user as any).id}`;
+        else if ("id" in (owner as any)) {
+          url += `/${(owner as any).id}`;
         }
       }
 

@@ -88,6 +88,36 @@ enum State {
   Error
 }
 
+const deepCopy = (obj: any): any => {
+  let copy: any;
+
+  if (null == obj || "object" != typeof obj) return obj;
+
+  if (obj instanceof Date) {
+    copy = new Date();
+    copy.setTime(obj.getTime());
+    return copy;
+  }
+
+  if (obj instanceof Array) {
+    copy = [];
+    for (var i = 0, len = obj.length; i < len; i++) {
+      copy[i] = deepCopy(obj[i]);
+    }
+    return copy;
+  }
+
+  if (obj instanceof Object) {
+    copy = {};
+    for (var attr in obj) {
+      if (obj.hasOwnProperty(attr)) copy[attr] = deepCopy(obj[attr]);
+    }
+    return copy;
+  }
+
+  throw new Error("Unable to copy object! Its type isn't supported.");
+};
+
 @Component({
   components: {
     "loading-stub-component": LoadingStubComponent,
@@ -137,22 +167,48 @@ export default class EventEditPage extends Vue {
   onSubmitEvent() {
     if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
+
+      // assign all edited data
       this.event.shifts = this.eventShifts;
-      this.event.shifts.forEach(shift => {
+      this.event.eventTypeId = this.eventTypeSelected.id;
+
+      // create result data
+      const resultEvent = deepCopy(this.event);
+
+      resultEvent.shifts.forEach((shift: any) => {
         if (shift.id == "") {
           delete shift.id;
         }
 
-        shift.places.forEach(place => {
+        shift.places.forEach((place: any) => {
           if (place.id == "") {
             delete place.id;
           }
+
+          place.participants.forEach(
+            (participant: any, i: number, arr: any[]) => {
+              arr[i] = {
+                id: participant.user.id,
+                roleId: participant.role.id,
+                delete: participant.delete
+              };
+            }
+          );
+
+          place.equipment.forEach((equipment: any, i: number, arr: any[]) => {
+            arr[i] = {
+              id: equipment.id,
+              delete: equipment.delete
+            };
+          });
         });
       });
-      this.event.eventTypeId = this.eventTypeSelected.id;
+
+      console.log(JSON.stringify(resultEvent, undefined, 4));
+      console.log(JSON.stringify(this.event, undefined, 4));
 
       this.$store
-        .dispatch(EVENTS_COMMIT_ONE, this.event)
+        .dispatch(EVENTS_COMMIT_ONE, resultEvent)
         .then(event => {
           this.setEvent(event);
 

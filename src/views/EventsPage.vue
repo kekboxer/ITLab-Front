@@ -74,9 +74,9 @@ export default class EventsPage extends Vue {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
 
     this.$store
-      .dispatch(EVENTS_FETCH_ALL, [
-        this.eventsShowPast ? undefined : this.currentDate
-      ])
+      .dispatch(EVENTS_FETCH_ALL, {
+        eventBegin: this.eventsShowPast ? undefined : this.currentDate
+      })
       .then(result => {
         this.loadingInProcess = false;
       })
@@ -86,7 +86,7 @@ export default class EventsPage extends Vue {
   togglePastEvents() {
     if (!this.pastEventsLoaded && !this.eventsShowPast) {
       this.$store
-        .dispatch(EVENTS_FETCH_ALL, [])
+        .dispatch(EVENTS_FETCH_ALL, {})
         .then(result => {})
         .catch(result => {});
       this.pastEventsLoaded = true;
