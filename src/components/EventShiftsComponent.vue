@@ -78,7 +78,8 @@
           <!--</draggable>-->
         </b-col>
       </b-row>
-      <b-button variant="outline-success" class="w-100" v-bind:class="{ 'mt-2': shift.places.filter(p=> !p.delete).length != 0 }" @click="onAddPlace(shift)" v-if="editable">Добавить место</b-button>
+      <b-button variant="outline-success" class="w-100 mt-2 theme-light-only" @click="onAddPlace(shift)" v-if="editable">Добавить место</b-button>
+      <b-button variant="success" class="w-100 mt-2 theme-dark-only" @click="onAddPlace(shift)" v-if="editable">Добавить место</b-button>
     </div>
 
     <b-row>
@@ -573,6 +574,12 @@ export default class EventShiftsComponent extends Vue {
 
       .place-data {
         padding: 0.375rem 0.75rem;
+
+        .list-group-item {
+          @include theme-specific() {
+            background-color: getstyle(event-shifts-card-items-background);
+          }
+        }
 
         .list-group-item:hover,
         .list-group-item:focus {

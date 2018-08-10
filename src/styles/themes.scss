@@ -50,7 +50,8 @@ $themes: (
     event-list-item-success-state-color: $success,
 
     event-shifts-card-title-font-color: getcolor(black, dark),
-    event-shifts-card-title-background: getcolor(white, base)
+    event-shifts-card-title-background: getcolor(white, base),
+    event-shifts-card-items-background: getcolor(white, lighter)
   ),
 
   theme-dark: (
@@ -79,12 +80,32 @@ $themes: (
     event-list-item-success-state-color: $success,
 
     event-shifts-card-title-font-color: getcolor(white, light),
-    event-shifts-card-title-background: getcolor(white, dark)
+    event-shifts-card-title-background: getcolor(white, dark),
+    event-shifts-card-items-background: getcolor(white, light)
   )
 );
 
 $theme: "";
 $theme_map: map-get($themes, theme-light);
+
+// Theme specific classes
+@each $current_theme, $current_theme_map in $themes {
+  .#{$current_theme}-hidden {
+    .#{$current_theme} & {
+      display: none;
+    }
+  }
+
+  .#{$current_theme}-only {
+    @each $other_theme, $other_theme_map in $themes {
+      @if $current_theme != $other_theme {
+        .#{$other_theme} & {
+          display: none;
+        }
+      }
+    }
+  }
+}
 
 @mixin theme-specific() {
   @each $current, $current_map in $themes {
