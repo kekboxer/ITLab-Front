@@ -204,9 +204,6 @@ export default class EventEditPage extends Vue {
         });
       });
 
-      console.log(JSON.stringify(resultEvent, undefined, 4));
-      console.log(JSON.stringify(this.event, undefined, 4));
-
       this.$store
         .dispatch(EVENTS_COMMIT_ONE, resultEvent)
         .then(event => {

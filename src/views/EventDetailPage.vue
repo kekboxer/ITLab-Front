@@ -26,9 +26,9 @@
               </b-col>
               <b-col cols="12" md="4">
                 <div style="font-size: 1.2em">
-                  <b>Начало:</b> {{ event.beginTime | moment("DD.MM.YYYY HH:mm") }}<br>
-                  <!--<b>Конец:&nbsp;&nbsp;</b> {{ event.endTime | moment("DD.MM.YYYY HH:mm") }}<br>-->
-                  <template v-if="showElapsed">
+                  <b>Начало:</b> {{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}<br>
+                  <b>Конец:&nbsp;&nbsp;</b> {{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}<br>
+                  <template v-if="showElapsed && elapsedTime">
                     (До события {{ elapsedTime }})<br>
                   </template>
                   <br>
@@ -72,6 +72,8 @@ import { Event, EventDefault } from "@/store/modules/events/types";
   }
 })
 export default class EventDetailPage extends Vue {
+  DATE_FORMAT: string = "DD.MM.YYYY HH:mm";
+
   loadingInProcess: boolean = false;
   event: Event = new EventDefault();
 
@@ -89,14 +91,46 @@ export default class EventDetailPage extends Vue {
   }
 
   get showElapsed(): boolean {
+    if (!this.eventRange.beginTime) return false;
+
     return (
-      this.event.beginTime != undefined && new Date() < this.event.beginTime
+      this.eventRange.beginTime && new Date() < this.eventRange.beginTime
     );
   }
 
-  get elapsedTime() {
-    const ms = moment(new Date()).diff(moment(this.event.beginTime));
+  get elapsedTime(): string | null {
+    if (!this.eventRange.beginTime) return null;
+
+    const ms = moment(new Date()).diff(moment(this.eventRange.beginTime));
     return moment.duration(ms).humanize();
+  }
+
+  get eventRange(): { beginTime: Date | null; endTime: Date | null } {
+    const shifts = this.event.shifts;
+    if (!shifts || shifts.length == 0)
+      return { beginTime: null, endTime: null };
+
+    const result: { beginTime: Date; endTime: Date } = {
+      beginTime: shifts[0].beginTime,
+      endTime: shifts[0].endTime
+    };
+
+    if (shifts.length > 1) {
+      shifts.map(shift => {
+        if (shift.beginTime < result.beginTime) {
+          result.beginTime = shift.beginTime;
+        }
+        if (shift.endTime > result.endTime) {
+          result.endTime = shift.endTime;
+        }
+      });
+    }
+
+    return result;
+  }
+
+  formatDate(date: Date): string {
+    return moment(date).format(this.DATE_FORMAT);
   }
 }
 

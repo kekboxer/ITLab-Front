@@ -355,7 +355,9 @@ export default class EventShiftsComponent extends Vue {
   showShiftModal(shiftIndex: number | undefined) {
     let newState: ModalState;
 
-    if (shiftIndex) {
+    console.log(shiftIndex);
+
+    if (shiftIndex != null) {
       if (!this.value) return;
 
       const shift = this.value[shiftIndex];
