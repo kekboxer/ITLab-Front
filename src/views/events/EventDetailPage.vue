@@ -67,17 +67,17 @@ import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig, Route } from "vue-router";
 import moment from "moment-timezone";
 
+import VueMarkdown from "vue-markdown";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
-import VueMarkdown from "vue-markdown";
 
 import { Event, EventDefault, EVENTS_FETCH_ONE } from "@/store/modules/events";
 
 @Component({
   components: {
+    "vue-markdown": VueMarkdown,
     "loading-stub-component": LoadingStubComponent,
-    "event-shifts-component": EventShiftsComponent,
-    "vue-markdown": VueMarkdown
+    "event-shifts-component": EventShiftsComponent
   }
 })
 export default class EventDetailPage extends Vue {

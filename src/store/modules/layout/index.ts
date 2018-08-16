@@ -11,25 +11,17 @@ export * from "./types"
 // used pages
 
 // @ts-ignore
-import { loginPageRoute } from "@/views/LoginPage.vue";
+import { loginPageRoute, registrationPageRoute, processingAgreementPageRoute } from "@/views/authorization";
 // @ts-ignore
-import { registrationPageRoute } from "@/views/RegistrationPage.vue";
+import { notificationsPage } from "@/views/notifications";
 // @ts-ignore
-import { processingAgreementPageRoute } from "@/views/ProcessingAgreementPage.vue";
+import { eventsPageRoute, eventEditPageRoute, eventDetailPage } from "@/views/events";
 // @ts-ignore
-import { eventsPageRoute } from "@/views/EventsPage.vue";
+import { equipmentPageRoute, equipmentEditPageRoute } from "@/views/equipment";
 // @ts-ignore
-import { eventDetailPage } from "@/views/EventDetailPage.vue";
+import { projectsPageRoute } from "@/views/projects";
 // @ts-ignore
-import { eventEditPageRoute } from "@/views/EventEditPage.vue";
-// @ts-ignore
-import { equipmentPageRoute } from "@/views/EquipmentPage.vue";
-// @ts-ignore
-import { equipmentEditPageRoute } from "@/views/EquipmentEditPage.vue";
-// @ts-ignore
-import { projectsPageRoute } from "@/views/ProjectsPage.vue";
-// @ts-ignore
-import { profileSettingsPageRoute } from "@/views/ProfileSettingsPage.vue";
+import { profileSettingsPageRoute } from "@/views/profile";
 
 
 export const state: LayoutState = {
@@ -42,6 +34,13 @@ export const state: LayoutState = {
       name: "general",
       title: "Общее",
       sections: [{
+        name: "notifications",
+        title: "Уведомления",
+        homeURL: "/notifications",
+        pages: [
+          notificationsPage
+        ]
+      }, {
         name: "events",
         title: "События",
         homeURL: "/events",
