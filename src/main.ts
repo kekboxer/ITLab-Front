@@ -41,7 +41,7 @@ axios.interceptors.response.use((response) => {
   if (body.statusCode != 1) {
     if (body.statusCode == 12) {
       store.dispatch(PROFILE_LOGOUT);
-      router.replace({ name: "LoginPage" });
+      //router.replace({ name: "LoginPage" });
     }
     else {
       throw { error: body }
@@ -49,7 +49,12 @@ axios.interceptors.response.use((response) => {
   }
   return response;
 }, (error) => {
-  return Promise.reject(error);
+  return new Promise((resolve, reject) => {
+    if (error.status === 401 && error.config && !error.config.__isRetryRequest) {
+      store.dispatch(PROFILE_LOGOUT);
+    }
+    throw error;
+  });
 });
 
 // Initialize router
@@ -63,7 +68,7 @@ router.beforeEach((to, from, next) => {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else {
-      next({ name: "LoginPage" });
+      next({ name: "LoginPage", params: { to: to.path } });
     }
   } else {
     next();

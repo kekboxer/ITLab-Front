@@ -81,7 +81,12 @@ export default class LoginPage extends Vue {
       .dispatch(PROFILE_LOGIN, this.authorizationData)
       .then(result => {
         this.authorizationData = new AuthorizationDataDefault();
-        this.$router.push("events");
+
+        if (this.$route.params && this.$route.params.to) {
+          this.$router.push(this.$route.params.to);
+        } else {
+          this.$router.push("events");
+        }
 
         this.pageState = State.Default;
       })
