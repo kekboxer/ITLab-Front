@@ -40,7 +40,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill" v-b-tooltip.hover title="Подтверждённый">{{ participant.role.name }}</span><br> {{ participant.user.email}}
+                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br> {{ participant.user.email}}
                         </b-col>
                         <b-col cols="auto" v-if="editable">
                           <div class="remove-button" @click="removePlaceParticipant(place.participants, participantIndex)">
@@ -55,7 +55,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill" v-b-tooltip.hover title="Не подтверждённый">{{ participant.role.name }}</span><br> {{ participant.user.email}}
+                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br> {{ participant.user.email}}
                         </b-col>
                         <b-col cols="auto" v-if="editable">
                           <div class="remove-button" @click="removePlaceParticipant(place.invited, participantIndex)">
@@ -204,6 +204,11 @@ enum ModalState {
 export default class EventShiftsComponent extends Vue {
   DATE_FORMAT = "DD.MM.YYYY HH:mm";
   TIME_FORMAT = "HH:mm";
+
+  ROLE_TRANSLATIONS: Map<string, string> = new Map<string, string>([
+    ["Participant", "Участник"],
+    ["Organizer", "Организатор"]
+  ]);
 
   // v-model //
   ////////////
@@ -509,10 +514,7 @@ export default class EventShiftsComponent extends Vue {
   ///////////////////////////////
 
   onAddPlaceParticipant(place: EventPlace) {
-    if (
-      !this.placeParticipantData.user ||
-      !this.placeParticipantData.role
-    ) {
+    if (!this.placeParticipantData.user || !this.placeParticipantData.role) {
       return;
     }
 
@@ -524,7 +526,10 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  removePlaceParticipant(participantsGroup: EventParticipant[], participantIndex: number) {
+  removePlaceParticipant(
+    participantsGroup: EventParticipant[],
+    participantIndex: number
+  ) {
     const participant = participantsGroup[participantIndex];
     participant.delete = true;
     Vue.set(participantsGroup, participantIndex, participant);
@@ -605,6 +610,10 @@ export default class EventShiftsComponent extends Vue {
           else return 0;
         })
       : [];
+  }
+
+  getRoleTranslation(role: EventUserRole): string {
+    return this.ROLE_TRANSLATIONS.get(role.name) || role.name;
   }
 
   // Stuff

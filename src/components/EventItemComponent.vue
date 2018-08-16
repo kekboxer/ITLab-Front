@@ -27,7 +27,7 @@
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
           <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
-          <p>{{ event.address }}</p>
+          <!--<p>{{ event.address }}</p>-->
         </b-col>
         <b-col md="4">
           <b-row>
@@ -52,7 +52,7 @@
           </b-row>
         </b-col>
       </b-row>
-      <b-row class="mt-2 buttons">
+      <b-row class="mt-2">
         <b-col cols="12" md="auto">
           <b-button :to="'events/' + event.id" variant="primary" class="w-100">Подробнее</b-button>
         </b-col>
@@ -216,16 +216,6 @@ export default class EventItemComponent extends Vue {
         background-color: darken($warning, 7.5%);
         border-color: darken($warning, 10%);
       }
-    }
-  }
-
-  @include media-breakpoint-down(sm) {
-    .buttons > div {
-      margin-bottom: 0.5rem;
-    }
-
-    .buttons > div:last-child {
-      margin-bottom: 0;
     }
   }
 

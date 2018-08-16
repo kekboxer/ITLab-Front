@@ -7,6 +7,8 @@ import {
   EVENTS_GET_ONE
 } from "./types"
 
+import moment from "moment-timezone";
+
 export const getters: GetterTree<EventsState, RootState> = {
   [EVENTS_GET_ALL]: (state) => {
     return ({ beginTime, endTime, invert = false }: { beginTime?: Date, endTime?: Date, invert: boolean }) => {

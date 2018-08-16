@@ -19,19 +19,29 @@
             <hr>
 
             <b-row>
-              <b-col cols="12" md="8" style="font-size: 1.1em">
+              <b-col cols="12" md="8" class="order-2 order-md-1 markdown">
                 <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
               </b-col>
-              <b-col cols="12" md="4">
-                <div style="font-size: 1.2em">
-                  <b>Начало:</b> {{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}<br>
-                  <b>Конец:&nbsp;&nbsp;</b> {{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}<br>
-                  <template v-if="showElapsed && elapsedTime">
-                    (До события {{ elapsedTime }})<br>
-                  </template>
-                  <br>
-                  <b>Адрес:</b><br> {{ event.address }}
-                </div>
+              <b-col cols="12" md="4" class="order-1 order-md-1">
+                <b-row>
+                  <b-col cols="3">
+                    <b>Начало:</b>
+                  </b-col>
+                  <b-col cols="9">{{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}</b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="3">
+                    <b>Конец:</b>
+                  </b-col>
+                  <b-col cols="9">{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
+                </b-row>
+
+                <template v-if="showElapsed && elapsedTime">
+                  (До события {{ elapsedTime }})<br>
+                </template>
+                <br>
+                <b>Адрес:</b><br> {{ event.address }}
+                <hr class="d-block d-md-none">
               </b-col>
             </b-row>
             <hr>

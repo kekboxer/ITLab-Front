@@ -20,6 +20,10 @@ import {
 const DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 
 const fixDates = (event: Event) => {
+  if (event.beginTime) {
+    event.beginTime = moment(event.beginTime, DATETIME_FORMAT + "Z").toDate();
+  }
+  
   if (event.shifts) {
     event.shifts.forEach(shift => {
       shift.beginTime = moment(shift.beginTime, DATETIME_FORMAT + "Z").toDate();
