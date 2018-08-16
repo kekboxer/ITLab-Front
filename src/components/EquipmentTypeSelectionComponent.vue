@@ -52,7 +52,7 @@ import {
 
 enum ModalState {
   Hidden,
-  Edit,
+  Editing,
   InProcess,
   Error
 }
@@ -135,7 +135,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
 
   showModal(search: string) {
     this.modalData.title = search;
-    this.modalState = ModalState.Edit;
+    this.modalState = ModalState.Editing;
   }
 
   get isModalInProcess(): boolean {

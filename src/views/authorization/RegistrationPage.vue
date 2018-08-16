@@ -12,6 +12,8 @@
               </b-col>
             </b-row>
 
+            {{ registrationData.email }}
+
             <b-form-group id="first-name-input-group" label="Имя" label-for="first-name-input">
               <b-form-input id="first-name-input" type="text" v-model.trim="registrationData.firstName" :state="!$v.registrationData.firstName.$invalid" required>
               </b-form-input>
@@ -19,11 +21,6 @@
 
             <b-form-group id="last-name-input-group" label="Фамилия" label-for="last-name-input">
               <b-form-input id="last-name-input" type="text" v-model.trim="registrationData.lastName" :state="!$v.registrationData.lastName.$invalid" required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group id="email-input-group" label="Почта" label-for="email-input">
-              <b-form-input id="email-input" type="email" v-model.trim="registrationData.email" :state="!$v.registrationData.email.$invalid" required>
               </b-form-input>
             </b-form-group>
 

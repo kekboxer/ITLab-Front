@@ -102,7 +102,7 @@ import {
   EQUIPMENT_GET_ALL
 } from "@/store/modules/equipment";
 
-import { User } from "@/store/modules/users";
+import { User, USERS_FETCH_ALL } from "@/store/modules/users";
 
 @Component({
   components: {
@@ -119,12 +119,10 @@ export default class EquipmentPage extends Vue {
   beforeMount() {
     this.loadingInProcess = this.$store.getters[EQUIPMENT_GET_ALL].length == 0;
 
-    axios
-      .get("user")
-      .then(result => {
-        const body = result && result.data;
-        this.users = body.data;
-
+    this.$store
+      .dispatch(USERS_FETCH_ALL)
+      .then((users: User[]) => {
+        this.users = users;
         return this.$store.dispatch(EQUIPMENT_FETCH_ALL);
       })
       .then(result => {
