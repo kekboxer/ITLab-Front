@@ -33,7 +33,7 @@
           <b-row>
             <b-col>
               Готовность:
-              <b-progress class="w-100 mb-2" height="2rem" :max="100">
+              <b-progress class="w-100 mb-2" height="2rem" :max="1">
                 <b-progress-bar :value="completeness"></b-progress-bar>
               </b-progress>
             </b-col>
