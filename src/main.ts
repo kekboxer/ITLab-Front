@@ -20,7 +20,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import VueNotifications from "vue-notification"
 
 // Router
-import Router, { Route, RawLocation, RouteConfig } from "vue-router";
+import Router from "vue-router";
 import { PROFILE_LOGOUT, PROFILE_AUTHORIZED } from "@/store/modules/profile";
 import { LAYOUT_PAGES_GET } from "@/store/modules/layout";
 
@@ -33,7 +33,9 @@ import moment from "moment-timezone";
 moment.tz.setDefault("Europe/Moscow");
 
 // Initialize axios
-axios.defaults.baseURL = "https://labworkback.azurewebsites.net/api/";
+//@ts-ignore
+axios.defaults.baseURL = process.env.API_URL;
+console.log(axios.defaults.baseURL);
 axios.defaults.headers.post['Content-Type'] = "application/json";
 
 axios.interceptors.response.use((response) => {

@@ -22,7 +22,8 @@ import { equipmentPageRoute, equipmentEditPageRoute } from "@/views/equipment";
 import { projectsPageRoute } from "@/views/projects";
 // @ts-ignore
 import { profileSettingsPageRoute } from "@/views/profile";
-
+//@ts-ignore
+import { usersPage } from "@/views/system";
 
 export const state: LayoutState = {
   stuff: [
@@ -60,6 +61,18 @@ export const state: LayoutState = {
         homeURL: "/projects",
         pages: [
           projectsPageRoute
+        ]
+      }]
+    },
+    {
+      name: "system",
+      title: "Система",
+      sections: [{
+        name: "users",
+        title: "Пользователи",
+        homeURL: "/users",
+        pages: [
+          usersPage
         ]
       }]
     },

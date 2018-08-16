@@ -6,6 +6,8 @@ import {
   UsersState,
   User,
   USER_SEARCH,
+  USERS_FETCH_ALL,
+  USERS_FETCH_ONE,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT
 } from "./types"
@@ -26,6 +28,26 @@ export const actions: ActionTree<UsersState, RootState> = {
       });
     });
   },
+/*
+  [USERS_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios.get("user").then((response) => {
+        const body = response && response.data
+        const data: Equipment[] = body.data
+
+        commit(EQUIPMENT_SET_ALL, data);
+        resolve(data);
+      }).catch(error => {
+        console.log(EQUIPMENT_FETCH_ALL, error);
+        reject(error);
+      })
+    })
+  },
+
+  [USERS_FETCH_ONE]: ({ commit }) => {
+
+  },
+  */
 
   [USER_ASSIGN_EQUIPMENT]: ({ }, { equipment, user }: { equipment: Equipment, user: User | string | null }) => {
     return new Promise((resolve, reject) => {
