@@ -43,6 +43,11 @@
                     </div>
                   </b-tab>
                 </b-tabs>
+                <div class="w-100" align="right">
+                  <small>
+                    <a target="_blank" href="https://guides.github.com/features/mastering-markdown">Markdown guide</a>
+                  </small>
+                </div>
               </b-form-group>
 
               <b-form-group id="event-address-group" label="Адрес" label-for="address-input">

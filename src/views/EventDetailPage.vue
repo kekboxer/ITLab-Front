@@ -21,8 +21,6 @@
             <b-row>
               <b-col cols="12" md="8" style="font-size: 1.1em">
                 <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
-                <br>
-                <br>
               </b-col>
               <b-col cols="12" md="4">
                 <div style="font-size: 1.2em">
