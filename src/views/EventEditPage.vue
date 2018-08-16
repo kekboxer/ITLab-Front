@@ -32,8 +32,17 @@
               </b-form-group>
 
               <b-form-group id="event-description-group" label="Описание" label-for="description-input">
-                <b-form-textarea id="description-input" :rows="3" :max-rows="6" v-model="event.description">
-                </b-form-textarea>
+                <b-tabs>
+                  <b-tab title="Markdown" active>
+                    <b-form-textarea id="description-input" style="font-family: monospace; resize: none" :rows="countRows(event.description, 3)" :max-rows="20" v-model="event.description">
+                    </b-form-textarea>
+                  </b-tab>
+                  <b-tab title="Просмотр">
+                    <div class="markdown-preview">
+                      <vue-markdown :source="event.description"></vue-markdown>
+                    </div>
+                  </b-tab>
+                </b-tabs>
               </b-form-group>
 
               <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
@@ -69,6 +78,7 @@ import { RouteConfig } from "vue-router";
 import moment from "moment-timezone";
 import axios from "axios";
 
+import VueMarkdown from "vue-markdown";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
@@ -91,6 +101,7 @@ enum State {
 
 @Component({
   components: {
+    "vue-markdown": VueMarkdown,
     "loading-stub-component": LoadingStubComponent,
     "event-shifts-component": EventShiftsComponent,
     "event-type-selection-component": EventTypeSelectionComponent
@@ -176,6 +187,11 @@ export default class EventEditPage extends Vue {
   get isPageInProcess(): boolean {
     return this.pageState == State.InProcess;
   }
+
+  countRows(str: string, minValue: number = 0): number {
+    const count = str.split(/\r\n|\r|\n/).length;
+    return count < minValue ? minValue : count;
+  }
 }
 
 export const eventEditPageRoute = <RouteConfig>{
@@ -195,6 +211,36 @@ export const eventEditPageRoute = <RouteConfig>{
   .mx-input-append {
     @include theme-specific() {
       background-color: getstyle(form-control-background-color);
+    }
+  }
+
+  .tabs {
+    .nav.nav-tabs {
+      border-bottom: 0;
+
+      .nav-item .nav-link {
+        border-bottom: 0;
+
+        &:not(.active) {
+          @include theme-specific {
+            color: getstyle(page-font-color);
+          }
+        }
+      }
+    }
+
+    .form-control {
+      border-top-left-radius: 0;
+    }
+  }
+
+  .markdown-preview {
+    @extend .form-control;
+
+    height: auto;
+
+    *:last-of-type {
+      margin-bottom: 0;
     }
   }
 }

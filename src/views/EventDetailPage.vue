@@ -20,7 +20,7 @@
 
             <b-row>
               <b-col cols="12" md="8" style="font-size: 1.1em">
-                {{ event.description }}
+                <vue-markdown :source="event.description"></vue-markdown>
                 <br>
                 <br>
               </b-col>
@@ -61,13 +61,15 @@ import moment from "moment-timezone";
 
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
+import VueMarkdown from "vue-markdown";
 
 import { Event, EventDefault, EVENTS_FETCH_ONE } from "@/store/modules/events";
 
 @Component({
   components: {
     "loading-stub-component": LoadingStubComponent,
-    "event-shifts-component": EventShiftsComponent
+    "event-shifts-component": EventShiftsComponent,
+    "vue-markdown": VueMarkdown
   }
 })
 export default class EventDetailPage extends Vue {

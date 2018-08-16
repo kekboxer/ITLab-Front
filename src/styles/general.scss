@@ -1,57 +1,47 @@
 @import "@/styles/themes.scss";
-
-
 /* Input field with autocomplete */
+
 .autocomplete-input {
   position: relative;
-
   .results {
     position: absolute;
     width: 100%;
     z-index: 1;
     padding: 0;
     margin: 0;
-
     .result-item {
       list-style: none;
       text-align: left;
       padding: 4px 10px;
       cursor: pointer;
     }
-
     .result-item:hover {
       background-color: $primary;
       color: white;
     }
-
     .add-item {
       list-style: none;
       text-align: left;
       padding: 4px 10px;
       cursor: pointer;
       border-top: 1px solid getcolor(white, base);
-      
       border-bottom-left-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
     }
-
     .add-item:hover {
       @include theme-specific() {
         background-color: darken(getstyle(form-control-background-color), 10%);
       }
     }
-
     border: 1px solid;
     border-bottom-left-radius: 0.25rem;
     border-bottom-right-radius: 0.25rem;
-
     @include theme-specific() {
       border-color: darken(getstyle(form-control-background-color), 10%);
       background-color: white;
       color: #495057;
     }
   }
-
   &.hide-results {
     .autocomplete-results {
       display: none;
@@ -60,19 +50,43 @@
 }
 
 /* Theme adaptive form control */
+
 .form-control {
   @include theme-specific() {
     background-color: getstyle(form-control-background-color);
   }
 }
 
-.table th, .table td {
+.nav.nav-tabs .nav-item {
+  margin-bottom: 0;
+
+  .nav-link {
+    @include theme-specific() {
+      background-color: getstyle(page-background-color);
+    }
+    &.active {
+      @include theme-specific() {
+        background-color: getstyle(form-control-background-color);
+      }
+    }
+  }
+}
+
+.table th,
+.table td {
   @include theme-specific() {
     border-color: getstyle(table-border-color);
   }
 }
 
+/* Bootstrap fix */
+
+.nav-tabs {
+  outline: none;
+}
+
 /* Usefull stuff */
+
 .noselect {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -90,14 +104,11 @@
   padding-bottom: 10px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0;
-
   @include media-breakpoint-down(sm) {
     border: Default;
   }
-
   @include theme-specific() {
     background-color: getstyle(form-card-background-color);
-
     .logo {
       fill: getstyle(auth-logo-color);
     }
