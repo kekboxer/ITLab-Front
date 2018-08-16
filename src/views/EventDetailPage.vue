@@ -62,8 +62,7 @@ import moment from "moment-timezone";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 
-import { EVENTS_FETCH_ONE } from "@/store/actions/events";
-import { Event, EventDefault } from "@/store/modules/events/types";
+import { Event, EventDefault, EVENTS_FETCH_ONE } from "@/store/modules/events";
 
 @Component({
   components: {
@@ -93,9 +92,7 @@ export default class EventDetailPage extends Vue {
   get showElapsed(): boolean {
     if (!this.eventRange.beginTime) return false;
 
-    return (
-      this.eventRange.beginTime && new Date() < this.eventRange.beginTime
-    );
+    return this.eventRange.beginTime && new Date() < this.eventRange.beginTime;
   }
 
   get elapsedTime(): string | null {

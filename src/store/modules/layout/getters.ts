@@ -1,7 +1,11 @@
 import { GetterTree } from "vuex"
-import { LayoutState } from "./types"
 import { RootState } from "@/store/types"
-import { LAYOUT_PAGES_GET, LAYOUT_GROUPS_GET } from "@/store/actions/layout"
+
+import {
+  LayoutState,
+  LAYOUT_PAGES_GET,
+  LAYOUT_GROUPS_GET
+} from "./types"
 
 export const getters: GetterTree<LayoutState, RootState> = {
   [LAYOUT_PAGES_GET]: (state) => {

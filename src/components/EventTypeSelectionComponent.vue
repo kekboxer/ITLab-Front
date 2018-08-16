@@ -11,24 +11,24 @@
       </template>
     </autocomplete-input-component>
 
-    <b-modal v-model="eventTypeModalShow">
+    <b-modal v-model="modalVisible">
       <template slot="modal-title">
         Новый тип события
       </template>
 
       <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="eventTypeModalData.title">
+        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title">
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
-        <b-form-input id="type-description-input" type="text" v-model.trim="eventTypeModalData.description">
+        <b-form-input id="type-description-input" type="text" v-model.trim="modalData.description">
         </b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="eventTypeModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmit">Подтвердить</button>
+        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -43,10 +43,16 @@ import axios from "axios";
 
 import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
-import { EventType, EventTypeDefault } from "@/store/modules/events/types";
+import {
+  EventType,
+  EventTypeDefault,
+  EVENT_TYPE_SEARCH,
+  EVENT_TYPE_COMMIT
+} from "@/store/modules/events";
 
-enum State {
-  Default,
+enum ModalState {
+  Hidden,
+  Edit,
   InProcess,
   Error
 }
@@ -67,9 +73,8 @@ export default class EventTypeSelectionComponent extends Vue {
 
   eventTypeSelected: EventType = new EventTypeDefault();
 
-  eventTypeModalShow: boolean = false;
-  eventTypeModalData: EventType = new EventTypeDefault();
-  eventTypeModalState: State = State.Default;
+  modalData: EventType = new EventTypeDefault();
+  modalState: ModalState = ModalState.Hidden;
 
   // Component methods //
   //////////////////////
@@ -94,63 +99,45 @@ export default class EventTypeSelectionComponent extends Vue {
   }
 
   onChange(input: string, cb: Function) {
-    this.fetchEventTypes(input, false).then(eventTypes => {
-      cb(eventTypes as EventType[]);
-    });
-  }
-
-  fetchEventTypes(match: string = "", all: boolean = true) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`EventType?all=${all}&match=${encodeURIComponent(match)}`)
-        .then(response => {
-          const body = response.data;
-          if (body.statusCode == 1) {
-            const eventTypes: EventType[] = body.data;
-            resolve(eventTypes);
-          } else {
-            reject();
-          }
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    this.$store
+      .dispatch(EVENT_TYPE_SEARCH, { match: input })
+      .then((eventTypes: EventType[]) => {
+        cb(eventTypes);
+      });
   }
 
   // Modal window methods //
   /////////////////////////
 
-  onSubmit() {
-    this.eventTypeModalState = State.InProcess;
-    axios
-      .post("EventType", {
-        title: this.eventTypeModalData.title,
-        description: this.eventTypeModalData.description
-      })
-      .then(response => {
-        const body = response.data;
-        this.eventTypeSelected = body.data as EventType;
+  get modalVisible(): boolean {
+    return this.modalState != ModalState.Hidden;
+  }
+  set modalVisible(show: boolean) {
+    if (!show) {
+      this.modalState = ModalState.Hidden;
+    }
+  }
+
+  onSubmitModal() {
+    this.modalState = ModalState.InProcess;
+    this.$store
+      .dispatch(EVENT_TYPE_COMMIT, this.modalData)
+      .then((eventType: EventType) => {
+        this.eventTypeSelected = eventType;
         this.onInput();
 
-        this.eventTypeModalState = State.Default;
-        this.eventTypeModalShow = false;
-
-        this.eventTypeModalData = new EventTypeDefault();
-      })
-      .catch(error => {
-        console.log(error);
-        this.eventTypeModalState = State.Error;
+        this.modalState = ModalState.Hidden;
+        this.modalData = new EventTypeDefault();
       });
   }
 
   showModal(search: string) {
-    this.eventTypeModalData.title = search;
-    this.eventTypeModalShow = true;
+    this.modalData.title = search;
+    this.modalState = ModalState.Edit;
   }
 
   get isModalInProcess(): boolean {
-    return this.eventTypeModalState == State.InProcess;
+    return this.modalState == ModalState.InProcess;
   }
 }
 </script>

@@ -1,9 +1,12 @@
 import { Module } from "vuex"
-import { getters } from "./getters"
-import { actions } from "./actions"
-import { mutations } from "./mutations"
-import { EquipmentState, Equipment } from "./types"
 import { RootState } from "@/store/types"
+
+import { actions } from "./actions"
+import { getters } from "./getters"
+import { mutations } from "./mutations"
+import { EquipmentState } from "./types"
+
+export * from "./types";
 
 export const state: EquipmentState = {
   equipment: []

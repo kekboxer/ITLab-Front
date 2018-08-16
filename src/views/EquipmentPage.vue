@@ -95,12 +95,14 @@ import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import Icon from "vue-awesome/components/Icon";
 import "vue-awesome/icons/times";
 
-import { Equipment, EquipmentType } from "@/store/modules/equipment/types";
 import {
+  Equipment,
+  EquipmentType,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_GET_ALL
-} from "@/store/actions/equipment";
-import { User } from "@/store/modules/profile/types";
+} from "@/store/modules/equipment";
+
+import { User } from "@/store/modules/users";
 
 @Component({
   components: {

@@ -21,8 +21,8 @@ import VueNotifications from "vue-notification"
 
 // Router
 import Router, { Route, RawLocation, RouteConfig } from "vue-router";
-import { AUTH_LOGOUT } from "@/store/actions/authorization";
-import { LAYOUT_PAGES_GET } from "@/store/actions/layout";
+import { PROFILE_LOGOUT, PROFILE_AUTHORIZED } from "@/store/modules/profile";
+import { LAYOUT_PAGES_GET } from "@/store/modules/layout";
 
 import store from "./store";
 
@@ -40,7 +40,7 @@ axios.interceptors.response.use((response) => {
   const body = response.data;
   if (body.statusCode != 1) {
     if (body.statusCode == 12) {
-      store.dispatch(AUTH_LOGOUT);
+      store.dispatch(PROFILE_LOGOUT);
       router.replace({ name: "LoginPage" });
     }
     else {
@@ -60,7 +60,7 @@ const router: Router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.secure !== false)) {
-    if (store.getters.isAuthenticated) {
+    if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else {
       next({ name: "LoginPage" });

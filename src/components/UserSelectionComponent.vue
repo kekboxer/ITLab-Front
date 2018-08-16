@@ -18,7 +18,7 @@ import axios from "axios";
 
 import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
-import { User, UserDefault } from "@/store/modules/profile/types";
+import { User, UserDefault, USER_SEARCH } from "@/store/modules/users";
 
 @Component({
   components: {
@@ -59,28 +59,11 @@ export default class UserSelectionComponent extends Vue {
   }
 
   onChange(input: string, cb: Function) {
-    this.fetchUsers(input, false).then(users => {
-      cb(users as User[]);
-    });
-  }
-
-  fetchUsers(match: string = "", all: boolean = true) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`user?count=${all ? 0 : 5}&match=${encodeURIComponent(match)}`)
-        .then(response => {
-          const body = response.data;
-          if (body.statusCode == 1) {
-            const users: User[] = body.data;
-            resolve(users);
-          } else {
-            reject();
-          }
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    this.$store
+      .dispatch(USER_SEARCH, { match: input })
+      .then((users: User[]) => {
+        cb(users);
+      });
   }
 }
 </script>

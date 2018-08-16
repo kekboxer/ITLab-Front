@@ -1,10 +1,18 @@
 import { GetterTree } from "vuex"
-import { ProfileState, User } from "./types"
 import { RootState } from "@/store/types"
-import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile"
+
+import {
+  ProfileState,
+  PROFILE_AUTHORIZED,
+  PROFILE_SETTINGS_THEME_GET
+} from "./types"
 
 export const getters: GetterTree<ProfileState, RootState> = {
-  [SETTINGS_DARK_THEME_GET]: (state) => {
+  [PROFILE_AUTHORIZED]: (state) => {
+    return state.authToken != undefined
+  },
+
+  [PROFILE_SETTINGS_THEME_GET]: (state) => {
     return state.settings.theme;
   }
 }

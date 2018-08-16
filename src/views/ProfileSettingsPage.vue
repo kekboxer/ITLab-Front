@@ -30,18 +30,18 @@ import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
 
 import {
-  SETTINGS_DARK_THEME_SET,
-  SETTINGS_DARK_THEME_GET
-} from "@/store/actions/profile";
+  PROFILE_SETTINGS_THEME_SET,
+  PROFILE_SETTINGS_THEME_GET
+} from "@/store/modules/profile";
 
 @Component
 export default class ProfileSettingsPage extends Vue {
   set theme(themeName: string) {
-    this.$store.commit(SETTINGS_DARK_THEME_SET, themeName);
+    this.$store.commit(PROFILE_SETTINGS_THEME_SET, themeName);
   }
 
   get theme(): string {
-    return this.$store.getters[SETTINGS_DARK_THEME_GET];
+    return this.$store.getters[PROFILE_SETTINGS_THEME_GET];
   }
 
   get themes() {

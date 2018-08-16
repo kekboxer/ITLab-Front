@@ -73,50 +73,21 @@ import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
 import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
 
-import { EVENTS_FETCH_ONE, EVENTS_COMMIT_ONE } from "@/store/actions/events";
 import {
   Event,
   EventDefault,
   EventType,
   EventTypeDefault,
-  EventShift
-} from "@/store/modules/events/types";
+  EventShift,
+  EVENTS_FETCH_ONE,
+  EVENT_COMMIT
+} from "@/store/modules/events";
 
 enum State {
   Default,
   InProcess,
   Error
 }
-
-const deepCopy = (obj: any): any => {
-  let copy: any;
-
-  if (null == obj || "object" != typeof obj) return obj;
-
-  if (obj instanceof Date) {
-    copy = new Date();
-    copy.setTime(obj.getTime());
-    return copy;
-  }
-
-  if (obj instanceof Array) {
-    copy = [];
-    for (var i = 0, len = obj.length; i < len; i++) {
-      copy[i] = deepCopy(obj[i]);
-    }
-    return copy;
-  }
-
-  if (obj instanceof Object) {
-    copy = {};
-    for (var attr in obj) {
-      if (obj.hasOwnProperty(attr)) copy[attr] = deepCopy(obj[attr]);
-    }
-    return copy;
-  }
-
-  throw new Error("Unable to copy object! Its type isn't supported.");
-};
 
 @Component({
   components: {
@@ -172,40 +143,8 @@ export default class EventEditPage extends Vue {
       this.event.shifts = this.eventShifts;
       this.event.eventTypeId = this.eventTypeSelected.id;
 
-      // create result data
-      const resultEvent = deepCopy(this.event);
-
-      resultEvent.shifts.forEach((shift: any) => {
-        if (shift.id == "") {
-          delete shift.id;
-        }
-
-        shift.places.forEach((place: any) => {
-          if (place.id == "") {
-            delete place.id;
-          }
-
-          place.participants.forEach(
-            (participant: any, i: number, arr: any[]) => {
-              arr[i] = {
-                id: participant.user.id,
-                roleId: participant.role.id,
-                delete: participant.delete
-              };
-            }
-          );
-
-          place.equipment.forEach((equipment: any, i: number, arr: any[]) => {
-            arr[i] = {
-              id: equipment.id,
-              delete: equipment.delete
-            };
-          });
-        });
-      });
-
       this.$store
-        .dispatch(EVENTS_COMMIT_ONE, resultEvent)
+        .dispatch(EVENT_COMMIT, this.event)
         .then(event => {
           this.setEvent(event);
 

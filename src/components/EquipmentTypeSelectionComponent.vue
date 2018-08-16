@@ -11,24 +11,24 @@
       </template>
     </autocomplete-input-component>
 
-    <b-modal v-model="equipmentTypeModalShow">
+    <b-modal v-model="modalVisible">
       <template slot="modal-title">
         Новый тип оборудования
       </template>
 
       <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="equipmentTypeModalData.title">
+        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title">
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
-        <b-form-input id="type-description-input" type="text" v-model.trim="equipmentTypeModalData.description">
+        <b-form-input id="type-description-input" type="text" v-model.trim="modalData.description">
         </b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="equipmentTypeModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmit">Подтвердить</button>
+        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -45,11 +45,14 @@ import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.
 
 import {
   EquipmentType,
-  EquipmentTypeDefault
-} from "@/store/modules/equipment/types";
+  EquipmentTypeDefault,
+  EQUIPMENT_TYPE_SEARCH,
+  EQUIPMENT_TYPE_COMMIT
+} from "@/store/modules/equipment";
 
-enum State {
-  Default,
+enum ModalState {
+  Hidden,
+  Edit,
   InProcess,
   Error
 }
@@ -70,9 +73,8 @@ export default class EquipmentTypeSelectionComponent extends Vue {
 
   equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
 
-  equipmentTypeModalShow: boolean = false;
-  equipmentTypeModalData: EquipmentType = new EquipmentTypeDefault();
-  equipmentTypeModalState: State = State.Default;
+  modalState: ModalState = ModalState.Hidden;
+  modalData: EquipmentType = new EquipmentTypeDefault();
 
   // Component methods //
   //////////////////////
@@ -99,63 +101,45 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   }
 
   onChange(title: string, cb: Function) {
-    this.fetchEquipmentTypes(title, false).then(equipmentTypes => {
-      cb(equipmentTypes as EquipmentType[]);
-    });
-  }
-
-  fetchEquipmentTypes(match: string = "", all: boolean) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`EquipmentType?all=${all}&match=${encodeURIComponent(match)}`)
-        .then(response => {
-          const body = response.data;
-          if (body.statusCode == 1) {
-            const equipmentTypes: EquipmentType[] = body.data;
-            resolve(equipmentTypes);
-          } else {
-            reject();
-          }
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    this.$store
+      .dispatch(EQUIPMENT_TYPE_SEARCH, { match: title })
+      .then((equipmentTypes: EquipmentType[]) => {
+        cb(equipmentTypes);
+      });
   }
 
   // Modal window methods //
   /////////////////////////
 
-  onSubmit() {
-    this.equipmentTypeModalState = State.InProcess;
-    axios
-      .post("EquipmentType", {
-        title: this.equipmentTypeModalData.title,
-        description: this.equipmentTypeModalData.description
-      })
-      .then(response => {
-        const body = response.data;
-        this.equipmentTypeSelected = body.data as EquipmentType;
+  get modalVisible(): boolean {
+    return this.modalState != ModalState.Hidden;
+  }
+  set modalVisible(show: boolean) {
+    if (!show) {
+      this.modalState = ModalState.Hidden;
+    }
+  }
+
+  onSubmitModal() {
+    this.modalState = ModalState.InProcess;
+    this.$store
+      .dispatch(EQUIPMENT_TYPE_COMMIT, this.modalData)
+      .then((equipmentType: EquipmentType) => {
+        this.equipmentTypeSelected = equipmentType;
         this.onInput();
 
-        this.equipmentTypeModalState = State.Default;
-        this.equipmentTypeModalShow = false;
-
-        this.equipmentTypeModalData = new EquipmentTypeDefault();
-      })
-      .catch(error => {
-        console.log(error);
-        this.equipmentTypeModalState = State.Error;
+        this.modalState = ModalState.Hidden;
+        this.modalData = new EquipmentTypeDefault();
       });
   }
 
   showModal(search: string) {
-    this.equipmentTypeModalData.title = search;
-    this.equipmentTypeModalShow = true;
+    this.modalData.title = search;
+    this.modalState = ModalState.Edit;
   }
 
   get isModalInProcess(): boolean {
-    return this.equipmentTypeModalState == State.InProcess;
+    return this.modalState == ModalState.InProcess;
   }
 }
 </script>

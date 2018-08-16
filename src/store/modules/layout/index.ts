@@ -1,25 +1,34 @@
 import { Module } from "vuex"
-import { getters } from "./getters"
-import { actions } from "./actions"
-import { mutations } from "./mutations"
-import { LayoutState } from "./types"
 import { RootState } from "@/store/types"
 
+import { actions } from "./actions"
+import { getters } from "./getters"
+import { mutations } from "./mutations"
+import { LayoutState } from "./types"
+
+export * from "./types"
+
 // used pages
+
+// @ts-ignore
 import { loginPageRoute } from "@/views/LoginPage.vue";
+// @ts-ignore
 import { registrationPageRoute } from "@/views/RegistrationPage.vue";
-
+// @ts-ignore
 import { processingAgreementPageRoute } from "@/views/ProcessingAgreementPage.vue";
-
+// @ts-ignore
 import { eventsPageRoute } from "@/views/EventsPage.vue";
+// @ts-ignore
 import { eventDetailPage } from "@/views/EventDetailPage.vue";
+// @ts-ignore
 import { eventEditPageRoute } from "@/views/EventEditPage.vue";
-
+// @ts-ignore
 import { equipmentPageRoute } from "@/views/EquipmentPage.vue";
+// @ts-ignore
 import { equipmentEditPageRoute } from "@/views/EquipmentEditPage.vue";
-
+// @ts-ignore
 import { projectsPageRoute } from "@/views/ProjectsPage.vue";
-
+// @ts-ignore
 import { profileSettingsPageRoute } from "@/views/ProfileSettingsPage.vue";
 
 

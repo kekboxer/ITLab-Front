@@ -37,10 +37,9 @@
 import { Component, Vue } from "vue-property-decorator";
 import Hammer from "hammerjs";
 
-import { AUTH_LOGOUT } from "@/store/actions/authorization";
-import { SYSTEM_NAME } from "@/store/actions/global";
-import { LAYOUT_GROUPS_GET } from "@/store/actions/layout";
-import { Group } from "@/store/modules/layout/types";
+import { SYSTEM_NAME } from "@/store";
+import { Group, LAYOUT_GROUPS_GET } from "@/store/modules/layout";
+import { PROFILE_LOGOUT } from "@/store/modules/profile";
 
 import "@/icons/bars";
 
@@ -74,7 +73,7 @@ export default class SidebarComponent extends Vue {
   }
 
   logout() {
-    this.$store.dispatch(AUTH_LOGOUT).then(result => {
+    this.$store.dispatch(PROFILE_LOGOUT).then(result => {
       this.$router.push({ name: "LoginPage" });
     });
   }

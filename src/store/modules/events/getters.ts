@@ -1,19 +1,18 @@
 import { GetterTree } from "vuex"
-import { EventsState } from "./types"
 import { RootState } from "@/store/types"
-import { EVENTS_GET_ALL, EVENTS_GET_ONE } from "@/store/actions/events";
+
+import {
+  EventsState,
+  EVENTS_GET_ALL,
+  EVENTS_GET_ONE
+} from "./types"
 
 export const getters: GetterTree<EventsState, RootState> = {
-  [EVENTS_GET_ALL]: (state, getters: any) => {
-    return (dateBegin?: Date, dateEnd?: Date, invert: boolean = false) => {
+  [EVENTS_GET_ALL]: (state) => {
+    return ({ beginTime, endTime, invert = false }: { beginTime?: Date, endTime?: Date, invert: boolean }) => {
       return state.events.filter((event) => {
-        /*
-        const condition = (dateBegin == undefined || event.endTime > dateBegin) &&
-          (dateEnd == undefined || event.beginTime < dateEnd);
-        */
 
-        const condition = (dateBegin == undefined || event.beginTime && event.beginTime > dateBegin) /* &&
-          (dateEnd == undefined || event.endTime < dateEnd);*/
+        const condition = (beginTime == undefined || event.beginTime && event.beginTime > beginTime)
 
         if (invert) {
           return !condition;
@@ -24,7 +23,7 @@ export const getters: GetterTree<EventsState, RootState> = {
       });
     }
   },
-  [EVENTS_GET_ONE]: (state, getters: any) => {
+  [EVENTS_GET_ONE]: (state) => {
     return (id: string) => {
       return state.events.find(v => v.id == id);
     }

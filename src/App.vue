@@ -21,7 +21,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import SidebarComponent from "@/components/SidebarComponent.vue";
-import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile";
+import { PROFILE_SETTINGS_THEME_GET } from "@/store/modules/profile";
 
 @Component({
   components: {
@@ -30,7 +30,7 @@ import { SETTINGS_DARK_THEME_GET } from "@/store/actions/profile";
 })
 export default class App extends Vue {
   get theme() {
-    const themeName = this.$store.getters[SETTINGS_DARK_THEME_GET];
+    const themeName = this.$store.getters[PROFILE_SETTINGS_THEME_GET];
     return "theme-" + themeName;
   }
 }

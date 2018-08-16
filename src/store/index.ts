@@ -1,14 +1,14 @@
 import Vue from "vue"
 import Vuex, { StoreOptions } from "vuex"
-import { RootState } from "./types"
+import { RootState, SYSTEM_NAME } from "./types"
 
-import { authorization } from "./modules/authorization"
-import { profile } from "./modules/profile"
+import { equipment } from "./modules/equipment"
 import { events } from "./modules/events"
 import { layout } from "./modules/layout"
-import { equipment } from "./modules/equipment"
+import { profile } from "./modules/profile"
+import { users } from "./modules/users"
 
-import { SYSTEM_NAME } from "./actions/global"
+export * from "./types"
 
 Vue.use(Vuex)
 
@@ -18,11 +18,11 @@ const state: RootState = {
 
 const store: StoreOptions<RootState> = {
   modules: {
-    authorization,
-    profile,
-    events,
     equipment,
-    layout
+    events,
+    layout,
+    profile,
+    users
   },
   state,
 

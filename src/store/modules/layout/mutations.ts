@@ -1,5 +1,8 @@
 import { MutationTree } from "vuex"
-import { LayoutState } from "./types"
+
+import {
+  LayoutState
+} from "./types"
 
 export const mutations: MutationTree<LayoutState> = {
 }

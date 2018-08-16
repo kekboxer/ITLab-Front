@@ -52,9 +52,12 @@ import axios from "axios";
 import EventItemComponent from "@/components/EventItemComponent.vue";
 import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
 
-import { Event, EventType } from "@/store/modules/events/types";
-import { EVENTS_FETCH_ALL, EVENTS_GET_ALL } from "@/store/actions/events";
-import { Getter } from "vuex-class/lib/bindings";
+import {
+  Event,
+  EventType,
+  EVENTS_FETCH_ALL,
+  EVENTS_GET_ALL
+} from "@/store/modules/events";
 
 @Component({
   components: {
@@ -86,7 +89,7 @@ export default class EventsPage extends Vue {
   togglePastEvents() {
     if (!this.pastEventsLoaded && !this.eventsShowPast) {
       this.$store
-        .dispatch(EVENTS_FETCH_ALL, {})
+        .dispatch(EVENTS_FETCH_ALL)
         .then(result => {})
         .catch(result => {});
       this.pastEventsLoaded = true;
@@ -96,15 +99,16 @@ export default class EventsPage extends Vue {
   }
 
   get eventsCurrent() {
-    return this.$store.getters[EVENTS_GET_ALL](this.currentDate);
+    return this.$store.getters[EVENTS_GET_ALL]({
+      beginTime: this.currentDate
+    });
   }
 
   get eventsPast() {
-    return this.$store.getters[EVENTS_GET_ALL](
-      this.currentDate,
-      undefined,
-      true
-    );
+    return this.$store.getters[EVENTS_GET_ALL]({
+      beginTime: this.currentDate,
+      invert: true
+    });
   }
 }
 

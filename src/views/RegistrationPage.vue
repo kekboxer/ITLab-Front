@@ -78,11 +78,11 @@ import {
   numeric
 } from "vuelidate/lib/validators";
 
-import { PROFILE_CREATE } from "@/store/actions/profile";
 import {
   RegistrationData,
-  RegistrationDataDefault
-} from "@/store/modules/profile/types";
+  RegistrationDataDefault,
+  PROFILE_CREATE
+} from "@/store/modules/profile";
 
 enum State {
   Default,

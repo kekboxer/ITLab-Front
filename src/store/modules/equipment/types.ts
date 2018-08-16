@@ -1,3 +1,19 @@
+// actions
+export const EQUIPMENT_SEARCH = "EQUIPMENT_SEARCH"
+export const EQUIPMENT_TYPE_SEARCH = "EQUIPMENT_TYPE_SEARCH"
+export const EQUIPMENT_FETCH_ALL = "EQUIPMENT_FETCH_ALL"
+export const EQUIPMENT_FETCH_ONE = "EQUIPMENT_FETCH_ONE"
+export const EQUIPMENT_COMMIT = "EQUIPMENT_COMMIT"
+export const EQUIPMENT_TYPE_COMMIT = "EQUIPMENT_TYPE_COMMIT";
+
+// setters
+export const EQUIPMENT_SET_ALL = "EQUIPMENT_SET_ALL"
+export const EQUIPMENT_SET_ONE = "EQUIPMENT_SET_ONE"
+
+// getters
+export const EQUIPMENT_GET_ALL = "EQUIPMENT_GET_ALL"
+export const EQUIPMENT_GET_ONE = "EQUIPMENT_GET_ONE"
+
 
 // EquipmentType //
 //////////////////

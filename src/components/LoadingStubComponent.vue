@@ -25,7 +25,7 @@ export default class LoadingStubComponent extends Vue {}
 .loading-stub-component {
   text-align: center;
   height: 100%;
-  
+
   .spinner {
     position: absolute;
     top: 50%;

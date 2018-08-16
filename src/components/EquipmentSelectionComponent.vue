@@ -18,7 +18,11 @@ import axios from "axios";
 
 import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
 
-import { Equipment, EquipmentDefault } from "@/store/modules/equipment/types";
+import {
+  Equipment,
+  EquipmentDefault,
+  EQUIPMENT_SEARCH
+} from "@/store/modules/equipment";
 
 @Component({
   components: {
@@ -63,27 +67,8 @@ export default class EquipmentSelectionComponent extends Vue {
   }
 
   onChange(input: string, cb: Function) {
-    this.fetchEquipment(input).then(equipment => {
+    this.$store.dispatch(EQUIPMENT_SEARCH, input).then(equipment => {
       cb(equipment as Equipment[]);
-    });
-  }
-
-  fetchEquipment(match: string = "") {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`equipment?match=${encodeURIComponent(match)}`)
-        .then(response => {
-          const body = response.data;
-          if (body.statusCode == 1) {
-            const equipment: Equipment[] = body.data;
-            resolve(equipment);
-          } else {
-            reject();
-          }
-        })
-        .catch(err => {
-          reject();
-        });
     });
   }
 }

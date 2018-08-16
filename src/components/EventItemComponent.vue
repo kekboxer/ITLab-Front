@@ -34,7 +34,7 @@
             <b-col>
               Готовность:
               <b-progress class="w-100 mb-2" height="2rem" :max="100">
-                <b-progress-bar :value="event.сompleteness || 0"></b-progress-bar>
+                <b-progress-bar :value="completeness"></b-progress-bar>
               </b-progress>
             </b-col>
           </b-row>
@@ -56,9 +56,6 @@
         <b-col cols="12" md="auto">
           <b-button :to="'events/' + event.id" variant="primary" class="w-100">Подробнее</b-button>
         </b-col>
-        <b-col cols="12" md="auto">
-          <b-button variant="outline-primary" class="w-100">Хочу пойти</b-button>
-        </b-col>
       </b-row>
     </div>
   </div>
@@ -76,7 +73,7 @@ import "vue-awesome/icons/clock";
 import "vue-awesome/icons/edit";
 import "vue-awesome/icons/eye-slash";
 
-import { Event } from "@/store/modules/events/types";
+import { Event } from "@/store/modules/events";
 
 enum State {
   Default,
@@ -141,6 +138,25 @@ export default class EventItemComponent extends Vue {
     }
 
     return moment(this.event.beginTime).format(this.TIME_FORMAT);
+  }
+
+  get completeness(): number {
+    if (
+      this.event.targetParticipantsCount == null ||
+      this.event.currentParticipantsCount == null
+    )
+      return 0;
+
+    if (
+      this.event.currentParticipantsCount > this.event.targetParticipantsCount ||
+      this.event.targetParticipantsCount == 0
+    ) {
+      return 100;
+    } else {
+      return (
+        this.event.currentParticipantsCount / this.event.targetParticipantsCount
+      );
+    }
   }
 
   get duration(): string {

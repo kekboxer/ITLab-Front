@@ -87,21 +87,20 @@ import UserSelectionComponent from "@/components/UserSelectionComponent.vue";
 import EquipmentTypeSelectionComponent from "@/components/EquipmentTypeSelectionComponent.vue";
 
 import {
-  EQUIPMENT_FETCH_ONE,
-  EQUIPMENT_COMMIT_ONE
-} from "@/store/actions/equipment";
-import {
   Equipment,
   EquipmentDefault,
   EquipmentType,
-  EquipmentTypeDefault
-} from "@/store/modules/equipment/types";
+  EquipmentTypeDefault,
+  EQUIPMENT_FETCH_ONE,
+  EQUIPMENT_COMMIT
+} from "@/store/modules/equipment";
 
 import {
-  PROFILE_ASSIGN_EQUIPMENT,
-  PROFILE_REMOVE_EQUIPMENT
-} from "@/store/actions/profile";
-import { User, UserDefault } from "@/store/modules/profile/types";
+  User,
+  UserDefault,
+  USER_ASSIGN_EQUIPMENT,
+  USER_REMOVE_EQUIPMENT
+} from "@/store/modules/users";
 
 enum State {
   Default,
@@ -160,7 +159,7 @@ export default class EquipmentEditPage extends Vue {
       this.equipment.equipmentTypeId = this.equipmentTypeSelected.id;
 
       this.$store
-        .dispatch(EQUIPMENT_COMMIT_ONE, this.equipment)
+        .dispatch(EQUIPMENT_COMMIT, this.equipment)
         .then(equipment => {
           this.setEquipment(equipment);
 
@@ -223,7 +222,7 @@ export default class EquipmentEditPage extends Vue {
 
     const assignEquipment = () => {
       return this.$store
-        .dispatch(PROFILE_ASSIGN_EQUIPMENT, {
+        .dispatch(USER_ASSIGN_EQUIPMENT, {
           equipment: this.equipment,
           owner: this.equipmentOwnerModalData
         })
@@ -238,7 +237,7 @@ export default class EquipmentEditPage extends Vue {
 
     if (this.equipment.ownerId) {
       this.$store
-        .dispatch(PROFILE_REMOVE_EQUIPMENT, {
+        .dispatch(USER_REMOVE_EQUIPMENT, {
           equipment: this.equipment,
           owner: this.equipment.ownerId
         })

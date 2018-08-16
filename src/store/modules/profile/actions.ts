@@ -1,82 +1,70 @@
 import { ActionTree } from "vuex"
-import axios from "axios"
-import { ProfileState, RegistrationData, User, UserDefault } from "./types"
 import { RootState } from "@/store/types"
-import { PROFILE_CREATE, PROFILE_ASSIGN_EQUIPMENT, PROFILE_REMOVE_EQUIPMENT } from "@/store/actions/profile"
+import axios from "axios"
 
-import { Equipment, EquipmentDefault } from "@/store/modules/equipment/types";
-import { equipment } from "@/store/modules/equipment";
+import {
+  ProfileState,
+  AuthorizationData,
+  RegistrationData,
+  PROFILE_LOGIN,
+  PROFILE_LOGOUT,
+  PROFILE_CREATE,
+  PROFILE_AUTH_TOKEN_SET
+} from "./types"
+
+interface LoginResponse {
+  id: string
+  token: string
+  firstName: string
+  lastName: string
+}
 
 export const actions: ActionTree<ProfileState, RootState> = {
-  [PROFILE_CREATE]: ({ commit, dispatch }, registrationData: RegistrationData) => {
+  [PROFILE_LOGIN]: ({ commit }, authorizationData: AuthorizationData) => {
     return new Promise((resolve, reject) => {
-      axios.post("account", registrationData).then(response => {
+      axios.post("Authentication/login", authorizationData).then(response => {
         const body = response && response.data
+        const data: LoginResponse = body && body.data
 
-        if (body.statusCode == 1) {
+        if (body.statusCode == 1 && data.token) {
+          localStorage.setItem("user-token", data.token)
+          axios.defaults.headers.common['Authorization'] = "Bearer " + data.token
+
+          commit(PROFILE_AUTH_TOKEN_SET, data.token)
           resolve(body)
         }
         else {
           reject({
-            err: "Registration failed"
+            err: "Login failed"
           })
         }
       }).catch(err => {
-        console.log("CATCH ERR:", err)
+        localStorage.removeItem("user-token")
+        reject(err)
       })
     })
   },
 
-  [PROFILE_ASSIGN_EQUIPMENT]: ({ commit, dispatch }, { equipment, user }: { equipment: Equipment, user: User | string | null }) => {
+  [PROFILE_LOGOUT]: ({ commit }) => {
     return new Promise((resolve, reject) => {
-      let url: string = "Equipment/user";
-      if (user) {
-        if (typeof user === "string") {
-          url += `/${user as string}`;
-        }
-        else if ("id" in (user as any)) {
-          url += `/${(user as any).id}`;
-        }
-      }
+      localStorage.removeItem("user-token")
+      axios.defaults.headers.common['Authorization'] = undefined
 
-      axios
-        .post(url, { id: equipment.id })
-        .then(result => {
-          const body = result && result.data;
-          const equipment: Equipment = body && body.data;
-
-          resolve(equipment);
-        })
-        .catch(err => {
-          console.log(err);
-          reject(err);
-        });
-    });
+      commit(PROFILE_AUTH_TOKEN_SET, undefined);
+      resolve()
+    })
   },
 
-  [PROFILE_REMOVE_EQUIPMENT]: ({ commit, dispatch }, { equipment, owner }: { equipment: Equipment, owner: User | string | null }) => {
+  [PROFILE_CREATE]: ({ }, registrationData: RegistrationData) => {
     return new Promise((resolve, reject) => {
-      let url: string = "Equipment/user";
-      if (owner) {
-        if (typeof owner === "string") {
-          url += `/${owner as string}`;
-        }
-        else if ("id" in (owner as any)) {
-          url += `/${(owner as any).id}`;
-        }
-      }
+      axios.post("account", registrationData).then(response => {
+        const body = response && response.data
 
-      axios
-        .delete(url, { data: { id: equipment.id } }).then(result => {
-          const body = result && result.data;
-          const equipment: Equipment = body && body.data;
-
-          resolve(equipment);
-        })
-        .catch(err => {
-          console.log(err);
-          reject(err);
-        });
+        resolve(body)
+      }).catch(error => {
+        console.log(PROFILE_CREATE, error);
+        reject(error);
+      })
     })
-  }
+  },
 }

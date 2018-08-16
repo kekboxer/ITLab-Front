@@ -50,11 +50,11 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
 
-import { AUTH_LOGIN } from "@/store/actions/authorization";
 import {
   AuthorizationData,
-  AuthorizationDataDefault
-} from "@/store/modules/authorization/types";
+  AuthorizationDataDefault,
+  PROFILE_LOGIN
+} from "@/store/modules/profile";
 
 import "@/icons/logo";
 
@@ -71,18 +71,18 @@ export default class LoginPage extends Vue {
 
   pageState: State = State.Default;
   authorizationData: AuthorizationData = new AuthorizationDataDefault();
-  
+
   // Methods //
   ////////////
 
   onSubmit() {
     this.pageState = State.InProcess;
     this.$store
-      .dispatch(AUTH_LOGIN, this.authorizationData)
+      .dispatch(PROFILE_LOGIN, this.authorizationData)
       .then(result => {
         this.authorizationData = new AuthorizationDataDefault();
         this.$router.push("events");
-        
+
         this.pageState = State.Default;
       })
       .catch(error => {

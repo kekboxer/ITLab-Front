@@ -1,5 +1,21 @@
-import { Equipment, EquipmentDefault } from "@/store/modules/equipment/types";
-import { User, UserDefault } from "@/store/modules/profile/types";
+import { Equipment } from "@/store/modules/equipment";
+import { User, UserDefault } from "@/store/modules/users";
+
+// actions
+export const EVENT_TYPE_SEARCH = "EVENT_TYPE_SEARCH"
+export const EVENTS_FETCH_ALL = "EVENTS_FETCH_ALL"
+export const EVENTS_FETCH_ONE = "EVENTS_FETCH_ONE"
+export const EVENT_COMMIT = "EVENT_COMMIT"
+export const EVENT_TYPE_COMMIT = "EVENT_TYPE_COMMIT"
+
+// setters
+export const EVENTS_SET_ALL = "EVENTS_SET_ALL"
+export const EVENTS_SET_ONE = "EVENTS_SET_ONE"
+
+// getters
+export const EVENTS_GET_ALL = "EVENTS_GET_ALL"
+export const EVENTS_GET_ONE = "EVENTS_GET_ONE"
+
 
 // EventType //
 //////////////
@@ -36,14 +52,13 @@ export class EventUserRoleDefault implements EventUserRole {
 
 export interface EventParticipant {
   user: User
-  role: EventUserRole
+  role?: EventUserRole
 
   delete?: boolean
 }
 
 export class EventParticipantDefault implements EventParticipant {
   user: User = new UserDefault
-  role: EventUserRole = new EventUserRoleDefault
 }
 
 // EventEquipment //
@@ -61,7 +76,10 @@ export interface EventPlace {
   targetParticipantsCount: number
 
   equipment: EventEquipment[]
+
   participants: EventParticipant[]
+  invited: EventParticipant[]
+  wishers: EventParticipant[]
 
   delete?: boolean
 }
@@ -71,7 +89,10 @@ export class EventPlaceDefault implements EventPlace {
   targetParticipantsCount: number = 0
 
   equipment: EventEquipment[] = []
+
   participants: EventParticipant[] = []
+  invited: EventParticipant[] = []
+  wishers: EventParticipant[] = []
 }
 
 // EventShift //
@@ -107,8 +128,10 @@ export interface Event {
 
   // List data
   beginTime?: Date
-  сompleteness?: number
   totalDurationInMinutes?: number
+
+  targetParticipantsCount?: number
+  currentParticipantsCount?: number
 
   // Shifts data
   shifts?: EventShift[]
