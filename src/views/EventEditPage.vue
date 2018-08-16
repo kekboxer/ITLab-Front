@@ -38,7 +38,7 @@
                     </b-form-textarea>
                   </b-tab>
                   <b-tab title="Просмотр">
-                    <div class="markdown-preview">
+                    <div class="markdown">
                       <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
                     </div>
                   </b-tab>
@@ -239,7 +239,7 @@ export const eventEditPageRoute = <RouteConfig>{
     }
   }
 
-  .markdown-preview {
+  .markdown {
     @extend .form-control;
 
     height: auto;

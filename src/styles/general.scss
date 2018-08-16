@@ -79,6 +79,13 @@
   }
 }
 
+/* markdown */
+.markdown {
+  input[type=checkbox] {
+    pointer-events:none;
+  }
+}
+
 /* Bootstrap fix */
 
 .nav-tabs {
