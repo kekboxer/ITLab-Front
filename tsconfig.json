@@ -1,28 +1,43 @@
 {
   "compilerOptions": {
-    "module": "es2015",
-    "moduleResolution": "node",
     "target": "es5",
+    "module": "esnext",
     "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": ".",
     "sourceMap": true,
-    "lib": [
-      "dom",
-      "es2017"
-    ],
     "typeRoots": [
       "node_modules/@types",
       "src/typings"
     ],
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "types": [
+      "node",
+      "jest"
+    ],
     "paths": {
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
   },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
   "exclude": [
     "node_modules"
   ]

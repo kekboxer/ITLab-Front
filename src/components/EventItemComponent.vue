@@ -67,7 +67,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Icon from "vue-awesome/components/Icon";
-import * as moment from "moment";
+import moment from "moment";
+
 
 import "vue-awesome/icons/clock";
 import "vue-awesome/icons/edit";

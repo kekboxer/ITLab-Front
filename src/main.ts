@@ -12,8 +12,8 @@ import * as svgicon from "vue-svgicon";
 import { VueHammer } from "vue2-hammer";
 
 // VueClipboard
-import VueClipboard from "vue-clipboard2";
-VueClipboard.config.autoSetContainer = true;
+//import VueClipboard from "vue-clipboard2";
+//VueClipboard.config.autoSetContainer = true;
 
 // Bootstrap
 import BootstrapVue from "bootstrap-vue";
@@ -37,8 +37,7 @@ import moment from "moment-timezone";
 moment.tz.setDefault("Europe/Moscow");
 
 // Initialize axios
-//@ts-ignore
-axios.defaults.baseURL = process.env.API_URL;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.defaults.headers.post['Content-Type'] = "application/json";
 
 axios.interceptors.response.use((response) => {
@@ -84,15 +83,13 @@ router.beforeEach((to, from, next) => {
 Vue.use(Router);
 Vue.use(VueMoment, { moment });
 Vue.use(VueHammer);
-Vue.use(VueClipboard);
+//Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(VueNotifications);
 Vue.use(svgicon, { tagName: "svgicon" });
 
 new Vue({
-  el: "#app",
   store,
   router,
-  template: "<App/>",
-  components: { App },
-});
+  render: (h) => h(App),
+}).$mount('#app');
