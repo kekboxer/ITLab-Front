@@ -27,14 +27,6 @@
         </b-form-input>
       </b-form-group>
 
-      <template v-if="currentInvitation">
-        <hr>
-        <b-form-group id="type-title-group" label="Invitation link">
-          <a :href="currentInvitationLink" style="font-family: monospace;">{{ currentInvitationLink }}</a><br>
-          <b-button variant="outline-secondary" class="btn-sm" v-clipboard:copy="currentInvitationLink">Копировать</b-button>
-        </b-form-group>
-      </template>
-
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
         <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Подтвердить</button>
@@ -76,8 +68,6 @@ export default class UsersPage extends Vue {
 
   loadingInProcess: boolean = true;
 
-  currentInvitation: { email: string; code: string } | null = null;
-
   modalData: {
     email: string | null;
   } = { email: null };
@@ -113,14 +103,7 @@ export default class UsersPage extends Vue {
     this.modalState = ModalState.InProcess;
     this.$store
       .dispatch(USER_INVITE, this.modalData)
-      .then((invitationCode: string) => {
-        if (this.modalData.email) {
-          this.currentInvitation = {
-            email: this.modalData.email,
-            code: invitationCode
-          };
-        }
-
+      .then(response => {
         this.modalState = ModalState.Editing;
         this.modalData = { email: null };
       });
@@ -141,14 +124,6 @@ export default class UsersPage extends Vue {
 
   // Computed data //
   //////////////////
-
-  get currentInvitationLink(): string {
-    if (!this.currentInvitation) return "";
-
-    return `${window.location.origin}/register?e=${encodeURIComponent(
-      this.currentInvitation.email
-    )}&c=${this.currentInvitation.code}`;
-  }
 
   get fields() {
     return [
