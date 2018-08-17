@@ -5,10 +5,9 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node
+FROM nginx:1.13.12-alpine
 WORKDIR /usr/src/app
-COPY --from=build /usr/src/app/dist .
-COPY --from=build /usr/src/app/server.js/ ./server.js
-RUN npm install express connect-history-api-fallback
-EXPOSE 8080
-CMD [ "node", "server.js" ]
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+COPY --from=build /usr/src/app/default.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
