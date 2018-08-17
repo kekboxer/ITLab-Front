@@ -22,7 +22,7 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios.post("user", {
         email: email,
-        redirectUrl: process.env.VUE_APP_API_URL
+        redirectUrl: window.location.origin
       }).then(response => {
         const body = response && response.data;
         const data: string = body && body.data;
