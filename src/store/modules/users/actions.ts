@@ -20,7 +20,10 @@ import { Equipment } from "@/store/modules/equipment";
 export const actions: ActionTree<UsersState, RootState> = {
   [USER_INVITE]: ({ }, { email }: { email: string }) => {
     return new Promise((resolve, reject) => {
-      axios.post("user", `"${email}"`).then(response => {
+      axios.post("user", {
+        email: email,
+        redirectUrl: process.env.VUE_APP_API_URL
+      }).then(response => {
         const body = response && response.data;
         const data: string = body && body.data;
 
