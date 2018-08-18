@@ -157,17 +157,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
-import moment from "moment-timezone";
-import axios from "axios";
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import moment from 'moment-timezone';
+import axios from 'axios';
 
-import Draggable from "vuedraggable";
-import DatePicker from "vue2-datepicker";
-import Icon from "vue-awesome/components/Icon";
-import UserSelectionComponent from "@/components/UserSelectionComponent.vue";
-import EquipmentSelectionComponent from "@/components/EquipmentSelectionComponent.vue";
+import Draggable from 'vuedraggable';
+import DatePicker from 'vue2-datepicker';
+import Icon from 'vue-awesome/components/Icon';
+import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
+import EquipmentSelectionComponent from '@/components/EquipmentSelectionComponent.vue';
 
-import "vue-awesome/icons/times";
+import 'vue-awesome/icons/times';
 
 import {
   EventShift,
@@ -178,9 +178,9 @@ import {
   EventEquipment,
   EventUserRole,
   EventUserRoleDefault
-} from "@/store/modules/events";
-import { Equipment } from "@/store/modules/equipment";
-import { UserDefault, User } from "@/store/modules/users";
+} from '@/store/modules/events';
+import { Equipment } from '@/store/modules/equipment';
+import { UserDefault, User } from '@/store/modules/users';
 
 enum ModalState {
   Hidden,
@@ -196,76 +196,77 @@ enum ModalState {
   components: {
     icon: Icon,
     draggable: Draggable,
-    "date-picker": DatePicker,
-    "user-selection-component": UserSelectionComponent,
-    "equipment-selection-component": EquipmentSelectionComponent
+    'date-picker': DatePicker,
+    'user-selection-component': UserSelectionComponent,
+    'equipment-selection-component': EquipmentSelectionComponent
   }
 })
 export default class EventShiftsComponent extends Vue {
-  DATE_FORMAT = "DD.MM.YYYY HH:mm";
-  TIME_FORMAT = "HH:mm";
+  public DATE_FORMAT = 'DD.MM.YYYY HH:mm';
+  public TIME_FORMAT = 'HH:mm';
 
-  ROLE_TRANSLATIONS: Map<string, string> = new Map<string, string>([
-    ["Participant", "Участник"],
-    ["Organizer", "Организатор"]
+  public ROLE_TRANSLATIONS: Map<string, string> = new Map<string, string>([
+    ['Participant', 'Участник'],
+    ['Organizer', 'Организатор']
   ]);
 
   // v-model //
   ////////////
 
-  @Prop() value?: EventShift[];
+  @Prop() public value?: EventShift[];
 
   // Properties //
   ///////////////
 
-  @Prop() editable?: boolean;
+  @Prop() public editable?: boolean;
 
-  modalTitles: Map<ModalState, string> = new Map<ModalState, string>([
-    [ModalState.Hidden, ""],
-    [ModalState.ShiftEdit, "Изменение смены"],
-    [ModalState.ShiftCreation, "Новая смена"],
-    [ModalState.PlaceEdit, "Изменение места"],
-    [ModalState.PlaceCreation, "Новое место"],
-    [ModalState.ParticipantInvitation, "Приглашение участника"],
-    [ModalState.EquipmentAdding, "Добавление оборудования"]
+  public modalTitles: Map<ModalState, string> = new Map<ModalState, string>([
+    [ModalState.Hidden, ''],
+    [ModalState.ShiftEdit, 'Изменение смены'],
+    [ModalState.ShiftCreation, 'Новая смена'],
+    [ModalState.PlaceEdit, 'Изменение места'],
+    [ModalState.PlaceCreation, 'Новое место'],
+    [ModalState.ParticipantInvitation, 'Приглашение участника'],
+    [ModalState.EquipmentAdding, 'Добавление оборудования']
   ]);
 
-  modalState: ModalState = ModalState.Hidden;
+  public modalState: ModalState = ModalState.Hidden;
 
-  submitModal: () => void = () => {};
-
-  shiftModalData: {
+  public shiftModalData: {
     id?: string;
     beginTime: Date | null;
     endTime: Date | null;
   } = { beginTime: null, endTime: null };
 
-  placeModalData: {
+  public placeModalData: {
     targetParticipantsCount: number;
   } = {
     targetParticipantsCount: 1
   };
 
-  placeParticipantData: {
+  public placeParticipantData: {
     user: User | null;
     role: EventUserRole | null;
   } = { user: null, role: null };
 
-  placeEquipmentModalData: Equipment | null = null;
+  public placeEquipmentModalData: Equipment | null = null;
 
-  participantRoleOptions: { value: EventUserRole; text: string }[] = [];
+  public participantRoleOptions: Array<{
+    value: EventUserRole;
+    text: string;
+  }> = [];
 
   // Component methods //
   //////////////////////
 
-  mounted() {
-    this.$watch("value", (shifts?: EventShift[]) => {
+  public mounted() {
+    this.$watch('value', (shifts?: EventShift[]) => {
       this.value = shifts ? shifts : [];
     });
 
-    this.fetchUserRoles().then(result => {
+    this.fetchUserRoles().then((result) => {
       const participantRoles: EventUserRole[] = result as EventUserRole[];
-      this.participantRoleOptions = participantRoles.map(v => {
+      this.participantRoleOptions = participantRoles.map((v) => {
         return { value: v, text: v.name };
       });
     });
@@ -275,18 +276,20 @@ export default class EventShiftsComponent extends Vue {
     }
   }
 
-  onInput() {
+  public onInput() {
     if (!this.editable) {
       return;
     }
-    this.$emit("input", this.value);
+    this.$emit('input', this.value);
   }
 
   // Modal //
   //////////
 
+  public submitModal: () => void = () => undefined;
+
   get modalShow(): boolean {
-    return this.modalState != ModalState.Hidden;
+    return this.modalState !== ModalState.Hidden;
   }
   set modalShow(show: boolean) {
     if (!show) {
@@ -307,14 +310,14 @@ export default class EventShiftsComponent extends Vue {
       place: [ModalState.PlaceEdit, ModalState.PlaceCreation].includes(
         this.modalState
       ),
-      participant: this.modalState == ModalState.ParticipantInvitation,
-      equipment: this.modalState == ModalState.EquipmentAdding
+      participant: this.modalState === ModalState.ParticipantInvitation,
+      equipment: this.modalState === ModalState.EquipmentAdding
     };
   }
 
   get modalTitle(): string {
     const title = this.modalTitles.get(this.modalState);
-    return title ? title : "";
+    return title ? title : '';
   }
 
   get isModalDataInvalid(): boolean {
@@ -341,9 +344,9 @@ export default class EventShiftsComponent extends Vue {
   // Shift handlers //
   ///////////////////
 
-  getShiftEndTime(shift: EventShift): string {
-    const shiftBeginDay = moment(shift.beginTime).startOf("day");
-    const shiftEndDay = moment(shift.endTime).startOf("day");
+  public getShiftEndTime(shift: EventShift): string {
+    const shiftBeginDay = moment(shift.beginTime).startOf('day');
+    const shiftEndDay = moment(shift.endTime).startOf('day');
 
     if (shiftBeginDay.isSame(shiftEndDay)) {
       return moment(shift.endTime).format(this.TIME_FORMAT);
@@ -352,13 +355,13 @@ export default class EventShiftsComponent extends Vue {
     }
   }
 
-  getShiftDuration(shift: EventShift): string {
+  public getShiftDuration(shift: EventShift): string {
     return moment
       .duration(moment(shift.endTime).diff(moment(shift.beginTime)))
       .humanize();
   }
 
-  onEditShift(shiftIndex?: number) {
+  public onEditShift(shiftIndex?: number) {
     if (
       (shiftIndex && !this.value) ||
       this.shiftModalData.beginTime == null ||
@@ -384,7 +387,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  onRemoveShift(shiftIndex: number) {
+  public onRemoveShift(shiftIndex: number) {
     if (!this.value) {
       return;
     }
@@ -395,15 +398,17 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  canDeleteShift(): boolean {
-    return this.value != null && this.value.filter(v => !v.delete).length > 1;
+  public canDeleteShift(): boolean {
+    return this.value != null && this.value.filter((v) => !v.delete).length > 1;
   }
 
-  showShiftModal(shiftIndex: number | undefined) {
+  public showShiftModal(shiftIndex: number | undefined) {
     let newState: ModalState;
 
     if (shiftIndex != null) {
-      if (!this.value) return;
+      if (!this.value) {
+        return;
+      }
 
       const shift = this.value[shiftIndex];
       this.shiftModalData = {
@@ -437,23 +442,25 @@ export default class EventShiftsComponent extends Vue {
   // Place handlers //
   ///////////////////
 
-  getPlaceTargetParticipantsCount(place: EventPlace): string {
-    if (place.targetParticipantsCount == 0) return "Участники не требуются";
+  public getPlaceTargetParticipantsCount(place: EventPlace): string {
+    if (place.targetParticipantsCount === 0) {
+      return 'Участники не требуются';
+    }
 
     const nounNeed = this.getNoun(place.targetParticipantsCount, [
-      "Нужен",
-      "Нужно",
-      "Нужно"
+      'Нужен',
+      'Нужно',
+      'Нужно'
     ]);
     const nounParticipant = this.getNoun(place.targetParticipantsCount, [
-      "участник",
-      "участника",
-      "участников"
+      'участник',
+      'участника',
+      'участников'
     ]);
     return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
   }
 
-  onEditPlace(shift: EventShift, placeIndex?: number) {
+  public onEditPlace(shift: EventShift, placeIndex?: number) {
     if (this.placeModalData.targetParticipantsCount == null) {
       return;
     }
@@ -470,22 +477,24 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  removePlace(shift: EventShift, placeIndex: number) {
+  public removePlace(shift: EventShift, placeIndex: number) {
     const place = shift.places[placeIndex];
     place.delete = true;
     Vue.set(shift.places, placeIndex, place);
     this.onInput();
   }
 
-  canDeletePlace(shift: EventShift): boolean {
-    return shift.places.filter(v => !v.delete).length > 1;
+  public canDeletePlace(shift: EventShift): boolean {
+    return shift.places.filter((v) => !v.delete).length > 1;
   }
 
-  showPlaceModal(shift: EventShift, placeIndex: number | undefined) {
+  public showPlaceModal(shift: EventShift, placeIndex: number | undefined) {
     let newState: ModalState;
 
     if (placeIndex != null) {
-      if (!this.value) return;
+      if (!this.value) {
+        return;
+      }
 
       const place = shift.places[placeIndex];
       this.placeModalData = {
@@ -513,7 +522,7 @@ export default class EventShiftsComponent extends Vue {
   // Place participant handlers //
   ///////////////////////////////
 
-  onAddPlaceParticipant(place: EventPlace) {
+  public onAddPlaceParticipant(place: EventPlace) {
     if (!this.placeParticipantData.user || !this.placeParticipantData.role) {
       return;
     }
@@ -526,7 +535,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  removePlaceParticipant(
+  public removePlaceParticipant(
     participantsGroup: EventParticipant[],
     participantIndex: number
   ) {
@@ -536,7 +545,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  showPlaceInvitedParticipantModal(place: EventPlace) {
+  public showPlaceInvitedParticipantModal(place: EventPlace) {
     this.placeParticipantData = { user: null, role: null };
     this.submitModal = () => this.onAddPlaceParticipant(place);
     this.modalState = ModalState.ParticipantInvitation;
@@ -553,7 +562,7 @@ export default class EventShiftsComponent extends Vue {
   // Place equipment handlers //
   /////////////////////////////
 
-  onAddPlaceEquipment(place: EventPlace) {
+  public onAddPlaceEquipment(place: EventPlace) {
     if (!this.placeEquipmentModalData) {
       return;
     }
@@ -562,14 +571,14 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  removePlaceEquipment(place: EventPlace, equipmentIndex: number) {
+  public removePlaceEquipment(place: EventPlace, equipmentIndex: number) {
     const equipment = place.equipment[equipmentIndex];
     equipment.delete = true;
     Vue.set(place.equipment, equipmentIndex, equipment);
     this.onInput();
   }
 
-  showPlaceEquipmentModal(place: EventPlace) {
+  public showPlaceEquipmentModal(place: EventPlace) {
     this.placeEquipmentModalData = null;
     this.submitModal = () => this.onAddPlaceEquipment(place);
     this.modalState = ModalState.EquipmentAdding;
@@ -583,20 +592,20 @@ export default class EventShiftsComponent extends Vue {
   // Computed data //
   //////////////////
 
-  fetchUserRoles() {
+  public fetchUserRoles() {
     return new Promise((resolve, reject) => {
       axios
-        .get("roles")
-        .then(response => {
+        .get('roles')
+        .then((response) => {
           const body = response.data;
-          if (body.statusCode == 1) {
+          if (body.statusCode === 1) {
             const roles: EventUserRole[] = body.data;
             resolve(roles);
           } else {
             reject();
           }
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -605,27 +614,37 @@ export default class EventShiftsComponent extends Vue {
   get eventShifts(): EventShift[] {
     return this.value
       ? this.value.sort((a, b) => {
-          if (a.beginTime < b.beginTime) return -1;
-          else if (a.beginTime > b.beginTime) return 1;
-          else return 0;
+          if (a.beginTime < b.beginTime) {
+            return -1;
+          } else if (a.beginTime > b.beginTime) {
+            return 1;
+          } else {
+            return 0;
+          }
         })
       : [];
   }
 
-  getRoleTranslation(role: EventUserRole): string {
+  public getRoleTranslation(role: EventUserRole): string {
     return this.ROLE_TRANSLATIONS.get(role.name) || role.name;
   }
 
   // Stuff
-  getNoun(value: number, forms: string[]): string {
+  public getNoun(value: number, forms: string[]): string {
     let n = Math.abs(value) % 100;
 
-    if (n >= 5 && n <= 20) return forms[2] || "";
+    if (n >= 5 && n <= 20) {
+      return forms[2] || '';
+    }
 
     n %= 10;
-    if (n === 1) return forms[0];
+    if (n === 1) {
+      return forms[0];
+    }
 
-    if (n >= 2 && n <= 4) return forms[1];
+    if (n >= 2 && n <= 4) {
+      return forms[1];
+    }
     return forms[2];
   }
 }
@@ -635,7 +654,7 @@ export default class EventShiftsComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .event-shifts-component {
   .shift {

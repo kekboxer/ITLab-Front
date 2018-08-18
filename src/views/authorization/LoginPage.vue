@@ -47,16 +47,16 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
 import {
   AuthorizationData,
   AuthorizationDataDefault,
   PROFILE_LOGIN
-} from "@/store/modules/profile";
+} from '@/store/modules/profile';
 
-import "@/icons/logo";
+import '@/icons/logo';
 
 enum State {
   Default,
@@ -69,31 +69,31 @@ export default class LoginPage extends Vue {
   // Page properties //
   ////////////////////
 
-  pageState: State = State.Default;
-  authorizationData: AuthorizationData = new AuthorizationDataDefault();
+  public pageState: State = State.Default;
+  public authorizationData: AuthorizationData = new AuthorizationDataDefault();
 
   // Methods //
   ////////////
 
-  onSubmit() {
+  public onSubmit() {
     this.pageState = State.InProcess;
     this.$store
       .dispatch(PROFILE_LOGIN, this.authorizationData)
-      .then(result => {
+      .then((result) => {
         this.authorizationData = new AuthorizationDataDefault();
 
         if (this.$route.params && this.$route.params.to) {
           this.$router.push(this.$route.params.to);
         } else {
-          this.$router.push("events");
+          this.$router.push('events');
         }
 
         this.pageState = State.Default;
       })
-      .catch(error => {
-        this.authorizationData.password = "";
+      .catch((error) => {
+        this.authorizationData.password = '';
 
-        const passwordInput = this.$refs["password-input"] as HTMLElement;
+        const passwordInput = this.$refs['password-input'] as HTMLElement;
         passwordInput.focus();
 
         this.pageState = State.Error;
@@ -101,30 +101,30 @@ export default class LoginPage extends Vue {
   }
 
   get isLoginOrPasswordInvalid(): boolean {
-    return this.pageState == State.Error;
+    return this.pageState === State.Error;
   }
 
   get isInProcess(): boolean {
-    return this.pageState == State.InProcess;
+    return this.pageState === State.InProcess;
   }
 }
 
-export const loginPageRoute = <RouteConfig>{
-  path: "/login",
-  name: "LoginPage",
+export const loginPageRoute: RouteConfig = {
+  path: '/login',
+  name: 'LoginPage',
   component: LoginPage,
   meta: {
     secure: false,
     hideNavigation: true
   }
-};
+} as RouteConfig;
 </script>
 <!-- SCRIPT END -->
 
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .auth-page {
   @include media-breakpoint-down(sm) {

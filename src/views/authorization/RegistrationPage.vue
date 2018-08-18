@@ -63,23 +63,23 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
-import { validationMixin } from "vuelidate";
+import { validationMixin } from 'vuelidate';
 import {
   required,
   minLength,
   maxLength,
   email,
   numeric
-} from "vuelidate/lib/validators";
+} from 'vuelidate/lib/validators';
 
 import {
   RegistrationData,
   RegistrationDataDefault,
   PROFILE_CREATE
-} from "@/store/modules/profile";
+} from '@/store/modules/profile';
 
 enum State {
   Default,
@@ -104,36 +104,36 @@ export default class RegistrationPage extends Vue {
   // Page properties //
   ////////////////////
 
-  pageState: State = State.Default;
-  registrationData: RegistrationData = new RegistrationDataDefault();
+  public pageState: State = State.Default;
+  public registrationData: RegistrationData = new RegistrationDataDefault();
 
   // Methods //
   ////////////
 
-  onSubmit() {
+  public onSubmit() {
     this.pageState = State.InProcess;
     this.$store
       .dispatch(PROFILE_CREATE, this.registrationData)
-      .then(result => {
+      .then((result) => {
         this.registrationData = new RegistrationDataDefault();
-        this.$router.push({ name: "EventsPage" });
+        this.$router.push({ name: 'EventsPage' });
 
         this.pageState = State.Default;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         this.pageState = State.Error;
       });
   }
 
   get isInProcess(): boolean {
-    return this.pageState == State.InProcess;
+    return this.pageState === State.InProcess;
   }
 }
 
-export const registrationPageRoute = <RouteConfig>{
-  path: "/register",
-  name: "RegistrationPage",
+export const registrationPageRoute: RouteConfig = {
+  path: '/register',
+  name: 'RegistrationPage',
   component: RegistrationPage,
   meta: {
     secure: false,
@@ -146,7 +146,7 @@ export const registrationPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .registration-page {
   @include media-breakpoint-down(sm) {

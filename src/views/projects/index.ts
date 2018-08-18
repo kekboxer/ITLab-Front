@@ -1,1 +1,1 @@
-export * from "./ProjectsPage.vue"
+export * from './ProjectsPage.vue';

@@ -1,1 +1,1 @@
-declare module "vue2-datepicker";
+declare module 'vue2-datepicker';

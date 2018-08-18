@@ -45,53 +45,49 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import axios from 'axios';
 
-import EventItemComponent from "@/components/EventItemComponent.vue";
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import EventItemComponent from '@/components/EventItemComponent.vue';
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 
 import {
   Event,
   EventType,
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
-} from "@/store/modules/events";
+} from '@/store/modules/events';
 
 @Component({
   components: {
-    "event-item-component": EventItemComponent,
-    "loading-stub-component": LoadingStubComponent
+    'event-item-component': EventItemComponent,
+    'loading-stub-component': LoadingStubComponent
   }
 })
 export default class EventsPage extends Vue {
-  loadingInProcess: boolean = true;
+  public loadingInProcess: boolean = true;
 
-  currentDate: Date = new Date();
+  public currentDate: Date = new Date();
 
-  pastEventsLoaded: boolean = false;
-  eventsShowPast: boolean = false;
+  public pastEventsLoaded: boolean = false;
+  public eventsShowPast: boolean = false;
 
-  beforeMount() {
-    this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length == 0;
+  public beforeMount() {
+    this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length === 0;
 
     this.$store
       .dispatch(EVENTS_FETCH_ALL, {
         eventBegin: this.eventsShowPast ? undefined : this.currentDate
       })
-      .then(result => {
+      .then((result) => {
         this.loadingInProcess = false;
-      })
-      .catch(result => {});
+      });
   }
 
-  togglePastEvents() {
+  public togglePastEvents() {
     if (!this.pastEventsLoaded && !this.eventsShowPast) {
-      this.$store
-        .dispatch(EVENTS_FETCH_ALL)
-        .then(result => {})
-        .catch(result => {});
+      this.$store.dispatch(EVENTS_FETCH_ALL);
       this.pastEventsLoaded = true;
     }
 
@@ -112,9 +108,9 @@ export default class EventsPage extends Vue {
   }
 }
 
-export const eventsPageRoute = <RouteConfig>{
-  path: "/events",
-  name: "EventsPage",
+export const eventsPageRoute: RouteConfig = {
+  path: '/events',
+  name: 'EventsPage',
   component: EventsPage
 };
 </script>
@@ -123,7 +119,7 @@ export const eventsPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .events-page {
   .load-more {

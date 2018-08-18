@@ -1,1 +1,1 @@
-export * from "./UsersPage.vue"
+export * from './UsersPage.vue';

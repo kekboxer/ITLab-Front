@@ -34,25 +34,25 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import Hammer from "hammerjs";
+import { Component, Vue } from 'vue-property-decorator';
+import Hammer from 'hammerjs';
 
-import { SYSTEM_NAME } from "@/store";
-import { Group, LAYOUT_GROUPS_GET } from "@/store/modules/layout";
-import { PROFILE_LOGOUT } from "@/store/modules/profile";
+import { SYSTEM_NAME } from '@/store';
+import { Group, LAYOUT_GROUPS_GET } from '@/store/modules/layout';
+import { PROFILE_LOGOUT } from '@/store/modules/profile';
 
-import "@/icons/bars";
+import '@/icons/bars';
 
 @Component
 export default class SidebarComponent extends Vue {
-  isMobileMenuHidden: boolean = true;
+  public isMobileMenuHidden: boolean = true;
 
-  created() {
+  public created() {
     const swipe = new Hammer(document.body);
-    document.body.style.userSelect = "text";
-    swipe.on("swiperight swipeleft", e => {
+    document.body.style.userSelect = 'text';
+    swipe.on('swiperight swipeleft', (e) => {
       e.preventDefault();
-      if (e.type == "swipeleft" && this.isMobileMenuHidden) {
+      if (e.type === 'swipeleft' && this.isMobileMenuHidden) {
         this.isMobileMenuHidden = false;
       } else {
         this.isMobileMenuHidden = true;
@@ -60,21 +60,21 @@ export default class SidebarComponent extends Vue {
     });
   }
 
-  toggleMenu(event: any, force: boolean | undefined) {
-    if (event.target.className !== "sidebar-component" && force == undefined) {
+  public toggleMenu(event: any, force: boolean | undefined) {
+    if (event.target.className !== 'sidebar-component' && force === undefined) {
       return;
     }
 
     const value: boolean =
-      force == undefined ? !this.isMobileMenuHidden : force;
+      force === undefined ? !this.isMobileMenuHidden : force;
 
     this.isMobileMenuHidden = value;
-    document.body.classList.toggle("sidebar-open", !value);
+    document.body.classList.toggle('sidebar-open', !value);
   }
 
-  logout() {
-    this.$store.dispatch(PROFILE_LOGOUT).then(result => {
-      this.$router.push({ name: "LoginPage" });
+  public logout() {
+    this.$store.dispatch(PROFILE_LOGOUT).then((result) => {
+      this.$router.push({ name: 'LoginPage' });
     });
   }
 
@@ -92,7 +92,7 @@ export default class SidebarComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .sidebar-component {
   position: fixed;

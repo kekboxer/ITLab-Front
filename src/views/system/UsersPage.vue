@@ -39,17 +39,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Vue, Component } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 
 import {
   User,
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
-} from "@/store/modules/users";
+} from '@/store/modules/users';
 
 enum ModalState {
   Hidden,
@@ -59,39 +59,36 @@ enum ModalState {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    'loading-stub-component': LoadingStubComponent
   }
 })
 export default class UsersPage extends Vue {
   // Properties //
   ///////////////
 
-  loadingInProcess: boolean = true;
+  public loadingInProcess: boolean = true;
 
-  modalData: {
+  public modalData: {
     email: string | null;
   } = { email: null };
-  modalState: ModalState = ModalState.Hidden;
+  public modalState: ModalState = ModalState.Hidden;
 
   // Component methods //
   //////////////////////
 
-  mounted() {
-    this.loadingInProcess = this.$store.getters[USERS_GET_ALL].lenth == 0;
+  public mounted() {
+    this.loadingInProcess = this.$store.getters[USERS_GET_ALL].lenth === 0;
 
-    this.$store
-      .dispatch(USERS_FETCH_ALL)
-      .then(result => {
-        this.loadingInProcess = false;
-      })
-      .catch(result => {});
+    this.$store.dispatch(USERS_FETCH_ALL).then((result) => {
+      this.loadingInProcess = false;
+    });
   }
 
   // Modal window methods //
   /////////////////////////
 
   get modalVisible(): boolean {
-    return this.modalState != ModalState.Hidden;
+    return this.modalState !== ModalState.Hidden;
   }
   set modalVisible(show: boolean) {
     if (!show) {
@@ -99,11 +96,11 @@ export default class UsersPage extends Vue {
     }
   }
 
-  onSubmitModal() {
+  public onSubmitModal() {
     this.modalState = ModalState.InProcess;
-    this.$store.dispatch(USER_INVITE, this.modalData).then(response => {
+    this.$store.dispatch(USER_INVITE, this.modalData).then((response) => {
       this.$notify({
-        title: "Приглашение отправлено!",
+        title: 'Приглашение отправлено!',
         duration: 500
       });
 
@@ -112,17 +109,17 @@ export default class UsersPage extends Vue {
     });
   }
 
-  showModal() {
+  public showModal() {
     this.modalData = { email: null };
     this.modalState = ModalState.Editing;
   }
 
   get canSubmitModal(): boolean {
-    return this.modalData.email != null && this.modalData.email != "";
+    return this.modalData.email != null && this.modalData.email !== '';
   }
 
   get isModalInProcess(): boolean {
-    return this.modalState == ModalState.InProcess;
+    return this.modalState === ModalState.InProcess;
   }
 
   // Computed data //
@@ -131,12 +128,12 @@ export default class UsersPage extends Vue {
   get fields() {
     return [
       {
-        key: "fullName",
-        label: "Ф.И.О."
+        key: 'fullName',
+        label: 'Ф.И.О.'
       },
       {
-        key: "email",
-        label: "Email"
+        key: 'email',
+        label: 'Email'
       }
     ];
   }
@@ -151,9 +148,9 @@ export default class UsersPage extends Vue {
   }
 }
 
-export const usersPage = <RouteConfig>{
-  path: "/users",
-  name: "UsersPage",
+export const usersPageRoute: RouteConfig = {
+  path: '/users',
+  name: 'UsersPage',
   component: UsersPage
 };
 </script>
@@ -162,9 +159,6 @@ export const usersPage = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
-
-.users-page {
-}
+@import '@/styles/general.scss';
 </style>
 <!-- STYLE END -->

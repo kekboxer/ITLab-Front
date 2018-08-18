@@ -1,1 +1,1 @@
-declare module "vue2-hammer";
+declare module 'vue2-hammer';

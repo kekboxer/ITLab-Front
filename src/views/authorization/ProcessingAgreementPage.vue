@@ -62,19 +62,19 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
 @Component
 export default class ProcessingAgreementPage extends Vue {
-  navigateBack() {
+  public navigateBack() {
     this.$router.go(-1);
   }
 }
 
-export const processingAgreementPageRoute = <RouteConfig>{
-  path: "/processing_agreement",
-  name: "ProcessingAgreement",
+export const processingAgreementPageRoute: RouteConfig = {
+  path: '/processing_agreement',
+  name: 'ProcessingAgreement',
   component: ProcessingAgreementPage,
   meta: {
     secure: false,
@@ -87,7 +87,7 @@ export const processingAgreementPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .processing-agreement-page .card {
   padding: 30px;

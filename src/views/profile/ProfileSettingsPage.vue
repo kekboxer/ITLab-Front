@@ -26,13 +26,13 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
 import {
   PROFILE_SETTINGS_THEME_SET,
   PROFILE_SETTINGS_THEME_GET
-} from "@/store/modules/profile";
+} from '@/store/modules/profile';
 
 @Component
 export default class ProfileSettingsPage extends Vue {
@@ -46,15 +46,15 @@ export default class ProfileSettingsPage extends Vue {
 
   get themes() {
     return {
-      light: "Светлая",
-      dark: "Тёмная"
+      light: 'Светлая',
+      dark: 'Тёмная'
     };
   }
 }
 
-export const profileSettingsPageRoute = <RouteConfig>{
-  path: "/settings",
-  name: "ProfileSettings",
+export const profileSettingsPageRoute: RouteConfig = {
+  path: '/settings',
+  name: 'ProfileSettings',
   component: ProfileSettingsPage
 };
 </script>

@@ -1,4 +1,4 @@
 /* eslint-disable */
-require('./bars')
-require('./loading')
-require('./logo')
+require('./bars');
+require('./loading');
+require('./logo');

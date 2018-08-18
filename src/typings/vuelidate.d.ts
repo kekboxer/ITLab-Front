@@ -1,14 +1,14 @@
-declare module "vuelidate" {
+declare module 'vuelidate' {
 
-  import _Vue from "vue";
+  import _Vue from 'vue';
   
-  module "vue/types/options" {
+  module 'vue/types/options' {
     interface ComponentOptions<V extends _Vue> {
       validations?: ValidationRuleset<{}>;
     }
   }
 
-  module "vue/types/vue" {
+  module 'vue/types/vue' {
     interface Vue {
       $v: Vuelidate<any>;
     }
@@ -194,9 +194,9 @@ declare module "vuelidate" {
 }
 
 
-declare module "vuelidate/lib/validators" {
+declare module 'vuelidate/lib/validators' {
 
-  import { ValidationPredicate } from "vuelidate";
+  import { ValidationPredicate } from 'vuelidate';
 
   /**
    * Accepts only alphabet characters.

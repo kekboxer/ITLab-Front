@@ -38,17 +38,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
-import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
 import {
   EventType,
   EventTypeDefault,
   EVENT_TYPE_SEARCH,
   EVENT_TYPE_COMMIT
-} from "@/store/modules/events";
+} from '@/store/modules/events';
 
 enum ModalState {
   Hidden,
@@ -59,46 +59,46 @@ enum ModalState {
 
 @Component({
   components: {
-    "autocomplete-input-component": AutocompleteInputComponent
+    'autocomplete-input-component': AutocompleteInputComponent
   }
 })
 export default class EventTypeSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() value?: EventType;
+  @Prop() public value?: EventType;
 
   // Properties //
   ///////////////
 
-  eventTypeSelected: EventType = new EventTypeDefault();
+  public eventTypeSelected: EventType = new EventTypeDefault();
 
-  modalData: EventType = new EventTypeDefault();
-  modalState: ModalState = ModalState.Hidden;
+  public modalData: EventType = new EventTypeDefault();
+  public modalState: ModalState = ModalState.Hidden;
 
   // Component methods //
   //////////////////////
 
-  mounted() {
-    this.$watch("value", (value?: EventType) => {
+  public mounted() {
+    this.$watch('value', (value?: EventType) => {
       this.eventTypeSelected = value ? value : new EventTypeDefault();
     });
 
     this.eventTypeSelected = this.value ? this.value : new EventTypeDefault();
   }
 
-  onInput() {
-    this.$emit("input", this.eventTypeSelected);
+  public onInput() {
+    this.$emit('input', this.eventTypeSelected);
   }
 
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringify(eventType: EventType): string {
+  public onStringify(eventType: EventType): string {
     return eventType.title;
   }
 
-  onChange(input: string, cb: Function) {
+  public onChange(input: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(EVENT_TYPE_SEARCH, { match: input })
       .then((eventTypes: EventType[]) => {
@@ -110,7 +110,7 @@ export default class EventTypeSelectionComponent extends Vue {
   /////////////////////////
 
   get modalVisible(): boolean {
-    return this.modalState != ModalState.Hidden;
+    return this.modalState !== ModalState.Hidden;
   }
   set modalVisible(show: boolean) {
     if (!show) {
@@ -118,7 +118,7 @@ export default class EventTypeSelectionComponent extends Vue {
     }
   }
 
-  onSubmitModal() {
+  public onSubmitModal() {
     this.modalState = ModalState.InProcess;
     this.$store
       .dispatch(EVENT_TYPE_COMMIT, this.modalData)
@@ -131,13 +131,13 @@ export default class EventTypeSelectionComponent extends Vue {
       });
   }
 
-  showModal(search: string) {
+  public showModal(search: string) {
     this.modalData.title = search;
     this.modalState = ModalState.Edit;
   }
 
   get isModalInProcess(): boolean {
-    return this.modalState == ModalState.InProcess;
+    return this.modalState === ModalState.InProcess;
   }
 }
 </script>

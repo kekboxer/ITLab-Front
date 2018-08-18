@@ -18,7 +18,6 @@
           </strong>
         </b-col>
         <b-col cols="auto">
-          <!--<strong>Иванов Иван</strong>-->
           <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + event.id">Изменить</b-button>
         </b-col>
       </b-row>
@@ -65,16 +64,15 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Icon from "vue-awesome/components/Icon";
-import moment from "moment";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Icon from 'vue-awesome/components/Icon';
+import moment from 'moment';
 
+import 'vue-awesome/icons/clock';
+import 'vue-awesome/icons/edit';
+import 'vue-awesome/icons/eye-slash';
 
-import "vue-awesome/icons/clock";
-import "vue-awesome/icons/edit";
-import "vue-awesome/icons/eye-slash";
-
-import { Event } from "@/store/modules/events";
+import { Event } from '@/store/modules/events';
 
 enum State {
   Default,
@@ -88,17 +86,17 @@ enum State {
   }
 })
 export default class EventItemComponent extends Vue {
-  DATE_FORMAT: string = "DD.MM.YYYY HH:mm";
-  TIME_FORMAT: string = "HH:mm";
+  public DATE_FORMAT: string = 'DD.MM.YYYY HH:mm';
+  public TIME_FORMAT: string = 'HH:mm';
 
-  @Prop() event!: Event;
+  @Prop() public event!: Event;
 
-  dateHovered: boolean = false;
+  public dateHovered: boolean = false;
 
-  checkDateHover() {
+  public checkDateHover() {
     if (
       !window.getSelection() ||
-      window.getSelection().toString().length == 0
+      window.getSelection().toString().length === 0
     ) {
       this.dateHovered = !this.dateHovered;
     }
@@ -119,7 +117,7 @@ export default class EventItemComponent extends Vue {
 
   get beginTime(): string {
     if (!this.event.beginTime) {
-      return "";
+      return '';
     }
 
     return moment(this.event.beginTime).format(this.DATE_FORMAT);
@@ -127,7 +125,7 @@ export default class EventItemComponent extends Vue {
 
   get beginTimeCalendar(): string {
     if (!this.event.beginTime) {
-      return "";
+      return '';
     }
 
     return moment(this.event.beginTime).calendar();
@@ -135,7 +133,7 @@ export default class EventItemComponent extends Vue {
 
   get beginTimeShort(): string {
     if (!this.event.beginTime) {
-      return "";
+      return '';
     }
 
     return moment(this.event.beginTime).format(this.TIME_FORMAT);
@@ -145,12 +143,14 @@ export default class EventItemComponent extends Vue {
     if (
       this.event.targetParticipantsCount == null ||
       this.event.currentParticipantsCount == null
-    )
+    ) {
       return 0;
+    }
 
     if (
-      this.event.currentParticipantsCount > this.event.targetParticipantsCount ||
-      this.event.targetParticipantsCount == 0
+      this.event.currentParticipantsCount >
+        this.event.targetParticipantsCount ||
+      this.event.targetParticipantsCount === 0
     ) {
       return 100;
     } else {
@@ -162,11 +162,11 @@ export default class EventItemComponent extends Vue {
 
   get duration(): string {
     if (!this.event.totalDurationInMinutes) {
-      return "";
+      return '';
     }
 
     return moment
-      .duration(this.event.totalDurationInMinutes, "minutes")
+      .duration(this.event.totalDurationInMinutes, 'minutes')
       .humanize();
   }
 }
@@ -176,7 +176,7 @@ export default class EventItemComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .event-item-component {
   padding: 20px;

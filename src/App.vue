@@ -18,20 +18,20 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import SidebarComponent from "@/components/SidebarComponent.vue";
-import { PROFILE_SETTINGS_THEME_GET } from "@/store/modules/profile";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import SidebarComponent from '@/components/SidebarComponent.vue';
+import { PROFILE_SETTINGS_THEME_GET } from '@/store/modules/profile';
 
 @Component({
   components: {
-    "sidebar-component": SidebarComponent
-  }
+    'sidebar-component': SidebarComponent,
+  },
 })
 export default class App extends Vue {
   get theme() {
     const themeName = this.$store.getters[PROFILE_SETTINGS_THEME_GET];
-    return "theme-" + themeName;
+    return 'theme-' + themeName;
   }
 }
 </script>

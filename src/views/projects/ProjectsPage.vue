@@ -30,29 +30,29 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import axios from 'axios';
 
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent
+    'loading-stub-component': LoadingStubComponent
   }
 })
 export default class ProjectsPage extends Vue {
-  APP_ID: string = "5c30d909f3ba9f9e3141a286626f90ea";
-  APP_TOKEN: string = "d366bf5ed0622c00e27f4532b7be509371a214a471355740e98374bffdf4a92d";
+  public APP_ID: string = '5c30d909f3ba9f9e3141a286626f90ea';
+  public APP_TOKEN: string = 'd366bf5ed0622c00e27f4532b7be509371a214a471355740e98374bffdf4a92d';
 
-  loadingInProcess: boolean = true;
-  boards: any[] = [];
+  public loadingInProcess: boolean = true;
+  public boards: any[] = [];
 
-  mounted() {
+  public mounted() {
     this.loadingInProcess = true;
 
     const ai = axios.create({
-      baseURL: "https://api.trello.com/1/"
+      baseURL: 'https://api.trello.com/1/'
     });
 
     ai
@@ -61,27 +61,29 @@ export default class ProjectsPage extends Vue {
           this.APP_TOKEN
         }`
       )
-      .then(result => {
+      .then((result) => {
         this.boards = result && result.data;
 
         this.loadingInProcess = false;
       })
-      .catch(err => {
-        console.log("ERROR", err);
+      .catch((err) => {
+        console.log('ERROR', err);
       });
   }
 
-  getStyle(board: any) {
+  public getStyle(board: any) {
     return {
       backgroundColor: board.prefs.backgroundColor,
-      backgroundImage: board.prefs.backgroundImageScaled ? `url(${board.prefs.backgroundImageScaled[1].url})` : undefined
-    }
+      backgroundImage: board.prefs.backgroundImageScaled
+        ? `url(${board.prefs.backgroundImageScaled[1].url})`
+        : undefined
+    };
   }
 }
 
-export const projectsPageRoute = <RouteConfig>{
-  path: "/projects",
-  name: "ProjectsPage",
+export const projectsPageRoute: RouteConfig = {
+  path: '/projects',
+  name: 'ProjectsPage',
   component: ProjectsPage
 };
 </script>
@@ -90,7 +92,7 @@ export const projectsPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .projects-page {
   .board-tile,

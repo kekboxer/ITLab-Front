@@ -1,1 +1,1 @@
-declare module "trello";
+declare module 'trello';

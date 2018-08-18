@@ -29,10 +29,10 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-import Icon from "vue-awesome/components/Icon";
-import "vue-awesome/icons/times";
+import Icon from 'vue-awesome/components/Icon';
+import 'vue-awesome/icons/times';
 
 @Component({
   components: {
@@ -40,100 +40,100 @@ import "vue-awesome/icons/times";
   }
 })
 export default class AutocompleteInputComponent extends Vue {
-  resultsHidden: boolean = true;
-  searchString: string = "";
-  results: Object[] = [];
+  public resultsHidden: boolean = true;
+  public searchString: string = '';
+  public results: object[] = [];
 
-  @Prop() value?: Object;
-
-  @Prop({
-    default: false
-  })
-  withoutAdding?: boolean;
+  @Prop() public value?: object;
 
   @Prop({
     default: false
   })
-  canClear?: boolean;
+  public withoutAdding?: boolean;
 
   @Prop({
-    default: (v: Object) => {
-      return v ? v.toString() : "";
+    default: false
+  })
+  public canClear?: boolean;
+
+  @Prop({
+    default: (v: object) => {
+      return v ? v.toString() : '';
     }
   })
-  stringify?: Function;
+  public stringify?: (value: object) => string;
 
   @Prop({
-    default: (s: string, cb: Function) => {
+    default: (s: string, cb: (arr: object[]) => void) => {
       if (cb) {
-        console.log(cb);
         cb([]);
       }
     }
   })
-  fetch?: Function;
+  public fetch?: (s: string, cb: (arr: object[]) => void) => void;
 
   @Prop({
-    default: (title: string) => {}
+    default: (title: string) => undefined
   })
-  add?: Function;
+  public add?: (title: string) => void;
 
-  mounted() {
-    this.$watch("value", (value?: Object) => {
-      this.searchString = value ? this.stringify && this.stringify(value) : "";
+  public mounted() {
+    this.$watch('value', (value?: object) => {
+      this.searchString = value && this.stringify ? this.stringify(value) : '';
     });
 
-    this.searchString = this.value
-      ? this.stringify && this.stringify(this.value)
-      : "";
+    this.searchString =
+      this.value && this.stringify ? this.stringify(this.value) : '';
   }
 
-  onBlur() {
+  public onBlur() {
     this.resultsHidden = true;
-    if (this.value != undefined) {
+    if (this.value != null && this.stringify) {
       this.searchString = this.stringify && this.stringify(this.value);
     } else {
-      this.searchString = "";
+      this.searchString = '';
     }
   }
 
-  onInput() {
+  public onInput() {
     this.resultsHidden = false;
     if (this.fetch) {
-      this.fetch(this.searchString, (results: Object[]) => {
+      this.fetch(this.searchString, (results: object[]) => {
         this.results = results;
       });
     }
   }
 
-  onSelect(selected: Object) {
-    this.searchString = this.stringify && this.stringify(selected);
+  public onSelect(selected: object) {
+    this.searchString = this.stringify ? this.stringify(selected) : '';
     this.resultsHidden = true;
-    this.$emit("input", selected);
+    this.$emit('input', selected);
   }
 
-  onAdd() {
-    this.add && this.add(this.searchString);
+  public onAdd() {
+    if (this.add != null) {
+      this.add(this.searchString);
+    }
   }
 
-  onClear() {
-    this.searchString = "";
+  public onClear() {
+    this.searchString = '';
     this.resultsHidden = true;
-    this.$emit("input", null);
+    this.$emit('input', null);
   }
 
   get checkExistence(): boolean {
-    if (!this.stringify || this.searchString.length == 0) {
+    if (!this.stringify || this.searchString.length === 0) {
       return false;
     }
 
     const search = this.searchString.trim().toLocaleLowerCase();
-    for (let result of this.results) {
+    for (const result of this.results) {
       const title = (this.stringify(result) as string)
         .trim()
         .toLocaleLowerCase();
 
-      if (title.localeCompare(search) == 0) {
+      if (title.localeCompare(search) === 0) {
         return true;
       }
     }
@@ -147,7 +147,7 @@ export default class AutocompleteInputComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .autocomplete-input-component {
   position: relative;

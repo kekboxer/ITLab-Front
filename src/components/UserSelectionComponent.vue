@@ -13,52 +13,52 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
-import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
-import { User, UserDefault, USER_SEARCH } from "@/store/modules/users";
+import { User, UserDefault, USER_SEARCH } from '@/store/modules/users';
 
 @Component({
   components: {
-    "autocomplete-input-component": AutocompleteInputComponent
+    'autocomplete-input-component': AutocompleteInputComponent
   }
 })
 export default class UserSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() value?: User;
+  @Prop() public value?: User;
 
   // Properties //
   ///////////////
 
-  userSelected: User = new UserDefault();
+  public userSelected: User = new UserDefault();
 
   // Component mthods //
   /////////////////////
 
-  mounted() {
-    this.$watch("value", (value?: User) => {
+  public mounted() {
+    this.$watch('value', (value?: User) => {
       this.userSelected = value ? value : new UserDefault();
     });
 
     this.userSelected = this.value ? this.value : new UserDefault();
   }
 
-  onInput() {
-    this.$emit("input", this.userSelected);
+  public onInput() {
+    this.$emit('input', this.userSelected);
   }
 
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringify(user: User): string {
+  public onStringify(user: User): string {
     return user.email;
   }
 
-  onChange(input: string, cb: Function) {
+  public onChange(input: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(USER_SEARCH, { match: input })
       .then((users: User[]) => {
@@ -72,7 +72,7 @@ export default class UserSelectionComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .user-selection-component {
   .result-item {

@@ -63,35 +63,35 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig, Route } from "vue-router";
-import moment from "moment-timezone";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig, Route } from 'vue-router';
+import moment from 'moment-timezone';
 
-import VueMarkdown from "vue-markdown";
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
-import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
+import VueMarkdown from 'vue-markdown';
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
-import { Event, EventDefault, EVENTS_FETCH_ONE } from "@/store/modules/events";
+import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/store/modules/events';
 
 @Component({
   components: {
-    "vue-markdown": VueMarkdown,
-    "loading-stub-component": LoadingStubComponent,
-    "event-shifts-component": EventShiftsComponent
+    'vue-markdown': VueMarkdown,
+    'loading-stub-component': LoadingStubComponent,
+    'event-shifts-component': EventShiftsComponent
   }
 })
 export default class EventDetailPage extends Vue {
-  DATE_FORMAT: string = "DD.MM.YYYY HH:mm";
+  public DATE_FORMAT: string = 'DD.MM.YYYY HH:mm';
 
-  loadingInProcess: boolean = false;
-  event: Event = new EventDefault();
+  public loadingInProcess: boolean = false;
+  public event: Event = new EventDefault();
 
-  mounted() {
+  public mounted() {
     this.loadingInProcess = true;
 
     const eventId = this.$route.params.id;
     if (eventId) {
-      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then(event => {
+      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then((event) => {
         this.event = event;
 
         this.loadingInProcess = false;
@@ -100,13 +100,17 @@ export default class EventDetailPage extends Vue {
   }
 
   get showElapsed(): boolean {
-    if (!this.eventRange.beginTime) return false;
+    if (!this.eventRange.beginTime) {
+      return false;
+    }
 
     return this.eventRange.beginTime && new Date() < this.eventRange.beginTime;
   }
 
   get elapsedTime(): string | null {
-    if (!this.eventRange.beginTime) return null;
+    if (!this.eventRange.beginTime) {
+      return null;
+    }
 
     const ms = moment(new Date()).diff(moment(this.eventRange.beginTime));
     return moment.duration(ms).humanize();
@@ -114,8 +118,9 @@ export default class EventDetailPage extends Vue {
 
   get eventRange(): { beginTime: Date | null; endTime: Date | null } {
     const shifts = this.event.shifts;
-    if (!shifts || shifts.length == 0)
+    if (!shifts || shifts.length === 0) {
       return { beginTime: null, endTime: null };
+    }
 
     const result: { beginTime: Date; endTime: Date } = {
       beginTime: shifts[0].beginTime,
@@ -123,7 +128,7 @@ export default class EventDetailPage extends Vue {
     };
 
     if (shifts.length > 1) {
-      shifts.map(shift => {
+      shifts.map((shift) => {
         if (shift.beginTime < result.beginTime) {
           result.beginTime = shift.beginTime;
         }
@@ -136,16 +141,16 @@ export default class EventDetailPage extends Vue {
     return result;
   }
 
-  formatDate(date: Date): string {
+  public formatDate(date: Date): string {
     return moment(date).format(this.DATE_FORMAT);
   }
 }
 
-export const eventDetailPage = <RouteConfig>{
-  path: "/events/:id",
-  name: "EventDetailPage",
+export const eventDetailPage = {
+  path: '/events/:id',
+  name: 'EventDetailPage',
   component: EventDetailPage
-};
+} as RouteConfig;
 </script>
 <!-- SCRIPT END -->
 

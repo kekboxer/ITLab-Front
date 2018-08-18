@@ -9,8 +9,8 @@
 
 <!-- SCRIPT BEGTIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import "@/icons/loading";
+import { Component, Vue } from 'vue-property-decorator';
+import '@/icons/loading';
 
 @Component
 export default class LoadingStubComponent extends Vue {}
@@ -20,7 +20,7 @@ export default class LoadingStubComponent extends Vue {}
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .loading-stub-component {
   text-align: center;

@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="equipmentSelected" @input="onInput" :without-adding="true" :can-clear="true">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" v-model="equipmentSelected" @input="onInput" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
         <b>{{ data.item.equipmentType.title }}</b><br>{{ data.item.serialNumber }}
       </div>
@@ -13,52 +13,52 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
-import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
 import {
   Equipment,
   EquipmentDefault,
   EQUIPMENT_SEARCH
-} from "@/store/modules/equipment";
+} from '@/store/modules/equipment';
 
 @Component({
   components: {
-    "autocomplete-input-component": AutocompleteInputComponent
+    'autocomplete-input-component': AutocompleteInputComponent
   }
 })
 export default class EquipmentSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() value?: Equipment;
+  @Prop() public value?: Equipment;
 
   // Properties //
   ///////////////
 
-  equipmentSelected: Equipment = new EquipmentDefault();
+  public equipmentSelected: Equipment = new EquipmentDefault();
 
   // Component methods //
   //////////////////////
 
-  mounted() {
-    this.$watch("value", (value?: Equipment) => {
+  public mounted() {
+    this.$watch('value', (value?: Equipment) => {
       this.equipmentSelected = value ? value : new EquipmentDefault();
     });
 
     this.equipmentSelected = this.value ? this.value : new EquipmentDefault();
   }
 
-  onInput() {
-    this.$emit("input", this.equipmentSelected);
+  public onInput() {
+    this.$emit('input', this.equipmentSelected);
   }
 
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringify(equipment: Equipment): string {
+  public onStringify(equipment: Equipment): string {
     if (equipment.equipmentType) {
       return `${equipment.equipmentType.title} ${equipment.serialNumber}`;
     } else {
@@ -66,8 +66,8 @@ export default class EquipmentSelectionComponent extends Vue {
     }
   }
 
-  onChange(input: string, cb: Function) {
-    this.$store.dispatch(EQUIPMENT_SEARCH, input).then(equipment => {
+  public onFetch(input: string, cb: (result: object[]) => void) {
+    this.$store.dispatch(EQUIPMENT_SEARCH, input).then((equipment) => {
       cb(equipment as Equipment[]);
     });
   }
@@ -78,7 +78,7 @@ export default class EquipmentSelectionComponent extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .equipment-selection-component {
   .result-item {

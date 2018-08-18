@@ -78,13 +78,13 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import axios from 'axios';
 
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
-import UserSelectionComponent from "@/components/UserSelectionComponent.vue";
-import EquipmentTypeSelectionComponent from "@/components/EquipmentTypeSelectionComponent.vue";
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
+import EquipmentTypeSelectionComponent from '@/components/EquipmentTypeSelectionComponent.vue';
 
 import {
   Equipment,
@@ -93,14 +93,14 @@ import {
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_COMMIT
-} from "@/store/modules/equipment";
+} from '@/store/modules/equipment';
 
 import {
   User,
   UserDefault,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT
-} from "@/store/modules/users";
+} from '@/store/modules/users';
 
 enum State {
   Default,
@@ -110,40 +110,42 @@ enum State {
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent,
-    "user-selection-component": UserSelectionComponent,
-    "equipment-type-selection-component": EquipmentTypeSelectionComponent
+    'loading-stub-component': LoadingStubComponent,
+    'user-selection-component': UserSelectionComponent,
+    'equipment-type-selection-component': EquipmentTypeSelectionComponent
   }
 })
 export default class EquipmentEditPage extends Vue {
   // Page properties //
   ////////////////////
 
-  pageState: State = State.Default;
-  isNewEquipment: boolean = false;
-  loadingInProcess: boolean = false;
+  public pageState: State = State.Default;
+  public isNewEquipment: boolean = false;
+  public loadingInProcess: boolean = false;
 
   // Equipment properties //
   /////////////////////////
 
-  equipment: Equipment = new EquipmentDefault();
-  equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
-  equipmentOwner: User | null = null;
+  public equipment: Equipment = new EquipmentDefault();
+  public equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
+  public equipmentOwner: User | null = null;
 
-  equipmentOwnerModalShow: boolean = false;
-  equipmentOwnerModalData: User | null = null;
-  equipmentOwnerModalState: State = State.Default;
+  public equipmentOwnerModalShow: boolean = false;
+  public equipmentOwnerModalData: User | null = null;
+  public equipmentOwnerModalState: State = State.Default;
 
-  mounted() {
+  public mounted() {
     this.loadingInProcess = true;
 
     const equipmentId = this.$route.params.id;
-    if (equipmentId && equipmentId != "new") {
-      this.$store.dispatch(EQUIPMENT_FETCH_ONE, equipmentId).then(equipment => {
-        this.setEquipment(equipment);
+    if (equipmentId && equipmentId !== 'new') {
+      this.$store
+        .dispatch(EQUIPMENT_FETCH_ONE, equipmentId)
+        .then((equipment) => {
+          this.setEquipment(equipment);
 
-        this.loadingInProcess = false;
-      });
+          this.loadingInProcess = false;
+        });
     } else {
       this.isNewEquipment = true;
       this.loadingInProcess = false;
@@ -153,41 +155,41 @@ export default class EquipmentEditPage extends Vue {
   // Equipment methods //
   //////////////////////
 
-  onSubmit() {
+  public onSubmit() {
     if (this.equipmentTypeSelected) {
       this.pageState = State.InProcess;
       this.equipment.equipmentTypeId = this.equipmentTypeSelected.id;
 
       this.$store
         .dispatch(EQUIPMENT_COMMIT, this.equipment)
-        .then(equipment => {
+        .then((equipment) => {
           this.setEquipment(equipment);
 
           this.pageState = State.Default;
           if (this.isNewEquipment) {
             this.isNewEquipment = false;
-            this.$router.push({ path: "/equipment/" + equipment.id });
+            this.$router.push({ path: '/equipment/' + equipment.id });
           } else {
             this.$notify({
-              title: "Изменения успешно сохранены",
+              title: 'Изменения успешно сохранены',
               duration: 500
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.pageState = State.Error;
         });
     }
   }
 
-  setEquipment(equipment: Equipment) {
+  public setEquipment(equipment: Equipment) {
     this.equipment = equipment;
     this.equipmentTypeSelected = equipment.equipmentType
       ? equipment.equipmentType
       : new EquipmentTypeDefault();
 
     if (equipment.ownerId) {
-      axios.get("user/" + equipment.ownerId).then(result => {
+      axios.get('user/' + equipment.ownerId).then((result) => {
         const body = result && result.data;
         this.equipmentOwner = body.data;
         this.equipmentOwnerModalData = body.data;
@@ -196,13 +198,13 @@ export default class EquipmentEditPage extends Vue {
   }
 
   get isPageInProcess(): boolean {
-    return this.pageState == State.InProcess;
+    return this.pageState === State.InProcess;
   }
 
   // Modal window methods //
   /////////////////////////
 
-  onSubmitEquipmentOwner() {
+  public onSubmitEquipmentOwner() {
     this.equipmentOwnerModalState = State.InProcess;
 
     const onSuccess = () => {
@@ -215,7 +217,7 @@ export default class EquipmentEditPage extends Vue {
       this.equipmentOwnerModalShow = false;
 
       this.$notify({
-        title: "Владелец успешно изменён",
+        title: 'Владелец успешно изменён',
         duration: 500
       });
     };
@@ -229,7 +231,7 @@ export default class EquipmentEditPage extends Vue {
         .then((equipment: Equipment) => {
           onSuccess();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           this.equipmentOwnerModalState = State.Error;
         });
@@ -248,7 +250,7 @@ export default class EquipmentEditPage extends Vue {
             onSuccess();
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           this.equipmentOwnerModalState = State.Error;
         });
@@ -259,18 +261,18 @@ export default class EquipmentEditPage extends Vue {
     }
   }
 
-  showEquipmentOwnerModal() {
+  public showEquipmentOwnerModal() {
     this.equipmentOwnerModalShow = true;
   }
 
   get isModalInProcess(): boolean {
-    return this.equipmentOwnerModalState == State.InProcess;
+    return this.equipmentOwnerModalState === State.InProcess;
   }
 }
 
-export const equipmentEditPageRoute = <RouteConfig>{
-  path: "/equipment/:id",
-  name: "EquipmentEditPage",
+export const equipmentEditPageRoute: RouteConfig = {
+  path: '/equipment/:id',
+  name: 'EquipmentEditPage',
   component: EquipmentEditPage
 };
 </script>
@@ -279,7 +281,7 @@ export const equipmentEditPageRoute = <RouteConfig>{
 
 <!-- STYLES BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .equipment-edit-page {
   @include media-breakpoint-down(sm) {

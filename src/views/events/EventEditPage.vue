@@ -78,15 +78,15 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import moment from "moment-timezone";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import moment from 'moment-timezone';
+import axios from 'axios';
 
-import VueMarkdown from "vue-markdown";
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
-import EventShiftsComponent from "@/components/EventShiftsComponent.vue";
-import EventTypeSelectionComponent from "@/components/EventTypeSelectionComponent.vue";
+import VueMarkdown from 'vue-markdown';
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
+import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
 
 import {
   Event,
@@ -96,7 +96,7 @@ import {
   EventShift,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT
-} from "@/store/modules/events";
+} from '@/store/modules/events';
 
 enum State {
   Default,
@@ -106,38 +106,38 @@ enum State {
 
 @Component({
   components: {
-    "vue-markdown": VueMarkdown,
-    "loading-stub-component": LoadingStubComponent,
-    "event-shifts-component": EventShiftsComponent,
-    "event-type-selection-component": EventTypeSelectionComponent
+    'vue-markdown': VueMarkdown,
+    'loading-stub-component': LoadingStubComponent,
+    'event-shifts-component': EventShiftsComponent,
+    'event-type-selection-component': EventTypeSelectionComponent
   }
 })
 export default class EventEditPage extends Vue {
-  DATETIME_FORMAT = "DD.MM.YYYY HH:mm";
+  public DATETIME_FORMAT = 'DD.MM.YYYY HH:mm';
 
   // Page properties //
   ////////////////////
 
-  pageState: State = State.Default;
-  isNewEvent: boolean = false;
-  loadingInProcess: boolean = false;
+  public pageState: State = State.Default;
+  public isNewEvent: boolean = false;
+  public loadingInProcess: boolean = false;
 
   // Event properties //
   /////////////////////
 
-  event: Event = new EventDefault();
-  eventShifts: EventShift[] = [];
-  eventTypeSelected: EventType = new EventTypeDefault();
+  public event: Event = new EventDefault();
+  public eventShifts: EventShift[] = [];
+  public eventTypeSelected: EventType = new EventTypeDefault();
 
   // Component methods //
   //////////////////////
 
-  mounted() {
+  public mounted() {
     this.loadingInProcess = true;
 
     const eventId = this.$route.params.id;
-    if (eventId && eventId != "new") {
-      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then(event => {
+    if (eventId && eventId !== 'new') {
+      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then((event) => {
         this.setEvent(event);
 
         this.loadingInProcess = false;
@@ -151,7 +151,7 @@ export default class EventEditPage extends Vue {
   // Event methods //
   //////////////////
 
-  onSubmitEvent() {
+  public onSubmitEvent() {
     if (this.eventTypeSelected) {
       this.pageState = State.InProcess;
 
@@ -161,27 +161,27 @@ export default class EventEditPage extends Vue {
 
       this.$store
         .dispatch(EVENT_COMMIT, this.event)
-        .then(event => {
+        .then((event) => {
           this.setEvent(event);
 
           this.pageState = State.Default;
           if (this.isNewEvent) {
             this.isNewEvent = false;
-            this.$router.push({ path: "/events/edit/" + event.id });
+            this.$router.push({ path: '/events/edit/' + event.id });
           } else {
             this.$notify({
-              title: "Изменения успешно сохранены",
+              title: 'Изменения успешно сохранены',
               duration: 500
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.pageState = State.Error;
         });
     }
   }
 
-  setEvent(event: Event) {
+  public setEvent(event: Event) {
     this.event = event;
     this.eventShifts = event.shifts || [];
     this.eventTypeSelected = event.eventType
@@ -190,18 +190,18 @@ export default class EventEditPage extends Vue {
   }
 
   get isPageInProcess(): boolean {
-    return this.pageState == State.InProcess;
+    return this.pageState === State.InProcess;
   }
 
-  countRows(str: string, minValue: number = 0): number {
+  public countRows(str: string, minValue: number = 0): number {
     const count = str.split(/\r\n|\r|\n/).length;
     return count < minValue ? minValue : count;
   }
 }
 
-export const eventEditPageRoute = <RouteConfig>{
-  path: "/events/edit/:id",
-  name: "EventEditPage",
+export const eventEditPageRoute: RouteConfig = {
+  path: '/events/edit/:id',
+  name: 'EventEditPage',
   component: EventEditPage
 };
 </script>
@@ -210,7 +210,7 @@ export const eventEditPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .event-edit-page {
   .mx-input-append {

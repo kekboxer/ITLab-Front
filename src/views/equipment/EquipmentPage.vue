@@ -86,38 +86,38 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import axios from 'axios';
 
-import LoadingStubComponent from "@/components/LoadingStubComponent.vue";
+import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 
-import Icon from "vue-awesome/components/Icon";
-import "vue-awesome/icons/times";
+import Icon from 'vue-awesome/components/Icon';
+import 'vue-awesome/icons/times';
 
 import {
   Equipment,
   EquipmentType,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_GET_ALL
-} from "@/store/modules/equipment";
+} from '@/store/modules/equipment';
 
-import { User, USERS_FETCH_ALL } from "@/store/modules/users";
+import { User, USERS_FETCH_ALL } from '@/store/modules/users';
 
 @Component({
   components: {
-    "loading-stub-component": LoadingStubComponent,
+    'loading-stub-component': LoadingStubComponent,
     Icon
   }
 })
 export default class EquipmentPage extends Vue {
-  loadingInProcess: boolean = true;
+  public loadingInProcess: boolean = true;
 
-  users: User[] = [];
-  equipmentFilterString: string = "";
+  public users: User[] = [];
+  public equipmentFilterString: string = '';
 
-  beforeMount() {
-    this.loadingInProcess = this.$store.getters[EQUIPMENT_GET_ALL].length == 0;
+  public beforeMount() {
+    this.loadingInProcess = this.$store.getters[EQUIPMENT_GET_ALL].length === 0;
 
     this.$store
       .dispatch(USERS_FETCH_ALL)
@@ -125,34 +125,34 @@ export default class EquipmentPage extends Vue {
         this.users = users;
         return this.$store.dispatch(EQUIPMENT_FETCH_ALL);
       })
-      .then(result => {
+      .then((result) => {
         this.loadingInProcess = false;
-      })
-      .catch(result => {});
+      });
   }
 
-  onEquipmentTableFilter(v: any) {
+  public onEquipmentTableFilter(v: any) {
     const filterStrings = this.equipmentFilterString
       .toLocaleLowerCase()
-      .split(" ");
+      .split(' ');
 
     return (
-      this.equipmentFilterString == "" ||
+      this.equipmentFilterString === '' ||
       filterStrings.find(
-        filter => v.equipmentType.title.toLocaleLowerCase().indexOf(filter) > -1
+        (filter) =>
+          v.equipmentType.title.toLocaleLowerCase().indexOf(filter) > -1
       ) ||
       filterStrings.find(
-        filter => v.serialNumber.toLocaleLowerCase().indexOf(filter) > -1
+        (filter) => v.serialNumber.toLocaleLowerCase().indexOf(filter) > -1
       ) ||
       filterStrings.find(
-        filter =>
+        (filter) =>
           v.owner && v.owner.email.toLocaleLowerCase().indexOf(filter) > -1
       )
     );
   }
 
-  onEquipmentTableSort(a: any, b: any, key: string) {
-    if (key == "type") {
+  public onEquipmentTableSort(a: any, b: any, key: string) {
+    if (key === 'type') {
       return a.equipmentType.title.localeCompare(
         b.equipmentType.title,
         undefined,
@@ -165,26 +165,26 @@ export default class EquipmentPage extends Vue {
     }
   }
 
-  onEquipmentTableRowClicked(data: Equipment) {
+  public onEquipmentTableRowClicked(data: Equipment) {
     if (window.innerWidth < 1170) {
-      this.$router.push("/equipment/" + data.id);
+      this.$router.push('/equipment/' + data.id);
     }
   }
 
   get fields() {
     return [
       {
-        key: "type",
-        label: "Тип",
+        key: 'type',
+        label: 'Тип',
         sortable: true
       },
       {
-        key: "serialNumber",
-        label: "Серийный номер"
+        key: 'serialNumber',
+        label: 'Серийный номер'
       },
       {
-        key: "actions",
-        label: ""
+        key: 'actions',
+        label: ''
       }
     ];
   }
@@ -192,7 +192,7 @@ export default class EquipmentPage extends Vue {
   get items() {
     return this.$store.getters[EQUIPMENT_GET_ALL].map(
       (equipment: Equipment) => {
-        const owner = this.users.find(user => user.id == equipment.ownerId);
+        const owner = this.users.find((user) => user.id === equipment.ownerId);
 
         return {
           ...equipment,
@@ -204,9 +204,9 @@ export default class EquipmentPage extends Vue {
   }
 }
 
-export const equipmentPageRoute = <RouteConfig>{
-  path: "/equipment",
-  name: "EquipmentPage",
+export const equipmentPageRoute: RouteConfig = {
+  path: '/equipment',
+  name: 'EquipmentPage',
   component: EquipmentPage
 };
 </script>
@@ -215,7 +215,7 @@ export const equipmentPageRoute = <RouteConfig>{
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .equipment-page {
   .equipment-table {
@@ -224,8 +224,8 @@ export const equipmentPageRoute = <RouteConfig>{
         display: none;
       }
 
-      th[aria-colindex="3"],
-      td[aria-colindex="3"] {
+      th[aria-colindex='3'],
+      td[aria-colindex='3'] {
         display: none;
       }
     }

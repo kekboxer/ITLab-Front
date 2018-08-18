@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" v-model="equipmentTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" :add="showModal" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -38,17 +38,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
-import AutocompleteInputComponent from "@/components/AutocompleteInputComponent.vue";
+import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
 import {
   EquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_TYPE_SEARCH,
   EQUIPMENT_TYPE_COMMIT
-} from "@/store/modules/equipment";
+} from '@/store/modules/equipment';
 
 enum ModalState {
   Hidden,
@@ -59,28 +59,28 @@ enum ModalState {
 
 @Component({
   components: {
-    "autocomplete-input-component": AutocompleteInputComponent
+    'autocomplete-input-component': AutocompleteInputComponent
   }
 })
 export default class EquipmentTypeSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() value?: EquipmentType;
+  @Prop() public value?: EquipmentType;
 
   // Properties //
   ///////////////
 
-  equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
+  public equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
 
-  modalState: ModalState = ModalState.Hidden;
-  modalData: EquipmentType = new EquipmentTypeDefault();
+  public modalState: ModalState = ModalState.Hidden;
+  public modalData: EquipmentType = new EquipmentTypeDefault();
 
   // Component methods //
   //////////////////////
 
-  mounted() {
-    this.$watch("value", (value?: EquipmentType) => {
+  public mounted() {
+    this.$watch('value', (value?: EquipmentType) => {
       this.equipmentTypeSelected = value ? value : new EquipmentTypeDefault();
     });
 
@@ -89,18 +89,18 @@ export default class EquipmentTypeSelectionComponent extends Vue {
       : new EquipmentTypeDefault();
   }
 
-  onInput() {
-    this.$emit("input", this.equipmentTypeSelected);
+  public onInput() {
+    this.$emit('input', this.equipmentTypeSelected);
   }
 
   // Autocomplete input methods //
   ///////////////////////////////
 
-  onStringify(equipmentType: EquipmentType) {
+  public onStringify(equipmentType: EquipmentType) {
     return equipmentType.title;
   }
 
-  onChange(title: string, cb: Function) {
+  public onFetch(title: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(EQUIPMENT_TYPE_SEARCH, { match: title })
       .then((equipmentTypes: EquipmentType[]) => {
@@ -112,7 +112,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   /////////////////////////
 
   get modalVisible(): boolean {
-    return this.modalState != ModalState.Hidden;
+    return this.modalState !== ModalState.Hidden;
   }
   set modalVisible(show: boolean) {
     if (!show) {
@@ -120,7 +120,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
     }
   }
 
-  onSubmitModal() {
+  public onSubmitModal() {
     this.modalState = ModalState.InProcess;
     this.$store
       .dispatch(EQUIPMENT_TYPE_COMMIT, this.modalData)
@@ -133,13 +133,13 @@ export default class EquipmentTypeSelectionComponent extends Vue {
       });
   }
 
-  showModal(search: string) {
+  public showModal(search: string) {
     this.modalData.title = search;
     this.modalState = ModalState.Editing;
   }
 
   get isModalInProcess(): boolean {
-    return this.modalState == ModalState.InProcess;
+    return this.modalState === ModalState.InProcess;
   }
 }
 </script>

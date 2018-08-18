@@ -1,1 +1,1 @@
-export * from "./NotificationsPage.vue"
+export * from './NotificationsPage.vue';

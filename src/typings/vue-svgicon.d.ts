@@ -1,1 +1,1 @@
-declare module "vue-svgicon";
+declare module 'vue-svgicon';
