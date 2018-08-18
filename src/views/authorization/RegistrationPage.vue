@@ -12,6 +12,16 @@
               </b-col>
             </b-row>
 
+            <b-form-group label="Почта">
+              <b-form-input autocomplete="email" type="email" v-model.trim="registrationData.email" required readonly>
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Пароль">
+              <b-form-input autocomplete="new-password" type="password" v-model="registrationData.password" :state="!$v.registrationData.password.$invalid" required>
+              </b-form-input>
+            </b-form-group>
+
             <b-form-group label="Имя">
               <b-form-input autocomplete="given-name" type="text" v-model.trim="registrationData.firstName" :state="!$v.registrationData.firstName.$invalid" required>
               </b-form-input>
@@ -19,16 +29,6 @@
 
             <b-form-group label="Фамилия">
               <b-form-input autocomplete="family-name" type="text" v-model.trim="registrationData.lastName" :state="!$v.registrationData.lastName.$invalid" required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Почта">
-              <b-form-input type="email" v-model.trim="registrationData.email" :disabled="true">
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Пароль">
-              <b-form-input autocomplete="new-password" type="password" v-model="registrationData.password" :state="!$v.registrationData.password.$invalid" required>
               </b-form-input>
             </b-form-group>
 
