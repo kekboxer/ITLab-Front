@@ -16,13 +16,13 @@
               Неправильный логин или пароль
             </b-alert>
 
-            <b-form-group id="username-input-group" label="Логин" label-for="username-input">
-              <b-form-input id="username-input" type="email" v-model.trim="authorizationData.username" key="login" required>
+            <b-form-group label="Почта">
+              <b-form-input autocomplete="email" type="email" v-model.trim="authorizationData.username" required>
               </b-form-input>
             </b-form-group>
 
-            <b-form-group id="password-input-group" label="Пароль" label-for="password-input">
-              <b-form-input id="password-input" type="password" v-model="authorizationData.password" key="password" required ref="password-input">
+            <b-form-group label="Пароль">
+              <b-form-input autocomplete="current-password" type="password" v-model="authorizationData.password" required ref="password-input">
               </b-form-input>
             </b-form-group>
 
@@ -30,10 +30,6 @@
               <b-col>
                 <b-button class="submit-button w-100" type="submit" variant="primary" :disabled="isInProcess">Войти</b-button>
               </b-col>
-            </b-form-row>
-
-            <b-form-row>
-              <router-link to="/register" class="btn btn-link text-secondary w-100 mt-2">У меня ещё нет аккаунта</router-link>
             </b-form-row>
           </b-form>
 

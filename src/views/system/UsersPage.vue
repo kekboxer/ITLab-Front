@@ -29,7 +29,7 @@
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Подтвердить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Пригласить</button>
       </template>
     </b-modal>
   </div>

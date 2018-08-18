@@ -12,20 +12,23 @@
               </b-col>
             </b-row>
 
-            {{ registrationData.email }}
-
-            <b-form-group id="first-name-input-group" label="Имя" label-for="first-name-input">
-              <b-form-input id="first-name-input" type="text" v-model.trim="registrationData.firstName" :state="!$v.registrationData.firstName.$invalid" required>
+            <b-form-group label="Имя">
+              <b-form-input autocomplete="given-name" type="text" v-model.trim="registrationData.firstName" :state="!$v.registrationData.firstName.$invalid" required>
               </b-form-input>
             </b-form-group>
 
-            <b-form-group id="last-name-input-group" label="Фамилия" label-for="last-name-input">
-              <b-form-input id="last-name-input" type="text" v-model.trim="registrationData.lastName" :state="!$v.registrationData.lastName.$invalid" required>
+            <b-form-group label="Фамилия">
+              <b-form-input autocomplete="family-name" type="text" v-model.trim="registrationData.lastName" :state="!$v.registrationData.lastName.$invalid" required>
               </b-form-input>
             </b-form-group>
 
-            <b-form-group id="password-input-group" label="Пароль" label-for="password-input">
-              <b-form-input id="password-input" type="password" v-model="registrationData.password" :state="!$v.registrationData.password.$invalid" required>
+            <b-form-group label="Почта">
+              <b-form-input type="email" v-model.trim="registrationData.email" :disabled="true">
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Пароль">
+              <b-form-input autocomplete="new-password" type="password" v-model="registrationData.password" :state="!$v.registrationData.password.$invalid" required>
               </b-form-input>
             </b-form-group>
 
@@ -67,13 +70,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
 import { validationMixin } from 'vuelidate';
-import {
-  required,
-  minLength,
-  maxLength,
-  email,
-  numeric
-} from 'vuelidate/lib/validators';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
   RegistrationData,
@@ -90,7 +87,6 @@ enum State {
 const baseValidations = {
   firstName: { required, maxLength: maxLength(32) },
   lastName: { required, maxLength: maxLength(32) },
-  email: { required, email },
   password: { required, minLength: minLength(6), maxLength: maxLength(32) }
 };
 
@@ -107,6 +103,25 @@ export default class RegistrationPage extends Vue {
   public pageState: State = State.Default;
   public registrationData: RegistrationData = new RegistrationDataDefault();
 
+  // Component methods //
+  //////////////////////
+
+  public mounted() {
+    const fallback = () => this.$router.replace({ name: 'LoginPage' });
+
+    const regex = /^#e=(.+)&c=(.+)$/;
+    const matchResult = this.$route.hash.match(regex);
+
+    if (matchResult == null || matchResult.length !== 3) {
+      fallback();
+      return;
+    }
+
+    const [, email, code] = matchResult;
+    this.registrationData.email = decodeURIComponent(email);
+    this.registrationData.accessToken = decodeURIComponent(code);
+  }
+
   // Methods //
   ////////////
 
@@ -116,7 +131,7 @@ export default class RegistrationPage extends Vue {
       .dispatch(PROFILE_CREATE, this.registrationData)
       .then((result) => {
         this.registrationData = new RegistrationDataDefault();
-        this.$router.push({ name: 'EventsPage' });
+        this.$router.push({ name: 'LoginPage' });
 
         this.pageState = State.Default;
       })
@@ -128,6 +143,13 @@ export default class RegistrationPage extends Vue {
 
   get isInProcess(): boolean {
     return this.pageState === State.InProcess;
+  }
+
+  // Stuff //
+  //////////
+
+  public getDynamicId(): string {
+    return Date.now().toString();
   }
 }
 

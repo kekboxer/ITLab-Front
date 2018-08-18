@@ -32,8 +32,8 @@ export class AuthorizationDataDefault implements AuthorizationData {
 
 export interface RegistrationData
   extends Pick<User, Exclude<keyof User, 'id'>> {
-  studentId?: string;
   password: string;
+  accessToken: string;
 }
 
 export class RegistrationDataDefault implements RegistrationData {
@@ -41,6 +41,7 @@ export class RegistrationDataDefault implements RegistrationData {
   public lastName: string = '';
   public email: string = '';
   public password: string = '';
+  public accessToken: string = '';
 }
 
 // Settings //

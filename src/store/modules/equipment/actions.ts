@@ -17,7 +17,7 @@ import {
 } from './types';
 
 export const actions: ActionTree<EquipmentState, RootState> = {
-  [EQUIPMENT_SEARCH]: ({ commit }, match: string = '') => {
+  [EQUIPMENT_SEARCH]: ({}, match: string = '') => {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment?match=${encodeURIComponent(match)}`)
@@ -35,7 +35,7 @@ export const actions: ActionTree<EquipmentState, RootState> = {
   },
 
   [EQUIPMENT_TYPE_SEARCH]: (
-    { commit },
+    {},
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
