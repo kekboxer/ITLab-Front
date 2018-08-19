@@ -48,7 +48,7 @@ import {
   EventTypeDefault,
   EVENT_TYPE_SEARCH,
   EVENT_TYPE_COMMIT
-} from '@/store/modules/events';
+} from '@/modules/events';
 
 enum ModalState {
   Hidden,

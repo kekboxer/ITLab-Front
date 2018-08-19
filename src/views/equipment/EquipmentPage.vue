@@ -100,9 +100,9 @@ import {
   EquipmentType,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_GET_ALL
-} from '@/store/modules/equipment';
+} from '@/modules/equipment';
 
-import { User, USERS_FETCH_ALL } from '@/store/modules/users';
+import { User, USERS_FETCH_ALL } from '@/modules/users';
 
 @Component({
   components: {

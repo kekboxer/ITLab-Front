@@ -1,5 +1,5 @@
-import { Equipment } from '@/store/modules/equipment';
-import { User, UserDefault } from '@/store/modules/users';
+import { Equipment } from '@/modules/equipment';
+import { User, UserDefault } from '@/modules/users';
 
 // actions
 export const EVENT_TYPE_SEARCH = 'EVENT_TYPE_SEARCH';
@@ -131,6 +131,7 @@ export interface Event {
 
   targetParticipantsCount?: number;
   currentParticipantsCount?: number;
+  participating?: boolean;
 
   // Shifts data
   shifts?: EventShift[];

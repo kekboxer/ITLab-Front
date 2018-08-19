@@ -76,7 +76,7 @@ import {
   RegistrationData,
   RegistrationDataDefault,
   PROFILE_CREATE
-} from '@/store/modules/profile';
+} from '@/modules/profile';
 
 enum State {
   Default,

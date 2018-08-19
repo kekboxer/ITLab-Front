@@ -1,5 +1,5 @@
 import { ActionTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 import moment from 'moment-timezone';
 import axios from 'axios';
 

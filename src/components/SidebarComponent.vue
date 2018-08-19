@@ -7,7 +7,7 @@
     <div class="nav-sidebar noselect">
       <div class="inner-scroll">
         <div class="home">
-          <div class="text">{{ systemName }}</div>
+          <div class="text">{{ $g.SYSTEM_NAME }}</div>
           <span class="menu-toggle" @click="toggleMenu($event, true)">
             <svgicon name="bars" height="32" class="bars"></svgicon>
           </span>
@@ -37,9 +37,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Hammer from 'hammerjs';
 
-import { SYSTEM_NAME } from '@/store';
-import { Group, LAYOUT_GROUPS_GET } from '@/store/modules/layout';
-import { PROFILE_LOGOUT } from '@/store/modules/profile';
+import { Group, LAYOUT_GROUPS_GET } from '@/modules/layout';
+import { PROFILE_LOGOUT } from '@/modules/profile';
 
 import '@/icons/bars';
 
@@ -76,10 +75,6 @@ export default class SidebarComponent extends Vue {
     this.$store.dispatch(PROFILE_LOGOUT).then((result) => {
       this.$router.push({ name: 'LoginPage' });
     });
-  }
-
-  get systemName(): string {
-    return this.$store.getters[SYSTEM_NAME];
   }
 
   get groups(): Group[] {

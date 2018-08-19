@@ -50,7 +50,7 @@ import {
   AuthorizationData,
   AuthorizationDataDefault,
   PROFILE_LOGIN
-} from '@/store/modules/profile';
+} from '@/modules/profile';
 
 import '@/icons/logo';
 

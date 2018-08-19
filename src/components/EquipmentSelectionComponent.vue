@@ -22,7 +22,7 @@ import {
   Equipment,
   EquipmentDefault,
   EQUIPMENT_SEARCH
-} from '@/store/modules/equipment';
+} from '@/modules/equipment';
 
 @Component({
   components: {

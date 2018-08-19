@@ -48,7 +48,7 @@ import {
   EquipmentTypeDefault,
   EQUIPMENT_TYPE_SEARCH,
   EQUIPMENT_TYPE_COMMIT
-} from '@/store/modules/equipment';
+} from '@/modules/equipment';
 
 enum ModalState {
   Hidden,

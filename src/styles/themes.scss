@@ -42,7 +42,7 @@ $themes: (
     sidebar-section-background-color: rgba(0, 0, 0, 0.04),
     sidebar-active-section-highlight-color: $primary,
 
-    event-list-item-background-color: getcolor(white, lighter),
+    card-list-item-background-color: getcolor(white, lighter),
     event-list-item-progrss-color: getcolor(white, light),
     event-list-item-progrss-font-color: getcolor(black, light),
     event-list-item-default-state-color: $primary,
@@ -72,7 +72,7 @@ $themes: (
     sidebar-section-background-color: rgba(0, 0, 0, 0.1),
     sidebar-active-section-highlight-color: $primary,
 
-    event-list-item-background-color: getcolor(black, light),
+    card-list-item-background-color: getcolor(black, light),
     event-list-item-progrss-color: getcolor(white, light),
     event-list-item-progrss-font-color: getcolor(black, light),
     event-list-item-default-state-color: $primary,

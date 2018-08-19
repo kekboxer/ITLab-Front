@@ -1,5 +1,5 @@
 import { GetterTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 
 import { EventsState, EVENTS_GET_ALL, EVENTS_GET_ONE } from './types';
 

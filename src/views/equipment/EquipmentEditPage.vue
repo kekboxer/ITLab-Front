@@ -93,14 +93,14 @@ import {
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_COMMIT
-} from '@/store/modules/equipment';
+} from '@/modules/equipment';
 
 import {
   User,
   UserDefault,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT
-} from '@/store/modules/users';
+} from '@/modules/users';
 
 enum State {
   Default,

@@ -57,7 +57,7 @@ import {
   EventType,
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
-} from '@/store/modules/events';
+} from '@/modules/events';
 
 @Component({
   components: {
@@ -135,11 +135,11 @@ export const eventsPageRoute: RouteConfig = {
     text-align: center;
 
     @include theme-specific() {
-      background-color: getstyle(event-list-item-background-color);
+      background-color: getstyle(card-list-item-background-color);
 
       &:hover {
         background-color: darken(
-          getstyle(event-list-item-background-color),
+          getstyle(card-list-item-background-color),
           5%
         );
       }

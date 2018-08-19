@@ -4,7 +4,7 @@
     <div class="shift" v-for="(shift, shiftIndex) in eventShifts" :key="`shift-${shiftIndex}`" v-if="!shift.delete">
       <b-row>
         <b-col cols="12" md="auto" class="ml-md-1 text-center" style="line-height: 31px;">
-          <b>{{ shift.beginTime | moment(DATE_FORMAT) }}</b> &mdash;
+          <b>{{ shift.beginTime | moment($g.DATETIME_FORMAT) }}</b> &mdash;
           <b>{{ getShiftEndTime(shift) }}</b> ({{ getShiftDuration(shift) }})
         </b-col>
         <b-col cols="auto" class="ml-auto" v-if="editable">
@@ -112,12 +112,12 @@
 
       <template v-if="fieldsVisivility.shift">
         <b-form-group label="Начало">
-          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.beginTime" :format="DATE_FORMAT" lang="ru" type="datetime" :minute-step="1">
+          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.beginTime" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1">
           </date-picker>
         </b-form-group>
 
         <b-form-group label="Конец">
-          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.endTime" :format="DATE_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
+          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.endTime" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
         </b-form-group>
       </template>
 
@@ -178,9 +178,9 @@ import {
   EventEquipment,
   EventUserRole,
   EventUserRoleDefault
-} from '@/store/modules/events';
-import { Equipment } from '@/store/modules/equipment';
-import { UserDefault, User } from '@/store/modules/users';
+} from '@/modules/events';
+import { Equipment } from '@/modules/equipment';
+import { UserDefault, User } from '@/modules/users';
 
 enum ModalState {
   Hidden,
@@ -202,14 +202,6 @@ enum ModalState {
   }
 })
 export default class EventShiftsComponent extends Vue {
-  public DATE_FORMAT = 'DD.MM.YYYY HH:mm';
-  public TIME_FORMAT = 'HH:mm';
-
-  public ROLE_TRANSLATIONS: Map<string, string> = new Map<string, string>([
-    ['Participant', 'Участник'],
-    ['Organizer', 'Организатор']
-  ]);
-
   // v-model //
   ////////////
 
@@ -349,9 +341,9 @@ export default class EventShiftsComponent extends Vue {
     const shiftEndDay = moment(shift.endTime).startOf('day');
 
     if (shiftBeginDay.isSame(shiftEndDay)) {
-      return moment(shift.endTime).format(this.TIME_FORMAT);
+      return moment(shift.endTime).format(this.$g.TIME_FORMAT);
     } else {
-      return moment(shift.endTime).format(this.DATE_FORMAT);
+      return moment(shift.endTime).format(this.$g.DATETIME_FORMAT);
     }
   }
 
@@ -626,7 +618,7 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public getRoleTranslation(role: EventUserRole): string {
-    return this.ROLE_TRANSLATIONS.get(role.name) || role.name;
+    return this.$g.ROLE_TRANSLATIONS.get(role.name) || role.name;
   }
 
   // Stuff
@@ -680,6 +672,10 @@ export default class EventShiftsComponent extends Vue {
       margin-top: 5px;
       border: 1px solid darken(getcolor(white, base), 10%);
       border-radius: 0.25rem;
+
+      .badge {
+        margin-left: 5px;
+      }
 
       .remove-button {
         @extend .noselect;

@@ -49,7 +49,7 @@ import {
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
-} from '@/store/modules/users';
+} from '@/modules/users';
 
 enum ModalState {
   Hidden,

@@ -1,4 +1,4 @@
-import { User } from '@/store/modules/users';
+import { User } from '@/modules/users';
 
 // actions
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';

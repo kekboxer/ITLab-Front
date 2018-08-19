@@ -1,5 +1,5 @@
 import { GetterTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 
 import { UsersState, USERS_GET_ALL, USERS_GET_ONE } from './types';
 

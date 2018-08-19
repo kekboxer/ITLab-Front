@@ -96,7 +96,7 @@ import {
   EventShift,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT
-} from '@/store/modules/events';
+} from '@/modules/events';
 
 enum State {
   Default,
@@ -113,8 +113,6 @@ enum State {
   }
 })
 export default class EventEditPage extends Vue {
-  public DATETIME_FORMAT = 'DD.MM.YYYY HH:mm';
-
   // Page properties //
   ////////////////////
 

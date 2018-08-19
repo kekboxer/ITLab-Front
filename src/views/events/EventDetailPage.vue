@@ -71,7 +71,7 @@ import VueMarkdown from 'vue-markdown';
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
-import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/store/modules/events';
+import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 
 @Component({
   components: {
@@ -81,8 +81,6 @@ import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/store/modules/events';
   }
 })
 export default class EventDetailPage extends Vue {
-  public DATE_FORMAT: string = 'DD.MM.YYYY HH:mm';
-
   public loadingInProcess: boolean = false;
   public event: Event = new EventDefault();
 
@@ -142,7 +140,7 @@ export default class EventDetailPage extends Vue {
   }
 
   public formatDate(date: Date): string {
-    return moment(date).format(this.DATE_FORMAT);
+    return moment(date).format(this.$g.DATETIME_FORMAT);
   }
 }
 

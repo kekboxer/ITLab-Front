@@ -1,18 +1,18 @@
 import { Module } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { EquipmentState } from './types';
+import { EventsState } from './types';
 
 export * from './types';
 
-export const state: EquipmentState = {
-  equipment: []
+export const state: EventsState = {
+  events: []
 };
 
-export const equipment: Module<EquipmentState, RootState> = {
+export const events: Module<EventsState, RootState> = {
   state,
   getters,
   actions,

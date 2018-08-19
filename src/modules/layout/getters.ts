@@ -1,5 +1,5 @@
 import { GetterTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 
 import { LayoutState, LAYOUT_PAGES_GET, LAYOUT_GROUPS_GET } from './types';
 

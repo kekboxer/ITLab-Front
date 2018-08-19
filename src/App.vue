@@ -21,7 +21,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import SidebarComponent from '@/components/SidebarComponent.vue';
-import { PROFILE_SETTINGS_THEME_GET } from '@/store/modules/profile';
+import { PROFILE_SETTINGS_THEME_GET } from '@/modules/profile';
 
 @Component({
   components: {

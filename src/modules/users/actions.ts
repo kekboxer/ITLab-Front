@@ -1,5 +1,5 @@
 import { ActionTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store';
 import axios from 'axios';
 
 import {
@@ -15,7 +15,7 @@ import {
   USERS_SET_ONE
 } from './types';
 
-import { Equipment } from '@/store/modules/equipment';
+import { Equipment } from '@/modules/equipment';
 
 export const actions: ActionTree<UsersState, RootState> = {
   [USER_INVITE]: ({}, { email }: { email: string }) => {

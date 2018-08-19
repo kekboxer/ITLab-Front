@@ -8,6 +8,7 @@
             <span>
               <icon name="clock" style="position: relative; top: -2px"></icon>
             </span>
+            &nbsp;
             <span class="date desktop">
               <span v-if="dateHovered">{{ beginTime }}</span>
               <span v-else>{{ beginTimeCalendar }}</span>
@@ -72,7 +73,7 @@ import 'vue-awesome/icons/clock';
 import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/eye-slash';
 
-import { Event } from '@/store/modules/events';
+import { Event } from '@/modules/events';
 
 enum State {
   Default,
@@ -86,12 +87,15 @@ enum State {
   }
 })
 export default class EventItemComponent extends Vue {
-  public DATE_FORMAT: string = 'DD.MM.YYYY HH:mm';
-  public TIME_FORMAT: string = 'HH:mm';
+  // Properties //
+  ///////////////
 
   @Prop() public event!: Event;
 
   public dateHovered: boolean = false;
+
+  // Methods //
+  ////////////
 
   public checkDateHover() {
     if (
@@ -102,8 +106,11 @@ export default class EventItemComponent extends Vue {
     }
   }
 
+  // Computed data //
+  //////////////////
+
   get currentState(): any {
-    const state: State = State.Default; // TODO: delete this
+    const state: State = this.event.participating === true ? State.Success : State.Default;
 
     switch (+state) {
       case State.Default:
@@ -120,7 +127,7 @@ export default class EventItemComponent extends Vue {
       return '';
     }
 
-    return moment(this.event.beginTime).format(this.DATE_FORMAT);
+    return moment(this.event.beginTime).format(this.$g.DATETIME_FORMAT);
   }
 
   get beginTimeCalendar(): string {
@@ -136,7 +143,7 @@ export default class EventItemComponent extends Vue {
       return '';
     }
 
-    return moment(this.event.beginTime).format(this.TIME_FORMAT);
+    return moment(this.event.beginTime).format(this.$g.TIME_FORMAT);
   }
 
   get completeness(): number {
@@ -221,7 +228,7 @@ export default class EventItemComponent extends Vue {
   }
 
   @include theme-specific() {
-    background-color: getstyle(event-list-item-background-color);
+    background-color: getstyle(card-list-item-background-color);
 
     &.default {
       box-shadow: -4px 0 0 getstyle(event-list-item-default-state-color);

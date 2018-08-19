@@ -32,7 +32,7 @@ import { RouteConfig } from 'vue-router';
 import {
   PROFILE_SETTINGS_THEME_SET,
   PROFILE_SETTINGS_THEME_GET
-} from '@/store/modules/profile';
+} from '@/modules/profile';
 
 @Component
 export default class ProfileSettingsPage extends Vue {

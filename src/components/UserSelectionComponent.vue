@@ -18,7 +18,7 @@ import axios from 'axios';
 
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
-import { User, UserDefault, USER_SEARCH } from '@/store/modules/users';
+import { User, UserDefault, USER_SEARCH } from '@/modules/users';
 
 @Component({
   components: {
