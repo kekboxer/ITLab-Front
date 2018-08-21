@@ -3,6 +3,8 @@ import { RootState } from '@/store';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
+import { getResponseData } from '@/stuff';
+
 import {
   NotificationsState,
   EventNotification,
@@ -48,14 +50,11 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/invitations')
-        .then((response) => {
-          const body = response && response.data;
-          const data: EventNotification[] = body.data;
-
-          data.forEach(fixDates);
-
-          commit(NOTIFICATIONS_SET_ALL, data);
-          resolve(data);
+        .then((response) => getResponseData<EventNotification[]>(response))
+        .then((eventNotifications) => {
+          eventNotifications.forEach(fixDates);
+          commit(NOTIFICATIONS_SET_ALL, eventNotifications);
+          resolve(eventNotifications);
         })
         .catch((error) => {
           console.log(NOTIFICATIONS_FETCH, error);

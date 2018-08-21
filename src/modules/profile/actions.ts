@@ -2,6 +2,8 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
+import { getResponseData } from '@/stuff';
+
 import {
   ProfileState,
   AuthorizationData,
@@ -24,27 +26,19 @@ export const actions: ActionTree<ProfileState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .post('Authentication/login', authorizationData)
-        .then((response) => {
-          const body = response && response.data;
-          const data: LoginResponse = body && body.data;
+        .then((response) => getResponseData<LoginResponse>(response))
+        .then((loginResponse) => {
+          localStorage.setItem('user-token', loginResponse.token);
+          axios.defaults.headers.common.Authorization = `Bearer ${
+            loginResponse.token
+          }`;
 
-          if (body.statusCode === 1 && data.token) {
-            localStorage.setItem('user-token', data.token);
-            axios.defaults.headers.common.Authorization = `Bearer ${
-              data.token
-            }`;
-
-            commit(PROFILE_AUTH_TOKEN_SET, data.token);
-            resolve(body);
-          } else {
-            reject({
-              err: 'Login failed'
-            });
-          }
+          commit(PROFILE_AUTH_TOKEN_SET, loginResponse.token);
+          resolve(loginResponse);
         })
-        .catch((err) => {
+        .catch((error) => {
           localStorage.removeItem('user-token');
-          reject(err);
+          reject(error);
         });
     });
   },
@@ -64,9 +58,8 @@ export const actions: ActionTree<ProfileState, RootState> = {
       axios
         .post('account', registrationData)
         .then((response) => {
-          const body = response && response.data;
-
-          resolve(body);
+          // TODO: get some profile information from response
+          resolve();
         })
         .catch((error) => {
           console.log(PROFILE_CREATE, error);

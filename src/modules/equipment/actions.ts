@@ -2,6 +2,8 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
+import { getResponseData } from '@/stuff';
+
 import {
   EquipmentState,
   Equipment,
@@ -21,12 +23,8 @@ export const actions: ActionTree<EquipmentState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment?match=${encodeURIComponent(match)}`)
-        .then((response) => {
-          const body = response && response.data;
-          const equipment: Equipment[] = body.data;
-
-          resolve(equipment);
-        })
+        .then((response) => getResponseData<Equipment[]>(response))
+        .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(EQUIPMENT_SEARCH, error);
           reject();
@@ -41,13 +39,10 @@ export const actions: ActionTree<EquipmentState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipmentType?match=${encodeURIComponent(match)}&all=${all}`)
-        .then((response) => {
-          const body = response && response.data;
-          const equipmentTypes: EquipmentType[] = body.data;
-
-          resolve(equipmentTypes);
-        })
+        .then((response) => getResponseData<EquipmentType[]>(response))
+        .then((equipmentTypes) => resolve(equipmentTypes))
         .catch((error) => {
+          console.log(EQUIPMENT_TYPE_SEARCH, error);
           reject(error);
         });
     });
@@ -57,12 +52,10 @@ export const actions: ActionTree<EquipmentState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('equipment')
-        .then((response) => {
-          const body = response && response.data;
-          const data: Equipment[] = body.data;
-
-          commit(EQUIPMENT_SET_ALL, data);
-          resolve(data);
+        .then((response) => getResponseData<Equipment[]>(response))
+        .then((equipment) => {
+          commit(EQUIPMENT_SET_ALL, equipment);
+          resolve(equipment);
         })
         .catch((error) => {
           console.log(EQUIPMENT_FETCH_ALL, error);
@@ -75,12 +68,10 @@ export const actions: ActionTree<EquipmentState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment/${id}`)
-        .then((response) => {
-          const body = response && response.data;
-          const data: Equipment = body.data;
-
-          commit(EQUIPMENT_SET_ONE, data);
-          resolve(data);
+        .then((response) => getResponseData<Equipment>(response))
+        .then((equipment) => {
+          commit(EQUIPMENT_SET_ONE, equipment);
+          resolve(equipment);
         })
         .catch((error) => {
           console.log(EQUIPMENT_FETCH_ONE, error);
@@ -99,12 +90,10 @@ export const actions: ActionTree<EquipmentState, RootState> = {
           : axios.put(url, equipment);
 
       request
-        .then((response) => {
-          const body = response && response.data;
-          const data: Equipment = body.data;
-
-          commit(EQUIPMENT_SET_ONE, data);
-          resolve(data);
+        .then((response) => getResponseData<Equipment>(response))
+        .then((equipment) => {
+          commit(EQUIPMENT_SET_ONE, equipment);
+          resolve(equipment);
         })
         .catch((error) => {
           console.log(EQUIPMENT_COMMIT, error);
@@ -123,12 +112,8 @@ export const actions: ActionTree<EquipmentState, RootState> = {
           : axios.put(url, equipmentType);
 
       request
-        .then((response) => {
-          const body = response && response.data;
-          const data: EquipmentType = body.data;
-
-          resolve(data);
-        })
+        .then((response) => getResponseData<EquipmentType>(response))
+        .then((equipmentType) => resolve(equipmentType))
         .catch((error) => {
           console.log(EQUIPMENT_TYPE_COMMIT, error);
           reject(error);

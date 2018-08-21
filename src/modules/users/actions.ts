@@ -2,6 +2,8 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
+import { getResponseData } from '@/stuff';
+
 import {
   UsersState,
   User,
@@ -25,12 +27,8 @@ export const actions: ActionTree<UsersState, RootState> = {
           email,
           redirectUrl: window.location.origin
         })
-        .then((response) => {
-          const body = response && response.data;
-          const data: string = body && body.data;
-
-          resolve(data);
-        })
+        .then((response) => getResponseData<string>(response))
+        .then((invitationCode) => resolve(invitationCode))
         .catch((error) => {
           console.log(USER_INVITE, error);
           reject(error);
@@ -45,12 +43,8 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`user?match=${encodeURIComponent(match)}&count=${all ? 0 : 5}`)
-        .then((response) => {
-          const body = response && response.data;
-          const data: User[] = body && body.data;
-
-          resolve(data);
-        })
+        .then((response) => getResponseData<User[]>(response))
+        .then((users) => resolve(users))
         .catch((error) => {
           console.log(USER_SEARCH, error);
           reject(error);
@@ -62,12 +56,10 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('user')
-        .then((response) => {
-          const body = response && response.data;
-          const data: User[] = body.data;
-
-          commit(USERS_SET_ALL, data);
-          resolve(data);
+        .then((response) => getResponseData<User[]>(response))
+        .then((users) => {
+          commit(USERS_SET_ALL, users);
+          resolve(users);
         })
         .catch((error) => {
           console.log(USERS_FETCH_ALL, error);
@@ -80,12 +72,10 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`user/${id}`)
-        .then((response) => {
-          const body = response && response.data;
-          const data: User = body.data;
-
-          commit(USERS_SET_ONE, data);
-          resolve(data);
+        .then((response) => getResponseData<User>(response))
+        .then((user) => {
+          commit(USERS_SET_ONE, user);
+          resolve(user);
         })
         .catch((error) => {
           console.log(USERS_FETCH_ONE, error);
@@ -110,12 +100,8 @@ export const actions: ActionTree<UsersState, RootState> = {
 
       axios
         .post(url, { id: equipment.id })
-        .then((result) => {
-          const body = result && result.data;
-          const equipment: Equipment = body && body.data;
-
-          resolve(equipment);
-        })
+        .then((response) => getResponseData<Equipment>(response))
+        .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(USER_ASSIGN_EQUIPMENT, error);
           reject(error);
@@ -139,14 +125,10 @@ export const actions: ActionTree<UsersState, RootState> = {
 
       axios
         .delete(url, { data: { id: equipment.id } })
-        .then((result) => {
-          const body = result && result.data;
-          const equipment: Equipment = body && body.data;
-
-          resolve(equipment);
-        })
+        .then((response) => getResponseData<Equipment>(response))
+        .then((equipment) => resolve(equipment))
         .catch((error) => {
-          console.log(error);
+          console.log(USER_REMOVE_EQUIPMENT, error);
           reject(error);
         });
     });

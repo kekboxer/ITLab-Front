@@ -3,6 +3,8 @@ import { RootState } from '@/store';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
+import { getResponseData } from '@/stuff';
+
 import {
   EventsState,
   Event,
@@ -73,12 +75,8 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`eventType?match=${encodeURIComponent(match)}&all=${all}`)
-        .then((response) => {
-          const body = response && response.data;
-          const data: EventType[] = body.data;
-
-          resolve(data);
-        })
+        .then((response) => getResponseData<EventType[]>(response))
+        .then((eventTypes) => resolve(eventTypes))
         .catch((error) => {
           console.log(EVENT_TYPE_SEARCH, error);
           reject(error);
@@ -113,14 +111,11 @@ export const actions: ActionTree<EventsState, RootState> = {
 
       axios
         .get(url)
-        .then((response) => {
-          const body = response && response.data;
-          const data: Event[] = body.data;
-
-          data.forEach(fixDates);
-
-          commit(EVENTS_SET_ALL, data);
-          resolve(data);
+        .then((response) => getResponseData<Event[]>(response))
+        .then((events) => {
+          events.forEach(fixDates);
+          commit(EVENTS_SET_ALL, events);
+          resolve(events);
         })
         .catch((error) => {
           console.log(EVENTS_FETCH_ALL, error);
@@ -133,14 +128,11 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/' + id)
-        .then((response) => {
-          const body = response && response.data;
-          const data: Event = body.data;
-
-          fixDates(data);
-
-          commit(EVENTS_SET_ONE, data);
-          resolve(data);
+        .then((response) => getResponseData<Event>(response))
+        .then((event) => {
+          fixDates(event);
+          commit(EVENTS_SET_ONE, event);
+          resolve(event);
         })
         .catch((error) => {
           console.log(EVENTS_FETCH_ONE, error);
@@ -198,12 +190,10 @@ export const actions: ActionTree<EventsState, RootState> = {
           : axios.put(url, eventData);
 
       request
-        .then((response) => {
-          const body = response && response.data;
-          const data: Event = body.data;
-
-          commit(EVENTS_SET_ONE, data);
-          resolve(data);
+        .then((response) => getResponseData<Event>(response))
+        .then((event) => {
+          commit(EVENTS_SET_ONE, event);
+          resolve(event);
         })
         .catch((error) => {
           console.log(EVENT_COMMIT, error);
@@ -222,12 +212,8 @@ export const actions: ActionTree<EventsState, RootState> = {
           : axios.put(url, eventType);
 
       request
-        .then((response) => {
-          const body = response && response.data;
-          const data: EventType = body.data;
-
-          resolve(data);
-        })
+        .then((response) => getResponseData<EventType>(response))
+        .then((eventType) => resolve(eventType))
         .catch((error) => {
           console.log(EVENT_TYPE_COMMIT, error);
           reject(error);
