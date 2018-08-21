@@ -4,6 +4,7 @@ import { User } from '@/modules/users';
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
 export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
+export const PROFILE_WISH = 'PROFILE_WISH';
 
 // setters
 export const PROFILE_SET = 'PROFILE_SET';
