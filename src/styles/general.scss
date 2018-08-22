@@ -59,7 +59,6 @@
 
 .nav.nav-tabs .nav-item {
   margin-bottom: 0;
-
   .nav-link {
     @include theme-specific() {
       background-color: getstyle(page-background-color);
@@ -79,10 +78,41 @@
   }
 }
 
+.modal-content {
+  @include theme-specific() {
+    background-color: getstyle(page-background-color);
+    .close {
+      color: getstyle(page-font-color);
+      &:not(:disabled):not(.disabled):hover,
+      &:not(:disabled):not(.disabled):focus {
+        color: getstyle(page-font-color);
+      }
+    }
+    .modal-header {
+      border-bottom: 1px solid getstyle(table-border-color);
+    }
+    .modal-footer {
+      border-top: 1px solid getstyle(table-border-color);
+    }
+  }
+}
+
+.mx-calendar {
+  @include theme-specific() {
+    background-color: getstyle(form-control-background-color);
+    color: #495057;
+    .mx-panel-date td.last-month:not(.actived),
+    .mx-panel-date td.next-month:not(.actived) {
+      color: lighten(#495057, 25);
+    }
+  }
+}
+
 /* markdown */
+
 .markdown {
   input[type=checkbox] {
-    pointer-events:none;
+    pointer-events: none;
   }
 }
 
