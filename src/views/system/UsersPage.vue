@@ -13,6 +13,9 @@
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <b-table :hover="true" :fixed="true" :items="items" :fields="fields">
+          <template slot="email" slot-scope="data">
+            <mail-link :email="data.item.email" />
+          </template>
         </b-table>
       </div>
     </b-container>
@@ -43,6 +46,7 @@ import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import MailLinkComponent from '@/components/MailLinkComponent.vue';
 
 import {
   User,
@@ -59,7 +63,8 @@ enum ModalState {
 
 @Component({
   components: {
-    'loading-stub-component': LoadingStubComponent
+    'loading-stub-component': LoadingStubComponent,
+    'mail-link': MailLinkComponent
   }
 })
 export default class UsersPage extends Vue {

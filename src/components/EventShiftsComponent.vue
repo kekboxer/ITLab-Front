@@ -46,7 +46,8 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br> {{ participant.user.email}}
+                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
                           <div class="remove-button" @click="removePlaceParticipant(place.participants, participantIndex)">
@@ -56,12 +57,13 @@
                       </b-row>
                     </li>
 
-                    <!-- Incited participants -->
+                    <!-- Invited participants -->
                     <li class="list-group-item" v-for="(participant, participantIndex) in place.invited" :key="`place-${placeIndex}-invited-${participantIndex}`" v-if="!participant.delete">
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br> {{ participant.user.email}}
+                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
                           <div class="remove-button" @click="removePlaceParticipant(place.invited, participantIndex)">
@@ -176,6 +178,7 @@ import axios from 'axios';
 import Draggable from 'vuedraggable';
 import DatePicker from 'vue2-datepicker';
 import Icon from 'vue-awesome/components/Icon';
+import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import EquipmentSelectionComponent from '@/components/EquipmentSelectionComponent.vue';
 
@@ -211,6 +214,7 @@ enum ModalState {
     icon: Icon,
     draggable: Draggable,
     'date-picker': DatePicker,
+    'mail-link': MailLinkComponent,
     'user-selection-component': UserSelectionComponent,
     'equipment-selection-component': EquipmentSelectionComponent
   }
