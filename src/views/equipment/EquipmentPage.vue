@@ -64,7 +64,8 @@
                     </b-col>
                     <b-col sm="9">
                       <template v-if="data.item.owner">
-                        <b>{{ data.item.owner.email }}</b>, {{ data.item.owner.firstName }} {{ data.item.owner.lastName }}
+                        <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>, 
+                        <mail-link :email="data.item.owner.email" />
                       </template>
                       <template v-else>
                         Лаборатория
@@ -91,6 +92,7 @@ import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import MailLinkComponent from '@/components/MailLinkComponent.vue';
 
 import Icon from 'vue-awesome/components/Icon';
 import 'vue-awesome/icons/times';
@@ -107,6 +109,7 @@ import { User, USERS_FETCH_ALL } from '@/modules/users';
 @Component({
   components: {
     'loading-stub-component': LoadingStubComponent,
+    'mail-link': MailLinkComponent,
     Icon
   }
 })

@@ -37,7 +37,8 @@
               </b-form-group>
 
               <b-form-group id="owner-label-group" label="Владелец" label-for="owner-label" v-if="equipmentOwner && !isNewEquipment">
-                <b>{{ equipmentOwner.email }}</b> {{ equipmentOwner.firstName }} {{ equipmentOwner.lastName }}
+                <b>{{ equipmentOwner.firstName }} {{ equipmentOwner.lastName }}</b>,
+                <mail-link :email="equipmentOwner.email" />
               </b-form-group>
 
               <br>
@@ -82,6 +83,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
+import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import EquipmentTypeSelectionComponent from '@/components/EquipmentTypeSelectionComponent.vue';
@@ -110,6 +112,7 @@ enum State {
 
 @Component({
   components: {
+    'mail-link': MailLinkComponent,
     'loading-stub-component': LoadingStubComponent,
     'user-selection-component': UserSelectionComponent,
     'equipment-type-selection-component': EquipmentTypeSelectionComponent
