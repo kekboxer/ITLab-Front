@@ -194,7 +194,7 @@ export default class AutocompleteInputComponent extends Vue {
 
     @include theme-specific() {
       border-color: darken(getstyle(form-control-background-color), 10%);
-      background-color: white;
+      background-color: getstyle(form-control-background-color);
       color: #495057;
     }
   }

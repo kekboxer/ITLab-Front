@@ -282,7 +282,10 @@ export default class EventShiftsComponent extends Vue {
     this.fetchUserRoles().then((result) => {
       const participantRoles: EventUserRole[] = result as EventUserRole[];
       this.participantRoleOptions = participantRoles.map((v) => {
-        return { value: v, text: v.name };
+        return {
+          value: v,
+          text: this.$g.ROLE_TRANSLATIONS.get(v.name) || v.name
+        };
       });
     });
 
