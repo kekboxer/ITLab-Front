@@ -8,7 +8,7 @@
           <b>{{ getShiftEndTime(shift) }}</b> ({{ getShiftDuration(shift) }})
         </b-col>
         <b-col cols="auto" class="ml-auto" v-if="editable">
-          <b-button variant="warning" class="btn-sm" @click="showShiftModal(shiftIndex)">Изменить</b-button>
+          <b-button variant="warning" class="btn-sm mr-1" @click="showShiftModal(shiftIndex)">Изменить</b-button>
           <b-button variant="outline-danger" class="btn-sm" @click="onRemoveShift(shiftIndex)" v-bind:disabled="!canDeleteShift">
             <icon name="times" style="position: relative; top: -2px;"></icon>
           </b-button>
@@ -25,7 +25,7 @@
                 </b-col>
                 <b-col cols="auto" class="ml-auto">
                   <template v-if="editable">
-                    <b-button variant="outline-secondary" class="btn-sm" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
+                    <b-button variant="outline-secondary" class="btn-sm mr-1" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
                     <b-button variant="outline-secondary" class="btn-sm" @click="removePlace(shift, placeIndex)" v-if="canDeletePlace(shift)">
                       <icon name="times" style="position: relative; top: -2px;"></icon>
                     </b-button>
