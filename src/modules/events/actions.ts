@@ -170,15 +170,19 @@ export const actions: ActionTree<EventsState, RootState> = {
             };
           };
 
-          place.participants.forEach(
-            (participant: any, i: number, arr: any[]) => {
-              arr[i] = prepareParticipantData(participant);
-            }
-          );
-
           place.invited.forEach((participant: any, i: number, arr: any[]) => {
             arr[i] = prepareParticipantData(participant);
           });
+
+          place.participants.forEach(
+            (participant: any, i: number, arr: any[]) => {
+              if (participant.delete === true) {
+                place.invited.push(prepareParticipantData(participant));
+              }
+            }
+          );
+
+          delete place.participants;
         });
       });
 
