@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
-import { getResponseData, getResponseBody } from '@/stuff';
+import { getResponseData } from '@/stuff';
 
 import {
   ProfileState,
@@ -83,7 +83,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
       const roleId = typeof role === 'string' ? role : role.id;
 
       axios
-        .post(`event/wishto/${placeId}/${roleId}`)
+        .post(`event/wish/${placeId}/${roleId}`)
         .then((response) => {
           const body = response.data;
 

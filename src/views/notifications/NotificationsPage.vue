@@ -10,10 +10,10 @@
       <br>
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
-        <template v-if="eventNotifications.length > 0">
-          <b-row v-for="notification in eventNotifications" :key="`${notification.placeId}-${notification.role.id}`">
+        <template v-if="eventInvitations.length > 0">
+          <b-row v-for="notification in eventInvitations" :key="`${notification.placeId}-${notification.role.id}`">
             <b-col>
-              <notification-component :data="notification"></notification-component>
+              <event-invitation-notification-component :data="notification"></event-invitation-notification-component>
             </b-col>
           </b-row>
         </template>
@@ -36,11 +36,11 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
-import NotificationComponent from '@/components/NotificationComponent.vue';
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import EventInvitationNotificationComponent from '@/components/EventInvitationNotificationComponent.vue';
 
 import {
-  EventNotification,
+  EventInvitation,
   NOTIFICATIONS_GET_ALL,
   NOTIFICATIONS_FETCH
 } from '@/modules/notifications';
@@ -48,21 +48,21 @@ import {
 @Component({
   components: {
     'loading-stub-component': LoadingStubComponent,
-    'notification-component': NotificationComponent
+    'event-invitation-notification-component': EventInvitationNotificationComponent
   }
 })
 export default class NotificationsPage extends Vue {
   public loadingInProcess: boolean = true;
 
   public mounted() {
-    this.loadingInProcess = this.eventNotifications.length === 0;
+    this.loadingInProcess = this.eventInvitations.length === 0;
 
     this.$store.dispatch(NOTIFICATIONS_FETCH).then((result) => {
       this.loadingInProcess = false;
     });
   }
 
-  get eventNotifications(): EventNotification[] {
+  get eventInvitations(): EventInvitation[] {
     return this.$store.getters[NOTIFICATIONS_GET_ALL];
   }
 }

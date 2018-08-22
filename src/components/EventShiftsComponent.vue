@@ -31,7 +31,8 @@
                     </b-button>
                   </template>
                   <template v-else>
-                    <b-button variant="outline-secondary" class="btn-sm" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
+                    <b-button variant="outline-secondary" class="btn-sm theme-light-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
+                    <b-button variant="secondary" class="btn-sm theme-dark-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
                   </template>
                 </b-col>
               </b-row>

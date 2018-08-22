@@ -7,7 +7,7 @@ import { getResponseData } from '@/stuff';
 
 import {
   NotificationsState,
-  EventNotification,
+  EventInvitation,
   NOTIFICATION_ACCEPT,
   NOTIFICATION_REJECT,
   NOTIFICATIONS_FETCH,
@@ -17,17 +17,17 @@ import {
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
-const fixDates = (event: EventNotification) => {
+const fixDates = (event: EventInvitation) => {
   if (event.beginTime) {
     event.beginTime = moment(event.beginTime, DATETIME_FORMAT + 'Z').toDate();
   }
 };
 
 export const actions: ActionTree<NotificationsState, RootState> = {
-  [NOTIFICATION_ACCEPT]: ({ commit }, notification: EventNotification) => {
+  [NOTIFICATION_ACCEPT]: ({ commit }, notification: EventInvitation) => {
     return new Promise((resolve, reject) => {
       axios
-        .post(`event/acceptinvite/${notification.placeId}`)
+        .post(`event/invitation/${notification.placeId}/accept`)
         .then((response) => {
           commit(NOTIFICATION_REMOVE_ONE, notification);
           resolve();
@@ -39,10 +39,18 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     });
   },
 
-  [NOTIFICATION_REJECT]: ({ commit }, notification: EventNotification) => {
+  [NOTIFICATION_REJECT]: ({ commit }, notification: EventInvitation) => {
     return new Promise((resolve, reject) => {
-      commit(NOTIFICATION_REMOVE_ONE, notification);
-      resolve();
+      axios
+        .post(`event/invitation/${notification.placeId}/reject`)
+        .then((response) => {
+          commit(NOTIFICATION_REMOVE_ONE, notification);
+          resolve();
+        })
+        .catch((error) => {
+          console.log(NOTIFICATION_ACCEPT, error);
+          reject();
+        });
     });
   },
 
@@ -50,7 +58,7 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/invitations')
-        .then((response) => getResponseData<EventNotification[]>(response))
+        .then((response) => getResponseData<EventInvitation[]>(response))
         .then((eventNotifications) => {
           eventNotifications.forEach(fixDates);
           commit(NOTIFICATIONS_SET_ALL, eventNotifications);

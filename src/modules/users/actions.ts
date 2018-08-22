@@ -27,8 +27,15 @@ export const actions: ActionTree<UsersState, RootState> = {
           email,
           redirectUrl: window.location.origin
         })
-        .then((response) => getResponseData<string>(response))
-        .then((invitationCode) => resolve(invitationCode))
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
         .catch((error) => {
           console.log(USER_INVITE, error);
           reject(error);

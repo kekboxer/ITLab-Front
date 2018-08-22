@@ -13,15 +13,3 @@ export const getResponseData = <T>(
     }
   });
 };
-
-export const getResponseBody = (response: AxiosResponse<any>): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    const body = response && response.data;
-
-    if (body) {
-      resolve(body);
-    } else {
-      reject();
-    }
-  });
-};

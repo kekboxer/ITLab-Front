@@ -9,7 +9,7 @@ import { NotificationsState } from './types';
 export * from './types';
 
 export const state: NotificationsState = {
-  eventNotifications: []
+  eventInvitations: []
 };
 
 export const notifications: Module<NotificationsState, RootState> = {

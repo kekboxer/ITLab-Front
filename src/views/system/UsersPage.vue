@@ -98,7 +98,7 @@ export default class UsersPage extends Vue {
 
   public onSubmitModal() {
     this.modalState = ModalState.InProcess;
-    this.$store.dispatch(USER_INVITE, this.modalData).then((response) => {
+    this.$store.dispatch(USER_INVITE, this.modalData).then(() => {
       this.$notify({
         title: 'Приглашение отправлено!',
         duration: 500

@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="notification-component">
+  <div class="event-invitation-notification-component">
     <b-row>
       <b-col cols="12" md="7">
         <a :href="'events/' + data.id">
@@ -51,7 +51,7 @@ import moment from 'moment';
 import 'vue-awesome/icons/clock';
 
 import {
-  EventNotification,
+  EventInvitation,
   NOTIFICATION_ACCEPT,
   NOTIFICATION_REJECT
 } from '@/modules/notifications';
@@ -62,11 +62,11 @@ enum State {
 }
 
 @Component
-export default class NotificationComponent extends Vue {
+export default class EventInvitationNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: EventNotification;
+  @Prop() public data!: EventInvitation;
 
   public currentState: State = State.Default;
 
@@ -131,7 +131,7 @@ export default class NotificationComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.notification-component {
+.event-invitation-notification-component {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;

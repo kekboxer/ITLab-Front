@@ -3,20 +3,20 @@ import Vue from 'vue';
 
 import {
   NotificationsState,
-  EventNotification,
+  EventInvitation,
   NOTIFICATIONS_SET_ALL,
   NOTIFICATION_REMOVE_ONE
 } from './types';
 
 export const mutations: MutationTree<NotificationsState> = {
-  [NOTIFICATIONS_SET_ALL]: (state, notifications: EventNotification[]) => {
-    state.eventNotifications = notifications;
+  [NOTIFICATIONS_SET_ALL]: (state, notifications: EventInvitation[]) => {
+    state.eventInvitations = notifications;
   },
 
-  [NOTIFICATION_REMOVE_ONE]: (state, notification: EventNotification) => {
-    const index = state.eventNotifications.findIndex((v) => v === notification);
+  [NOTIFICATION_REMOVE_ONE]: (state, notification: EventInvitation) => {
+    const index = state.eventInvitations.findIndex((v) => v === notification);
     if (index !== -1) {
-      Vue.delete(state.eventNotifications, index);
+      Vue.delete(state.eventInvitations, index);
     }
   }
 };

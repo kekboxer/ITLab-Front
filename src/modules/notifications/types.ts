@@ -18,10 +18,15 @@ export const NOTIFICATION_REMOVE_ONE = 'NOTIFICATION_REMOVE_ONE';
 export const NOTIFICATIONS_GET_ALL = 'NOTIFICATIONS_GET_ALL';
 export const NOTIFICATIONS_GET_COUNT = 'NOTIFICATIONS_GET_COUNT';
 
-// EventNotification //
-//////////////////////
+// Notification //
+/////////////////
 
-export interface EventNotification {
+export class Notification {}
+
+// EventInvitation //
+////////////////////////////////
+
+export interface EventInvitation extends Notification {
   id: string;
   title: string;
   eventType: EventType;
@@ -31,7 +36,7 @@ export interface EventNotification {
   role: EventUserRole;
 }
 
-export class EventNotificationDefault implements EventNotification {
+export class EventInvitationDefault implements EventInvitation {
   public id: string = '';
   public title: string = '';
   public eventType: EventType = new EventTypeDefault();
@@ -41,9 +46,17 @@ export class EventNotificationDefault implements EventNotification {
   public role: EventUserRole = new EventUserRoleDefault();
 }
 
+// EventApplication //
+/////////////////////////////////
+
+export interface EventApplication extends Notification {
+  eventId: string;
+  title: string;
+}
+
 // State //
 //////////
 
 export interface NotificationsState {
-  eventNotifications: EventNotification[];
+  eventInvitations: EventInvitation[];
 }
