@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="event-invitation-notification-component">
+  <div class="wish-notification-component">
     <b-row>
       <b-col cols="12" md="7">
         <a :href="'events/' + data.id">
@@ -16,25 +16,19 @@
           </b-col>
         </b-row>
         <b-row>
-          <b-col cols="5">Длительность:</b-col>
-          <b-col cols="7">
-            <b>{{ duration }}</b>
-          </b-col>
-        </b-row>
-        <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ role }}</b>
+            <b>{{ wish.role }}</b>
           </b-col>
         </b-row>
       </b-col>
     </b-row>
     <b-row class="mt-2 buttons">
       <b-col cols="12" md="auto">
-        <b-button variant="primary" class="w-100" @click="accept">Принять</b-button>
+        <b-button variant="primary" class="w-100" :disabled="isInProcess" @click="accept">Принять</b-button>
       </b-col>
       <b-col cols="12" md="auto">
-        <b-button variant="outline-danger" class="w-100" @click="reject">Отказаться</b-button>
+        <b-button variant="outline-danger" class="w-100" :disabled="isInProcess" @click="reject">Отказаться</b-button>
       </b-col>
     </b-row>
   </div>
@@ -52,8 +46,8 @@ import 'vue-awesome/icons/clock';
 
 import {
   EventInvitation,
-  NOTIFICATION_ACCEPT,
-  NOTIFICATION_REJECT
+  NOTIFICATION_INVITATION_ACCEPT,
+  NOTIFICATION_INVITATION_REJECT
 } from '@/modules/notifications';
 
 enum State {
@@ -62,7 +56,7 @@ enum State {
 }
 
 @Component
-export default class EventInvitationNotificationComponent extends Vue {
+export default class InvitationNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
@@ -103,24 +97,26 @@ export default class EventInvitationNotificationComponent extends Vue {
 
   public accept() {
     this.currentState = State.InProcess;
-    this.$store.dispatch(NOTIFICATION_ACCEPT, this.data).then((response) => {
-      this.currentState = State.Default;
-      this.$notify({
-        title: 'Вы подтвердили своё участие',
-        duration: 500
+    this.$store
+      .dispatch(NOTIFICATION_INVITATION_ACCEPT, this.data)
+      .then((response) => {
+        this.$notify({
+          title: 'Вы подтвердили своё участие',
+          duration: 500
+        });
       });
-    });
   }
 
   public reject() {
     this.currentState = State.InProcess;
-    this.$store.dispatch(NOTIFICATION_REJECT, this.data).then((response) => {
-      this.currentState = State.Default;
-      this.$notify({
-        title: 'Вы отказались от участия!',
-        duration: 500
+    this.$store
+      .dispatch(NOTIFICATION_INVITATION_REJECT, this.data)
+      .then((response) => {
+        this.$notify({
+          title: 'Вы отказались от участия!',
+          duration: 500
+        });
       });
-    });
   }
 }
 </script>
@@ -131,7 +127,7 @@ export default class EventInvitationNotificationComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.event-invitation-notification-component {
+.invitation-notification-component {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;

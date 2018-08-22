@@ -27,7 +27,7 @@
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
           <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
-          <!--<p>{{ event.address }}</p>-->
+          <p>{{ event.address }}</p>
         </b-col>
         <b-col md="4">
           <b-row>

@@ -11,9 +11,9 @@
       <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
       <div v-else>
         <template v-if="eventInvitations.length > 0">
-          <b-row v-for="notification in eventInvitations" :key="`${notification.placeId}-${notification.role.id}`">
+          <b-row v-for="invitation in eventInvitations" :key="`${invitation.placeId}-${invitation.role.id}`">
             <b-col>
-              <event-invitation-notification-component :data="notification"></event-invitation-notification-component>
+              <invitation-notification-component :data="invitation"></invitation-notification-component>
             </b-col>
           </b-row>
         </template>
@@ -35,35 +35,45 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
+import moment from 'moment-timezone';
 
 import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
-import EventInvitationNotificationComponent from '@/components/EventInvitationNotificationComponent.vue';
+import InvitationNotificationComponent from '@/components/InvitationNotificationComponent.vue';
 
 import {
   EventInvitation,
-  NOTIFICATIONS_GET_ALL,
-  NOTIFICATIONS_FETCH
+  NOTIFICATION_INVITATIONS_GET_ALL,
+  NOTIFICATION_INVITATIONS_FETCH
 } from '@/modules/notifications';
 
 @Component({
   components: {
     'loading-stub-component': LoadingStubComponent,
-    'event-invitation-notification-component': EventInvitationNotificationComponent
+    'invitation-notification-component': InvitationNotificationComponent
   }
 })
 export default class NotificationsPage extends Vue {
+  // Properties //
+  ///////////////
+
   public loadingInProcess: boolean = true;
+
+  // Component methods //
+  //////////////////////
 
   public mounted() {
     this.loadingInProcess = this.eventInvitations.length === 0;
 
-    this.$store.dispatch(NOTIFICATIONS_FETCH).then((result) => {
+    this.$store.dispatch(NOTIFICATION_INVITATIONS_FETCH).then((result) => {
       this.loadingInProcess = false;
     });
   }
 
+  // Computed data //
+  //////////////////
+
   get eventInvitations(): EventInvitation[] {
-    return this.$store.getters[NOTIFICATIONS_GET_ALL];
+    return this.$store.getters[NOTIFICATION_INVITATIONS_GET_ALL];
   }
 }
 
