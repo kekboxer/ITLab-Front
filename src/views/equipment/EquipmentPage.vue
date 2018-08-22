@@ -57,22 +57,14 @@
               </template>
 
               <template slot="row-details" slot-scope="data">
-                <b-card>
-                  <b-row>
-                    <b-col sm="3" class="text-sm-right">
-                      Находится у:
-                    </b-col>
-                    <b-col sm="9">
-                      <template v-if="data.item.owner">
-                        <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>, 
-                        <mail-link :email="data.item.owner.email" />
-                      </template>
-                      <template v-else>
-                        Лаборатория
-                      </template>
-                    </b-col>
-                  </b-row>
-                </b-card>
+                Владелец:
+                <template v-if="data.item.owner">
+                  <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
+                  <mail-link :email="data.item.owner.email" />
+                </template>
+                <template v-else>
+                  Лаборатория
+                </template>
               </template>
             </b-table>
           </b-col>
@@ -230,6 +222,33 @@ export const equipmentPageRoute: RouteConfig = {
       th[aria-colindex='3'],
       td[aria-colindex='3'] {
         display: none;
+      }
+    }
+
+    tr td {
+      line-height: 31px;
+    }
+
+    .b-table-has-details {
+      background-color: rgba(0, 0, 0, 0.075);
+
+      td {
+        padding-bottom: 0px;
+      }
+    }
+
+    .b-table-details {
+      background-color: rgba(0, 0, 0, 0.075);
+      
+      td {
+        padding: 12px;
+        padding-top: 0px;
+      }
+    }
+
+    .equipment-details {
+      @include theme-specific() {
+        background-color: getstyle(page-background-color);
       }
     }
   }
