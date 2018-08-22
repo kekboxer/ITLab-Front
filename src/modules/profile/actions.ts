@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
-import { getResponseData } from '@/stuff';
+import { getResponseData, getResponseBody } from '@/stuff';
 
 import {
   ProfileState,
@@ -11,8 +11,11 @@ import {
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_CREATE,
-  PROFILE_AUTH_TOKEN_SET
+  PROFILE_AUTH_TOKEN_SET,
+  PROFILE_WISH
 } from './types';
+
+import { EventPlace, EventUserRole } from '@/modules/events';
 
 interface LoginResponse {
   id: string;
@@ -63,6 +66,35 @@ export const actions: ActionTree<ProfileState, RootState> = {
         })
         .catch((error) => {
           console.log(PROFILE_CREATE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROFILE_WISH]: (
+    {},
+    {
+      place,
+      role
+    }: { place: EventPlace | string; role: EventUserRole | string }
+  ) => {
+    return new Promise((resolve, reject) => {
+      const placeId = typeof place === 'string' ? place : place.id;
+      const roleId = typeof role === 'string' ? role : role.id;
+
+      axios
+        .post(`event/wishto/${placeId}/${roleId}`)
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(PROFILE_WISH, error);
           reject(error);
         });
     });

@@ -23,11 +23,16 @@
                 <b-col cols="12" md="auto" class="text ml-md-1 text-center">
                   Место #{{ placeIndex + 1}} | {{ getPlaceTargetParticipantsCount(place) }}
                 </b-col>
-                <b-col cols="auto" class="ml-auto" v-if="editable">
-                  <b-button variant="outline-secondary" class="btn-sm" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
-                  <b-button variant="outline-secondary" class="btn-sm" @click="removePlace(shift, placeIndex)" v-if="canDeletePlace(shift)">
-                    <icon name="times" style="position: relative; top: -2px;"></icon>
-                  </b-button>
+                <b-col cols="auto" class="ml-auto">
+                  <template v-if="editable">
+                    <b-button variant="outline-secondary" class="btn-sm" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
+                    <b-button variant="outline-secondary" class="btn-sm" @click="removePlace(shift, placeIndex)" v-if="canDeletePlace(shift)">
+                      <icon name="times" style="position: relative; top: -2px;"></icon>
+                    </b-button>
+                  </template>
+                  <template v-else>
+                    <b-button variant="outline-secondary" class="btn-sm" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
+                  </template>
                 </b-col>
               </b-row>
             </div>
@@ -144,6 +149,12 @@
         </b-form-group>
       </template>
 
+      <template v-if="fieldsVisivility.application">
+        <b-form-group label="Роль">
+          <b-form-select v-model="applicationData.role" :options="participantRoleOptions"></b-form-select>
+        </b-form-group>
+      </template>
+
       <template slot="modal-footer">
         <b-button variant="secondary" @click="modalShow = false">Отменить</b-button>
         <b-button variant="primary" :disabled="!isModalDataInvalid" @click="submitModal(); modalShow = false">Подтвердить</b-button>
@@ -181,6 +192,7 @@ import {
 } from '@/modules/events';
 import { Equipment } from '@/modules/equipment';
 import { UserDefault, User } from '@/modules/users';
+import { PROFILE_WISH } from '@/modules/profile';
 
 enum ModalState {
   Hidden,
@@ -189,7 +201,8 @@ enum ModalState {
   PlaceEdit,
   PlaceCreation,
   ParticipantInvitation,
-  EquipmentAdding
+  EquipmentAdding,
+  ApplicationCreation
 }
 
 @Component({
@@ -219,7 +232,8 @@ export default class EventShiftsComponent extends Vue {
     [ModalState.PlaceEdit, 'Изменение места'],
     [ModalState.PlaceCreation, 'Новое место'],
     [ModalState.ParticipantInvitation, 'Приглашение участника'],
-    [ModalState.EquipmentAdding, 'Добавление оборудования']
+    [ModalState.EquipmentAdding, 'Добавление оборудования'],
+    [ModalState.ApplicationCreation, 'Заявка на участие']
   ]);
 
   public modalState: ModalState = ModalState.Hidden;
@@ -242,6 +256,10 @@ export default class EventShiftsComponent extends Vue {
   } = { user: null, role: null };
 
   public placeEquipmentModalData: Equipment | null = null;
+
+  public applicationData: {
+    role: EventUserRole | null;
+  } = { role: null };
 
   public participantRoleOptions: Array<{
     value: EventUserRole;
@@ -294,6 +312,7 @@ export default class EventShiftsComponent extends Vue {
     place: boolean;
     participant: boolean;
     equipment: boolean;
+    application: boolean;
   } {
     return {
       shift: [ModalState.ShiftEdit, ModalState.ShiftCreation].includes(
@@ -303,7 +322,8 @@ export default class EventShiftsComponent extends Vue {
         this.modalState
       ),
       participant: this.modalState === ModalState.ParticipantInvitation,
-      equipment: this.modalState === ModalState.EquipmentAdding
+      equipment: this.modalState === ModalState.EquipmentAdding,
+      application: this.modalState === ModalState.ApplicationCreation
     };
   }
 
@@ -327,6 +347,9 @@ export default class EventShiftsComponent extends Vue {
 
       case ModalState.EquipmentAdding:
         return this.isModalPlaceEquipmentValid;
+
+      case ModalState.ApplicationCreation:
+        return this.isModalApplicationValid;
 
       default:
         return false;
@@ -579,6 +602,47 @@ export default class EventShiftsComponent extends Vue {
   get isModalPlaceEquipmentValid(): boolean {
     // TODO: check existance of selected equipment in place equipment
     return this.placeEquipmentModalData != null;
+  }
+
+  // Application handlers
+
+  public onCreateApplication(place: EventPlace) {
+    if (this.applicationData.role == null) {
+      return;
+    }
+
+    this.$store
+      .dispatch(PROFILE_WISH, { place, role: this.applicationData.role })
+      .then((response) => {
+        this.$notify({
+          title: 'Заявка отправлена',
+          duration: 500
+        });
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно отправить заявку',
+          text: 'Возможно вы уже участвуете/подали заявку',
+          type: 'error',
+          duration: 1500
+        });
+      });
+  }
+
+  public showApplicationModal(shift: EventShift, placeIndex: number) {
+    if (placeIndex < 0 || placeIndex >= shift.places.length) {
+      return;
+    }
+
+    this.applicationData = { role: null };
+    this.submitModal = () => {
+      this.onCreateApplication(shift.places[placeIndex]);
+    };
+    this.modalState = ModalState.ApplicationCreation;
+  }
+
+  get isModalApplicationValid(): boolean {
+    return this.applicationData.role != null;
   }
 
   // Computed data //
