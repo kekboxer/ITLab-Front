@@ -9,7 +9,7 @@ import {
 
 export const getters: GetterTree<ProfileState, RootState> = {
   [PROFILE_AUTHORIZED]: (state) => {
-    return state.authToken !== undefined;
+    return state.accessToken !== undefined;
   },
 
   [PROFILE_SETTINGS_THEME_GET]: (state) => {

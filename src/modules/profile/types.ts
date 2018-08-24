@@ -1,5 +1,10 @@
 import { User } from '@/modules/users';
 
+// local storage
+export const LOCAL_STORAGE_ACCESS_TOKEN = 'access-token';
+export const LOCAL_STORAGE_REFRESH_TOKEN = 'refresh-token';
+export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
+
 // actions
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
 export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
@@ -8,7 +13,8 @@ export const PROFILE_WISH = 'PROFILE_WISH';
 
 // setters
 export const PROFILE_SET = 'PROFILE_SET';
-export const PROFILE_AUTH_TOKEN_SET = 'PROFILE_AUTH_TOKEN_SET';
+export const PROFILE_ACCESS_TOKEN_SET = 'PROFILE_ACCESS_TOKEN_SET';
+export const PROFILE_REFRESH_TOKEN_SET = 'PROFILE_REFRESH_TOKEN_SET';
 export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
 
 // getters
@@ -57,7 +63,8 @@ export interface Settings {
 
 export interface ProfileState {
   profile?: User;
-  authToken?: string;
+  accessToken?: string;
+  refreshToken?: string;
 
   settings: Settings;
 }

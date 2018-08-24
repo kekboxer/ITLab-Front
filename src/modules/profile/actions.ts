@@ -11,15 +11,18 @@ import {
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_CREATE,
-  PROFILE_AUTH_TOKEN_SET,
+  PROFILE_ACCESS_TOKEN_SET,
+  PROFILE_REFRESH_TOKEN_SET,
   PROFILE_WISH
 } from './types';
 
 import { EventPlace, EventUserRole } from '@/modules/events';
 
+
 interface LoginResponse {
   id: string;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   firstName: string;
   lastName: string;
 }
@@ -31,16 +34,16 @@ export const actions: ActionTree<ProfileState, RootState> = {
         .post('Authentication/login', authorizationData)
         .then((response) => getResponseData<LoginResponse>(response))
         .then((loginResponse) => {
-          localStorage.setItem('user-token', loginResponse.token);
           axios.defaults.headers.common.Authorization = `Bearer ${
-            loginResponse.token
+            loginResponse.accessToken
           }`;
 
-          commit(PROFILE_AUTH_TOKEN_SET, loginResponse.token);
+          commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
+          commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
           resolve(loginResponse);
         })
         .catch((error) => {
-          localStorage.removeItem('user-token');
+          localStorage.removeItem('access-token');
           reject(error);
         });
     });
@@ -48,10 +51,10 @@ export const actions: ActionTree<ProfileState, RootState> = {
 
   [PROFILE_LOGOUT]: ({ commit }) => {
     return new Promise((resolve, reject) => {
-      localStorage.removeItem('user-token');
       axios.defaults.headers.common.Authorization = undefined;
 
-      commit(PROFILE_AUTH_TOKEN_SET, undefined);
+      commit(PROFILE_ACCESS_TOKEN_SET, undefined);
+      commit(PROFILE_REFRESH_TOKEN_SET, undefined);
       resolve();
     });
   },

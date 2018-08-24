@@ -12,18 +12,18 @@ import { decodeJWT } from '@/stuff';
 export * from './types';
 
 const initializeToken = (): string | undefined => {
-  const token = localStorage.getItem('user-token');
-  if (token == null) {
+  const accessToken = localStorage.getItem('access-token');
+  if (accessToken == null) {
     return;
   }
 
   try {
-    const expirationDate: number = decodeJWT(token).exp * 1000;
+    const expirationDate: number = decodeJWT(accessToken).exp * 1000;
     const currentDate: number = Date.now();
 
     if (currentDate < expirationDate) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      return token;
+      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+      return accessToken;
     }
   } catch (error) {
     return;
@@ -32,7 +32,7 @@ const initializeToken = (): string | undefined => {
 
 export const state: ProfileState = {
   profile: undefined,
-  authToken: initializeToken(),
+  accessToken: initializeToken(),
   settings: {
     theme: localStorage.getItem('theme') || 'light'
   }
