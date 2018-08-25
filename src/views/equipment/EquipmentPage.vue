@@ -5,7 +5,10 @@
       <b-row>
         <b-col>
           <h1 class="page-title">Оборудование
-            <b-button variant="success" to="equipment/new">Добавить</b-button>
+            <b-button variant="success" to="equipment/new">
+              <span class="text d-none d-md-inline">Добавить</span>
+              <icon name="plus" class="d-inline d-md-none"></icon>
+            </b-button>
           </h1>
         </b-col>
       </b-row>
@@ -19,7 +22,7 @@
               <input class="form-control" v-model="equipmentFilterString" placeholder="Поиск" type="text">
               <b-input-group-append>
                 <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
-                  <icon name="times" style="position: relative; top: -2px;"></icon>
+                  <icon name="times"></icon>
                 </b-btn>
               </b-input-group-append>
             </b-input-group>
@@ -88,6 +91,7 @@ import MailLinkComponent from '@/components/MailLinkComponent.vue';
 
 import Icon from 'vue-awesome/components/Icon';
 import 'vue-awesome/icons/times';
+import 'vue-awesome/icons/plus';
 
 import {
   Equipment,
@@ -239,7 +243,7 @@ export const equipmentPageRoute: RouteConfig = {
 
     .b-table-details {
       background-color: rgba(0, 0, 0, 0.075);
-      
+
       td {
         padding: 12px;
         padding-top: 0px;

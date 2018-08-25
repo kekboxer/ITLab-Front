@@ -21,6 +21,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import SidebarComponent from '@/components/SidebarComponent.vue';
+
 import {
   PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET
@@ -107,7 +108,7 @@ body {
 
     .btn {
       position: relative;
-      top: -2px;
+      top: -4px;
       padding: 0.25rem 0.5rem;
       font-size: 0.875rem;
       line-height: 1.5;
