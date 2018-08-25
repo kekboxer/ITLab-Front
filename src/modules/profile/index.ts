@@ -5,7 +5,7 @@ import axios from 'axios';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { ProfileState } from './types';
+import { ProfileState, LOCAL_STORAGE_REFRESH_TOKEN } from './types';
 
 import { decodeJWT } from '@/stuff';
 
@@ -33,6 +33,7 @@ const initializeToken = (): string | undefined => {
 export const state: ProfileState = {
   profile: undefined,
   accessToken: initializeToken(),
+  refreshToken: localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN) || undefined,
   settings: {
     theme: localStorage.getItem('theme') || 'light'
   }

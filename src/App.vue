@@ -4,7 +4,7 @@
     <notifications position="top right"></notifications>
     <div class="layout" v-bind:class="{ 'with-sidebar': ($route.meta.hideNavigation !== true) }">
       <template v-if="$route.meta.hideNavigation !== true">
-        <sidebar-component></sidebar-component>
+        <sidebar-component v-if="isAuthorized"></sidebar-component>
       </template>
 
       <div class="content-wrapper">
@@ -21,17 +21,24 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import SidebarComponent from '@/components/SidebarComponent.vue';
-import { PROFILE_SETTINGS_THEME_GET } from '@/modules/profile';
+import {
+  PROFILE_AUTHORIZED,
+  PROFILE_SETTINGS_THEME_GET
+} from '@/modules/profile';
 
 @Component({
   components: {
-    'sidebar-component': SidebarComponent,
-  },
+    'sidebar-component': SidebarComponent
+  }
 })
 export default class App extends Vue {
-  get theme() {
+  get theme(): string {
     const themeName = this.$store.getters[PROFILE_SETTINGS_THEME_GET];
-    return 'theme-' + themeName;
+    return `theme-${themeName}`;
+  }
+
+  get isAuthorized(): boolean {
+    return this.$store.getters[PROFILE_AUTHORIZED];
   }
 }
 </script>
@@ -40,7 +47,7 @@ export default class App extends Vue {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 html,
 body {

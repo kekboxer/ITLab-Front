@@ -1,5 +1,7 @@
 import { MutationTree } from 'vuex';
 
+import { decodeJWT } from '@/stuff';
+
 import {
   ProfileState,
   LOCAL_STORAGE_ACCESS_TOKEN,
@@ -13,6 +15,12 @@ import {
 export const mutations: MutationTree<ProfileState> = {
   [PROFILE_ACCESS_TOKEN_SET]: (state, token?: string) => {
     state.accessToken = token;
+
+    if (token) {
+      state.accessTokenDecoded = decodeJWT(state.accessToken);
+    } else {
+      state.accessTokenDecoded = undefined;
+    }
 
     if (token) {
       localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, token);

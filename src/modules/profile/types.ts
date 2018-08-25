@@ -8,6 +8,7 @@ export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
 // actions
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
 export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
+export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
 
@@ -19,6 +20,7 @@ export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
 
 // getters
 export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
+export const PROFILE_REFRESH_TOKEN = 'PROFILE_REFRESH_TOKEN';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
 
 // AuthorizationData //
@@ -51,6 +53,13 @@ export class RegistrationDataDefault implements RegistrationData {
   public accessToken: string = '';
 }
 
+// AccessToken //
+////////////////
+
+export interface AccessToken {
+  exp: number;
+}
+
 // Settings //
 /////////////
 
@@ -64,6 +73,7 @@ export interface Settings {
 export interface ProfileState {
   profile?: User;
   accessToken?: string;
+  accessTokenDecoded?: AccessToken;
   refreshToken?: string;
 
   settings: Settings;

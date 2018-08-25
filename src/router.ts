@@ -4,7 +4,11 @@ import axios from 'axios';
 
 import store from '@/store';
 
-import { PROFILE_LOGOUT, PROFILE_AUTHORIZED } from '@/modules/profile';
+import {
+  PROFILE_REFRESH_ACCESS,
+  PROFILE_AUTHORIZED,
+  PROFILE_REFRESH_TOKEN
+} from '@/modules/profile';
 import { LAYOUT_PAGES_GET } from '@/modules/layout';
 
 Vue.use(Router);
@@ -13,44 +17,79 @@ Vue.use(Router);
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-axios.interceptors.response.use(
-  (response) => {
-    const body = response.data;
-    if (body.statusCode !== 1) {
-      if (body.statusCode === 12) {
-        store.dispatch(PROFILE_LOGOUT);
-      } else {
-        throw { error: body };
-      }
-    }
-    return response;
-  },
-  (error) => {
-    return new Promise((resolve, reject) => {
-      if (
-        error.status === 401 &&
-        error.config &&
-        !error.config.__isRetryRequest
-      ) {
-        store.dispatch(PROFILE_LOGOUT);
-      }
-      throw error;
-    });
-  }
-);
-
 // Initialize router
 const router: Router = new Router({
   mode: 'history',
   routes: store.getters[LAYOUT_PAGES_GET]
 });
 
+// Initialize authorization
+let refreshingToken: boolean = false;
+let subscribers: Array<(success: boolean) => void> = [];
+
+const refreshAccessToken = (callback: (success: boolean) => void) => {
+  if (refreshingToken) {
+    return;
+  }
+
+  refreshingToken = true;
+  store
+    .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
+    .then(() => {
+      refreshingToken = false;
+      callback(true);
+    })
+    .catch(() => {
+      refreshingToken = false;
+      callback(false);
+    });
+};
+
+axios.interceptors.response.use(
+  (response) => {
+    const body = response.data;
+
+    if (body.statusCode === 1) {
+      return response;
+    }
+
+    if (body.statusCode === 12) {
+      refreshAccessToken((success) => {
+        subscribers = subscribers.filter((cb) => cb(success));
+      });
+
+      const originalRequest = response.config;
+      return new Promise((resolve, reject) => {
+        subscribers.push((success: boolean) => {
+          if (success) {
+            resolve(axios(originalRequest));
+          } else {
+            reject({ error: body });
+          }
+        });
+      });
+    } else {
+      throw { error: body };
+    }
+  },
+  (error) => {
+    console.log(error);
+    throw error;
+  }
+);
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.secure !== false)) {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else {
-      next({ name: 'LoginPage', params: { to: to.path } });
+      refreshAccessToken((success) => {
+        if (success) {
+          next();
+        } else {
+          next({ name: 'LoginPage', params: { to: to.path } });
+        }
+      });
     }
   } else {
     next();

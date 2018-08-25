@@ -11,8 +11,8 @@
                 <svgicon class="logo" name="logo" height="230"></svgicon>
               </b-col>
             </b-form-row>
-
-            <b-alert :show="isLoginOrPasswordInvalid" variant="danger" dismissible>
+            
+            <b-alert :show="isLoginOrPasswordInvalid" variant="danger" dismissible class="mt-2">
               Неправильный логин или пароль
             </b-alert>
 
