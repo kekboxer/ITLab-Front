@@ -25,23 +25,34 @@ const router: Router = new Router({
 
 // Initialize authorization
 let refreshingToken: boolean = false;
-let subscribers: Array<(success: boolean) => void> = [];
+let subscribers: Array<(accessToken?: string) => void> = [];
 
-const refreshAccessToken = (callback: (success: boolean) => void) => {
+const refreshAccessToken = () => {
   if (refreshingToken) {
     return;
   }
 
+  const refreshToken = store.getters[PROFILE_REFRESH_TOKEN];
+
+  if (refreshToken == null) {
+    return;
+  }
+
+  const notifySubscribers = (accessToken?: string) => {
+    subscribers = subscribers.filter((cb) => cb(accessToken));
+  };
+
   refreshingToken = true;
+
   store
-    .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
-    .then(() => {
+    .dispatch(PROFILE_REFRESH_ACCESS, refreshToken)
+    .then((response) => {
+      notifySubscribers(response.accessToken);
       refreshingToken = false;
-      callback(true);
     })
     .catch(() => {
+      notifySubscribers();
       refreshingToken = false;
-      callback(false);
     });
 };
 
@@ -54,14 +65,13 @@ axios.interceptors.response.use(
     }
 
     if (body.statusCode === 12) {
-      refreshAccessToken((success) => {
-        subscribers = subscribers.filter((cb) => cb(success));
-      });
+      refreshAccessToken();
 
       const originalRequest = response.config;
       return new Promise((resolve, reject) => {
-        subscribers.push((success: boolean) => {
-          if (success) {
+        subscribers.push((accessToken?: string) => {
+          if (accessToken) {
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             resolve(axios(originalRequest));
           } else {
             reject({ error: body });
@@ -83,8 +93,10 @@ router.beforeEach((to, from, next) => {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else {
-      refreshAccessToken((success) => {
-        if (success) {
+      refreshAccessToken();
+
+      subscribers.push((accessToken?: string) => {
+        if (accessToken) {
           next();
         } else {
           next({ name: 'LoginPage', params: { to: to.path } });
