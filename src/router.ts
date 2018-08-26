@@ -32,12 +32,6 @@ const refreshAccessToken = () => {
     return;
   }
 
-  const refreshToken = store.getters[PROFILE_REFRESH_TOKEN];
-
-  if (refreshToken == null) {
-    return;
-  }
-
   const notifySubscribers = (accessToken?: string) => {
     subscribers = subscribers.filter((cb) => cb(accessToken));
   };
@@ -45,7 +39,7 @@ const refreshAccessToken = () => {
   refreshingToken = true;
 
   store
-    .dispatch(PROFILE_REFRESH_ACCESS, refreshToken)
+    .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
     .then((response) => {
       notifySubscribers(response.accessToken);
       refreshingToken = false;
@@ -92,7 +86,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.secure !== false)) {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
-    } else {
+    } else if (store.getters[PROFILE_REFRESH_TOKEN] != null) {
       refreshAccessToken();
 
       subscribers.push((accessToken?: string) => {
@@ -102,6 +96,8 @@ router.beforeEach((to, from, next) => {
           next({ name: 'LoginPage', params: { to: to.path } });
         }
       });
+    } else {
+      next({ name: 'LoginPage', params: { to: to.path } });
     }
   } else {
     next();

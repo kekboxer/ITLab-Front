@@ -19,7 +19,7 @@ import {
 
 import { EventPlace, EventUserRole } from '@/modules/events';
 
-const setAxiosAuthHeader = (token?: string) => {
+export const setAxiosAuthHeader = (token?: string) => {
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   } else {
