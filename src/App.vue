@@ -33,6 +33,10 @@ import {
   }
 })
 export default class App extends Vue {
+
+  // Computed data //
+  //////////////////
+
   get theme(): string {
     const themeName = this.$store.getters[PROFILE_SETTINGS_THEME_GET];
     return `theme-${themeName}`;

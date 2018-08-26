@@ -28,7 +28,7 @@ import {
   // @ts-ignore
   eventEditPageRoute,
   // @ts-ignore
-  eventDetailPage
+  eventDetailPageRoute
 } from '@/views/events';
 
 // @ts-ignore
@@ -38,10 +38,10 @@ import { equipmentPageRoute, equipmentEditPageRoute } from '@/views/equipment';
 import { projectsPageRoute } from '@/views/projects';
 
 // @ts-ignore
-import { profileSettingsPageRoute } from '@/views/profile';
+import { profilePageRoute } from '@/views/profile';
 
 // @ts-ignore
-import { usersPageRoute } from '@/views/system';
+import { usersPageRoute, settingsPageRoute } from '@/views/system';
 
 export const state: LayoutState = {
   stuff: [loginPageRoute, registrationPageRoute, processingAgreementPageRoute],
@@ -50,6 +50,12 @@ export const state: LayoutState = {
       name: 'general',
       title: 'Общее',
       sections: [
+        {
+          name: 'profile',
+          title: 'Профиль',
+          homeURL: '/profile',
+          pages: [profilePageRoute]
+        },
         {
           name: 'notifications',
           title: 'Уведомления',
@@ -60,7 +66,7 @@ export const state: LayoutState = {
           name: 'events',
           title: 'События',
           homeURL: '/events',
-          pages: [eventsPageRoute, eventDetailPage, eventEditPageRoute]
+          pages: [eventsPageRoute, eventDetailPageRoute, eventEditPageRoute]
         },
         {
           name: 'equipment',
@@ -85,18 +91,12 @@ export const state: LayoutState = {
           title: 'Пользователи',
           homeURL: '/users',
           pages: [usersPageRoute]
-        }
-      ]
-    },
-    {
-      name: 'settings',
-      title: 'Профиль',
-      sections: [
+        },
         {
           name: 'profileSettings',
           title: 'Настройки',
           homeURL: '/settings',
-          pages: [profileSettingsPageRoute]
+          pages: [settingsPageRoute]
         }
       ]
     }

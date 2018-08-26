@@ -64,7 +64,7 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { RouteConfig, Route } from 'vue-router';
+import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
 import VueMarkdown from 'vue-markdown';
@@ -144,7 +144,7 @@ export default class EventDetailPage extends Vue {
   }
 }
 
-export const eventDetailPage = {
+export const eventDetailPageRoute = {
   path: '/events/:id',
   name: 'EventDetailPage',
   component: EventDetailPage

@@ -1,10 +1,10 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="profile-settings-page">
+  <div class="settings-page">
     <b-container class="content">
       <b-row>
         <b-col>
-          <h1 class="page-title">Настройки профиля</h1>
+          <h1 class="page-title">Настройки</h1>
         </b-col>
       </b-row>
       <br>
@@ -35,7 +35,7 @@ import {
 } from '@/modules/profile';
 
 @Component
-export default class ProfileSettingsPage extends Vue {
+export default class SettingsPage extends Vue {
   set theme(themeName: string) {
     this.$store.commit(PROFILE_SETTINGS_THEME_SET, themeName);
   }
@@ -52,10 +52,10 @@ export default class ProfileSettingsPage extends Vue {
   }
 }
 
-export const profileSettingsPageRoute: RouteConfig = {
+export const settingsPageRoute: RouteConfig = {
   path: '/settings',
-  name: 'ProfileSettings',
-  component: ProfileSettingsPage
+  name: 'Settings',
+  component: SettingsPage
 };
 </script>
 <!-- SCRIPT END -->

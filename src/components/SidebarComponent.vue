@@ -19,6 +19,7 @@
           <b-nav vertical>
             <b-nav-item v-for="section in group.sections" :key="section.name" :to="section.homeURL" @click="toggleMenu($event, true)" exact v-bind:class="{'active': section.name == $route.meta.parentSection}">
               {{section.title}}
+              <span class="badge badge-pill badge-primary" v-if="section.badgeText">{{ section.badgeText }}</span>
             </b-nav-item>
           </b-nav>
         </div>
@@ -37,14 +38,27 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Hammer from 'hammerjs';
 
+import '@/icons/bars';
+
 import { Group, LAYOUT_GROUPS_GET } from '@/modules/layout';
 import { PROFILE_LOGOUT } from '@/modules/profile';
 
-import '@/icons/bars';
+import {
+  NOTIFICATION_INVITATIONS_FETCH,
+  NOTIFICATIONS_GET_COUNT
+} from '@/modules/notifications';
+
+import { LAYOUT_BADGE_TEXT_SET } from '@/modules/layout';
 
 @Component
 export default class SidebarComponent extends Vue {
+  // Properties //
+  ///////////////
+
   public isMobileMenuHidden: boolean = true;
+
+  // Component methods //
+  //////////////////////
 
   public created() {
     const swipe = new Hammer(document.body);
@@ -57,7 +71,22 @@ export default class SidebarComponent extends Vue {
         this.isMobileMenuHidden = true;
       }
     });
+
+    this.$watch(
+      () => this.$store.getters[NOTIFICATIONS_GET_COUNT],
+      (n: number, o: number) => {
+        this.$store.commit(LAYOUT_BADGE_TEXT_SET, {
+          sectionName: 'notifications',
+          badgeText: n > 0 ? `${n}` : undefined
+        });
+      }
+    );
+
+    this.$store.dispatch(NOTIFICATION_INVITATIONS_FETCH);
   }
+
+  // Methods //
+  ////////////
 
   public toggleMenu(event: any, force: boolean | undefined) {
     if (event.target.className !== 'sidebar-component' && force === undefined) {
@@ -76,6 +105,9 @@ export default class SidebarComponent extends Vue {
       this.$router.push({ name: 'LoginPage' });
     });
   }
+
+  // Computed data //
+  //////////////////
 
   get groups(): Group[] {
     return this.$store.getters[LAYOUT_GROUPS_GET];

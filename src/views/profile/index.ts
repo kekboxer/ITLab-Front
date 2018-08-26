@@ -1,1 +1,1 @@
-export * from './ProfileSettingsPage.vue';
+export * from './ProfilePage.vue';
