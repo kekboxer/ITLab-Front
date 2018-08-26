@@ -1,24 +1,18 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="users-page">
-    <b-container class="content">
-      <b-row>
-        <b-col>
-          <h1 class="page-title">Пользователи
-            <b-button variant="success" @click="showModal">Пригласить</b-button>
-          </h1>
-        </b-col>
-      </b-row>
-      <br>
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-table :hover="true" :fixed="true" :items="items" :fields="fields">
-          <template slot="email" slot-scope="data">
-            <mail-link :email="data.item.email" />
-          </template>
-        </b-table>
-      </div>
-    </b-container>
+    <page-content-component :loading="loadingInProcess">
+      <template slot="header">
+        Пользователи
+        <b-button variant="success" @click="showModal">Пригласить</b-button>
+      </template>
+
+      <b-table :hover="true" :fixed="true" :items="items" :fields="fields">
+        <template slot="email" slot-scope="data">
+          <mail-link :email="data.item.email" />
+        </template>
+      </b-table>
+    </page-content-component>
 
     <b-modal v-model="modalVisible">
       <template slot="modal-title">
@@ -45,8 +39,8 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
 import MailLinkComponent from '@/components/MailLinkComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import {
   User,
@@ -63,8 +57,8 @@ enum ModalState {
 
 @Component({
   components: {
-    'loading-stub-component': LoadingStubComponent,
-    'mail-link': MailLinkComponent
+    'mail-link': MailLinkComponent,
+    'page-content-component': PageContentComponent
   }
 })
 export default class UsersPage extends Vue {

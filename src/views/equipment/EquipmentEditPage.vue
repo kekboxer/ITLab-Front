@@ -1,62 +1,54 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-edit-page">
-    <b-container class="content">
-      <b-row>
+    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+      <template slot="header">
+        Оборудование
+      </template>
+
+      <b-row v-if="!isNewEquipment">
         <b-col>
-          <h3 class="page-title">Оборудование</h3>
+          ID:
+          <span style="font-family: monospace">{{ equipment.id }}</span>
+          <hr>
         </b-col>
       </b-row>
-      <br>
+      <b-row>
+        <b-col>
+          <b-form @submit.prevent="onSubmit">
+            <b-form-group id="equipment-type-group" label="Тип оборудования">
+              <equipment-type-selection-component v-model="equipmentTypeSelected"></equipment-type-selection-component>
+            </b-form-group>
 
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-row v-if="!isNewEquipment">
-          <b-col v-bind:title="'Это временно'">
-            ID:
-            <span style="font-family: monospace">{{ equipment.id }}</span>
-            <hr>
-          </b-col>
-        </b-row>
+            <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
+              <b-form-input id="serial-number-input" type="text" v-model.trim="equipment.serialNumber">
+              </b-form-input>
+            </b-form-group>
 
-        <b-row>
-          <b-col>
-            <b-form @submit.prevent="onSubmit">
-              <b-form-group id="equipment-type-group" label="Тип оборудования">
-                <equipment-type-selection-component v-model="equipmentTypeSelected"></equipment-type-selection-component>
-              </b-form-group>
+            <b-form-group id="description-group" label="Описание" label-for="description-input">
+              <b-form-textarea id="description-input" :rows="3" :max-rows="6" v-model="equipment.description">
+              </b-form-textarea>
+            </b-form-group>
 
-              <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
-                <b-form-input id="serial-number-input" type="text" v-model.trim="equipment.serialNumber">
-                </b-form-input>
-              </b-form-group>
+            <b-form-group id="owner-label-group" label="Владелец" label-for="owner-label" v-if="equipmentOwner && !isNewEquipment">
+              <b>{{ equipmentOwner.firstName }} {{ equipmentOwner.lastName }}</b>,
+              <mail-link :email="equipmentOwner.email" />
+            </b-form-group>
 
-              <b-form-group id="description-group" label="Описание" label-for="description-input">
-                <b-form-textarea id="description-input" :rows="3" :max-rows="6" v-model="equipment.description">
-                </b-form-textarea>
-              </b-form-group>
+            <br>
 
-              <b-form-group id="owner-label-group" label="Владелец" label-for="owner-label" v-if="equipmentOwner && !isNewEquipment">
-                <b>{{ equipmentOwner.firstName }} {{ equipmentOwner.lastName }}</b>,
-                <mail-link :email="equipmentOwner.email" />
-              </b-form-group>
-
-              <br>
-
-              <b-form-row class="buttons">
-                <b-col cols="12" md="auto">
-                  <b-button class="w-100 submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
-                </b-col>
-                <b-col cols="12" md="auto" v-if="!isNewEquipment">
-                  <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
-                </b-col>
-              </b-form-row>
-            </b-form>
-          </b-col>
-        </b-row>
-      </div>
-      <br>
-    </b-container>
+            <b-form-row class="buttons">
+              <b-col cols="12" md="auto">
+                <b-button class="w-100 submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
+              </b-col>
+              <b-col cols="12" md="auto" v-if="!isNewEquipment">
+                <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
+              </b-col>
+            </b-form-row>
+          </b-form>
+        </b-col>
+      </b-row>
+    </page-content-component>
 
     <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment">
       <template slot="modal-title">
@@ -84,7 +76,7 @@ import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
 import MailLinkComponent from '@/components/MailLinkComponent.vue';
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import EquipmentTypeSelectionComponent from '@/components/EquipmentTypeSelectionComponent.vue';
 
@@ -113,7 +105,7 @@ enum State {
 @Component({
   components: {
     'mail-link': MailLinkComponent,
-    'loading-stub-component': LoadingStubComponent,
+    'page-content-component': PageContentComponent,
     'user-selection-component': UserSelectionComponent,
     'equipment-type-selection-component': EquipmentTypeSelectionComponent
   }
@@ -122,9 +114,10 @@ export default class EquipmentEditPage extends Vue {
   // Page properties //
   ////////////////////
 
+  public loadingInProcess: boolean = false;
+  public notFound: boolean = false;
   public pageState: State = State.Default;
   public isNewEquipment: boolean = false;
-  public loadingInProcess: boolean = false;
 
   // Equipment properties //
   /////////////////////////
@@ -146,7 +139,10 @@ export default class EquipmentEditPage extends Vue {
         .dispatch(EQUIPMENT_FETCH_ONE, equipmentId)
         .then((equipment) => {
           this.setEquipment(equipment);
-
+          this.loadingInProcess = false;
+        })
+        .catch((error) => {
+          this.notFound = true;
           this.loadingInProcess = false;
         });
     } else {

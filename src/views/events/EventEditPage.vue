@@ -1,76 +1,68 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="event-edit-page">
-    <b-container class="content">
-      <b-row>
+    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+      <template slot="header">
+        Событие
+      </template>
+
+      <b-row v-if="!isNewEvent">
         <b-col>
-          <h3 class="page-title">Событие</h3>
+          ID:
+          <span style="font-family: monospace">{{ event.id }}</span>
+          <hr>
         </b-col>
       </b-row>
-      <br>
+      <b-row>
+        <b-col>
+          <b-form @submit.prevent="onSubmitEvent">
+            <b-form-group id="event-type-group" label="Тип события">
+              <event-type-selection-component v-model="eventTypeSelected"></event-type-selection-component>
+            </b-form-group>
 
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-row v-if="!isNewEvent">
-          <b-col>
-            ID:
-            <span style="font-family: monospace">{{ event.id }}</span>
-            <hr>
-          </b-col>
-        </b-row>
+            <b-form-group id="event-title-group" label="Название" label-for="title-input">
+              <b-form-input id="title-input" type="text" v-model.trim="event.title">
+              </b-form-input>
+            </b-form-group>
 
-        <b-row>
-          <b-col>
-            <b-form @submit.prevent="onSubmitEvent">
-              <b-form-group id="event-type-group" label="Тип события">
-                <event-type-selection-component v-model="eventTypeSelected"></event-type-selection-component>
-              </b-form-group>
+            <b-form-group id="event-description-group" label="Описание" label-for="description-input">
+              <b-tabs>
+                <b-tab title="Markdown" active>
+                  <b-form-textarea id="description-input" style="font-family: monospace; resize: none" :rows="countRows(event.description, 3)" :max-rows="20" v-model="event.description">
+                  </b-form-textarea>
+                </b-tab>
+                <b-tab title="Просмотр">
+                  <div class="markdown markdown-preview">
+                    <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
+                  </div>
+                </b-tab>
+              </b-tabs>
+              <div class="w-100" align="right">
+                <small>
+                  <a target="_blank" href="https://guides.github.com/features/mastering-markdown">Markdown guide</a>
+                </small>
+              </div>
+            </b-form-group>
 
-              <b-form-group id="event-title-group" label="Название" label-for="title-input">
-                <b-form-input id="title-input" type="text" v-model.trim="event.title">
-                </b-form-input>
-              </b-form-group>
+            <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
+              <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
+              </b-form-textarea>
+            </b-form-group>
 
-              <b-form-group id="event-description-group" label="Описание" label-for="description-input">
-                <b-tabs>
-                  <b-tab title="Markdown" active>
-                    <b-form-textarea id="description-input" style="font-family: monospace; resize: none" :rows="countRows(event.description, 3)" :max-rows="20" v-model="event.description">
-                    </b-form-textarea>
-                  </b-tab>
-                  <b-tab title="Просмотр">
-                    <div class="markdown markdown-preview">
-                      <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
-                    </div>
-                  </b-tab>
-                </b-tabs>
-                <div class="w-100" align="right">
-                  <small>
-                    <a target="_blank" href="https://guides.github.com/features/mastering-markdown">Markdown guide</a>
-                  </small>
-                </div>
-              </b-form-group>
+            <b-form-group id="event-shifts-group" label="Смены" label-for="shifts-input">
+              <event-shifts-component v-model="eventShifts" :editable="true">
+              </event-shifts-component>
+            </b-form-group>
 
-              <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
-                <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
-                </b-form-textarea>
-              </b-form-group>
-
-              <b-form-group id="event-shifts-group" label="Смены" label-for="shifts-input">
-                <event-shifts-component v-model="eventShifts" :editable="true">
-                </event-shifts-component>
-              </b-form-group>
-
-              <b-form-row>
-                <b-col>
-                  <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
-                </b-col>
-              </b-form-row>
-            </b-form>
-          </b-col>
-        </b-row>
-      </div>
-      <br>
-    </b-container>
+            <b-form-row>
+              <b-col>
+                <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
+              </b-col>
+            </b-form-row>
+          </b-form>
+        </b-col>
+      </b-row>
+    </page-content-component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -84,7 +76,7 @@ import moment from 'moment-timezone';
 import axios from 'axios';
 
 import VueMarkdown from 'vue-markdown';
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
 
@@ -107,7 +99,7 @@ enum State {
 @Component({
   components: {
     'vue-markdown': VueMarkdown,
-    'loading-stub-component': LoadingStubComponent,
+    'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent,
     'event-type-selection-component': EventTypeSelectionComponent
   }
@@ -116,9 +108,10 @@ export default class EventEditPage extends Vue {
   // Page properties //
   ////////////////////
 
+  public loadingInProcess: boolean = false;
+  public notFound: boolean = false;
   public pageState: State = State.Default;
   public isNewEvent: boolean = false;
-  public loadingInProcess: boolean = false;
 
   // Event properties //
   /////////////////////
@@ -135,11 +128,16 @@ export default class EventEditPage extends Vue {
 
     const eventId = this.$route.params.id;
     if (eventId && eventId !== 'new') {
-      this.$store.dispatch(EVENTS_FETCH_ONE, eventId).then((event) => {
-        this.setEvent(event);
-
-        this.loadingInProcess = false;
-      });
+      this.$store
+        .dispatch(EVENTS_FETCH_ONE, eventId)
+        .then((event) => {
+          this.setEvent(event);
+          this.loadingInProcess = false;
+        })
+        .catch((error) => {
+          this.notFound = true;
+          this.loadingInProcess = false;
+        });
     } else {
       this.isNewEvent = true;
       this.loadingInProcess = false;

@@ -1,43 +1,37 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="events-page">
-    <b-container class="content">
-      <b-row>
+    <page-content-component :loading="loadingInProcess">
+      <template slot="header">
+        События&nbsp;
+        <b-button variant="success" to="events/edit/new">Добавить</b-button>
+      </template>
+
+      <b-row v-for="event in eventsCurrent" :key="event.id">
         <b-col>
-          <h1 class="page-title">События
-            <b-button variant="success" to="events/edit/new">Добавить</b-button>
-          </h1>
+          <event-item-component :event="event"></event-item-component>
         </b-col>
       </b-row>
-      <br>
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-row v-for="event in eventsCurrent" :key="event.id">
+
+      <b-row>
+        <b-col>
+          <div class="load-more" @click="togglePastEvents">
+            <strong>
+              {{ eventsShowPast ? "Скрыть" : "Показать" }} прошедшие события
+            </strong>
+          </div>
+        </b-col>
+      </b-row>
+
+      <div v-if="eventsShowPast">
+        <b-row v-for="event in eventsPast" :key="event.id">
           <b-col>
             <event-item-component :event="event"></event-item-component>
           </b-col>
         </b-row>
-
-        <b-row>
-          <b-col>
-            <div class="load-more" @click="togglePastEvents">
-              <strong>
-                {{ eventsShowPast ? "Скрыть" : "Показать" }} прошедшие события
-              </strong>
-            </div>
-          </b-col>
-        </b-row>
-
-        <div v-if="eventsShowPast">
-          <b-row v-for="event in eventsPast" :key="event.id">
-            <b-col>
-              <event-item-component :event="event"></event-item-component>
-            </b-col>
-          </b-row>
-        </div>
-
       </div>
-    </b-container>
+
+    </page-content-component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -50,7 +44,7 @@ import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
 import EventItemComponent from '@/components/EventItemComponent.vue';
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import {
   Event,
@@ -62,7 +56,7 @@ import {
 @Component({
   components: {
     'event-item-component': EventItemComponent,
-    'loading-stub-component': LoadingStubComponent
+    'page-content-component': PageContentComponent
   }
 })
 export default class EventsPage extends Vue {
@@ -138,10 +132,7 @@ export const eventsPageRoute: RouteConfig = {
       background-color: getstyle(card-list-item-background-color);
 
       &:hover {
-        background-color: darken(
-          getstyle(card-list-item-background-color),
-          5%
-        );
+        background-color: darken(getstyle(card-list-item-background-color), 5%);
       }
     }
   }

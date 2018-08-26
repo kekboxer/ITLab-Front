@@ -1,28 +1,22 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="projects-page">
-    <b-container class="content">
+    <page-content-component :loading="loadingInProcess">
+      <template slot="header">
+        Проекты
+      </template>
+
       <b-row>
-        <b-col>
-          <h1 class="page-title">Проекты</h1>
+        <b-col v-for="board in boards" :key="board.id" class="mb-3" lg="3" md="4" sm="6" cols="12">
+          <a class="board-tile" :href="board.url" v-bind:style="getStyle(board)">
+            <span class="board-tile-fade"></span>
+            <span class="board-tile-details is-badged">
+              <span :title="board.name" dir="auto" class="board-tile-details-name">{{ board.name }}</span>
+            </span>
+          </a>
         </b-col>
       </b-row>
-      <br>
-
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-row>
-          <b-col v-for="board in boards" :key="board.id" class="mb-3" lg="3" md="4" sm="6" cols="12">
-            <a class="board-tile" :href="board.url" v-bind:style="getStyle(board)">
-              <span class="board-tile-fade"></span>
-              <span class="board-tile-details is-badged">
-                <span :title="board.name" dir="auto" class="board-tile-details-name">{{ board.name }}</span>
-              </span>
-            </a>
-          </b-col>
-        </b-row>
-      </div>
-    </b-container>
+    </page-content-component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -34,19 +28,25 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 
 @Component({
   components: {
-    'loading-stub-component': LoadingStubComponent
+    'page-content-component': PageContentComponent
   }
 })
 export default class ProjectsPage extends Vue {
   public APP_ID: string = '5c30d909f3ba9f9e3141a286626f90ea';
   public APP_TOKEN: string = 'd366bf5ed0622c00e27f4532b7be509371a214a471355740e98374bffdf4a92d';
 
+  // Properties //
+  ///////////////
+
   public loadingInProcess: boolean = true;
   public boards: any[] = [];
+
+  // Component methods //
+  //////////////////////
 
   public mounted() {
     this.loadingInProcess = true;
@@ -70,6 +70,9 @@ export default class ProjectsPage extends Vue {
         console.log('ERROR', err);
       });
   }
+
+  // Computed data //
+  //////////////////
 
   public getStyle(board: any) {
     return {

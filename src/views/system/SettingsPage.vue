@@ -1,13 +1,10 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="settings-page">
-    <b-container class="content">
-      <b-row>
-        <b-col>
-          <h1 class="page-title">Настройки</h1>
-        </b-col>
-      </b-row>
-      <br>
+    <page-content-component>
+      <template slot="header">
+        Настройки
+      </template>
 
       <b-row>
         <b-col>
@@ -18,7 +15,7 @@
           </b-form>
         </b-col>
       </b-row>
-    </b-container>
+    </page-content-component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -29,16 +26,28 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
+import PageContentComponent from '@/components/PageContentComponent.vue';
+
 import {
   PROFILE_SETTINGS_THEME_SET,
   PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
 
-@Component
+@Component({
+  components: {
+    'page-content-component': PageContentComponent
+  }
+})
 export default class SettingsPage extends Vue {
+  // Methods //
+  ////////////
+
   set theme(themeName: string) {
     this.$store.commit(PROFILE_SETTINGS_THEME_SET, themeName);
   }
+
+  // Computed data //
+  //////////////////
 
   get theme(): string {
     return this.$store.getters[PROFILE_SETTINGS_THEME_GET];

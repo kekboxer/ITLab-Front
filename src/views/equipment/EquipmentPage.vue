@@ -1,80 +1,69 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-page">
-    <b-container class="content">
-      <b-row>
-        <b-col>
-          <h1 class="page-title">Оборудование
-            <b-button variant="success" to="equipment/new">
-              <span class="text d-none d-md-inline">Добавить</span>
-              <icon name="plus" class="d-inline d-md-none"></icon>
-            </b-button>
-          </h1>
+    <page-content-component :loading="loadingInProcess">
+      <template slot="header">
+        Оборудование&nbsp;
+        <b-button variant="success" to="equipment/new">Добавить</b-button>
+      </template>
+
+      <b-row class="d-lg-none">
+        <b-col cols="12" md="6 mr-auto">
+          <b-input-group class="mb-2 pr-3">
+            <input class="form-control" v-model="equipmentFilterString" placeholder="Поиск" type="text">
+            <b-input-group-append>
+              <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
+                <icon name="times"></icon>
+              </b-btn>
+            </b-input-group-append>
+          </b-input-group>
         </b-col>
       </b-row>
-      <br>
+      <b-row>
+        <b-col>
+          <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
+            <template slot="HEAD_actions" slot-scope="data">
+              <b-input-group class="actions-head">
+                <b-form-input v-model="equipmentFilterString" placeholder="Поиск" type="text"></b-form-input>
+                <b-input-group-append>
+                  <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
+                    <icon name="times" style="position: relative; top: -2px;"></icon>
+                  </b-btn>
+                </b-input-group-append>
+              </b-input-group>
+            </template>
 
-      <loading-stub-component v-if="loadingInProcess"></loading-stub-component>
-      <div v-else>
-        <b-row class="d-lg-none">
-          <b-col cols="12" md="6 mr-auto">
-            <b-input-group class="mb-2 pr-3">
-              <input class="form-control" v-model="equipmentFilterString" placeholder="Поиск" type="text">
-              <b-input-group-append>
-                <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
-                  <icon name="times"></icon>
-                </b-btn>
-              </b-input-group-append>
-            </b-input-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
-              <template slot="HEAD_actions" slot-scope="data">
-                <b-input-group class="actions-head">
-                  <b-form-input v-model="equipmentFilterString" placeholder="Поиск" type="text"></b-form-input>
-                  <b-input-group-append>
-                    <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
-                      <icon name="times" style="position: relative; top: -2px;"></icon>
-                    </b-btn>
-                  </b-input-group-append>
-                </b-input-group>
-              </template>
+            <template slot="type" slot-scope="data">
+              {{ data.item.equipmentType.title }}
+            </template>
+            <template slot="serialNumber" slot-scope="data">
+              <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+            </template>
+            <template slot="actions" slot-scope="data" style="overflow: auto">
+              <span class="actions-cell">
+                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
+                  Изменить
+                </b-button>
+                <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
+                  {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
+                </b-button>
+              </span>
+            </template>
 
-              <template slot="type" slot-scope="data">
-                {{ data.item.equipmentType.title }}
+            <template slot="row-details" slot-scope="data">
+              Владелец:
+              <template v-if="data.item.owner">
+                <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
+                <mail-link :email="data.item.owner.email" />
               </template>
-              <template slot="serialNumber" slot-scope="data">
-                <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+              <template v-else>
+                Лаборатория
               </template>
-              <template slot="actions" slot-scope="data" style="overflow: auto">
-                <span class="actions-cell">
-                  <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
-                    Изменить
-                  </b-button>
-                  <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
-                    {{ data.detailsShowing ? "Свернуть" : "Подробнее" }}
-                  </b-button>
-                </span>
-              </template>
-
-              <template slot="row-details" slot-scope="data">
-                Владелец:
-                <template v-if="data.item.owner">
-                  <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
-                  <mail-link :email="data.item.owner.email" />
-                </template>
-                <template v-else>
-                  Лаборатория
-                </template>
-              </template>
-            </b-table>
-          </b-col>
-        </b-row>
-      </div>
-      <br>
-    </b-container>
+            </template>
+          </b-table>
+        </b-col>
+      </b-row>
+    </page-content-component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -86,7 +75,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import LoadingStubComponent from '@/components/LoadingStubComponent.vue';
+import PageContentComponent from '@/components/PageContentComponent.vue';
 import MailLinkComponent from '@/components/MailLinkComponent.vue';
 
 import Icon from 'vue-awesome/components/Icon';
@@ -104,9 +93,9 @@ import { User, USERS_FETCH_ALL } from '@/modules/users';
 
 @Component({
   components: {
-    'loading-stub-component': LoadingStubComponent,
+    Icon,
     'mail-link': MailLinkComponent,
-    Icon
+    'page-content-component': PageContentComponent
   }
 })
 export default class EquipmentPage extends Vue {
