@@ -8,13 +8,17 @@ import {
   ProfileState,
   AuthorizationData,
   RegistrationData,
+  UserSession,
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
-  PROFILE_CREATE,
   PROFILE_REFRESH_ACCESS,
+  PROFILE_CREATE,
+  PROFILE_WISH,
+  PROFILE_SESSIONS_FETCH,
+  PROFILE_SESSIONS_DELETE,
+  PROFILE_SET,
   PROFILE_ACCESS_TOKEN_SET,
-  PROFILE_REFRESH_TOKEN_SET,
-  PROFILE_WISH
+  PROFILE_REFRESH_TOKEN_SET
 } from './types';
 
 import { EventPlace, EventUserRole } from '@/modules/events';
@@ -35,19 +39,26 @@ interface LoginResponse {
   lastName: string;
 }
 
+const handleLogin = (
+  response: LoginResponse,
+  commit: any,
+  resolve: (value?: {} | PromiseLike<{}>) => void
+) => {
+  setAxiosAuthHeader(response.accessToken);
+
+  commit(PROFILE_SET, response.id);
+  commit(PROFILE_ACCESS_TOKEN_SET, response.accessToken);
+  commit(PROFILE_REFRESH_TOKEN_SET, response.refreshToken);
+  resolve(response);
+};
+
 export const actions: ActionTree<ProfileState, RootState> = {
   [PROFILE_LOGIN]: ({ commit }, authorizationData: AuthorizationData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('authentication/login', authorizationData)
         .then((response) => getResponseData<LoginResponse>(response))
-        .then((loginResponse) => {
-          setAxiosAuthHeader(loginResponse.accessToken);
-
-          commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
-          commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
-          resolve(loginResponse);
-        })
+        .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
         .catch((error) => {
           reject(error);
         });
@@ -55,7 +66,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
   },
 
   [PROFILE_LOGOUT]: ({ commit }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setAxiosAuthHeader(undefined);
 
       commit(PROFILE_ACCESS_TOKEN_SET, undefined);
@@ -71,13 +82,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
       axios
         .post('authentication/refresh', data)
         .then((response) => getResponseData<LoginResponse>(response))
-        .then((loginResponse) => {
-          setAxiosAuthHeader(loginResponse.accessToken);
-
-          commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
-          commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
-          resolve(loginResponse);
-        })
+        .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
         .catch((error) => {
           console.log(PROFILE_REFRESH_ACCESS, error);
           reject(error);
@@ -121,6 +126,50 @@ export const actions: ActionTree<ProfileState, RootState> = {
         })
         .catch((error) => {
           console.log(PROFILE_WISH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROFILE_SESSIONS_FETCH]: ({}) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('authentication/refresh')
+        .then((response) => getResponseData<UserSession>(response))
+        .then((sessions) => resolve(sessions))
+        .catch((error) => {
+          console.log(PROFILE_SESSIONS_FETCH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROFILE_SESSIONS_DELETE]: ({}, sessions: string[] | UserSession[]) => {
+    if (sessions.length === 0) {
+      return;
+    }
+
+    const sessionIds =
+      typeof sessions[0] === 'string'
+        ? sessions
+        : (sessions as UserSession[]).map((session) => session.id);
+
+    return new Promise((resolve, reject) => {
+      axios
+        .delete('authentication/refresh', {
+          data: sessionIds
+        })
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(PROFILE_SESSIONS_DELETE, error);
           reject(error);
         });
     });

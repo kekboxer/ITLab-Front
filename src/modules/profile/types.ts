@@ -1,6 +1,7 @@
 import { User } from '@/modules/users';
 
 // local storage
+export const LOCAL_STORAGE_PROFILE_ID = 'user-id';
 export const LOCAL_STORAGE_ACCESS_TOKEN = 'access-token';
 export const LOCAL_STORAGE_REFRESH_TOKEN = 'refresh-token';
 export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
@@ -11,6 +12,8 @@ export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
+export const PROFILE_SESSIONS_FETCH = 'PROFILE_SESSIONS_FETCH';
+export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
 // setters
 export const PROFILE_SET = 'PROFILE_SET';
@@ -19,6 +22,7 @@ export const PROFILE_REFRESH_TOKEN_SET = 'PROFILE_REFRESH_TOKEN_SET';
 export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
 
 // getters
+export const PROFILE_GET = 'PROFILE_GET';
 export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
 export const PROFILE_REFRESH_TOKEN = 'PROFILE_REFRESH_TOKEN';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
@@ -60,6 +64,15 @@ export interface AccessToken {
   exp: number;
 }
 
+// UserSession //
+////////////////
+
+export interface UserSession {
+  id: string;
+  userAgent: string;
+  createTime: Date;
+}
+
 // Settings //
 /////////////
 
@@ -71,7 +84,7 @@ export interface Settings {
 //////////
 
 export interface ProfileState {
-  profile?: User;
+  profileId?: string;
   accessToken?: string;
   accessTokenDecoded?: AccessToken;
   refreshToken?: string;
