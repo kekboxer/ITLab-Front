@@ -14,8 +14,10 @@ import {
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
   EVENT_TYPE_COMMIT,
+  EVENT_DELETE,
   EVENTS_SET_ALL,
-  EVENTS_SET_ONE
+  EVENTS_SET_ONE,
+  EVENTS_REMOVE_ONE
 } from './types';
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
@@ -220,6 +222,29 @@ export const actions: ActionTree<EventsState, RootState> = {
         .then((eventType) => resolve(eventType))
         .catch((error) => {
           console.log(EVENT_TYPE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_DELETE]: ({ commit }, event: string | Event) => {
+    return new Promise((resolve, reject) => {
+      const eventId = typeof event === 'string' ? event : event.id;
+
+      axios
+        .delete(`event/${eventId}`)
+        .then((response) => {
+          const body = response && response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            commit(EVENTS_REMOVE_ONE, eventId);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(EVENT_DELETE, error);
           reject(error);
         });
     });

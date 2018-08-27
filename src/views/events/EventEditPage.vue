@@ -54,11 +54,14 @@
               </event-shifts-component>
             </b-form-group>
 
-            <b-form-row>
-              <b-col>
-                <b-button class="submit-button" type="submit" variant="primary" :disabled="isPageInProcess">Подтвердить</b-button>
+            <b-row class="mt-2 buttons">
+              <b-col cols="12" md="auto">
+                <b-button type="submit" variant="primary" class="w-100" :disabled="isPageInProcess">Подтвердить</b-button>
               </b-col>
-            </b-form-row>
+              <b-col cols="12" md="auto">
+                <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
+              </b-col>
+            </b-row>
           </b-form>
         </b-col>
       </b-row>
@@ -87,7 +90,8 @@ import {
   EventTypeDefault,
   EventShift,
   EVENTS_FETCH_ONE,
-  EVENT_COMMIT
+  EVENT_COMMIT,
+  EVENT_DELETE
 } from '@/modules/events';
 
 enum State {
@@ -177,6 +181,21 @@ export default class EventEditPage extends Vue {
     }
   }
 
+  public onDelete() {
+    if (confirm('Вы действительно хотите удалить это событие?')) {
+      this.$store
+        .dispatch(EVENT_DELETE, this.event.id)
+        .then(() => {
+          this.$notify({
+            title: 'Событие удалено',
+            duration: 500
+          });
+          this.$router.replace({ name: 'EventsPage' });
+        })
+        .catch();
+    }
+  }
+
   public setEvent(event: Event) {
     this.event = event;
     this.eventShifts = event.shifts || [];
@@ -239,6 +258,15 @@ export const eventEditPageRoute: RouteConfig = {
     @extend .form-control;
 
     height: auto;
+  }
+
+  @include media-breakpoint-down(sm) {
+    .buttons > div {
+      margin-bottom: 0.5rem;
+    }
+    .buttons > div:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

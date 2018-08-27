@@ -7,10 +7,12 @@ export const EVENTS_FETCH_ALL = 'EVENTS_FETCH_ALL';
 export const EVENTS_FETCH_ONE = 'EVENTS_FETCH_ONE';
 export const EVENT_COMMIT = 'EVENT_COMMIT';
 export const EVENT_TYPE_COMMIT = 'EVENT_TYPE_COMMIT';
+export const EVENT_DELETE = 'EVENT_DELETE';
 
 // setters
 export const EVENTS_SET_ALL = 'EVENTS_SET_ALL';
 export const EVENTS_SET_ONE = 'EVENTS_SET_ONE';
+export const EVENTS_REMOVE_ONE = 'EVENTS_REMOVE_ONE';
 
 // getters
 export const EVENTS_GET_ALL = 'EVENTS_GET_ALL';

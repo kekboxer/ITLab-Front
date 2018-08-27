@@ -1,7 +1,13 @@
 import { MutationTree } from 'vuex';
 import { Vue } from 'vue-property-decorator';
 
-import { EventsState, Event, EVENTS_SET_ALL, EVENTS_SET_ONE } from './types';
+import {
+  EventsState,
+  Event,
+  EVENTS_SET_ALL,
+  EVENTS_SET_ONE,
+  EVENTS_REMOVE_ONE
+} from './types';
 
 const setOneEvent = (events: Event[], event: Event) => {
   const currentEventIndex = events.findIndex((value) => {
@@ -52,5 +58,12 @@ export const mutations: MutationTree<EventsState> = {
 
   [EVENTS_SET_ONE]: (state, event: Event) => {
     setOneEvent(state.events, event);
+  },
+
+  [EVENTS_REMOVE_ONE]: (state, eventId: string) => {
+    const eventIndex = state.events.findIndex((event) => event.id === eventId);
+    if (eventIndex !== -1) {
+      Vue.delete(state.events, eventIndex);
+    }
   }
 };
