@@ -5,6 +5,7 @@ import {
   EventUserRoleDefault,
   EventParticipant
 } from '@/modules/events';
+import { User } from '@/modules/users';
 
 // actions
 export const NOTIFICATION_INVITATION_ACCEPT = 'NOTIFICATION_INVITATION_ACCEPT';
@@ -46,6 +47,7 @@ export interface EventInvitation extends Notification {
   placeId: string;
   shiftDurationInMinutes: number;
   role: EventUserRole;
+  createTime: Date;
 }
 
 export class EventInvitationDefault implements EventInvitation {
@@ -56,6 +58,7 @@ export class EventInvitationDefault implements EventInvitation {
   public placeId: string = '';
   public shiftDurationInMinutes: number = 0;
   public role: EventUserRole = new EventUserRoleDefault();
+  public createTime: Date = new Date(0);
 }
 
 // Wish //
@@ -67,7 +70,11 @@ export interface WishApplication extends Notification {
   eventType: EventType;
   beginTime: Date;
   placeId: string;
-  wish: EventParticipant;
+  wish: {
+    user: User;
+    role: EventUserRole;
+    createTime: Date;
+  };
 }
 
 // State //

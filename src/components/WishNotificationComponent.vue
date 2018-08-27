@@ -3,14 +3,21 @@
   <div class="wish-notification-component">
     <b-row>
       <b-col cols="12" md="7">
-        <a :href="'events/' + data.id">
-          <h4>{{ data.title }}</h4>
-        </a>
-        <small style="position: relative; top: -5px">{{ data.eventType.title }}</small>
+        <h4>Заявка</h4>
+        <b>{{ userName }}</b><br>
+        <mail-link :email="data.wish.user.email" />
       </b-col>
       <b-col cols="12" md="5">
         <b-row>
-          <b-col cols="5">Начало:</b-col>
+          <b-col cols="5">Событие:</b-col>
+          <b-col cols="7">
+            <a :href="'events/' + data.id">
+              {{ data.title }}
+            </a>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="5">Начало смены:</b-col>
           <b-col cols="7">
             <b>{{ data.beginTime | moment($g.DATETIME_FORMAT) }}</b>
           </b-col>
@@ -18,7 +25,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ wish.role }}</b>
+            <b>{{ role }}</b>
           </b-col>
         </b-row>
       </b-col>
@@ -28,7 +35,7 @@
         <b-button variant="primary" class="w-100" :disabled="isInProcess" @click="accept">Принять</b-button>
       </b-col>
       <b-col cols="12" md="auto">
-        <b-button variant="outline-danger" class="w-100" :disabled="isInProcess" @click="reject">Отказаться</b-button>
+        <b-button variant="outline-danger" class="w-100" :disabled="isInProcess" @click="reject">Отказать</b-button>
       </b-col>
     </b-row>
   </div>
@@ -42,12 +49,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Icon from 'vue-awesome/components/Icon';
 import moment from 'moment';
 
+import MailLinkComponent from '@/components/MailLinkComponent.vue';
+
 import 'vue-awesome/icons/clock';
 
 import {
-  EventInvitation,
-  NOTIFICATION_INVITATION_ACCEPT,
-  NOTIFICATION_INVITATION_REJECT
+  WishApplication,
+  NOTIFICATION_WISH_ACCEPT,
+  NOTIFICATION_WISH_REJECT
 } from '@/modules/notifications';
 
 enum State {
@@ -55,40 +64,35 @@ enum State {
   InProcess
 }
 
-@Component
-export default class InvitationNotificationComponent extends Vue {
+@Component({
+  components: {
+    'mail-link': MailLinkComponent
+  }
+})
+export default class WishNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: EventInvitation;
+  @Prop() public data!: WishApplication;
 
   public currentState: State = State.Default;
 
   // Computed data //
   //////////////////
 
-  get beginTime(): string {
-    if (!this.data.beginTime) {
-      return '';
-    }
+  get userName(): string {
+    const user = this.data.wish.user;
+    return `${user.firstName} ${user.lastName}`;
+  }
 
+  get beginTime(): string {
     return moment(this.data.beginTime).format();
   }
 
-  get duration(): string {
-    if (!this.data.shiftDurationInMinutes) {
-      return '';
-    }
-
-    return moment
-      .duration(this.data.shiftDurationInMinutes, 'minutes')
-      .humanize();
-  }
-
   get role(): string {
-    return (
-      this.$g.ROLE_TRANSLATIONS.get(this.data.role.name) || this.data.role.name
-    );
+    const roleName = this.data.wish.role.name;
+
+    return this.$g.ROLE_TRANSLATIONS.get(roleName) || roleName;
   }
 
   get isInProcess(): boolean {
@@ -98,10 +102,10 @@ export default class InvitationNotificationComponent extends Vue {
   public accept() {
     this.currentState = State.InProcess;
     this.$store
-      .dispatch(NOTIFICATION_INVITATION_ACCEPT, this.data)
+      .dispatch(NOTIFICATION_WISH_ACCEPT, this.data)
       .then((response) => {
         this.$notify({
-          title: 'Вы подтвердили своё участие',
+          title: 'Участник подтверждён',
           duration: 500
         });
       });
@@ -110,10 +114,10 @@ export default class InvitationNotificationComponent extends Vue {
   public reject() {
     this.currentState = State.InProcess;
     this.$store
-      .dispatch(NOTIFICATION_INVITATION_REJECT, this.data)
+      .dispatch(NOTIFICATION_WISH_REJECT, this.data)
       .then((response) => {
         this.$notify({
-          title: 'Вы отказались от участия!',
+          title: 'Участник отклонён',
           duration: 500
         });
       });
@@ -127,7 +131,7 @@ export default class InvitationNotificationComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.invitation-notification-component {
+.wish-notification-component {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;
@@ -135,7 +139,7 @@ export default class InvitationNotificationComponent extends Vue {
   @include theme-specific() {
     background-color: getstyle(card-list-item-background-color);
 
-    box-shadow: -4px 0 0 $warning;
+    box-shadow: -4px 0 0 $primary;
   }
 
   @include media-breakpoint-down(sm) {

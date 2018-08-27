@@ -3,10 +3,10 @@
   <div class="invitation-notification-component">
     <b-row>
       <b-col cols="12" md="7">
+        <h4>Приглашение</h4>
         <a :href="'events/' + data.id">
-          <h4>{{ data.title }}</h4>
+          {{ data.title }}
         </a>
-        <small style="position: relative; top: -5px">{{ data.eventType.title }}</small>
       </b-col>
       <b-col cols="12" md="5">
         <b-row>
