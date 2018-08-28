@@ -197,6 +197,7 @@ import {
 import { Equipment } from '@/modules/equipment';
 import { UserDefault, User } from '@/modules/users';
 import { PROFILE_WISH } from '@/modules/profile';
+import { getNounDeclension } from '@/stuff';
 
 enum ModalState {
   Hidden,
@@ -470,12 +471,12 @@ export default class EventShiftsComponent extends Vue {
       return 'Участники не требуются';
     }
 
-    const nounNeed = this.getNoun(place.targetParticipantsCount, [
+    const nounNeed = getNounDeclension(place.targetParticipantsCount, [
       'Нужен',
       'Нужно',
       'Нужно'
     ]);
-    const nounParticipant = this.getNoun(place.targetParticipantsCount, [
+    const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
       'участник',
       'участника',
       'участников'
@@ -691,25 +692,6 @@ export default class EventShiftsComponent extends Vue {
 
   public getRoleTranslation(role: EventUserRole): string {
     return this.$g.ROLE_TRANSLATIONS.get(role.name) || role.name;
-  }
-
-  // Stuff
-  public getNoun(value: number, forms: string[]): string {
-    let n = Math.abs(value) % 100;
-
-    if (n >= 5 && n <= 20) {
-      return forms[2] || '';
-    }
-
-    n %= 10;
-    if (n === 1) {
-      return forms[0];
-    }
-
-    if (n >= 2 && n <= 4) {
-      return forms[1];
-    }
-    return forms[2];
   }
 }
 </script>

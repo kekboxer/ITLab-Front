@@ -51,7 +51,7 @@ import moment from 'moment';
 import 'vue-awesome/icons/clock';
 
 import {
-  EventInvitation,
+  Invitation,
   NOTIFICATION_INVITATION_ACCEPT,
   NOTIFICATION_INVITATION_REJECT
 } from '@/modules/notifications';
@@ -66,7 +66,7 @@ export default class InvitationNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: EventInvitation;
+  @Prop() public data!: Invitation;
 
   public currentState: State = State.Default;
 
