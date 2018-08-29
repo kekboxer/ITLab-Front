@@ -18,7 +18,7 @@ export const getters: GetterTree<ProfileState, RootState> = {
     return (
       state.accessToken !== undefined &&
       state.accessTokenDecoded !== undefined &&
-      state.accessTokenDecoded.exp
+      state.accessTokenDecoded.exp * 1000 > Date.now()
     );
   },
 

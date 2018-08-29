@@ -24,17 +24,28 @@ const getStoredData = (): {
   accessTokenDecoded?: AccessToken;
   refreshToken?: string;
 } => {
-  const profileId = localStorage.getItem(LOCAL_STORAGE_PROFILE_ID);
-  const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN);
-  const refreshToken = localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN);
+  const profileId = localStorage.getItem(LOCAL_STORAGE_PROFILE_ID) || undefined;
+  const accessToken =
+    localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN) || undefined;
+  const refreshToken =
+    localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN) || undefined;
+
+  let accessTokenDecoded: AccessToken | undefined;
+  if (accessToken) {
+    try {
+      accessTokenDecoded = decodeJWT(accessToken) as AccessToken;
+    } catch (e) {
+      console.error('Stored access token is invalid');
+    }
+  }
 
   setAxiosAuthHeader(accessToken || undefined);
 
   return {
-    profileId: profileId || undefined,
-    accessToken: accessToken || undefined,
-    accessTokenDecoded: accessToken ? decodeJWT(accessToken) : undefined,
-    refreshToken: refreshToken || undefined
+    profileId,
+    accessToken: accessTokenDecoded != null ? accessToken : undefined,
+    accessTokenDecoded,
+    refreshToken
   };
 };
 
