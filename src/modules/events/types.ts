@@ -123,9 +123,7 @@ export interface Event {
   title: string;
   description: string;
   address: string;
-
   eventType?: EventType;
-  eventTypeId?: string;
 
   // List data
   beginTime?: Date;

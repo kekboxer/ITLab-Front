@@ -2,7 +2,7 @@
 <template>
   <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
     <b-input-group>
-      <input type="text" v-model="searchString" @input="onInput" @blur="onBlur" class="form-control">
+      <b-form-input type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state"></b-form-input>
       <b-input-group-append v-if="canClear">
         <b-btn :disabled="!searchString" @click="onClear">
           <icon name="times" style="position: relative; top: -2px;"></icon>
@@ -45,6 +45,8 @@ export default class AutocompleteInputComponent extends Vue {
   public results: object[] = [];
 
   @Prop() public value?: object;
+
+  @Prop() public state?: boolean;
 
   @Prop({
     default: false

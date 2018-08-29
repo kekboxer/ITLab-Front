@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" v-model="eventTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -11,13 +11,13 @@
       </template>
     </autocomplete-input-component>
 
-    <b-modal v-model="modalVisible">
+    <b-modal v-model="modalVisible" @keydown.native.enter="onSubmitModal">
       <template slot="modal-title">
         Новый тип события
       </template>
 
       <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title">
+        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title" :state="!$v.modalData.title.$invalid">
         </b-form-input>
       </b-form-group>
 
@@ -28,7 +28,7 @@
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Подтвердить</button>
+        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -42,6 +42,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
+
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
   EventType,
@@ -60,6 +63,17 @@ enum ModalState {
 @Component({
   components: {
     'autocomplete-input-component': AutocompleteInputComponent
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      modalData: {
+        title: {
+          required,
+          minLength: minLength(1)
+        }
+      }
+    };
   }
 })
 export default class EventTypeSelectionComponent extends Vue {
@@ -67,6 +81,8 @@ export default class EventTypeSelectionComponent extends Vue {
   ////////////
 
   @Prop() public value?: EventType;
+
+  @Prop() public state?: boolean;
 
   // Properties //
   ///////////////
@@ -103,7 +119,8 @@ export default class EventTypeSelectionComponent extends Vue {
       .dispatch(EVENT_TYPE_SEARCH, { match: input })
       .then((eventTypes: EventType[]) => {
         cb(eventTypes);
-      });
+      })
+      .catch();
   }
 
   // Modal window methods //
@@ -119,6 +136,13 @@ export default class EventTypeSelectionComponent extends Vue {
   }
 
   public onSubmitModal() {
+    if (
+      (this.$v.modalData && this.$v.modalData.$invalid) ||
+      this.isModalInProcess
+    ) {
+      return;
+    }
+
     this.modalState = ModalState.InProcess;
     this.$store
       .dispatch(EVENT_TYPE_COMMIT, this.modalData)
@@ -128,7 +152,8 @@ export default class EventTypeSelectionComponent extends Vue {
 
         this.modalState = ModalState.Hidden;
         this.modalData = new EventTypeDefault();
-      });
+      })
+      .catch();
   }
 
   public showModal(search: string) {

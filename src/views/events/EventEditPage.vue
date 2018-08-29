@@ -15,13 +15,13 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-form @submit.prevent="onSubmitEvent">
+          <b-form>
             <b-form-group id="event-type-group" label="Тип события">
-              <event-type-selection-component v-model="eventTypeSelected"></event-type-selection-component>
+              <event-type-selection-component v-model="event.eventType" :state="!$v.event.eventType.$invalid"></event-type-selection-component>
             </b-form-group>
 
             <b-form-group id="event-title-group" label="Название" label-for="title-input">
-              <b-form-input id="title-input" type="text" v-model.trim="event.title">
+              <b-form-input id="title-input" type="text" v-model.trim="event.title" :state="!$v.event.title.$invalid">
               </b-form-input>
             </b-form-group>
 
@@ -45,7 +45,7 @@
             </b-form-group>
 
             <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
-              <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address">
+              <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address" :state="!$v.event.address.$invalid">
               </b-form-textarea>
             </b-form-group>
 
@@ -56,9 +56,9 @@
 
             <b-row class="mt-2 buttons">
               <b-col cols="12" md="auto">
-                <b-button type="submit" variant="primary" class="w-100" :disabled="isPageInProcess">Подтвердить</b-button>
+                <b-button variant="primary" class="w-100" :disabled="$v.event.$invalid || isPageInProcess" @click="onSubmitEvent">Подтвердить</b-button>
               </b-col>
-              <b-col cols="12" md="auto">
+              <b-col cols="12" md="auto" v-if="!isNewEvent">
                 <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
               </b-col>
             </b-row>
@@ -83,6 +83,9 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
 
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
+
 import {
   Event,
   EventDefault,
@@ -91,7 +94,8 @@ import {
   EventShift,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
-  EVENT_DELETE
+  EVENT_DELETE,
+  EventShiftDefault
 } from '@/modules/events';
 
 enum State {
@@ -106,6 +110,25 @@ enum State {
     'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent,
     'event-type-selection-component': EventTypeSelectionComponent
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      event: {
+        eventType: {
+          required,
+          selected: (eventType?: EventType) => eventType && eventType.id !== ''
+        },
+        title: {
+          required,
+          minLength: minLength(1)
+        },
+        address: {
+          required,
+          minLength: minLength(1)
+        }
+      }
+    };
   }
 })
 export default class EventEditPage extends Vue {
@@ -122,7 +145,6 @@ export default class EventEditPage extends Vue {
 
   public event: Event = new EventDefault();
   public eventShifts: EventShift[] = [];
-  public eventTypeSelected: EventType = new EventTypeDefault();
 
   // Component methods //
   //////////////////////
@@ -152,33 +174,43 @@ export default class EventEditPage extends Vue {
   //////////////////
 
   public onSubmitEvent() {
-    if (this.eventTypeSelected) {
-      this.pageState = State.InProcess;
-
-      // assign all edited data
-      this.event.shifts = this.eventShifts;
-      this.event.eventTypeId = this.eventTypeSelected.id;
-
-      this.$store
-        .dispatch(EVENT_COMMIT, this.event)
-        .then((event) => {
-          this.setEvent(event);
-
-          this.pageState = State.Default;
-          if (this.isNewEvent) {
-            this.isNewEvent = false;
-            this.$router.push({ path: '/events/edit/' + event.id });
-          } else {
-            this.$notify({
-              title: 'Изменения успешно сохранены',
-              duration: 500
-            });
-          }
-        })
-        .catch((error) => {
-          this.pageState = State.Error;
-        });
+    if ((this.$v.event && this.$v.event.$invalid) || this.isPageInProcess) {
+      return;
     }
+
+    if (this.eventShifts.length === 0) {
+      this.$notify({
+        title: 'Добавьте хотя бы одну смену',
+        type: 'error',
+        duration: 1500
+      });
+      return;
+    }
+
+    this.pageState = State.InProcess;
+
+    // assign all edited data
+    this.event.shifts = this.eventShifts;
+
+    this.$store
+      .dispatch(EVENT_COMMIT, this.event)
+      .then((event) => {
+        this.setEvent(event);
+
+        this.pageState = State.Default;
+        if (this.isNewEvent) {
+          this.isNewEvent = false;
+          this.$router.push({ path: '/events/edit/' + event.id });
+        } else {
+          this.$notify({
+            title: 'Изменения успешно сохранены',
+            duration: 500
+          });
+        }
+      })
+      .catch((error) => {
+        this.pageState = State.Error;
+      });
   }
 
   public onDelete() {
@@ -199,9 +231,6 @@ export default class EventEditPage extends Vue {
   public setEvent(event: Event) {
     this.event = event;
     this.eventShifts = event.shifts || [];
-    this.eventTypeSelected = event.eventType
-      ? event.eventType
-      : new EventTypeDefault();
   }
 
   get isPageInProcess(): boolean {
