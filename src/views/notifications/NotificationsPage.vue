@@ -38,17 +38,16 @@ import WishNotificationComponent from '@/components/WishNotificationComponent.vu
 import InvitationNotificationComponent from '@/components/InvitationNotificationComponent.vue';
 
 import {
-  EventInvitation,
-  WishApplication,
+  Invitation,
+  Wish,
   NOTIFICATION_INVITATIONS_GET_ALL,
-  NOTIFICATION_INVITATIONS_FETCH,
   NOTIFICATION_WISHES_GET_ALL,
-  NOTIFICATION_WISHES_FETCH
+  NOTIFICATIONS_FETCH
 } from '@/modules/notifications';
 
 interface NotificationHandle {
   type: 'invitation' | 'wish';
-  notification: EventInvitation | WishApplication;
+  notification: Invitation | Wish;
 }
 
 @Component({
@@ -71,10 +70,9 @@ export default class NotificationsPage extends Vue {
     this.loadingInProcess = this.eventInvitations.length === 0;
 
     this.$store
-      .dispatch(NOTIFICATION_INVITATIONS_FETCH)
-      .then((invitations) => {
+      .dispatch(NOTIFICATIONS_FETCH)
+      .then((results) => {
         this.loadingInProcess = false;
-        return this.$store.dispatch(NOTIFICATION_WISHES_FETCH);
       })
       .then()
       .catch();
@@ -103,15 +101,8 @@ export default class NotificationsPage extends Vue {
     );
 
     result.sort((a, b) => {
-      const timeFirst =
-        a.type === 'invitation'
-          ? (a.notification as EventInvitation).createTime
-          : (a.notification as WishApplication).wish.createTime;
-
-      const timeSecond =
-        b.type === 'invitation'
-          ? (b.notification as EventInvitation).createTime
-          : (b.notification as WishApplication).wish.createTime;
+      const timeFirst = a.notification.creationTime;
+      const timeSecond = b.notification.creationTime;
 
       if (timeFirst < timeSecond) {
         return 1;
@@ -125,11 +116,11 @@ export default class NotificationsPage extends Vue {
     return result;
   }
 
-  get eventInvitations(): EventInvitation[] {
+  get eventInvitations(): Invitation[] {
     return this.$store.getters[NOTIFICATION_INVITATIONS_GET_ALL];
   }
 
-  get eventWishes(): WishApplication[] {
+  get eventWishes(): Wish[] {
     return this.$store.getters[NOTIFICATION_WISHES_GET_ALL];
   }
 }

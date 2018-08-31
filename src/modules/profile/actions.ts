@@ -21,6 +21,8 @@ import {
   PROFILE_REFRESH_TOKEN_SET
 } from './types';
 
+import { User } from '@/modules/users';
+
 import { EventPlace, EventUserRole } from '@/modules/events';
 
 export const setAxiosAuthHeader = (token?: string) => {
@@ -32,11 +34,9 @@ export const setAxiosAuthHeader = (token?: string) => {
 };
 
 interface LoginResponse {
-  id: string;
   accessToken: string;
   refreshToken: string;
-  firstName: string;
-  lastName: string;
+  user: User;
 }
 
 const handleLogin = (
@@ -46,7 +46,7 @@ const handleLogin = (
 ) => {
   setAxiosAuthHeader(response.accessToken);
 
-  commit(PROFILE_SET, response.id);
+  commit(PROFILE_SET, response.user.id);
   commit(PROFILE_ACCESS_TOKEN_SET, response.accessToken);
   commit(PROFILE_REFRESH_TOKEN_SET, response.refreshToken);
   resolve(response);

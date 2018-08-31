@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" v-model="equipmentSelected" @input="onInput" :without-adding="true" :can-clear="true">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" v-model="equipmentSelected" @input="onInput" :state="state" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
         <b>{{ data.item.equipmentType.title }}</b><br>{{ data.item.serialNumber }}
       </div>
@@ -34,6 +34,8 @@ export default class EquipmentSelectionComponent extends Vue {
   ////////////
 
   @Prop() public value?: Equipment;
+
+  @Prop() public state?: boolean;
 
   // Properties //
   ///////////////

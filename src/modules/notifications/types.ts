@@ -16,6 +16,8 @@ export const NOTIFICATION_WISH_ACCEPT = 'NOTIFICATION_WISH_ACCEPT';
 export const NOTIFICATION_WISH_REJECT = 'NOTIFICATION_WISH_REJECT';
 export const NOTIFICATION_WISHES_FETCH = 'NOTIFICATION_WISHES_FETCH';
 
+export const NOTIFICATIONS_FETCH = 'NOTIFICATIONS_FETCH';
+
 // setters
 export const NOTIFICATION_INVITATIONS_SET_ALL =
   'NOTIFICATION_INVITATIONS_SET_ALL';
@@ -31,56 +33,39 @@ export const NOTIFICATION_INVITATIONS_GET_ALL =
 export const NOTIFICATION_WISHES_GET_ALL = 'NOTIFICATION_WISHES_GET_ALL';
 export const NOTIFICATIONS_GET_COUNT = 'NOTIFICATIONS_GET_COUNT';
 
-// Notification //
-/////////////////
+// EventNotification //
+//////////////////////
 
-export class Notification {}
-
-// EventInvitation //
-////////////////////////////////
-
-export interface EventInvitation extends Notification {
-  id: string;
-  title: string;
-  eventType: EventType;
-  beginTime: Date;
-  placeId: string;
-  shiftDurationInMinutes: number;
-  role: EventUserRole;
-  createTime: Date;
-}
-
-export class EventInvitationDefault implements EventInvitation {
+export class EventNotification {
   public id: string = '';
   public title: string = '';
   public eventType: EventType = new EventTypeDefault();
-  public beginTime = new Date(0);
+  public beginTime: Date = new Date(0);
   public placeId: string = '';
-  public shiftDurationInMinutes: number = 0;
+  public creationTime: Date = new Date(0);
   public role: EventUserRole = new EventUserRoleDefault();
-  public createTime: Date = new Date(0);
+}
+
+// Invitation //
+///////////////
+
+export interface Invitation extends EventNotification {
+  shiftDurationInMinutes: number;
 }
 
 // Wish //
 /////////
 
-export interface WishApplication extends Notification {
-  id: string;
-  title: string;
-  eventType: EventType;
-  beginTime: Date;
-  placeId: string;
-  wish: {
-    user: User;
-    role: EventUserRole;
-    createTime: Date;
-  };
+export interface Wish extends EventNotification {
+  currentParticipantsCount: number;
+  targetParticipantsCount: number;
+  user: User;
 }
 
 // State //
 //////////
 
 export interface NotificationsState {
-  eventInvitations: EventInvitation[];
-  eventWishApplications: WishApplication[];
+  eventInvitations: Invitation[];
+  eventWishApplications: Wish[];
 }

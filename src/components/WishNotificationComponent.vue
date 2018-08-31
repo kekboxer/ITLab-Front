@@ -5,7 +5,7 @@
       <b-col cols="12" md="7">
         <h4>Заявка</h4>
         <b>{{ userName }}</b><br>
-        <mail-link :email="data.wish.user.email" />
+        <mail-link :email="data.user.email" />
       </b-col>
       <b-col cols="12" md="5">
         <b-row>
@@ -26,6 +26,12 @@
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
             <b>{{ role }}</b>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            {{ targetParticipantsCount }} (сейчас:
+            <span v-bind:class="participantsLabelClass">{{ data.currentParticipantsCount }}</span>)
           </b-col>
         </b-row>
       </b-col>
@@ -54,10 +60,11 @@ import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import 'vue-awesome/icons/clock';
 
 import {
-  WishApplication,
+  Wish,
   NOTIFICATION_WISH_ACCEPT,
   NOTIFICATION_WISH_REJECT
 } from '@/modules/notifications';
+import { getNounDeclension } from '@/stuff';
 
 enum State {
   Default,
@@ -73,7 +80,7 @@ export default class WishNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: WishApplication;
+  @Prop() public data!: Wish;
 
   public currentState: State = State.Default;
 
@@ -81,7 +88,7 @@ export default class WishNotificationComponent extends Vue {
   //////////////////
 
   get userName(): string {
-    const user = this.data.wish.user;
+    const user = this.data.user;
     return `${user.firstName} ${user.lastName}`;
   }
 
@@ -90,9 +97,38 @@ export default class WishNotificationComponent extends Vue {
   }
 
   get role(): string {
-    const roleName = this.data.wish.role.name;
+    const roleName = this.data.role.name;
 
     return this.$g.ROLE_TRANSLATIONS.get(roleName) || roleName;
+  }
+
+  get targetParticipantsCount(): string {
+    if (this.data.targetParticipantsCount === 0) {
+      return 'Участники не требуются';
+    }
+
+    const nounNeed = getNounDeclension(this.data.targetParticipantsCount, [
+      'Нужен',
+      'Нужно',
+      'Нужно'
+    ]);
+    const nounParticipant = getNounDeclension(
+      this.data.targetParticipantsCount,
+      ['участник', 'участника', 'участников']
+    );
+    return `${nounNeed} ${
+      this.data.targetParticipantsCount
+    } ${nounParticipant}`;
+  }
+
+  get participantsLabelClass() {
+    return {
+      'text-primary':
+        this.data.currentParticipantsCount ===
+        this.data.targetParticipantsCount,
+      'text-danger':
+        this.data.currentParticipantsCount > this.data.targetParticipantsCount
+    };
   }
 
   get isInProcess(): boolean {

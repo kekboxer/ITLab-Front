@@ -44,7 +44,7 @@ import { Group, LAYOUT_GROUPS_GET } from '@/modules/layout';
 import { PROFILE_LOGOUT } from '@/modules/profile';
 
 import {
-  NOTIFICATION_INVITATIONS_FETCH,
+  NOTIFICATIONS_FETCH,
   NOTIFICATIONS_GET_COUNT
 } from '@/modules/notifications';
 
@@ -82,7 +82,7 @@ export default class SidebarComponent extends Vue {
       }
     );
 
-    this.$store.dispatch(NOTIFICATION_INVITATIONS_FETCH);
+    this.$store.dispatch(NOTIFICATIONS_FETCH);
   }
 
   // Methods //

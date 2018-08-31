@@ -49,7 +49,7 @@ export const actions: ActionTree<UsersState, RootState> = {
   ) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(`user?match=${encodeURIComponent(match)}&count=${all ? 0 : 5}`)
+        .get(`user?match=${encodeURIComponent(match)}&count=${all ? -1 : 5}`)
         .then((response) => getResponseData<User[]>(response))
         .then((users) => resolve(users))
         .catch((error) => {
@@ -62,7 +62,7 @@ export const actions: ActionTree<UsersState, RootState> = {
   [USERS_FETCH_ALL]: ({ commit }) => {
     return new Promise((resolve, reject) => {
       axios
-        .get('user')
+        .get('user?count=-1')
         .then((response) => getResponseData<User[]>(response))
         .then((users) => {
           commit(USERS_SET_ALL, users);

@@ -145,48 +145,56 @@ export const actions: ActionTree<EventsState, RootState> = {
 
   [EVENT_COMMIT]: ({ commit }, event: Event) => {
     return new Promise((resolve, reject) => {
-      const eventData = deepCopy(event);
+      if (event.eventType == null || event.shifts == null) {
+        reject();
+        return;
+      }
 
-      eventData.shifts.forEach((shift: any) => {
-        if (shift.id === '') {
-          delete shift.id;
-        }
-
-        shift.places.forEach((place: any) => {
-          if (place.id === '') {
-            delete place.id;
-          }
-
-          place.equipment.forEach((equipment: any, i: number, arr: any[]) => {
-            arr[i] = {
-              id: equipment.id,
-              delete: equipment.delete
-            };
-          });
-
-          const prepareParticipantData = (participant: any) => {
-            return {
-              id: participant.user.id,
-              roleId: participant.role.id,
-              delete: participant.delete
-            };
+      const eventData = {
+        id: event.id,
+        title: event.title,
+        eventTypeId: event.eventType && event.eventType.id,
+        description: event.description,
+        address: event.address,
+        shifts: event.shifts.map((shift) => {
+          return {
+            delete: shift.delete,
+            id: shift.id === '' ? undefined : shift.id,
+            beginTime: shift.beginTime,
+            endTime: shift.endTime,
+            places: shift.places.map((place) => {
+              return {
+                delete: place.delete,
+                id: place.id === '' ? undefined : place.id,
+                targetParticipantsCount: place.targetParticipantsCount,
+                equipment: place.equipment.map((equipment) => {
+                  return {
+                    delete: equipment.delete,
+                    id: equipment.id
+                  };
+                }),
+                invited: [
+                  ...place.invited.map((participant) => {
+                    return {
+                      delete: participant.delete,
+                      id: participant.user.id,
+                      roleId: participant.role && participant.role.id
+                    };
+                  }),
+                  ...place.participants
+                    .filter((participant) => participant.delete === true)
+                    .map((participant) => {
+                      return {
+                        delete: participant.delete,
+                        id: participant.user.id
+                      };
+                    })
+                ]
+              };
+            })
           };
-
-          place.invited.forEach((participant: any, i: number, arr: any[]) => {
-            arr[i] = prepareParticipantData(participant);
-          });
-
-          place.participants.forEach(
-            (participant: any, i: number, arr: any[]) => {
-              if (participant.delete === true) {
-                place.invited.push(prepareParticipantData(participant));
-              }
-            }
-          );
-
-          delete place.participants;
-        });
-      });
+        })
+      };
 
       const url = 'event';
 
