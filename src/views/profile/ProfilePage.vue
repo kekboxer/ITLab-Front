@@ -11,20 +11,24 @@
           <h4>Общая информация</h4>
           <hr>
           <b-form @submit.prevent="onSubmitProfile">
+            {{ profileData.email }}
+
             <b-form-group label="Имя">
-              <b-form-input type="text" v-model.trim="profile.firstName" readonly>
+              <b-form-input type="text" v-model.trim="profileData.firstName" :state="!$v.profileData.firstName.$invalid">
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Фамилия">
-              <b-form-input type="text" v-model.trim="profile.lastName" readonly>
+              <b-form-input type="text" v-model.trim="profileData.lastName" :state="!$v.profileData.lastName.$invalid">
               </b-form-input>
             </b-form-group>
 
-            <b-form-group label="Почта">
-              <b-form-input type="text" v-model.trim="profile.email" readonly>
+            <b-form-group label="Номер телефона">
+              <b-form-input type="tel" v-model.trim="profileData.phoneNumber" :state="!$v.profileData.phoneNumber.$invalid">
               </b-form-input>
             </b-form-group>
+
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isFormInProcess">Принять</b-button>
           </b-form>
         </b-col>
 
@@ -71,18 +75,48 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import 'vue-awesome/icons/times';
 
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
+
 import {
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_GET,
-  UserSession
+  UserSession,
+  PROFILE_COMMIT
 } from '@/modules/profile';
 import { USERS_FETCH_ONE, User, UserDefault } from '@/modules/users';
+
+enum FormState {
+  Default,
+  InProcess,
+  Error
+}
 
 @Component({
   components: {
     Icon,
     'page-content-component': PageContentComponent
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      profileData: {
+        firstName: {
+          required,
+          minLength: minLength(1)
+        },
+        lastName: {
+          required,
+          minLength: minLength(1)
+        },
+        phoneNumber: {
+          required,
+          phoneValid: (value: string) =>
+            /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/.test(value)
+        }
+      }
+    };
   }
 })
 export default class ProfilePage extends Vue {
@@ -90,7 +124,8 @@ export default class ProfilePage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
-  public profile: User = new UserDefault();
+  public profileData: User = new UserDefault();
+  public formState: FormState = FormState.Default;
   public sessions: UserSession[] = [];
 
   // Component methods //
@@ -100,7 +135,7 @@ export default class ProfilePage extends Vue {
     this.$store
       .dispatch(USERS_FETCH_ONE, this.$store.getters[PROFILE_GET])
       .then((profile) => {
-        this.profile = profile;
+        this.profileData = profile;
         this.loadingInProcess = false;
 
         return this.$store.dispatch(PROFILE_SESSIONS_FETCH);
@@ -112,6 +147,28 @@ export default class ProfilePage extends Vue {
 
   // Methods //
   ////////////
+
+  public onSubmitProfile() {
+    this.formState = FormState.InProcess;
+    this.$store
+      .dispatch(PROFILE_COMMIT, this.profileData)
+      .then((profile) => {
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
+        });
+        this.profileData = profile;
+        this.formState = FormState.Default;
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно сохранить изменения',
+          duration: 1500,
+          type: 'error'
+        });
+        this.formState = FormState.Default;
+      });
+  }
 
   public removeSession(sessionIndex: number) {
     const session = this.sessions[sessionIndex];
@@ -126,6 +183,13 @@ export default class ProfilePage extends Vue {
 
   public formatSessionDate(session: UserSession): string {
     return moment(session.createTime).format('DD.MM.YYYY HH:mm:ss');
+  }
+
+  // Computed data //
+  //////////////////
+
+  get isFormInProcess(): boolean {
+    return this.formState === FormState.InProcess;
   }
 }
 

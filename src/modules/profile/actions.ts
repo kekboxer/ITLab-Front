@@ -18,7 +18,8 @@ import {
   PROFILE_SESSIONS_DELETE,
   PROFILE_SET,
   PROFILE_ACCESS_TOKEN_SET,
-  PROFILE_REFRESH_TOKEN_SET
+  PROFILE_REFRESH_TOKEN_SET,
+  PROFILE_COMMIT
 } from './types';
 
 import { User } from '@/modules/users';
@@ -126,6 +127,26 @@ export const actions: ActionTree<ProfileState, RootState> = {
         })
         .catch((error) => {
           console.log(PROFILE_WISH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROFILE_COMMIT]: ({ commit }, user: User) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put('account', {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phoneNumber: user.phoneNumber
+        })
+        .then((response) => getResponseData<User>(response))
+        .then((user) => {
+          commit(PROFILE_SET, user);
+          resolve(user);
+        })
+        .catch((error) => {
+          console.log(PROFILE_COMMIT, error);
           reject(error);
         });
     });

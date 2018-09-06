@@ -12,6 +12,7 @@ export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
+export const PROFILE_COMMIT = 'PROFILE_COMMIT';
 export const PROFILE_SESSIONS_FETCH = 'PROFILE_SESSIONS_FETCH';
 export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
@@ -43,8 +44,10 @@ export class AuthorizationDataDefault implements AuthorizationData {
 // RegistractionData //
 //////////////////////
 
-export interface RegistrationData
-  extends Pick<User, Exclude<keyof User, 'id'>> {
+export interface RegistrationData {
+  firstName: string;
+  lastName: string;
+  email: string;
   password: string;
   accessToken: string;
 }

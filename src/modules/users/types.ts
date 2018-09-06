@@ -22,6 +22,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber: string;
 }
 
 export class UserDefault implements User {
@@ -29,6 +30,7 @@ export class UserDefault implements User {
   public firstName: string = '';
   public lastName: string = '';
   public email: string = '';
+  public phoneNumber: string = '';
 }
 
 // State //
