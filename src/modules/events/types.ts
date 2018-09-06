@@ -56,6 +56,7 @@ export interface EventParticipant {
   role?: EventUserRole;
 
   delete?: boolean;
+  new?: boolean;
 }
 
 export class EventParticipantDefault implements EventParticipant {
@@ -67,6 +68,7 @@ export class EventParticipantDefault implements EventParticipant {
 
 export interface EventEquipment extends Equipment {
   delete?: boolean;
+  new?: boolean;
 }
 
 // EventPlace //
@@ -83,6 +85,7 @@ export interface EventPlace {
   wishers: EventParticipant[];
 
   delete?: boolean;
+  new?: boolean;
 }
 
 export class EventPlaceDefault implements EventPlace {
@@ -106,6 +109,7 @@ export interface EventShift {
   places: EventPlace[];
 
   delete?: boolean;
+  new?: boolean;
 }
 
 export class EventShiftDefault implements EventShift {

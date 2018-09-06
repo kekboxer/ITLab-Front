@@ -406,7 +406,7 @@ export default class EventShiftsComponent extends Vue {
     if (shiftIndex != null) {
       Vue.set(this.value, shiftIndex, shift);
     } else {
-      this.value.push(shift);
+      this.value.push({ ...shift, new: true });
     }
     this.onInput();
   }
@@ -417,8 +417,12 @@ export default class EventShiftsComponent extends Vue {
     }
 
     const shift = this.value[shiftIndex];
-    shift.delete = true;
-    Vue.set(this.value, shiftIndex, shift);
+    if (shift.new === true) {
+      Vue.delete(this.value, shiftIndex);
+    } else {
+      shift.delete = true;
+      Vue.set(this.value, shiftIndex, shift);
+    }
     this.onInput();
   }
 
@@ -496,15 +500,19 @@ export default class EventShiftsComponent extends Vue {
     if (placeIndex != null) {
       Vue.set(shift.places, placeIndex, place);
     } else {
-      shift.places.push(place);
+      shift.places.push({ ...place, new: true });
     }
     this.onInput();
   }
 
   public removePlace(shift: EventShift, placeIndex: number) {
     const place = shift.places[placeIndex];
-    place.delete = true;
-    Vue.set(shift.places, placeIndex, place);
+    if (place.new === true) {
+      Vue.delete(shift.places, placeIndex);
+    } else {
+      place.delete = true;
+      Vue.set(shift.places, placeIndex, place);
+    }
     this.onInput();
   }
 
@@ -555,7 +563,22 @@ export default class EventShiftsComponent extends Vue {
       user: this.placeParticipantData.user,
       role: this.placeParticipantData.role
     };
-    place.invited.push(participant);
+
+    const existingParticipantIndex = place.invited.findIndex(
+      (p) =>
+        p.user.id === participant.user.id &&
+        (p.role === participant.role ||
+          (p.role != null &&
+            participant.role != null &&
+            p.role.id === participant.role.id))
+    );
+
+    if (existingParticipantIndex === -1) {
+      place.invited.push({ ...participant, new: true });
+    } else {
+      Vue.set(place.invited, existingParticipantIndex, participant);
+    }
+
     this.onInput();
   }
 
@@ -564,8 +587,12 @@ export default class EventShiftsComponent extends Vue {
     participantIndex: number
   ) {
     const participant = participantsGroup[participantIndex];
-    participant.delete = true;
-    Vue.set(participantsGroup, participantIndex, participant);
+    if (participant.new === true) {
+      Vue.delete(participantsGroup, participantIndex);
+    } else {
+      participant.delete = true;
+      Vue.set(participantsGroup, participantIndex, participant);
+    }
     this.onInput();
   }
 
@@ -591,14 +618,29 @@ export default class EventShiftsComponent extends Vue {
       return;
     }
 
-    place.equipment.push(this.placeEquipmentModalData);
+    const equipment = this.placeEquipmentModalData;
+
+    const existingEquipmentIndex = place.equipment.findIndex(
+      (e) => e.id === equipment.id
+    );
+
+    if (existingEquipmentIndex === -1) {
+      place.equipment.push({ ...equipment, new: true });
+    } else {
+      Vue.set(place.equipment, existingEquipmentIndex, equipment);
+    }
+
     this.onInput();
   }
 
   public removePlaceEquipment(place: EventPlace, equipmentIndex: number) {
     const equipment = place.equipment[equipmentIndex];
-    equipment.delete = true;
-    Vue.set(place.equipment, equipmentIndex, equipment);
+    if (equipment.new === true) {
+      Vue.delete(place.equipment, equipmentIndex);
+    } else {
+      equipment.delete = true;
+      Vue.set(place.equipment, equipmentIndex, equipment);
+    }
     this.onInput();
   }
 

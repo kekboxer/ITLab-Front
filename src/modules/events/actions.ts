@@ -168,10 +168,14 @@ export const actions: ActionTree<EventsState, RootState> = {
                 id: place.id === '' ? undefined : place.id,
                 targetParticipantsCount: place.targetParticipantsCount,
                 equipment: place.equipment.map((equipment) => {
-                  return {
-                    delete: equipment.delete,
-                    id: equipment.id
-                  };
+                  if (place.id === '') {
+                    return equipment.id;
+                  } else {
+                    return {
+                      delete: equipment.delete,
+                      id: equipment.id
+                    };
+                  }
                 }),
                 invited: [
                   ...place.invited.map((participant) => {
@@ -181,14 +185,16 @@ export const actions: ActionTree<EventsState, RootState> = {
                       roleId: participant.role && participant.role.id
                     };
                   }),
-                  ...place.participants
-                    .filter((participant) => participant.delete === true)
-                    .map((participant) => {
-                      return {
+                  ...place.participants.reduce((acc: any[], participant) => {
+                    if (participant.delete === true) {
+                      return acc.concat({
                         delete: participant.delete,
                         id: participant.user.id
-                      };
-                    })
+                      });
+                    } else {
+                      return acc;
+                    }
+                  }, [])
                 ]
               };
             })
