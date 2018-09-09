@@ -93,7 +93,6 @@ router.beforeEach((to, from, next) => {
   );
 
   if (development) {
-    console.log(process.env.NODE_ENV);
     if (process.env.NODE_ENV === 'development') {
       next();
     } else {

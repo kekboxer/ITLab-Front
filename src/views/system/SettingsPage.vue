@@ -13,6 +13,8 @@
               <b-form-radio-group id="theme-input" v-model="theme" class="pt-2" :options="themes" />
             </b-form-group>
           </b-form>
+
+          <a href="/backend_selection" v-if="environment === 'development'" target="blank">Смена API URL</a>
         </b-col>
       </b-row>
     </page-content-component>
@@ -58,6 +60,10 @@ export default class SettingsPage extends Vue {
       light: 'Светлая',
       dark: 'Тёмная'
     };
+  }
+
+  get environment(): string {
+    return process.env.NODE_ENV || '';
   }
 }
 
