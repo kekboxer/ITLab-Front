@@ -14,7 +14,9 @@ import { LAYOUT_PAGES_GET } from '@/modules/layout';
 Vue.use(Router);
 
 // Initialize axios
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+
+axios.defaults.baseURL =
+  localStorage.getItem('api-url') || process.env.VUE_APP_API_URL || '/api/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 // Initialize router

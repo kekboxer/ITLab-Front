@@ -40,11 +40,22 @@ import { projectsPageRoute } from '@/views/projects';
 // @ts-ignore
 import { profilePageRoute } from '@/views/profile';
 
-// @ts-ignore
-import { usersPageRoute, settingsPageRoute } from '@/views/system';
+import {
+  // @ts-ignore
+  usersPageRoute,
+  // @ts-ignore
+  settingsPageRoute,
+  // @ts-ignore
+  backendSelectionPageRoute
+} from '@/views/system';
 
 export const state: LayoutState = {
-  stuff: [loginPageRoute, registrationPageRoute, processingAgreementPageRoute],
+  stuff: [
+    loginPageRoute,
+    registrationPageRoute,
+    processingAgreementPageRoute,
+    backendSelectionPageRoute
+  ],
   groups: [
     {
       name: 'general',
