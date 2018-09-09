@@ -85,7 +85,23 @@ axios.interceptors.response.use(
 );
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.secure !== false)) {
+  const secure: boolean = to.matched.some(
+    (record) => record.meta.secure !== false
+  );
+  const development: boolean = to.matched.some(
+    (record) => record.meta.development === true
+  );
+
+  if (development) {
+    if (process.env.NODE_ENV === 'development') {
+      next();
+    } else {
+      next({ name: 'EventsPage' });
+    }
+    return;
+  }
+
+  if (secure) {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else if (store.getters[PROFILE_REFRESH_TOKEN] != null) {
