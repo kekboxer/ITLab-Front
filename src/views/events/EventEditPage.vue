@@ -237,7 +237,11 @@ export default class EventEditPage extends Vue {
     return this.pageState === State.InProcess;
   }
 
-  public countRows(str: string, minValue: number = 0): number {
+  public countRows(str?: string, minValue: number = 0): number {
+    if (str == null) {
+      return minValue;
+    }
+
     const count = str.split(/\r\n|\r|\n/).length;
     return count < minValue ? minValue : count;
   }

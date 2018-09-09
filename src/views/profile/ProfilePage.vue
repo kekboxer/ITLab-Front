@@ -11,7 +11,9 @@
           <h4>Общая информация</h4>
           <hr>
           <b-form @submit.prevent="onSubmitProfile">
-            {{ profileData.email }}
+            <p>
+              <b>{{ profileData.email }}</b>
+            </p>
 
             <b-form-group label="Имя">
               <b-form-input type="text" v-model.trim="profileData.firstName" :state="!$v.profileData.firstName.$invalid">

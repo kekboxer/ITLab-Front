@@ -150,8 +150,10 @@ export const actions: ActionTree<EventsState, RootState> = {
         return;
       }
 
+      const isNewEvent = event.id === '';
+
       const eventData = {
-        id: event.id,
+        id: isNewEvent ? undefined : event.id,
         title: event.title,
         eventTypeId: event.eventType && event.eventType.id,
         description: event.description,
@@ -168,7 +170,7 @@ export const actions: ActionTree<EventsState, RootState> = {
                 id: place.id === '' ? undefined : place.id,
                 targetParticipantsCount: place.targetParticipantsCount,
                 equipment: place.equipment.map((equipment) => {
-                  if (place.id === '') {
+                  if (isNewEvent) {
                     return equipment.id;
                   } else {
                     return {
@@ -204,10 +206,9 @@ export const actions: ActionTree<EventsState, RootState> = {
 
       const url = 'event';
 
-      const request =
-        eventData.id === ''
-          ? axios.post(url, eventData)
-          : axios.put(url, eventData);
+      const request = isNewEvent
+        ? axios.post(url, eventData)
+        : axios.put(url, eventData);
 
       request
         .then((response) => getResponseData<Event>(response))
