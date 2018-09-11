@@ -17,7 +17,7 @@
         <b-col>
           <b-form>
             <b-form-group id="equipment-type-group" label="Тип оборудования">
-              <equipment-type-selection-component v-model="equipmentTypeSelected" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection-component>
+              <equipment-type-selection-component v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection-component>
             </b-form-group>
 
             <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
@@ -39,7 +39,7 @@
 
             <b-form-row class="buttons">
               <b-col cols="12" md="auto">
-                <b-button class="w-100 submit-button" type="submit" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess">Подтвердить</b-button>
+                <b-button class="w-100 submit-button" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess" @click="onSubmit">Подтвердить</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
                 <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
@@ -56,12 +56,12 @@
       </template>
 
       <b-form-group id="owner-group" label="Владелец" label-for="owner-input">
-        <user-selection-component v-model="equipmentOwnerModalData" :state="!$v.equipmentOwnerModalData.$invalid"></user-selection-component>
+        <user-selection-component v-model="equipmentOwnerModalData"></user-selection-component>
       </b-form-group>
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="equipmentOwnerModalShow = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="$v.equipmentOwnerModalData.$invalid || isModalInProcess" @click="onSubmitEquipmentOwner">Подтвердить</button>
+        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitEquipmentOwner">Подтвердить</button>
       </template>
     </b-modal>
   </div>
@@ -118,19 +118,11 @@ enum State {
       equipment: {
         equipmentType: {
           required,
-          selected: (equipmentType?: EquipmentType) => {
-            return equipmentType && equipmentType.id !== '';
-          }
+          selected: (equipmentType?: EquipmentType) => equipmentType && equipmentType.id !== ''
         },
         serialNumber: {
           required,
           minLength: minLength(1)
-        }
-      },
-      equipmentOwnerModalData: {
-        required,
-        selected: (user?: User) => {
-          return user && user.id !== '';
         }
       }
     };
@@ -149,7 +141,6 @@ export default class EquipmentEditPage extends Vue {
   /////////////////////////
 
   public equipment: Equipment = new EquipmentDefault();
-  public equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
   public equipmentOwner: User | null = null;
 
   public equipmentOwnerModalShow: boolean = false;
@@ -181,37 +172,37 @@ export default class EquipmentEditPage extends Vue {
   //////////////////////
 
   public onSubmit() {
-    if (this.equipmentTypeSelected) {
-      this.pageState = State.InProcess;
-      this.equipment.equipmentTypeId = this.equipmentTypeSelected.id;
-
-      this.$store
-        .dispatch(EQUIPMENT_COMMIT, this.equipment)
-        .then((equipment) => {
-          this.setEquipment(equipment);
-
-          this.pageState = State.Default;
-          if (this.isNewEquipment) {
-            this.isNewEquipment = false;
-            this.$router.push({ path: '/equipment/' + equipment.id });
-          } else {
-            this.$notify({
-              title: 'Изменения успешно сохранены',
-              duration: 500
-            });
-          }
-        })
-        .catch((error) => {
-          this.pageState = State.Error;
-        });
+    if (this.$v.equipment &&
+        this.$v.equipment.$invalid) {
+      return;
     }
+
+    this.pageState = State.InProcess;
+    this.equipment.equipmentTypeId = this.equipment.equipmentType && this.equipment.equipmentType.id || '';
+
+    this.$store
+      .dispatch(EQUIPMENT_COMMIT, this.equipment)
+      .then((equipment) => {
+        this.setEquipment(equipment);
+
+        this.pageState = State.Default;
+        if (this.isNewEquipment) {
+          this.isNewEquipment = false;
+          this.$router.push({ path: '/equipment/' + equipment.id });
+        } else {
+          this.$notify({
+            title: 'Изменения успешно сохранены',
+            duration: 500
+          });
+        }
+      })
+      .catch((error) => {
+        this.pageState = State.Error;
+      });
   }
 
   public setEquipment(equipment: Equipment) {
     this.equipment = equipment;
-    this.equipmentTypeSelected = equipment.equipmentType
-      ? equipment.equipmentType
-      : new EquipmentTypeDefault();
 
     if (equipment.ownerId) {
       axios.get('user/' + equipment.ownerId).then((result) => {
@@ -231,8 +222,6 @@ export default class EquipmentEditPage extends Vue {
 
   public onSubmitEquipmentOwner() {
     if (
-      (this.$v.equipmentOwnerModalData &&
-        this.$v.equipmentOwnerModalData.$invalid) ||
       this.isModalInProcess
     ) {
       return;
@@ -259,7 +248,7 @@ export default class EquipmentEditPage extends Vue {
       return this.$store
         .dispatch(USER_ASSIGN_EQUIPMENT, {
           equipment: this.equipment,
-          owner: this.equipmentOwnerModalData
+          user: this.equipmentOwnerModalData
         })
         .then((equipment: Equipment) => {
           onSuccess();
