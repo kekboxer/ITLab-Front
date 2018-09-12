@@ -45,7 +45,7 @@
             </b-form-group>
 
             <b-form-group label="Адрес">
-              <b-form-textarea :rows="2" :max-rows="3" v-model="event.address" :state="!$v.event.address.$invalid">
+              <b-form-textarea v-autosize="event.address" v-model="event.address" @keydown.native="handleAddressInput" :state="!$v.event.address.$invalid">
               </b-form-textarea>
             </b-form-group>
 
@@ -84,7 +84,7 @@ import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
 
 import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
   Event,
@@ -97,6 +97,9 @@ import {
   EVENT_DELETE,
   EventShiftDefault
 } from '@/modules/events';
+
+const ADDRESS_ROWS_MAX = 4;
+const ADDRESS_LENGTH_MAX = 250;
 
 enum State {
   Default,
@@ -125,7 +128,10 @@ enum State {
         },
         address: {
           required,
-          minLength: minLength(1)
+          minLength: minLength(1),
+          maxLength: maxLength(ADDRESS_LENGTH_MAX),
+          rowsLength: (address?: string) =>
+            address && address.split(/\n\r|\n|\r/).length <= ADDRESS_ROWS_MAX
         }
       }
     };
@@ -232,6 +238,20 @@ export default class EventEditPage extends Vue {
     this.event = event;
     this.eventShifts = event.shifts || [];
   }
+
+  public handleAddressInput(e: KeyboardEvent) {
+    const keyCode = window.event ? e.keyCode : e.which ? e.which : 0;
+
+    if (
+      keyCode === 13 &&
+      this.event.address.split(/\n\r|\n|\r/).length >= ADDRESS_ROWS_MAX
+    ) {
+      e.preventDefault();
+    }
+  }
+
+  // Computed data //
+  //////////////////
 
   get isPageInProcess(): boolean {
     return this.pageState === State.InProcess;
