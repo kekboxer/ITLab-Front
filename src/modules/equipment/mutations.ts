@@ -5,7 +5,8 @@ import {
   EquipmentState,
   Equipment,
   EQUIPMENT_SET_ALL,
-  EQUIPMENT_SET_ONE
+  EQUIPMENT_SET_ONE,
+  EQUIPMENT_REMOVE_ONE
 } from './types';
 
 const setOneEquipment = (equipmentArray: Equipment[], equipment: Equipment) => {
@@ -43,5 +44,14 @@ export const mutations: MutationTree<EquipmentState> = {
 
   [EQUIPMENT_SET_ONE]: (state, equipment: Equipment) => {
     setOneEquipment(state.equipment, equipment);
+  },
+
+  [EQUIPMENT_REMOVE_ONE]: (state, equipmentId: string) => {
+    const equipmentIndex = state.equipment.findIndex(
+      (equipment) => equipment.id === equipmentId
+    );
+    if (equipmentIndex !== -1) {
+      Vue.delete(state.equipment, equipmentIndex);
+    }
   }
 };

@@ -44,6 +44,9 @@
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
                 <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
               </b-col>
+              <b-col cols="12" md="auto" v-if="!isNewEquipment">
+                <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
+              </b-col>
             </b-form-row>
           </b-form>
         </b-col>
@@ -89,7 +92,8 @@ import {
   EquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
-  EQUIPMENT_COMMIT
+  EQUIPMENT_COMMIT,
+  EQUIPMENT_DELETE
 } from '@/modules/equipment';
 
 import {
@@ -118,7 +122,8 @@ enum State {
       equipment: {
         equipmentType: {
           required,
-          selected: (equipmentType?: EquipmentType) => equipmentType && equipmentType.id !== ''
+          selected: (equipmentType?: EquipmentType) =>
+            equipmentType && equipmentType.id !== ''
         },
         serialNumber: {
           required,
@@ -172,13 +177,13 @@ export default class EquipmentEditPage extends Vue {
   //////////////////////
 
   public onSubmit() {
-    if (this.$v.equipment &&
-        this.$v.equipment.$invalid) {
+    if (this.$v.equipment && this.$v.equipment.$invalid) {
       return;
     }
 
     this.pageState = State.InProcess;
-    this.equipment.equipmentTypeId = this.equipment.equipmentType && this.equipment.equipmentType.id || '';
+    this.equipment.equipmentTypeId =
+      (this.equipment.equipmentType && this.equipment.equipmentType.id) || '';
 
     this.$store
       .dispatch(EQUIPMENT_COMMIT, this.equipment)
@@ -201,6 +206,21 @@ export default class EquipmentEditPage extends Vue {
       });
   }
 
+  public onDelete() {
+    if (confirm('Вы действительно хотите удалить это оборудование?')) {
+      this.$store
+        .dispatch(EQUIPMENT_DELETE, this.equipment.id)
+        .then(() => {
+          this.$notify({
+            title: 'Оборудование удалено',
+            duration: 500
+          });
+          this.$router.replace({ name: 'EquipmentPage' });
+        })
+        .catch();
+    }
+  }
+
   public setEquipment(equipment: Equipment) {
     this.equipment = equipment;
 
@@ -221,9 +241,7 @@ export default class EquipmentEditPage extends Vue {
   /////////////////////////
 
   public onSubmitEquipmentOwner() {
-    if (
-      this.isModalInProcess
-    ) {
+    if (this.isModalInProcess) {
       return;
     }
 

@@ -16,7 +16,9 @@ import {
   EQUIPMENT_COMMIT,
   EQUIPMENT_TYPE_COMMIT,
   EQUIPMENT_SET_ALL,
-  EQUIPMENT_SET_ONE
+  EQUIPMENT_SET_ONE,
+  EQUIPMENT_DELETE,
+  EQUIPMENT_REMOVE_ONE
 } from './types';
 
 export const actions: ActionTree<EquipmentState, RootState> = {
@@ -111,6 +113,30 @@ export const actions: ActionTree<EquipmentState, RootState> = {
         })
         .catch((error) => {
           console.log(EQUIPMENT_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_DELETE]: ({ commit }, equipment: string | Equipment) => {
+    return new Promise((resolve, reject) => {
+      const equipmentId =
+        typeof equipment === 'string' ? equipment : equipment.id;
+
+      axios
+        .delete('equipment', { data: { id: equipmentId } })
+        .then((response) => {
+          const body = response && response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            commit(EQUIPMENT_REMOVE_ONE, equipmentId);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(EQUIPMENT_DELETE, error);
           reject(error);
         });
     });
