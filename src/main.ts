@@ -21,6 +21,11 @@ import { VueHammer } from 'vue2-hammer';
 
 Vue.use(VueHammer);
 
+// Autosize
+import VueAutosize from 'vue-autosize';
+
+Vue.use(VueAutosize);
+
 // Bootstrap
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';

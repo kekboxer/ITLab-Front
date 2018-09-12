@@ -16,19 +16,19 @@
       <b-row>
         <b-col>
           <b-form>
-            <b-form-group id="event-type-group" label="Тип события">
+            <b-form-group label="Тип события">
               <event-type-selection-component v-model="event.eventType" :state="!$v.event.eventType.$invalid"></event-type-selection-component>
             </b-form-group>
 
-            <b-form-group id="event-title-group" label="Название" label-for="title-input">
-              <b-form-input id="title-input" type="text" v-model.trim="event.title" :state="!$v.event.title.$invalid">
+            <b-form-group label="Название">
+              <b-form-input type="text" v-model.trim="event.title" :state="!$v.event.title.$invalid">
               </b-form-input>
             </b-form-group>
 
-            <b-form-group id="event-description-group" label="Описание" label-for="description-input">
+            <b-form-group label="Описание">
               <b-tabs>
                 <b-tab title="Markdown" active>
-                  <b-form-textarea id="description-input" style="font-family: monospace; resize: none" :rows="countRows(event.description, 3)" :max-rows="20" v-model="event.description">
+                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" :max-rows="20" v-model="event.description">
                   </b-form-textarea>
                 </b-tab>
                 <b-tab title="Просмотр">
@@ -44,12 +44,12 @@
               </div>
             </b-form-group>
 
-            <b-form-group id="event-address-group" label="Адрес" label-for="address-input">
-              <b-form-textarea id="address-input" :rows="2" :max-rows="3" v-model="event.address" :state="!$v.event.address.$invalid">
+            <b-form-group label="Адрес">
+              <b-form-textarea :rows="2" :max-rows="3" v-model="event.address" :state="!$v.event.address.$invalid">
               </b-form-textarea>
             </b-form-group>
 
-            <b-form-group id="event-shifts-group" label="Смены" label-for="shifts-input">
+            <b-form-group label="Смены">
               <event-shifts-component v-model="eventShifts" :editable="true">
               </event-shifts-component>
             </b-form-group>
@@ -235,15 +235,6 @@ export default class EventEditPage extends Vue {
 
   get isPageInProcess(): boolean {
     return this.pageState === State.InProcess;
-  }
-
-  public countRows(str?: string, minValue: number = 0): number {
-    if (str == null) {
-      return minValue;
-    }
-
-    const count = str.split(/\r\n|\r|\n/).length;
-    return count < minValue ? minValue : count;
   }
 }
 
