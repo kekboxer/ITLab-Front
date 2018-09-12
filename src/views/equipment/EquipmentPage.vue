@@ -7,8 +7,16 @@
         <b-button variant="success" to="equipment/new">Добавить</b-button>
       </template>
 
-      <b-row class="d-lg-none">
-        <b-col cols="12" md="6 mr-auto">
+      <b-row>
+        <b-col cols="auto" class=" ml-auto order-2 order-md-1 mb-3 mb-md-0">
+          <b-input-group>
+            <b-form-checkbox v-model="onlyFree" :value="true" :unchecked-value="false" class="noselect">
+              Только свободное
+            </b-form-checkbox>
+          </b-input-group>
+        </b-col>
+
+        <b-col cols="12" md="6" class="order-1 order-md-2">
           <b-input-group class="mb-2 pr-3">
             <input class="form-control" v-model="equipmentFilterString" placeholder="Поиск" type="text">
             <b-input-group-append>
@@ -22,16 +30,6 @@
       <b-row>
         <b-col>
           <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
-            <template slot="HEAD_actions" slot-scope="data">
-              <b-input-group class="actions-head">
-                <b-form-input v-model="equipmentFilterString" placeholder="Поиск" type="text"></b-form-input>
-                <b-input-group-append>
-                  <b-btn :disabled="!equipmentFilterString" @click="equipmentFilterString=''">
-                    <icon name="times" style="position: relative; top: -2px;"></icon>
-                  </b-btn>
-                </b-input-group-append>
-              </b-input-group>
-            </template>
 
             <template slot="type" slot-scope="data">
               {{ data.item.equipmentType.title }}
@@ -99,10 +97,16 @@ import { User, USERS_FETCH_ALL } from '@/modules/users';
   }
 })
 export default class EquipmentPage extends Vue {
-  public loadingInProcess: boolean = true;
+  // Properties //
+  ///////////////
 
+  public loadingInProcess: boolean = true;
   public users: User[] = [];
   public equipmentFilterString: string = '';
+  public onlyFree: boolean = false;
+
+  // Component methods //
+  //////////////////////
 
   public beforeMount() {
     this.loadingInProcess = this.$store.getters[EQUIPMENT_GET_ALL].length === 0;
@@ -118,24 +122,28 @@ export default class EquipmentPage extends Vue {
       });
   }
 
+  // Methods //
+  ////////////
+
   public onEquipmentTableFilter(v: any) {
+    const lower = (s: string) => s.toLocaleLowerCase();
+
     const filterStrings = this.equipmentFilterString
       .toLocaleLowerCase()
       .split(' ');
 
     return (
-      this.equipmentFilterString === '' ||
-      filterStrings.find(
-        (filter) =>
-          v.equipmentType.title.toLocaleLowerCase().indexOf(filter) > -1
-      ) ||
-      filterStrings.find(
-        (filter) => v.serialNumber.toLocaleLowerCase().indexOf(filter) > -1
-      ) ||
-      filterStrings.find(
-        (filter) =>
-          v.owner && v.owner.email.toLocaleLowerCase().indexOf(filter) > -1
-      )
+      ((this.onlyFree && v.owner == null) || !this.onlyFree) &&
+      (this.equipmentFilterString === '' ||
+        filterStrings.every(
+          (filter) =>
+            lower(v.equipmentType.title).includes(filter) ||
+            lower(v.serialNumber).includes(filter) ||
+            (v.owner &&
+              (lower(v.owner.email).includes(filter) ||
+                lower(v.owner.firstName).includes(filter) ||
+                lower(v.owner.lastName).includes(filter)))
+        ))
     );
   }
 
@@ -158,6 +166,9 @@ export default class EquipmentPage extends Vue {
       this.$router.push('/equipment/' + data.id);
     }
   }
+
+  // Computed data //
+  //////////////////
 
   get fields() {
     return [
