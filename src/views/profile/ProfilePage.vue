@@ -30,27 +30,23 @@
               </b-form-input>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isFormInProcess">Принять</b-button>
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isFormInProcess">Сохранить</b-button>
           </b-form>
         </b-col>
 
-        <b-col cols="12" md="6">
-          <h4>Сессии</h4>
+        <b-col cols="12" md="6" class="mt-3 mt-md-0">
+          <h4>Оборудование</h4>
           <hr>
-          <div class="session-card" v-for="(session, sectionIndex) in sessions" :key="session.id">
+
+          <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
             <b-row>
               <b-col cols="auto">
-                <b>{{ formatSessionDate(session) }}</b>
-              </b-col>
-              <b-col cols="auto" class="ml-auto">
-                <div class="remove-button" @click="removeSession(sectionIndex)">
-                  <icon name="times"></icon>
-                </div>
+                <a :href="`equipment/${equipment.id}`"><b>{{ equipment.equipmentType.title }}</b></a>
               </b-col>
             </b-row>
             <b-row>
               <b-col>
-                <span style="font-family: monospace">{{ session.userAgent }}</span>
+                <span style="font-family: monospace">{{ equipment.serialNumber }}</span>
               </b-col>
             </b-row>
           </div>
@@ -80,14 +76,9 @@ import 'vue-awesome/icons/times';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import {
-  PROFILE_SESSIONS_FETCH,
-  PROFILE_SESSIONS_DELETE,
-  PROFILE_GET,
-  UserSession,
-  PROFILE_COMMIT
-} from '@/modules/profile';
+import { PROFILE_GET, PROFILE_COMMIT } from '@/modules/profile';
 import { USERS_FETCH_ONE, User, UserDefault } from '@/modules/users';
+import { Equipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
 
 enum FormState {
   Default,
@@ -128,7 +119,7 @@ export default class ProfilePage extends Vue {
   public loadingInProcess: boolean = true;
   public profileData: User = new UserDefault();
   public formState: FormState = FormState.Default;
-  public sessions: UserSession[] = [];
+  public equipment: Equipment[] = [];
 
   // Component methods //
   //////////////////////
@@ -140,10 +131,9 @@ export default class ProfilePage extends Vue {
         this.profileData = profile;
         this.loadingInProcess = false;
 
-        return this.$store.dispatch(PROFILE_SESSIONS_FETCH);
-      })
-      .then((sessions) => {
-        this.sessions = sessions;
+        return this.$store
+          .dispatch(EQUIPMENT_FETCH_MY)
+          .then((equipment) => (this.equipment = equipment));
       });
   }
 
@@ -172,21 +162,6 @@ export default class ProfilePage extends Vue {
       });
   }
 
-  public removeSession(sessionIndex: number) {
-    const session = this.sessions[sessionIndex];
-
-    this.$store
-      .dispatch(PROFILE_SESSIONS_DELETE, [session.id])
-      .then((response) => {
-        Vue.delete(this.sessions, sessionIndex);
-      })
-      .catch();
-  }
-
-  public formatSessionDate(session: UserSession): string {
-    return moment(session.createTime).format('DD.MM.YYYY HH:mm:ss');
-  }
-
   // Computed data //
   //////////////////
 
@@ -209,29 +184,13 @@ export const profilePageRoute = {
 @import '@/styles/general.scss';
 
 .profile-page {
-  .session-card {
+  .equipment-card {
     @extend .form-control;
 
     height: auto;
 
     &:not(:last-child) {
       margin-bottom: 5px;
-    }
-
-    .remove-button {
-      @extend .noselect;
-      cursor: pointer;
-
-      transition: color 0.15s ease-in-out;
-
-      svg {
-        position: relative;
-        top: -2px;
-      }
-
-      &:hover {
-        color: var(--danger);
-      }
     }
   }
 }

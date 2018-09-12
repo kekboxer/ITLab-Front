@@ -12,6 +12,7 @@ import {
   EQUIPMENT_TYPE_SEARCH,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_FETCH_ONE,
+  EQUIPMENT_FETCH_MY,
   EQUIPMENT_COMMIT,
   EQUIPMENT_TYPE_COMMIT,
   EQUIPMENT_SET_ALL,
@@ -75,6 +76,19 @@ export const actions: ActionTree<EquipmentState, RootState> = {
         })
         .catch((error) => {
           console.log(EQUIPMENT_FETCH_ONE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_FETCH_MY]: () => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('equipment/user')
+        .then((response) => getResponseData<Equipment>(response))
+        .then((equipment) => resolve(equipment))
+        .catch((error) => {
+          console.log(EQUIPMENT_FETCH_MY, error);
           reject(error);
         });
     });
