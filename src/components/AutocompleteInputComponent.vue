@@ -2,7 +2,7 @@
 <template>
   <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
     <b-input-group>
-      <b-form-input type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state"></b-form-input>
+      <b-form-input type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state" ref="input"></b-form-input>
       <b-input-group-append v-if="canClear">
         <b-btn :disabled="!searchString" @click="onClear">
           <icon name="times" style="position: relative; top: -2px;"></icon>
@@ -11,11 +11,11 @@
     </b-input-group>
 
     <ul class="results" v-show="!resultsHidden && (searchString.length > 1 || results.length > 0)">
-      <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown.prevent="onSelect(result)">
+      <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown="preventBlur" @click.stop="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
       <template v-if="withoutAdding == undefined || !withoutAdding">
-        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="onAdd()">
+        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @click.stop="onAdd()">
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
             <b>{{ searchString }}</b>
           </slot>
@@ -40,6 +40,9 @@ import 'vue-awesome/icons/times';
   }
 })
 export default class AutocompleteInputComponent extends Vue {
+  // Properties //
+  ///////////////
+
   public resultsHidden: boolean = true;
   public searchString: string = '';
   public results: object[] = [];
@@ -79,6 +82,11 @@ export default class AutocompleteInputComponent extends Vue {
   })
   public add?: (title: string) => void;
 
+  private preventingBlur: boolean = false;
+
+  // Component methods //
+  //////////////////////
+
   public mounted() {
     this.$watch('value', (value?: object) => {
       this.searchString = value && this.stringify ? this.stringify(value) : '';
@@ -88,7 +96,19 @@ export default class AutocompleteInputComponent extends Vue {
       this.value && this.stringify ? this.stringify(this.value) : '';
   }
 
-  public onBlur() {
+  // Methods //
+  ////////////
+
+  public preventBlur(event: MouseEvent) {
+    this.preventingBlur = true;
+  }
+
+  public onBlur(event: FocusEvent) {
+    if (this.preventingBlur) {
+      this.preventingBlur = false;
+      return;
+    }
+
     this.resultsHidden = true;
     if (this.value != null && this.stringify) {
       this.searchString = this.stringify && this.stringify(this.value);
