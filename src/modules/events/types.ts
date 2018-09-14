@@ -77,6 +77,7 @@ export interface EventEquipment extends Equipment {
 export interface EventPlace {
   id: string;
   targetParticipantsCount: number;
+  description: string;
 
   equipment: EventEquipment[];
 
@@ -91,6 +92,7 @@ export interface EventPlace {
 export class EventPlaceDefault implements EventPlace {
   public id: string = '';
   public targetParticipantsCount: number = 0;
+  public description: string = '';
 
   public equipment: EventEquipment[] = [];
 
@@ -106,6 +108,7 @@ export interface EventShift {
   id: string;
   beginTime: Date;
   endTime: Date;
+  description: string;
   places: EventPlace[];
 
   delete?: boolean;
@@ -116,6 +119,7 @@ export class EventShiftDefault implements EventShift {
   public id: string = '';
   public beginTime: Date = new Date(0);
   public endTime: Date = new Date(0);
+  public description: string = '';
   public places: EventPlace[] = [new EventPlaceDefault()];
 }
 

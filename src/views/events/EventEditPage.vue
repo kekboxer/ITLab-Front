@@ -28,7 +28,7 @@
             <b-form-group label="Описание">
               <b-tabs>
                 <b-tab title="Markdown" active>
-                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" :max-rows="20" v-model="event.description">
+                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" v-model="event.description">
                   </b-form-textarea>
                 </b-tab>
                 <b-tab title="Просмотр">

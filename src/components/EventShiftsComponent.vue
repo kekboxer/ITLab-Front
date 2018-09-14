@@ -14,6 +14,11 @@
           </b-button>
         </b-col>
       </b-row>
+      <b-row v-if="shift.description">
+        <b-col>
+          {{ shift.description }}
+        </b-col>
+      </b-row>
       <hr>
       <b-row>
         <b-col>
@@ -34,6 +39,11 @@
                     <b-button variant="outline-secondary" class="btn-sm theme-light-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
                     <b-button variant="secondary" class="btn-sm theme-dark-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
                   </template>
+                </b-col>
+              </b-row>
+              <b-row v-if="place.description">
+                <b-col>
+                  {{ place.description }}
                 </b-col>
               </b-row>
             </div>
@@ -127,11 +137,21 @@
         <b-form-group label="Конец">
           <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.endTime" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
         </b-form-group>
+
+        <b-form-group label="Описание">
+          <b-form-input type="text" v-model="shiftModalData.description">
+          </b-form-input>
+        </b-form-group>
       </template>
 
       <template v-if="fieldsVisivility.place">
         <b-form-group label="Необходимое кол-во участников">
-          <b-form-input id="title-input" type="text" v-model="placeModalData.targetParticipantsCount">
+          <b-form-input type="text" v-model="placeModalData.targetParticipantsCount">
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Описание">
+          <b-form-input type="text" v-model="placeModalData.description">
           </b-form-input>
         </b-form-group>
       </template>
@@ -248,12 +268,15 @@ export default class EventShiftsComponent extends Vue {
     id?: string;
     beginTime: Date | null;
     endTime: Date | null;
-  } = { beginTime: null, endTime: null };
+    description: string | null;
+  } = { beginTime: null, endTime: null, description: null };
 
   public placeModalData: {
     targetParticipantsCount: number;
+    description: string;
   } = {
-    targetParticipantsCount: 1
+    targetParticipantsCount: 0,
+    description: ''
   };
 
   public placeParticipantData: {
@@ -389,7 +412,8 @@ export default class EventShiftsComponent extends Vue {
     if (
       (shiftIndex && !this.value) ||
       this.shiftModalData.beginTime == null ||
-      this.shiftModalData.endTime == null
+      this.shiftModalData.endTime == null ||
+      this.shiftModalData.description == null
     ) {
       return;
     }
@@ -402,6 +426,7 @@ export default class EventShiftsComponent extends Vue {
       shiftIndex != null ? this.value[shiftIndex] : new EventShiftDefault();
     shift.beginTime = this.shiftModalData.beginTime;
     shift.endTime = this.shiftModalData.endTime;
+    shift.description = this.shiftModalData.description;
 
     if (shiftIndex != null) {
       Vue.set(this.value, shiftIndex, shift);
@@ -441,7 +466,8 @@ export default class EventShiftsComponent extends Vue {
       const shift = this.value[shiftIndex];
       this.shiftModalData = {
         beginTime: shift.beginTime,
-        endTime: shift.endTime
+        endTime: shift.endTime,
+        description: shift.description
       };
 
       newState = ModalState.ShiftEdit;
@@ -449,7 +475,8 @@ export default class EventShiftsComponent extends Vue {
     } else {
       this.shiftModalData = {
         beginTime: null,
-        endTime: null
+        endTime: null,
+        description: null
       };
 
       newState = ModalState.ShiftCreation;
@@ -496,6 +523,7 @@ export default class EventShiftsComponent extends Vue {
     const place =
       placeIndex != null ? shift.places[placeIndex] : new EventPlaceDefault();
     place.targetParticipantsCount = this.placeModalData.targetParticipantsCount;
+    place.description = this.placeModalData.description;
 
     if (placeIndex != null) {
       Vue.set(shift.places, placeIndex, place);
@@ -530,14 +558,16 @@ export default class EventShiftsComponent extends Vue {
 
       const place = shift.places[placeIndex];
       this.placeModalData = {
-        targetParticipantsCount: place.targetParticipantsCount
+        targetParticipantsCount: place.targetParticipantsCount,
+        description: place.description
       };
 
       newState = ModalState.PlaceEdit;
       this.submitModal = () => this.onEditPlace(shift, placeIndex);
     } else {
       this.placeModalData = {
-        targetParticipantsCount: 0
+        targetParticipantsCount: 0,
+        description: ''
       };
 
       newState = ModalState.PlaceCreation;

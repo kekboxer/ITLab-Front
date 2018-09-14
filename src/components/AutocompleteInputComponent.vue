@@ -15,7 +15,7 @@
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
       <template v-if="withoutAdding == undefined || !withoutAdding">
-        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @click.stop="onAdd()">
+        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="preventBlur" @click="onAdd()">
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
             <b>{{ searchString }}</b>
           </slot>
@@ -133,6 +133,7 @@ export default class AutocompleteInputComponent extends Vue {
   }
 
   public onAdd() {
+    this.resultsHidden = true;
     if (this.add != null) {
       this.add(this.searchString);
     }
