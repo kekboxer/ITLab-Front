@@ -65,15 +65,13 @@ enum ModalState {
     'autocomplete-input-component': AutocompleteInputComponent
   },
   mixins: [validationMixin],
-  validations() {
-    return {
-      modalData: {
-        title: {
-          required,
-          minLength: minLength(1)
-        }
+  validations: {
+    modalData: {
+      title: {
+        required,
+        minLength: minLength(1)
       }
-    };
+    }
   }
 })
 export default class EquipmentTypeSelectionComponent extends Vue {

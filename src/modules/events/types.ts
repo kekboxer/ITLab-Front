@@ -116,10 +116,15 @@ export interface EventShift {
   new?: boolean;
 }
 
+const getDefaultDate = () => {
+  const now = Date.now();
+  return new Date(now - (now % 3600000));
+};
+
 export class EventShiftDefault implements EventShift {
   public id: string = '';
-  public beginTime: Date = new Date(0);
-  public endTime: Date = new Date(0);
+  public beginTime: Date = getDefaultDate();
+  public endTime: Date = getDefaultDate();
   public description: string = '';
   public places: EventPlace[] = [new EventPlaceDefault()];
 }

@@ -130,12 +130,12 @@
 
       <template v-if="fieldsVisivility.shift">
         <b-form-group label="Начало">
-          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.beginTime" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1">
+          <date-picker :first-day-of-week="1" v-model="shiftModalData.beginTime" v-bind:input-class="getShiftModalCalendarClasses()" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1">
           </date-picker>
         </b-form-group>
 
         <b-form-group label="Конец">
-          <date-picker :first-day-of-week="1" input-class="form-control w-100" v-model="shiftModalData.endTime" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
+          <date-picker :first-day-of-week="1" v-model="shiftModalData.endTime" v-bind:input-class="getShiftModalCalendarClasses()" :format="$g.DATETIME_FORMAT" lang="ru" type="datetime" :minute-step="1"></date-picker>
         </b-form-group>
 
         <b-form-group label="Описание">
@@ -146,13 +146,13 @@
         <b-row v-if="shiftAdditionalModalData.creatingShift">
           <b-col>
             <b-form-group label="Кол-во смен">
-              <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeCount">
+              <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeCount" :state="!$v.shiftAdditionalModalData.placeCount.$invalid">
               </b-form-input>
             </b-form-group>
           </b-col>
           <b-col>
             <b-form-group label="Человек в смене">
-              <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeParticipantCount">
+              <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeParticipantCount" :state="!$v.shiftAdditionalModalData.placeCount.$invalid">
               </b-form-input>
             </b-form-group>
           </b-col>
@@ -161,7 +161,7 @@
 
       <template v-if="fieldsVisivility.place">
         <b-form-group label="Необходимое кол-во участников">
-          <b-form-input type="text" v-model="placeModalData.targetParticipantsCount">
+          <b-form-input type="number" v-model.number="placeModalData.targetParticipantsCount" :state="!$v.placeModalData.targetParticipantsCount.$invalid">
           </b-form-input>
         </b-form-group>
 
@@ -173,23 +173,23 @@
 
       <template v-if="fieldsVisivility.participant">
         <b-form-group label="Участник">
-          <user-selection-component v-model="placeParticipantData.user"></user-selection-component>
+          <user-selection-component v-model="placeParticipantData.user" :state="!$v.placeParticipantData.user.$invalid"></user-selection-component>
         </b-form-group>
 
         <b-form-group label="Роль">
-          <b-form-select v-model="placeParticipantData.role" :options="participantRoleOptions"></b-form-select>
+          <b-form-select v-model="placeParticipantData.role" :state="!$v.placeParticipantData.role.$invalid" :options="participantRoleOptions"></b-form-select>
         </b-form-group>
       </template>
 
       <template v-if="fieldsVisivility.equipment">
         <b-form-group label="Оборудование">
-          <equipment-selection-component v-model="placeEquipmentModalData"></equipment-selection-component>
+          <equipment-selection-component v-model="placeEquipmentModalData" :state="!$v.placeEquipmentModalData.$invalid"></equipment-selection-component>
         </b-form-group>
       </template>
 
       <template v-if="fieldsVisivility.application">
         <b-form-group label="Роль">
-          <b-form-select v-model="applicationData.role" :options="participantRoleOptions"></b-form-select>
+          <b-form-select v-model="applicationModalData" :options="participantRoleOptions" :state="!$v.applicationModalData.$invalid"></b-form-select>
         </b-form-group>
       </template>
 
@@ -219,6 +219,9 @@ import EquipmentSelectionComponent from '@/components/EquipmentSelectionComponen
 
 import 'vue-awesome/icons/times';
 
+import { validationMixin } from 'vuelidate';
+import { required, minLength, helpers } from 'vuelidate/lib/validators';
+
 import {
   EventShift,
   EventShiftDefault,
@@ -246,6 +249,13 @@ enum ModalState {
   ApplicationCreation
 }
 
+const shiftRangeModalValidator = (component: EventShiftsComponent) => {
+  return () => {
+    const shiftModalData = component.shiftModalData;
+    return shiftModalData && shiftModalData.beginTime <= shiftModalData.endTime;
+  };
+};
+
 @Component({
   components: {
     icon: Icon,
@@ -254,6 +264,53 @@ enum ModalState {
     'mail-link': MailLinkComponent,
     'user-selection-component': UserSelectionComponent,
     'equipment-selection-component': EquipmentSelectionComponent
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      shiftModalData: {
+        beginTime: {
+          required,
+          validRange: shiftRangeModalValidator(this as EventShiftsComponent)
+        },
+        endTime: {
+          required,
+          validRange: shiftRangeModalValidator(this as EventShiftsComponent)
+        }
+      },
+      shiftAdditionalModalData: {
+        placeCount: {
+          valid: (count: number | null) => count == null || count > 0
+        },
+        placeParticipantCount: {
+          valid: (count: number | null) => count == null || count >= 0
+        }
+      },
+      placeModalData: {
+        targetParticipantsCount: {
+          required,
+          valid: (count: number) => count >= 0
+        }
+      },
+      placeParticipantData: {
+        user: {
+          required,
+          selected: (user?: User) => user && user.id !== ''
+        },
+        role: {
+          required,
+          selected: (role?: EventUserRole) => role && role.id !== ''
+        }
+      },
+      placeEquipmentModalData: {
+        required,
+        selected: (equipment?: Equipment) => equipment && equipment.id !== ''
+      },
+      applicationModalData: {
+        required,
+        selected: (role?: EventUserRole) => role && role.id !== ''
+      }
+    };
   }
 })
 export default class EventShiftsComponent extends Vue {
@@ -280,24 +337,24 @@ export default class EventShiftsComponent extends Vue {
 
   public modalState: ModalState = ModalState.Hidden;
 
-  public shiftModalData: EventShift | null = null;
-  public shiftAdditionalModalData: {
-    creatingShift: boolean;
-    placeCount: number;
-    placeParticipantCount: number;
-  } = { creatingShift: true, placeCount: 1, placeParticipantCount: 0 };
-  public placeModalData: EventPlace | null = null;
-  public placeParticipantData: EventParticipant | null = null;
-  public placeEquipmentModalData: Equipment | null = null;
-
-  public applicationData: {
-    role: EventUserRole | null;
-  } = { role: null };
-
   public participantRoleOptions: Array<{
     value: EventUserRole;
     text: string;
   }> = [];
+
+  // Modal data //
+  ///////////////
+
+  public shiftModalData: EventShift = new EventShiftDefault();
+  public shiftAdditionalModalData: {
+    creatingShift: boolean;
+    placeCount: number | null;
+    placeParticipantCount: number | null;
+  } = { creatingShift: true, placeCount: null, placeParticipantCount: null };
+  public placeModalData: EventPlace = new EventPlaceDefault();
+  public placeParticipantData: EventParticipant | null = null;
+  public placeEquipmentModalData: Equipment | null = null;
+  public applicationModalData: EventUserRole | null = null;
 
   // Component methods //
   //////////////////////
@@ -372,20 +429,36 @@ export default class EventShiftsComponent extends Vue {
     switch (this.modalState) {
       case ModalState.ShiftEdit:
       case ModalState.ShiftCreation:
-        return true; // this.isModalShiftValid;
+        return (
+          (this.$v.shiftModalData && !this.$v.shiftModalData.$invalid) || false
+        );
 
       case ModalState.PlaceEdit:
       case ModalState.PlaceCreation:
-        return true; // this.isModalPlaceValid;
+        return (
+          (this.$v.placeModalData && !this.$v.placeModalData.$invalid) || false
+        );
 
       case ModalState.ParticipantInvitation:
-        return true; // this.isModalPlaceParticipantValid;
+        return (
+          (this.$v.placeParticipantData &&
+            !this.$v.placeParticipantData.$invalid) ||
+          false
+        );
 
       case ModalState.EquipmentAdding:
-        return true; // this.isModalPlaceEquipmentValid;
+        return (
+          (this.$v.placeEquipmentModalData &&
+            !this.$v.placeEquipmentModalData.$invalid) ||
+          false
+        );
 
       case ModalState.ApplicationCreation:
-        return true; // this.isModalApplicationValid;
+        return (
+          (this.$v.applicationModalData &&
+            !this.$v.applicationModalData.$invalid) ||
+          false
+        );
 
       default:
         return false;
@@ -413,7 +486,11 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public onEditShift(shiftIndex?: number) {
-    if ((shiftIndex && !this.value) || this.shiftModalData == null) {
+    if (
+      (shiftIndex && !this.value) ||
+      this.shiftModalData == null ||
+      (this.$v.shiftModalData && this.$v.shiftModalData.$invalid)
+    ) {
       return;
     }
 
@@ -431,19 +508,24 @@ export default class EventShiftsComponent extends Vue {
     if (shiftIndex != null) {
       Vue.set(this.value, shiftIndex, shift);
     } else {
-      if (this.shiftAdditionalModalData.placeCount > 0) {
+      if (
+        this.shiftAdditionalModalData.placeCount &&
+        this.shiftAdditionalModalData.placeCount > 0
+      ) {
         const newPlace = () => {
           const place: EventPlace = new EventPlaceDefault();
-          place.targetParticipantsCount = this.shiftAdditionalModalData.placeParticipantCount;
+          place.targetParticipantsCount =
+            this.shiftAdditionalModalData.placeParticipantCount || 0;
           return place;
         };
 
-        shift.places = new Array<EventPlace>(
-          this.shiftAdditionalModalData.placeCount
-        ).fill({
-          ...newPlace(),
-          new: true
-        });
+        shift.places = [];
+        for (let i = 0; i < this.shiftAdditionalModalData.placeCount; ++i) {
+          shift.places.push({
+            ...newPlace(),
+            new: true
+          });
+        }
       }
 
       this.value.push({ ...shift, new: true });
@@ -472,12 +554,6 @@ export default class EventShiftsComponent extends Vue {
 
   public showShiftModal(shiftIndex: number | undefined) {
     let newState: ModalState;
-    this.shiftModalData = new EventShiftDefault();
-    this.shiftAdditionalModalData = {
-      creatingShift: shiftIndex == null,
-      placeCount: 1,
-      placeParticipantCount: 0
-    };
 
     if (shiftIndex != null) {
       if (!this.value) {
@@ -485,6 +561,9 @@ export default class EventShiftsComponent extends Vue {
       }
 
       const shift = this.value[shiftIndex];
+      this.shiftModalData.new = false;
+      this.shiftAdditionalModalData.creatingShift = false;
+
       this.shiftModalData.beginTime = shift.beginTime;
       this.shiftModalData.endTime = shift.endTime;
       this.shiftModalData.description = shift.description;
@@ -493,18 +572,26 @@ export default class EventShiftsComponent extends Vue {
       this.submitModal = () => this.onEditShift(shiftIndex);
     } else {
       this.shiftModalData.new = true;
-      this.shiftModalData.beginTime = moment(moment.now())
-        .startOf('hour')
-        .toDate();
-      this.shiftModalData.endTime = moment(moment.now())
-        .startOf('hour')
-        .toDate();
+      this.shiftAdditionalModalData.creatingShift = true;
 
       newState = ModalState.ShiftCreation;
       this.submitModal = this.onEditShift;
     }
 
     this.modalState = newState;
+  }
+
+  public getShiftModalCalendarClasses() {
+    const baseClasses = 'form-control w-100';
+
+    const validationData = this.$v.shiftModalData;
+    if (validationData == null) {
+      return baseClasses;
+    } else {
+      return `${baseClasses} ${
+        validationData.$invalid ? 'is-invalid' : 'is-valid'
+      }`;
+    }
   }
 
   // Place handlers //
@@ -529,7 +616,10 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public onEditPlace(shift: EventShift, placeIndex?: number) {
-    if (this.placeModalData == null) {
+    if (
+      this.placeModalData == null ||
+      (this.$v.placeModalData && this.$v.placeModalData.$invalid)
+    ) {
       return;
     }
 
@@ -564,7 +654,6 @@ export default class EventShiftsComponent extends Vue {
 
   public showPlaceModal(shift: EventShift, placeIndex: number | undefined) {
     let newState: ModalState;
-    this.placeModalData = new EventPlaceDefault();
 
     if (placeIndex != null) {
       if (!this.value) {
@@ -572,6 +661,7 @@ export default class EventShiftsComponent extends Vue {
       }
 
       const place = shift.places[placeIndex];
+      this.placeModalData.new = true;
       this.placeModalData.targetParticipantsCount =
         place.targetParticipantsCount;
       this.placeModalData.description = place.description;
@@ -592,7 +682,10 @@ export default class EventShiftsComponent extends Vue {
   ///////////////////////////////
 
   public onAddPlaceParticipant(place: EventPlace) {
-    if (this.placeParticipantData == null) {
+    if (
+      this.placeParticipantData == null ||
+      (this.$v.placeParticipantData && this.$v.placeParticipantData.$invalid)
+    ) {
       return;
     }
 
@@ -642,7 +735,11 @@ export default class EventShiftsComponent extends Vue {
   /////////////////////////////
 
   public onAddPlaceEquipment(place: EventPlace) {
-    if (!this.placeEquipmentModalData) {
+    if (
+      !this.placeEquipmentModalData ||
+      (this.$v.placeEquipmentModalData &&
+        this.$v.placeEquipmentModalData.$invalid)
+    ) {
       return;
     }
 
@@ -678,20 +775,15 @@ export default class EventShiftsComponent extends Vue {
     this.modalState = ModalState.EquipmentAdding;
   }
 
-  get isModalPlaceEquipmentValid(): boolean {
-    // TODO: check existance of selected equipment in place equipment
-    return this.placeEquipmentModalData != null;
-  }
-
   // Application handlers
 
   public onCreateApplication(place: EventPlace) {
-    if (this.applicationData.role == null) {
+    if (this.$v.applicationModalData && this.$v.applicationModalData.$invalid) {
       return;
     }
 
     this.$store
-      .dispatch(PROFILE_WISH, { place, role: this.applicationData.role })
+      .dispatch(PROFILE_WISH, { place, role: this.applicationModalData })
       .then((response) => {
         this.$notify({
           title: 'Заявка отправлена',
@@ -713,15 +805,10 @@ export default class EventShiftsComponent extends Vue {
       return;
     }
 
-    this.applicationData = { role: null };
     this.submitModal = () => {
       this.onCreateApplication(shift.places[placeIndex]);
     };
     this.modalState = ModalState.ApplicationCreation;
-  }
-
-  get isModalApplicationValid(): boolean {
-    return this.applicationData.role != null;
   }
 
   // Computed data //

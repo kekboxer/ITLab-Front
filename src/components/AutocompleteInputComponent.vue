@@ -10,12 +10,12 @@
       </b-input-group-append>
     </b-input-group>
 
-    <ul class="results" v-show="!resultsHidden && (searchString.length > 1 || results.length > 0)">
+    <ul class="results" v-show="!resultsHidden && (withoutAdding !== true && searchString.length > 0 || results.length > 0)">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown="preventBlur" @click.stop="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
-      <template v-if="withoutAdding == undefined || !withoutAdding">
-        <li class="add-item" v-show="searchString.length > 1" v-if="!checkExistence" @mousedown="preventBlur" @click="onAdd()">
+      <template v-if="withoutAdding !== true">
+        <li class="add-item" v-show="searchString.length > 0" v-if="!checkExistence" @mousedown="preventBlur" @click="onAdd()">
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
             <b>{{ searchString }}</b>
           </slot>
@@ -136,6 +136,8 @@ export default class AutocompleteInputComponent extends Vue {
     this.resultsHidden = true;
     if (this.add != null) {
       this.add(this.searchString);
+      this.searchString =
+        this.stringify && this.value ? this.stringify(this.value) : '';
     }
   }
 
