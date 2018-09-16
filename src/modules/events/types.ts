@@ -1,5 +1,6 @@
 import { Equipment } from '@/modules/equipment';
 import { User, UserDefault } from '@/modules/users';
+import moment from 'moment-timezone';
 
 // actions
 export const EVENT_TYPE_SEARCH = 'EVENT_TYPE_SEARCH';
@@ -117,8 +118,9 @@ export interface EventShift {
 }
 
 const getDefaultDate = () => {
-  const now = Date.now();
-  return new Date(now - (now % 3600000));
+  return moment(moment.now())
+    .startOf('hour')
+    .toDate();
 };
 
 export class EventShiftDefault implements EventShift {
