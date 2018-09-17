@@ -64,6 +64,15 @@ export default class SidebarComponent extends Vue {
     const swipe = new Hammer(document.body);
     document.body.style.userSelect = 'text';
     swipe.on('swiperight swipeleft', (e) => {
+      const width =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+
+      if (width > 576) {
+        return;
+      }
+
       e.preventDefault();
       if (e.type === 'swipeleft' && this.isMobileMenuHidden) {
         this.isMobileMenuHidden = false;
