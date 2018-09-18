@@ -27,7 +27,9 @@
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
           <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
-          <p>{{ event.address }}</p>
+          <p>
+            <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`">{{ event.address }}</a>
+          </p>
         </b-col>
         <b-col md="4">
           <b-row>
@@ -110,7 +112,8 @@ export default class EventItemComponent extends Vue {
   //////////////////
 
   get currentState(): any {
-    const state: State = this.event.participating === true ? State.Success : State.Default;
+    const state: State =
+      this.event.participating === true ? State.Success : State.Default;
 
     switch (+state) {
       case State.Default:
