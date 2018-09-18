@@ -72,7 +72,7 @@ export default class EventsPage extends Vue {
 
     this.$store
       .dispatch(EVENTS_FETCH_ALL, {
-        eventBegin: this.eventsShowPast ? undefined : this.currentDate
+        dateBegin: this.eventsShowPast ? undefined : this.currentDate
       })
       .then((result) => {
         this.loadingInProcess = false;

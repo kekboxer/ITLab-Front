@@ -164,11 +164,13 @@ export const actions: ActionTree<EventsState, RootState> = {
             id: shift.id === '' ? undefined : shift.id,
             beginTime: shift.beginTime,
             endTime: shift.endTime,
+            description: shift.description,
             places: shift.places.map((place) => {
               return {
                 delete: place.delete,
                 id: place.id === '' ? undefined : place.id,
                 targetParticipantsCount: place.targetParticipantsCount,
+                description: place.description,
                 equipment: place.equipment.map((equipment) => {
                   if (isNewEvent) {
                     return equipment.id;

@@ -1,5 +1,6 @@
 import { Equipment } from '@/modules/equipment';
 import { User, UserDefault } from '@/modules/users';
+import moment from 'moment-timezone';
 
 // actions
 export const EVENT_TYPE_SEARCH = 'EVENT_TYPE_SEARCH';
@@ -53,7 +54,7 @@ export class EventUserRoleDefault implements EventUserRole {
 
 export interface EventParticipant {
   user: User;
-  role?: EventUserRole;
+  role: EventUserRole;
 
   delete?: boolean;
   new?: boolean;
@@ -61,6 +62,7 @@ export interface EventParticipant {
 
 export class EventParticipantDefault implements EventParticipant {
   public user: User = new UserDefault();
+  public role: EventUserRole = new EventUserRoleDefault();
 }
 
 // EventEquipment //
@@ -77,6 +79,7 @@ export interface EventEquipment extends Equipment {
 export interface EventPlace {
   id: string;
   targetParticipantsCount: number;
+  description: string;
 
   equipment: EventEquipment[];
 
@@ -91,6 +94,7 @@ export interface EventPlace {
 export class EventPlaceDefault implements EventPlace {
   public id: string = '';
   public targetParticipantsCount: number = 0;
+  public description: string = '';
 
   public equipment: EventEquipment[] = [];
 
@@ -106,16 +110,24 @@ export interface EventShift {
   id: string;
   beginTime: Date;
   endTime: Date;
+  description: string;
   places: EventPlace[];
 
   delete?: boolean;
   new?: boolean;
 }
 
+const getDefaultDate = () => {
+  return moment(moment.now())
+    .startOf('hour')
+    .toDate();
+};
+
 export class EventShiftDefault implements EventShift {
   public id: string = '';
-  public beginTime: Date = new Date(0);
-  public endTime: Date = new Date(0);
+  public beginTime: Date = getDefaultDate();
+  public endTime: Date = getDefaultDate();
+  public description: string = '';
   public places: EventPlace[] = [new EventPlaceDefault()];
 }
 

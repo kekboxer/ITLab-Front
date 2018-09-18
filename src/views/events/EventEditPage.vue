@@ -28,7 +28,7 @@
             <b-form-group label="Описание">
               <b-tabs>
                 <b-tab title="Markdown" active>
-                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" :max-rows="20" v-model="event.description">
+                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" v-model="event.description">
                   </b-form-textarea>
                 </b-tab>
                 <b-tab title="Просмотр">
@@ -132,6 +132,23 @@ enum State {
           maxLength: maxLength(ADDRESS_LENGTH_MAX),
           rowsLength: (address?: string) =>
             address && address.split(/\n\r|\n|\r/).length <= ADDRESS_ROWS_MAX
+        },
+        places: {
+          validStructure: () => {
+            const shifts = (this as EventEditPage).eventShifts;
+
+            let shiftCount = 0;
+            for (const shift of shifts) {
+              if (shift.delete !== true) {
+                shiftCount++;
+              }
+
+              if (shift.places.length === 0) {
+                return false;
+              }
+            }
+            return shiftCount > 0;
+          }
         }
       }
     };
@@ -184,15 +201,6 @@ export default class EventEditPage extends Vue {
       return;
     }
 
-    if (this.eventShifts.length === 0) {
-      this.$notify({
-        title: 'Добавьте хотя бы одну смену',
-        type: 'error',
-        duration: 1500
-      });
-      return;
-    }
-
     this.pageState = State.InProcess;
 
     // assign all edited data
@@ -216,6 +224,12 @@ export default class EventEditPage extends Vue {
       })
       .catch((error) => {
         this.pageState = State.Error;
+
+        this.$notify({
+          title: 'Невозможно сохранить изменения',
+          type: 'error',
+          duration: 1500
+        });
       });
   }
 

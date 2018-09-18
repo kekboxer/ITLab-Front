@@ -3,7 +3,8 @@
   <div class="event-detail-page">
     <page-content-component :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
-        Событие
+        Событие&nbsp;
+        <b-button variant="warning" :to="'/events/edit/' + event.id">Изменить</b-button>
       </template>
 
       <b-row>
@@ -35,7 +36,8 @@
                 (До события {{ elapsedTime }})<br>
               </template>
               <br>
-              <b>Адрес:</b><br> {{ event.address }}
+              <b>Адрес:</b><br>
+              <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
               <hr class="d-block d-md-none">
             </b-col>
           </b-row>

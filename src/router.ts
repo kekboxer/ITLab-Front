@@ -48,6 +48,7 @@ const refreshAccessToken = () => {
     })
     .catch(() => {
       notifySubscribers();
+      router.push({ name: 'LoginPage', params: { to: router.currentRoute.path } });
       refreshingToken = false;
     });
 };
