@@ -18,11 +18,13 @@ import {
   EQUIPMENT_SET_ALL,
   EQUIPMENT_SET_ONE,
   EQUIPMENT_DELETE,
-  EQUIPMENT_REMOVE_ONE
+  EQUIPMENT_REMOVE_ONE,
+  EQUIPMENT_TYPE_FETCH_ALL,
+  EQUIPMENT_TYPE_SET_ALL
 } from './types';
 
 export const actions: ActionTree<EquipmentState, RootState> = {
-  [EQUIPMENT_SEARCH]: ({}, match: string = '') => {
+  [EQUIPMENT_SEARCH]: ({ }, match: string = '') => {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment?match=${encodeURIComponent(match)}`)
@@ -36,7 +38,7 @@ export const actions: ActionTree<EquipmentState, RootState> = {
   },
 
   [EQUIPMENT_TYPE_SEARCH]: (
-    {},
+    { },
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
@@ -94,6 +96,22 @@ export const actions: ActionTree<EquipmentState, RootState> = {
           reject(error);
         });
     });
+  },
+
+  [EQUIPMENT_TYPE_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('equipmentType')
+        .then((response) => getResponseData<EquipmentType[]>(response))
+        .then((equipmentTypes) => {
+          commit(EQUIPMENT_TYPE_SET_ALL, equipmentTypes);
+          resolve(equipmentTypes)
+        })
+        .catch((error) => {
+          console.log(EQUIPMENT_TYPE_FETCH_ALL, error);
+          reject(error);
+        })
+    })
   },
 
   [EQUIPMENT_COMMIT]: ({ commit }, equipment: Equipment) => {
