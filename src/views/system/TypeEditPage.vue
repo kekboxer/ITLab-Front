@@ -6,15 +6,24 @@
         Типы
       </template>
 
-      <div class="nav nav-tabs">
-        <div class="nav-item">
+      <b-tabs>
+        <b-tab title="События" active>
+          <br>
+          <b-table :hover="true" :fixed="true" :items="eventTypes" :fields="eventTypesFields">
+            <template slot="title" slot-scope="data">
+              {{ data.item.title }}
+            </template>
+          </b-table>
+        </b-tab>
+        <b-tab title="Оборудование">
+          <br>
           <b-table :hover="true" :fixed="true" :items="equipmentTypes" :fields="equipmentTypesFields">
             <template slot="title" slot-scope="data">
               {{ data.item.title }}
             </template>
           </b-table>
-        </div>
-      </div>
+        </b-tab>
+      </b-tabs>
     </page-content-component>
   </div>
 </template>
@@ -34,6 +43,11 @@ import {
 import { RouteConfig } from 'vue-router';
 
 import PageContentComponent from '@/components/PageContentComponent.vue';
+import {
+  EVENT_TYPES_FETCH_ALL,
+  EventType,
+  EVENT_TYPES_GET_ALL
+} from '@/modules/events';
 
 @Component({
   components: {
@@ -50,13 +64,35 @@ export default class TypeEditPage extends Vue {
   //////////////////////
 
   public mounted() {
-    this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL).then(() => {
-      this.loadingInProcess = false;
-    });
+    Promise.all([
+      this.$store.dispatch(EVENT_TYPES_FETCH_ALL),
+      this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL)
+    ])
+      .then((results) => {
+        this.loadingInProcess = false;
+      })
+      .catch();
   }
 
   // Computed data //
   //////////////////
+
+  get eventTypes(): EventType[] {
+    return this.$store.getters[EVENT_TYPES_GET_ALL];
+  }
+
+  get eventTypesFields() {
+    return [
+      {
+        key: 'title',
+        label: 'Название'
+      },
+      {
+        key: 'description',
+        label: 'Описание'
+      }
+    ];
+  }
 
   get equipmentTypes(): EquipmentType[] {
     return this.$store.getters[EQUIPMENT_TYPES_GET_ALL];
@@ -87,5 +123,12 @@ export const typeEditPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+.type-edit-page {
+  .nav-tabs {
+    .nav-item .nav-link {
+      border: none;
+    }
+  }
+}
 </style>
 <!-- STYLE END -->
