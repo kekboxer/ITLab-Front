@@ -24,7 +24,13 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { EquipmentType, EQUIPMENT_GET_ALL, EQUIPMENT_FETCH_ALL, EQUIPMENT_TYPE_FETCH_ALL, EQUIPMENT_TYPE_GET_ALL } from '@/modules/equipment';
+import {
+  EquipmentType,
+  EQUIPMENT_GET_ALL,
+  EQUIPMENT_FETCH_ALL,
+  EQUIPMENT_TYPES_FETCH_ALL,
+  EQUIPMENT_TYPES_GET_ALL
+} from '@/modules/equipment';
 import { RouteConfig } from 'vue-router';
 
 import PageContentComponent from '@/components/PageContentComponent.vue';
@@ -44,7 +50,7 @@ export default class TypeEditPage extends Vue {
   //////////////////////
 
   public mounted() {
-    this.$store.dispatch(EQUIPMENT_TYPE_FETCH_ALL).then(() => {
+    this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL).then(() => {
       this.loadingInProcess = false;
     });
   }
@@ -53,7 +59,7 @@ export default class TypeEditPage extends Vue {
   //////////////////
 
   get equipmentTypes(): EquipmentType[] {
-    return this.$store.getters[EQUIPMENT_TYPE_GET_ALL];
+    return this.$store.getters[EQUIPMENT_TYPES_GET_ALL];
   }
 
   get equipmentTypesFields() {

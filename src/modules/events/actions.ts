@@ -9,15 +9,21 @@ import {
   EventsState,
   Event,
   EventType,
-  EVENT_TYPE_SEARCH,
   EVENTS_FETCH_ALL,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
-  EVENT_TYPE_COMMIT,
   EVENT_DELETE,
   EVENTS_SET_ALL,
   EVENTS_SET_ONE,
-  EVENTS_REMOVE_ONE
+  EVENTS_REMOVE_ONE,
+  EVENT_TYPE_SEARCH,
+  EVENT_TYPES_FETCH_ALL,
+  EVENT_TYPES_FETCH_ONE,
+  EVENT_TYPE_COMMIT,
+  EVENT_TYPE_DELETE,
+  EVENT_TYPES_SET_ALL,
+  EVENT_TYPES_SET_ONE,
+  EVENT_TYPES_REMOVE_ONE
 } from './types';
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
@@ -35,57 +41,7 @@ const fixDates = (event: Event) => {
   }
 };
 
-const deepCopy = (obj: any): any => {
-  let copy: any;
-
-  if (null == obj || 'object' !== typeof obj) {
-    return obj;
-  }
-
-  if (obj instanceof Date) {
-    copy = new Date();
-    copy.setTime(obj.getTime());
-    return copy;
-  }
-
-  if (obj instanceof Array) {
-    copy = [];
-    for (let i = 0, len = obj.length; i < len; i++) {
-      copy[i] = deepCopy(obj[i]);
-    }
-    return copy;
-  }
-
-  if (obj instanceof Object) {
-    copy = {};
-    for (const attr in obj) {
-      if (obj.hasOwnProperty(attr)) {
-        copy[attr] = deepCopy(obj[attr]);
-      }
-    }
-    return copy;
-  }
-
-  throw new Error('Unable to copy object! Its type isn\'t supported.');
-};
-
 export const actions: ActionTree<EventsState, RootState> = {
-  [EVENT_TYPE_SEARCH]: (
-    {},
-    { match = '', all = false }: { match?: string; all?: boolean }
-  ) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`eventType?match=${encodeURIComponent(match)}&all=${all}`)
-        .then((response) => getResponseData<EventType[]>(response))
-        .then((eventTypes) => resolve(eventTypes))
-        .catch((error) => {
-          console.log(EVENT_TYPE_SEARCH, error);
-          reject(error);
-        });
-    });
-  },
-
   [EVENTS_FETCH_ALL]: (
     { commit },
     range:
@@ -225,25 +181,6 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_TYPE_COMMIT]: ({ commit }, eventType: EventType) => {
-    return new Promise((resolve, reject) => {
-      const url = 'eventType';
-
-      const request =
-        eventType.id === ''
-          ? axios.post(url, eventType)
-          : axios.put(url, eventType);
-
-      request
-        .then((response) => getResponseData<EventType>(response))
-        .then((eventType) => resolve(eventType))
-        .catch((error) => {
-          console.log(EVENT_TYPE_COMMIT, error);
-          reject(error);
-        });
-    });
-  },
-
   [EVENT_DELETE]: ({ commit }, event: string | Event) => {
     return new Promise((resolve, reject) => {
       const eventId = typeof event === 'string' ? event : event.id;
@@ -262,6 +199,100 @@ export const actions: ActionTree<EventsState, RootState> = {
         })
         .catch((error) => {
           console.log(EVENT_DELETE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_TYPE_SEARCH]: (
+    {},
+    { match = '', all = false }: { match?: string; all?: boolean }
+  ) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`eventType?match=${encodeURIComponent(match)}&all=${all}`)
+        .then((response) => getResponseData<EventType[]>(response))
+        .then((eventTypes) => resolve(eventTypes))
+        .catch((error) => {
+          console.log(EVENT_TYPE_SEARCH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_TYPES_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('eventType')
+        .then((response) => getResponseData<EventType[]>(response))
+        .then((eventTypes) => {
+          commit(EVENT_TYPES_SET_ALL, eventTypes);
+          resolve(eventTypes);
+        })
+        .catch((error) => {
+          console.log(EVENT_TYPES_FETCH_ALL);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_TYPES_FETCH_ONE]: ({ commit }, id: string) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`eventType/${id}`)
+        .then((response) => getResponseData<EventType>(response))
+        .then((eventType) => {
+          commit(EVENT_TYPES_SET_ONE, eventType);
+          resolve(eventType);
+        })
+        .catch((error) => {
+          console.log(EVENT_TYPES_FETCH_ONE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_TYPE_COMMIT]: ({ commit }, eventType: EventType) => {
+    return new Promise((resolve, reject) => {
+      const url = 'eventType';
+
+      const request =
+        eventType.id === ''
+          ? axios.post(url, eventType)
+          : axios.put(url, eventType);
+
+      request
+        .then((response) => getResponseData<EventType>(response))
+        .then((eventType) => {
+          commit(EVENT_TYPES_SET_ONE, eventType);
+          resolve(eventType);
+        })
+        .catch((error) => {
+          console.log(EVENT_TYPE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_TYPE_DELETE]: ({ commit }, eventType: string | EventType) => {
+    return new Promise((resolve, reject) => {
+      const eventTypeId =
+        typeof eventType === 'string' ? eventType : eventType.id;
+
+      axios
+        .delete('eventType', { data: { id: eventTypeId } })
+        .then((response) => {
+          const body = response && response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            commit(EVENT_TYPES_REMOVE_ONE, eventTypeId);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(EVENT_TYPE_DELETE, error);
           reject(error);
         });
     });

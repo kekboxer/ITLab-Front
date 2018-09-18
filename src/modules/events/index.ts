@@ -9,7 +9,8 @@ import { EventsState } from './types';
 export * from './types';
 
 export const state: EventsState = {
-  events: []
+  events: [],
+  eventTypes: []
 };
 
 export const events: Module<EventsState, RootState> = {
