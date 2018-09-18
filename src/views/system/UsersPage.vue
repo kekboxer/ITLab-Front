@@ -7,11 +7,13 @@
         <b-button variant="success" @click="showModal">Пригласить</b-button>
       </template>
 
-      <b-table :hover="true" :fixed="true" :items="items" :fields="fields">
-        <template slot="email" slot-scope="data">
-          <mail-link :email="data.item.email" />
-        </template>
-      </b-table>
+      <b-card-group columns class="mb-3">
+        <b-card v-for="user in users" :key="user.id" v-bind:class="{ 'border-primary': user.id === profileId }" :title="`${ user.firstName } ${ user.lastName }`">
+          Email:
+          <mail-link :email="user.email" /><br>
+          <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+        </b-card>
+      </b-card-group>
     </page-content-component>
 
     <b-modal v-model="modalVisible">
@@ -51,6 +53,7 @@ import {
   USERS_FETCH_ALL,
   USER_INVITE
 } from '@/modules/users';
+import { PROFILE_GET } from '@/modules/profile';
 
 enum ModalState {
   Hidden,
@@ -140,26 +143,12 @@ export default class UsersPage extends Vue {
   // Computed data //
   //////////////////
 
-  get fields() {
-    return [
-      {
-        key: 'fullName',
-        label: 'Ф.И.О.'
-      },
-      {
-        key: 'email',
-        label: 'Email'
-      }
-    ];
+  get users(): User[] {
+    return this.$store.getters[USERS_GET_ALL];
   }
 
-  get items(): User[] {
-    return this.$store.getters[USERS_GET_ALL].map((user: User) => {
-      return {
-        fullName: `${user.firstName} ${user.lastName}`,
-        email: user.email
-      };
-    });
+  get profileId(): string {
+    return this.$store.getters[PROFILE_GET];
   }
 }
 
@@ -175,5 +164,13 @@ export const usersPageRoute: RouteConfig = {
 <!-- STYLE BEGIN -->
 <style lang="scss">
 @import '@/styles/general.scss';
+
+.users-page {
+  .card {
+    @include theme-specific() {
+      background-color: getstyle(card-list-item-background-color);
+    }
+  }
+}
 </style>
 <!-- STYLE END -->

@@ -36,7 +36,8 @@
                 (До события {{ elapsedTime }})<br>
               </template>
               <br>
-              <b>Адрес:</b><br> {{ event.address }}
+              <b>Адрес:</b><br>
+              <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
               <hr class="d-block d-md-none">
             </b-col>
           </b-row>

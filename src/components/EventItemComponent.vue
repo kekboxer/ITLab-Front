@@ -28,7 +28,7 @@
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
           <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
           <p>
-            <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="blank">{{ event.address }}</a>
+            <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
           </p>
         </b-col>
         <b-col md="4">
