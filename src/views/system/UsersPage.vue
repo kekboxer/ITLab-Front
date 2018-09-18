@@ -20,13 +20,13 @@
       </template>
 
       <b-form-group id="type-title-group" label="Email" label-for="email-input">
-        <b-form-input id="email-input" type="email" v-model.trim="modalData.email">
+        <b-form-input id="email-input" type="email" v-model="modalData.email" :state="!$v.modalData.email.$invalid">
         </b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Пригласить</button>
+        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Пригласить</button>
       </template>
     </b-modal>
   </div>
@@ -41,6 +41,9 @@ import { RouteConfig } from 'vue-router';
 
 import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import PageContentComponent from '@/components/PageContentComponent.vue';
+
+import { validationMixin } from 'vuelidate';
+import { required, email } from 'vuelidate/lib/validators';
 
 import {
   User,
@@ -59,6 +62,15 @@ enum ModalState {
   components: {
     'mail-link': MailLinkComponent,
     'page-content-component': PageContentComponent
+  },
+  mixins: [validationMixin],
+  validations: {
+    modalData: {
+      email: {
+        required,
+        email
+      }
+    }
   }
 })
 export default class UsersPage extends Vue {
@@ -96,6 +108,10 @@ export default class UsersPage extends Vue {
   }
 
   public onSubmitModal() {
+    if (this.$v.modalData == null || this.$v.modalData.$invalid) {
+      return;
+    }
+
     this.modalState = ModalState.InProcess;
     this.$store.dispatch(USER_INVITE, this.modalData).then(() => {
       this.$notify({
