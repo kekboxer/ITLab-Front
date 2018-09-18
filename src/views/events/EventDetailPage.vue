@@ -3,7 +3,8 @@
   <div class="event-detail-page">
     <page-content-component :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
-        Событие
+        Событие&nbsp;
+        <b-button variant="warning" :to="'/events/edit/' + event.id">Изменить</b-button>
       </template>
 
       <b-row>
