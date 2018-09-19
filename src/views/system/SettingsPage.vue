@@ -17,7 +17,10 @@
             </b-form-group>
           </b-form>
 
-          <a href="/backend_selection" v-if="environment === 'development'" target="blank">Смена API URL</a>
+          <template v-if="environment === 'development'">
+            <a href="/backend_selection" v-if="environment === 'development'" target="blank">Смена API URL</a><br>
+          </template>
+          <a href="/about" target="blank">О системе</a>
         </b-col>
 
         <b-col cols="12" md="6" class="mt-3 mt-md-0">

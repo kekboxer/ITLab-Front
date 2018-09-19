@@ -42,6 +42,8 @@ import { profilePageRoute } from '@/views/profile';
 
 import {
   // @ts-ignore
+  aboutPageRoute,
+  // @ts-ignore
   usersPageRoute,
   // @ts-ignore
   settingsPageRoute,
@@ -53,6 +55,7 @@ import {
 
 export const state: LayoutState = {
   stuff: [
+    aboutPageRoute,
     loginPageRoute,
     registrationPageRoute,
     processingAgreementPageRoute,

@@ -38,18 +38,25 @@
           <h4>Оборудование</h4>
           <hr>
 
-          <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
-            <b-row>
-              <b-col cols="auto">
-                <a :href="`equipment/${equipment.id}`"><b>{{ equipment.equipmentType.title }}</b></a>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <span style="font-family: monospace">{{ equipment.serialNumber }}</span>
-              </b-col>
-            </b-row>
-          </div>
+          <template v-if="equipment.length === 0">
+            Оборудования на руках нет
+          </template>
+          <template v-else>
+            <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
+              <b-row>
+                <b-col cols="auto">
+                  <a :href="`equipment/${equipment.id}`">
+                    <b>{{ equipment.equipmentType.title }}</b>
+                  </a>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span style="font-family: monospace">{{ equipment.serialNumber }}</span>
+                </b-col>
+              </b-row>
+            </div>
+          </template>
         </b-col>
       </b-row>
       <hr>

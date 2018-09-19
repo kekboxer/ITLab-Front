@@ -155,14 +155,14 @@
         </b-form-group>
 
         <b-row v-if="shiftModalData.new === true && !shiftAdditionalModalData.clone">
-          <b-col>
-            <b-form-group label="Кол-во смен">
+          <b-col cols="12" sm="6">
+            <b-form-group label="Кол-во мест">
               <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeCount" :state="!$v.shiftAdditionalModalData.placeCount.$invalid">
               </b-form-input>
             </b-form-group>
           </b-col>
-          <b-col>
-            <b-form-group label="Человек в смене">
+          <b-col cols="12" sm="6">
+            <b-form-group label="Кол-во человек на место">
               <b-form-input type="number" v-model.number="shiftAdditionalModalData.placeParticipantCount" :state="!$v.shiftAdditionalModalData.placeCount.$invalid">
               </b-form-input>
             </b-form-group>
@@ -170,13 +170,11 @@
         </b-row>
 
         <b-row v-if="shiftAdditionalModalData.clone">
-          <!--
           <b-col>
             <b-form-checkbox class="noselect" v-model="shiftAdditionalModalData.cloneParticipants" :value="true" :unchecked-value="false">
               С участниками
             </b-form-checkbox>
           </b-col>
-          -->
           <b-col>
             <b-form-checkbox class="noselect" v-model="shiftAdditionalModalData.cloneEquipment" :value="true" :unchecked-value="false">
               С оборудованием
@@ -278,7 +276,7 @@ enum ModalState {
 const shiftRangeModalValidator = (component: EventShiftsComponent) => {
   return () => {
     const shiftModalData = component.shiftModalData;
-    return shiftModalData && shiftModalData.beginTime <= shiftModalData.endTime;
+    return shiftModalData && moment(shiftModalData.beginTime) <= moment(shiftModalData.endTime);
   };
 };
 
@@ -549,17 +547,46 @@ export default class EventShiftsComponent extends Vue {
       Vue.set(this.value, shiftIndex, shift);
     } else {
       if (this.shiftAdditionalModalData.clone) {
-        if (this.shiftAdditionalModalData.cloneEquipment) {
-          shift.places = this.shiftModalData.places.reduce(
-            (places, currentPlace) => {
-              if (currentPlace.delete === true) {
-                return places;
-              } else {
-                const newPlace: EventPlace = new EventPlaceDefault();
-                newPlace.new = true;
-                newPlace.targetParticipantsCount =
-                  currentPlace.targetParticipantsCount;
-                newPlace.description = currentPlace.description;
+        shift.places = this.shiftModalData.places.reduce(
+          (places, currentPlace) => {
+            if (currentPlace.delete === true) {
+              return places;
+            } else {
+              const newPlace: EventPlace = new EventPlaceDefault();
+              newPlace.new = true;
+              newPlace.targetParticipantsCount =
+                currentPlace.targetParticipantsCount;
+              newPlace.description = currentPlace.description;
+
+              if (this.shiftAdditionalModalData.cloneParticipants) {
+                const participantsReducer = (
+                  participants: EventParticipant[],
+                  currentParticipant: EventParticipant
+                ) => {
+                  if (currentParticipant.delete === true) {
+                    return participants;
+                  } else {
+                    const newParticipant: EventParticipant = Object.assign(
+                      {},
+                      currentParticipant
+                    );
+                    newParticipant.new = true;
+
+                    return participants.concat(newParticipant);
+                  }
+                };
+
+                newPlace.invited = currentPlace.participants
+                  .reduce(participantsReducer, new Array<EventParticipant>())
+                  .concat(
+                    currentPlace.invited.reduce(
+                      participantsReducer,
+                      new Array<EventParticipant>()
+                    )
+                  );
+              }
+
+              if (this.shiftAdditionalModalData.cloneEquipment) {
                 newPlace.equipment = currentPlace.equipment.reduce(
                   (equipment, currentEquipment) => {
                     if (currentEquipment.delete === true) {
@@ -576,13 +603,13 @@ export default class EventShiftsComponent extends Vue {
                   },
                   new Array<Equipment>()
                 );
-
-                return places.concat(newPlace);
               }
-            },
-            new Array<EventPlace>()
-          );
-        }
+
+              return places.concat(newPlace);
+            }
+          },
+          new Array<EventPlace>()
+        );
       } else if (
         this.shiftAdditionalModalData.placeCount &&
         this.shiftAdditionalModalData.placeCount > 0

@@ -7,11 +7,13 @@
         <b-button variant="success" @click="showModal">Пригласить</b-button>
       </template>
 
-      <b-table :hover="true" :fixed="true" :items="items" :fields="fields">
-        <template slot="email" slot-scope="data">
-          <mail-link :email="data.item.email" />
-        </template>
-      </b-table>
+      <b-card-group columns class="mb-3">
+        <b-card v-for="user in users" :key="user.id" v-bind:class="{ 'border-primary': user.id === profileId }" :title="`${ user.firstName } ${ user.lastName }`">
+          Email:
+          <mail-link :email="user.email" /><br>
+          <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+        </b-card>
+      </b-card-group>
     </page-content-component>
 
     <b-modal v-model="modalVisible">
@@ -20,13 +22,13 @@
       </template>
 
       <b-form-group id="type-title-group" label="Email" label-for="email-input">
-        <b-form-input id="email-input" type="email" v-model.trim="modalData.email">
+        <b-form-input id="email-input" type="email" v-model="modalData.email" :state="!$v.modalData.email.$invalid">
         </b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="isModalInProcess" @click="onSubmitModal">Пригласить</button>
+        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Пригласить</button>
       </template>
     </b-modal>
   </div>
@@ -42,12 +44,16 @@ import { RouteConfig } from 'vue-router';
 import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 
+import { validationMixin } from 'vuelidate';
+import { required, email } from 'vuelidate/lib/validators';
+
 import {
   User,
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
 } from '@/modules/users';
+import { PROFILE_GET } from '@/modules/profile';
 
 enum ModalState {
   Hidden,
@@ -59,6 +65,15 @@ enum ModalState {
   components: {
     'mail-link': MailLinkComponent,
     'page-content-component': PageContentComponent
+  },
+  mixins: [validationMixin],
+  validations: {
+    modalData: {
+      email: {
+        required,
+        email
+      }
+    }
   }
 })
 export default class UsersPage extends Vue {
@@ -96,6 +111,10 @@ export default class UsersPage extends Vue {
   }
 
   public onSubmitModal() {
+    if (this.$v.modalData == null || this.$v.modalData.$invalid) {
+      return;
+    }
+
     this.modalState = ModalState.InProcess;
     this.$store.dispatch(USER_INVITE, this.modalData).then(() => {
       this.$notify({
@@ -124,26 +143,12 @@ export default class UsersPage extends Vue {
   // Computed data //
   //////////////////
 
-  get fields() {
-    return [
-      {
-        key: 'fullName',
-        label: 'Ф.И.О.'
-      },
-      {
-        key: 'email',
-        label: 'Email'
-      }
-    ];
+  get users(): User[] {
+    return this.$store.getters[USERS_GET_ALL];
   }
 
-  get items(): User[] {
-    return this.$store.getters[USERS_GET_ALL].map((user: User) => {
-      return {
-        fullName: `${user.firstName} ${user.lastName}`,
-        email: user.email
-      };
-    });
+  get profileId(): string {
+    return this.$store.getters[PROFILE_GET];
   }
 }
 
@@ -159,5 +164,13 @@ export const usersPageRoute: RouteConfig = {
 <!-- STYLE BEGIN -->
 <style lang="scss">
 @import '@/styles/general.scss';
+
+.users-page {
+  .card {
+    @include theme-specific() {
+      background-color: getstyle(card-list-item-background-color);
+    }
+  }
+}
 </style>
 <!-- STYLE END -->
