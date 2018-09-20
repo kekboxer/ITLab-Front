@@ -10,7 +10,8 @@ export * from './types';
 
 export const state: EventsState = {
   events: [],
-  eventTypes: []
+  eventTypes: [],
+  eventRoles: []
 };
 
 export const events: Module<EventsState, RootState> = {

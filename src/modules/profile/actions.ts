@@ -24,7 +24,7 @@ import {
 
 import { User } from '@/modules/users';
 
-import { EventPlace, EventUserRole } from '@/modules/events';
+import { EventPlace, EventRole } from '@/modules/events';
 
 export const setAxiosAuthHeader = (token?: string) => {
   if (token) {
@@ -105,10 +105,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
 
   [PROFILE_WISH]: (
     {},
-    {
-      place,
-      role
-    }: { place: EventPlace | string; role: EventUserRole | string }
+    { place, role }: { place: EventPlace | string; role: EventRole | string }
   ) => {
     return new Promise((resolve, reject) => {
       const placeId = typeof place === 'string' ? place : place.id;

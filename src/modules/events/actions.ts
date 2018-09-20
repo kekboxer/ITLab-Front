@@ -9,6 +9,7 @@ import {
   EventsState,
   Event,
   EventType,
+  EventRole,
   EVENTS_FETCH_ALL,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
@@ -23,7 +24,13 @@ import {
   EVENT_TYPE_DELETE,
   EVENT_TYPES_SET_ALL,
   EVENT_TYPES_SET_ONE,
-  EVENT_TYPES_REMOVE_ONE
+  EVENT_TYPES_REMOVE_ONE,
+  EVENT_ROLES_FETCH_ALL,
+  EVENT_ROLE_COMMIT,
+  EVENT_ROLE_DELETE,
+  EVENT_ROLES_SET_ALL,
+  EVENT_ROLES_SET_ONE,
+  EVENT_ROLES_REMOVE_ONE
 } from './types';
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
@@ -183,15 +190,15 @@ export const actions: ActionTree<EventsState, RootState> = {
 
   [EVENT_DELETE]: ({ commit }, event: string | Event) => {
     return new Promise((resolve, reject) => {
-      const eventId = typeof event === 'string' ? event : event.id;
+      const id = typeof event === 'string' ? event : event.id;
 
       axios
-        .delete(`event/${eventId}`)
+        .delete(`event/${id}`)
         .then((response) => {
           const body = response && response.data;
 
           if (body.statusCode && body.statusCode === 1) {
-            commit(EVENTS_REMOVE_ONE, eventId);
+            commit(EVENTS_REMOVE_ONE, id);
             resolve();
           } else {
             reject();
@@ -276,16 +283,15 @@ export const actions: ActionTree<EventsState, RootState> = {
 
   [EVENT_TYPE_DELETE]: ({ commit }, eventType: string | EventType) => {
     return new Promise((resolve, reject) => {
-      const eventTypeId =
-        typeof eventType === 'string' ? eventType : eventType.id;
+      const id = typeof eventType === 'string' ? eventType : eventType.id;
 
       axios
-        .delete('eventType', { data: { id: eventTypeId } })
+        .delete('eventType', { data: { id } })
         .then((response) => {
           const body = response && response.data;
 
           if (body.statusCode && body.statusCode === 1) {
-            commit(EVENT_TYPES_REMOVE_ONE, eventTypeId);
+            commit(EVENT_TYPES_REMOVE_ONE, id);
             resolve();
           } else {
             reject();
@@ -293,6 +299,67 @@ export const actions: ActionTree<EventsState, RootState> = {
         })
         .catch((error) => {
           console.log(EVENT_TYPE_DELETE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_ROLES_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('eventRole')
+        .then((response) => getResponseData<EventRole[]>(response))
+        .then((eventRoles) => {
+          commit(EVENT_ROLES_SET_ALL, eventRoles);
+          resolve(eventRoles);
+        })
+        .catch((error) => {
+          console.log(EVENT_ROLES_FETCH_ALL);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_ROLE_COMMIT]: ({ commit }, eventRole: EventRole) => {
+    return new Promise((resolve, reject) => {
+      const url = 'eventRole';
+
+      const request =
+        eventRole.id === ''
+          ? axios.post(url, eventRole)
+          : axios.put(url, eventRole);
+
+      request
+        .then((response) => getResponseData<EventRole>(response))
+        .then((eventRole) => {
+          commit(EVENT_ROLES_SET_ONE, eventRole);
+          resolve(eventRole);
+        })
+        .catch((error) => {
+          console.log(EVENT_ROLE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EVENT_ROLE_DELETE]: ({ commit }, eventRole: string | EventRole) => {
+    return new Promise((resolve, reject) => {
+      const id = typeof eventRole === 'string' ? eventRole : eventRole.id;
+
+      axios
+        .delete('eventType', { data: { id } })
+        .then((response) => {
+          const body = response && response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            commit(EVENT_ROLES_REMOVE_ONE, id);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(EVENT_ROLE_DELETE, error);
           reject(error);
         });
     });

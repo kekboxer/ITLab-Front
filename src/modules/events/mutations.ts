@@ -6,13 +6,17 @@ import { setOneElement } from '@/stuff';
 import {
   EventsState,
   Event,
+  EventType,
+  EventRole,
   EVENTS_SET_ALL,
   EVENTS_SET_ONE,
   EVENTS_REMOVE_ONE,
   EVENT_TYPES_SET_ALL,
-  EventType,
   EVENT_TYPES_SET_ONE,
-  EVENT_TYPES_REMOVE_ONE
+  EVENT_TYPES_REMOVE_ONE,
+  EVENT_ROLES_SET_ALL,
+  EVENT_ROLES_SET_ONE,
+  EVENT_ROLES_REMOVE_ONE
 } from './types';
 
 const sortEvents = (events: Event[]): Event[] => {
@@ -50,8 +54,9 @@ export const mutations: MutationTree<EventsState> = {
     setOneElement(state.events, event);
   },
 
-  [EVENTS_REMOVE_ONE]: (state, eventId: string) => {
-    const eventIndex = state.events.findIndex((event) => event.id === eventId);
+  [EVENTS_REMOVE_ONE]: (state, event: string | Event) => {
+    const id = typeof event === 'string' ? event : event.id;
+    const eventIndex = state.events.findIndex((event) => event.id === id);
     if (eventIndex !== -1) {
       Vue.delete(state.events, eventIndex);
     }
@@ -77,12 +82,43 @@ export const mutations: MutationTree<EventsState> = {
     setOneElement(state.eventTypes, eventType);
   },
 
-  [EVENT_TYPES_REMOVE_ONE]: (state, eventTypeId: string) => {
+  [EVENT_TYPES_REMOVE_ONE]: (state, eventType: string | EventType) => {
+    const id = typeof eventType === 'string' ? eventType : eventType.id;
     const eventTypeIndex = state.eventTypes.findIndex(
-      (eventType) => eventType.id === eventTypeId
+      (eventType) => eventType.id === id
     );
     if (eventTypeIndex !== -1) {
       Vue.delete(state.eventTypes, eventTypeIndex);
+    }
+  },
+
+  [EVENT_ROLES_SET_ALL]: (
+    state,
+    payload: EventRole[] | { eventRoles: EventRole[]; merge?: boolean }
+  ) => {
+    const eventRoles = payload instanceof Array ? payload : payload.eventRoles;
+    const merge = payload instanceof Array ? false : payload.merge === true;
+
+    if (merge) {
+      eventRoles.forEach((eventRole) => {
+        setOneElement(state.eventRoles, eventRole);
+      });
+    } else {
+      state.eventRoles = eventRoles;
+    }
+  },
+
+  [EVENT_ROLES_SET_ONE]: (state, eventRole: EventRole) => {
+    setOneElement(state.eventRoles, eventRole);
+  },
+
+  [EVENT_ROLES_REMOVE_ONE]: (state, eventRole: string | EventRole) => {
+    const id = typeof eventRole === 'string' ? eventRole : eventRole.id;
+    const eventRoleIndex = state.eventRoles.findIndex(
+      (eventRole) => eventRole.id === id
+    );
+    if (eventRoleIndex !== -1) {
+      Vue.delete(state.eventRoles, eventRoleIndex);
     }
   }
 };

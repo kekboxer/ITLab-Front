@@ -14,6 +14,10 @@ export const EVENT_TYPES_FETCH_ONE = 'EVENT_TYPES_FETCH_ONE';
 export const EVENT_TYPE_COMMIT = 'EVENT_TYPE_COMMIT';
 export const EVENT_TYPE_DELETE = 'EVENT_TYPE_DELETE';
 
+export const EVENT_ROLES_FETCH_ALL = 'EVENT_ROLES_FETCH_ALL';
+export const EVENT_ROLE_COMMIT = 'EVENT_ROLE_COMMIT';
+export const EVENT_ROLE_DELETE = 'EVENT_ROLE_DELETE';
+
 // setters
 export const EVENTS_SET_ALL = 'EVENTS_SET_ALL';
 export const EVENTS_SET_ONE = 'EVENTS_SET_ONE';
@@ -23,12 +27,19 @@ export const EVENT_TYPES_SET_ALL = 'EVENT_TYPES_SET_ALL';
 export const EVENT_TYPES_SET_ONE = 'EVENT_TYPES_SET_ONE';
 export const EVENT_TYPES_REMOVE_ONE = 'EVENT_TYPES_REMOVE_ONE';
 
+export const EVENT_ROLES_SET_ALL = 'EVENT_ROLES_SET_ALL';
+export const EVENT_ROLES_SET_ONE = 'EVENT_ROLES_SET_ONE';
+export const EVENT_ROLES_REMOVE_ONE = 'EVENT_ROLES_REMOVE_ONE';
+
 // getters
 export const EVENTS_GET_ALL = 'EVENTS_GET_ALL';
 export const EVENTS_GET_ONE = 'EVENTS_GET_ONE';
 
 export const EVENT_TYPES_GET_ALL = 'EVENT_TYPES_GET_ALL';
 export const EVENT_TYPES_GET_ONE = 'EVENT_TYPES_GET_ONE';
+
+export const EVENT_ROLES_GET_ALL = 'EVENT_ROLES_GET_ALL';
+export const EVENT_ROLES_GET_ONE = 'EVENT_ROLES_GET_ONE';
 
 // EventType //
 //////////////
@@ -45,19 +56,19 @@ export class EventTypeDefault implements EventType {
   public description: string = '';
 }
 
-// EventUserRole //
-//////////////////
+// EventRole //
+//////////////
 
-export interface EventUserRole {
+export interface EventRole {
   id: string;
-  name: string;
-
-  normalizedName?: string;
+  title: string;
+  description: string;
 }
 
-export class EventUserRoleDefault implements EventUserRole {
+export class EventRoleDefault implements EventRole {
   public id: string = '';
-  public name: string = '';
+  public title: string = '';
+  public description: string = '';
 }
 
 // EventParticipant //
@@ -65,7 +76,7 @@ export class EventUserRoleDefault implements EventUserRole {
 
 export interface EventParticipant {
   user: User;
-  role: EventUserRole;
+  role: EventRole;
 
   delete?: boolean;
   new?: boolean;
@@ -73,7 +84,7 @@ export interface EventParticipant {
 
 export class EventParticipantDefault implements EventParticipant {
   public user: User = new UserDefault();
-  public role: EventUserRole = new EventUserRoleDefault();
+  public role: EventRole = new EventRoleDefault();
 }
 
 // EventEquipment //
@@ -179,4 +190,5 @@ export class EventDefault implements Event {
 export interface EventsState {
   events: Event[];
   eventTypes: EventType[];
+  eventRoles: EventRole[];
 }

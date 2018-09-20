@@ -67,7 +67,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.role.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -83,7 +83,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.role.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -251,11 +251,12 @@ import {
   EventShiftDefault,
   EventPlace,
   EventPlaceDefault,
-  EventParticipant,
   EventEquipment,
-  EventUserRole,
-  EventUserRoleDefault,
-  EventParticipantDefault
+  EventParticipant,
+  EventParticipantDefault,
+  EventRole,
+  EventRoleDefault,
+  EVENT_ROLES_FETCH_ALL
 } from '@/modules/events';
 
 import { Equipment, EquipmentDefault, equipment } from '@/modules/equipment';
@@ -327,7 +328,7 @@ const shiftRangeModalValidator = (component: EventShiftsComponent) => {
         },
         role: {
           required,
-          selected: (role?: EventUserRole) => role && role.id !== ''
+          selected: (role?: EventRole) => role && role.id !== ''
         }
       },
       placeEquipmentModalData: {
@@ -336,7 +337,7 @@ const shiftRangeModalValidator = (component: EventShiftsComponent) => {
       },
       applicationModalData: {
         required,
-        selected: (role?: EventUserRole) => role && role.id !== ''
+        selected: (role?: EventRole) => role && role.id !== ''
       }
     };
   }
@@ -366,7 +367,7 @@ export default class EventShiftsComponent extends Vue {
   public modalState: ModalState = ModalState.Hidden;
 
   public participantRoleOptions: Array<{
-    value: EventUserRole;
+    value: EventRole;
     text: string;
   }> = [];
 
@@ -390,7 +391,7 @@ export default class EventShiftsComponent extends Vue {
   public placeModalData: EventPlace = new EventPlaceDefault();
   public placeParticipantData: EventParticipant | null = null;
   public placeEquipmentModalData: Equipment | null = null;
-  public applicationModalData: EventUserRole | null = null;
+  public applicationModalData: EventRole | null = null;
 
   // Component methods //
   //////////////////////
@@ -400,12 +401,12 @@ export default class EventShiftsComponent extends Vue {
       this.value = shifts ? shifts : [];
     });
 
-    this.fetchUserRoles().then((result) => {
-      const participantRoles: EventUserRole[] = result as EventUserRole[];
+    this.$store.dispatch(EVENT_ROLES_FETCH_ALL).then((result: EventRole[]) => {
+      const participantRoles: EventRole[] = result;
       this.participantRoleOptions = participantRoles.map((v) => {
         return {
           value: v,
-          text: this.$g.ROLE_TRANSLATIONS.get(v.name) || v.name
+          text: v.title
         };
       });
     });
@@ -927,25 +928,6 @@ export default class EventShiftsComponent extends Vue {
   // Computed data //
   //////////////////
 
-  public fetchUserRoles() {
-    return new Promise((resolve, reject) => {
-      axios
-        .get('roles')
-        .then((response) => {
-          const body = response.data;
-          if (body.statusCode === 1) {
-            const roles: EventUserRole[] = body.data;
-            resolve(roles);
-          } else {
-            reject();
-          }
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  }
-
   get eventShifts(): EventShift[] {
     return this.value
       ? this.value.sort((a, b) => {
@@ -958,10 +940,6 @@ export default class EventShiftsComponent extends Vue {
           }
         })
       : [];
-  }
-
-  public getRoleTranslation(role: EventUserRole): string {
-    return this.$g.ROLE_TRANSLATIONS.get(role.name) || role.name;
   }
 }
 </script>

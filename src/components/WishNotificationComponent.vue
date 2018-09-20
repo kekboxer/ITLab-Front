@@ -25,7 +25,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ role }}</b>
+            <b>{{ data.role.title }}</b>
           </b-col>
         </b-row>
         <b-row>
@@ -94,12 +94,6 @@ export default class WishNotificationComponent extends Vue {
 
   get beginTime(): string {
     return moment(this.data.beginTime).format();
-  }
-
-  get role(): string {
-    const roleName = this.data.role.name;
-
-    return this.$g.ROLE_TRANSLATIONS.get(roleName) || roleName;
   }
 
   get targetParticipantsCount(): string {

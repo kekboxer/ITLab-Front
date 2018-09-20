@@ -55,31 +55,15 @@ export default class SidebarComponent extends Vue {
   // Properties //
   ///////////////
 
+  public swipeArea?: HammerManager;
+
   public isMobileMenuHidden: boolean = true;
 
   // Component methods //
   //////////////////////
 
   public created() {
-    const swipe = new Hammer(document.body);
     document.body.style.userSelect = 'text';
-    swipe.on('swiperight swipeleft', (e) => {
-      const width =
-        window.innerWidth ||
-        document.documentElement.clientWidth ||
-        document.body.clientWidth;
-
-      if (width > 576) {
-        return;
-      }
-
-      e.preventDefault();
-      if (e.type === 'swipeleft' && this.isMobileMenuHidden) {
-        this.isMobileMenuHidden = false;
-      } else {
-        this.isMobileMenuHidden = true;
-      }
-    });
 
     this.$watch(
       () => this.$store.getters[NOTIFICATIONS_GET_COUNT],
@@ -92,6 +76,32 @@ export default class SidebarComponent extends Vue {
     );
 
     this.$store.dispatch(NOTIFICATIONS_FETCH);
+  }
+
+  public mounted() {
+    if (this.swipeArea == null) {
+      this.swipeArea = new Hammer(document.getElementById(
+        'app'
+      ) as HTMLElement);
+
+      this.swipeArea.on('swiperight swipeleft', (e) => {
+        console.log('xcvxcv');
+        const width =
+          window.innerWidth ||
+          document.documentElement.clientWidth ||
+          document.body.clientWidth;
+
+        if (width > 576) {
+          return;
+        }
+
+        if (e.type === 'swipeleft' && this.isMobileMenuHidden) {
+          this.isMobileMenuHidden = false;
+        } else {
+          this.isMobileMenuHidden = true;
+        }
+      });
+    }
   }
 
   // Methods //

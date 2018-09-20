@@ -24,7 +24,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ role }}</b>
+            <b>{{ data.role.title }}</b>
           </b-col>
         </b-row>
       </b-col>
@@ -89,12 +89,6 @@ export default class InvitationNotificationComponent extends Vue {
     return moment
       .duration(this.data.shiftDurationInMinutes, 'minutes')
       .humanize();
-  }
-
-  get role(): string {
-    return (
-      this.$g.ROLE_TRANSLATIONS.get(this.data.role.name) || this.data.role.name
-    );
   }
 
   get isInProcess(): boolean {

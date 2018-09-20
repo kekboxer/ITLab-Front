@@ -6,7 +6,9 @@ import {
   EVENTS_GET_ALL,
   EVENTS_GET_ONE,
   EVENT_TYPES_GET_ALL,
-  EVENT_TYPES_GET_ONE
+  EVENT_TYPES_GET_ONE,
+  EVENT_ROLES_GET_ALL,
+  EVENT_ROLES_GET_ONE
 } from './types';
 
 export const getters: GetterTree<EventsState, RootState> = {
@@ -45,6 +47,16 @@ export const getters: GetterTree<EventsState, RootState> = {
   [EVENT_TYPES_GET_ONE]: (state) => {
     return (id: string) => {
       return state.eventTypes.find((v) => v.id === id);
+    };
+  },
+
+  [EVENT_ROLES_GET_ALL]: (state) => {
+    return state.eventRoles;
+  },
+
+  [EVENT_ROLES_GET_ONE]: (state) => {
+    return (id: string) => {
+      return state.eventRoles.find((v) => v.id === id);
     };
   }
 };

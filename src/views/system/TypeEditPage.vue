@@ -162,7 +162,7 @@ export default class TypeEditPage extends Vue {
   public removeEventType(eventType: EventType) {
     this.$store.dispatch(EVENT_TYPE_DELETE, eventType);
   }
-  
+
   public onSubmitEventTypeModal(eventType: EventType) {
     this.eventTypeModalVisible = false;
   }

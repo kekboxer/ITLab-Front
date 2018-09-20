@@ -22,7 +22,10 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 // Initialize router
 const router: Router = new Router({
   mode: 'history',
-  routes: store.getters[LAYOUT_PAGES_GET]
+  routes: store.getters[LAYOUT_PAGES_GET],
+  scrollBehavior: (to, from, savedPosition) => {
+    return { x: 0, y: 0 };
+  }
 });
 
 // Initialize authorization
@@ -48,7 +51,10 @@ const refreshAccessToken = () => {
     })
     .catch(() => {
       notifySubscribers();
-      router.push({ name: 'LoginPage', params: { to: router.currentRoute.path } });
+      router.push({
+        name: 'LoginPage',
+        params: { to: router.currentRoute.path }
+      });
       refreshingToken = false;
     });
 };

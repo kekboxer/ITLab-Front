@@ -1,9 +1,9 @@
 import {
+  EventParticipant,
   EventType,
-  EventUserRole,
   EventTypeDefault,
-  EventUserRoleDefault,
-  EventParticipant
+  EventRole,
+  EventRoleDefault
 } from '@/modules/events';
 import { User } from '@/modules/users';
 
@@ -43,7 +43,7 @@ export class EventNotification {
   public beginTime: Date = new Date(0);
   public placeId: string = '';
   public creationTime: Date = new Date(0);
-  public role: EventUserRole = new EventUserRoleDefault();
+  public role: EventRole = new EventRoleDefault();
 }
 
 // Invitation //
