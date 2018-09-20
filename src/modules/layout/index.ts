@@ -47,6 +47,8 @@ import {
   usersPageRoute,
   // @ts-ignore
   settingsPageRoute,
+  // @ts-ignore,
+  typeEditPageRoute,
   // @ts-ignore
   backendSelectionPageRoute
 } from '@/views/system';
@@ -105,6 +107,12 @@ export const state: LayoutState = {
           title: 'Пользователи',
           homeURL: '/users',
           pages: [usersPageRoute]
+        },
+        {
+          name: 'typeEdit',
+          title: 'Типы',
+          homeURL: '/type_edit',
+          pages: [typeEditPageRoute]
         },
         {
           name: 'profileSettings',

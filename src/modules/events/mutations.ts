@@ -1,29 +1,19 @@
 import { MutationTree } from 'vuex';
 import { Vue } from 'vue-property-decorator';
 
+import { setOneElement } from '@/stuff';
+
 import {
   EventsState,
   Event,
   EVENTS_SET_ALL,
   EVENTS_SET_ONE,
-  EVENTS_REMOVE_ONE
+  EVENTS_REMOVE_ONE,
+  EVENT_TYPES_SET_ALL,
+  EventType,
+  EVENT_TYPES_SET_ONE,
+  EVENT_TYPES_REMOVE_ONE
 } from './types';
-
-const setOneEvent = (events: Event[], event: Event) => {
-  const currentEventIndex = events.findIndex((value) => {
-    return value.id === event.id;
-  });
-
-  if (currentEventIndex === -1) {
-    events.push(event);
-  } else {
-    Vue.set(
-      events,
-      currentEventIndex,
-      Object.assign({}, events[currentEventIndex], event)
-    );
-  }
-};
 
 const sortEvents = (events: Event[]): Event[] => {
   return events.sort((a, b) => {
@@ -47,7 +37,7 @@ export const mutations: MutationTree<EventsState> = {
 
     if (merge) {
       events.forEach((event) => {
-        setOneEvent(state.events, event);
+        setOneElement(state.events, event);
       });
     } else {
       state.events = events;
@@ -57,13 +47,42 @@ export const mutations: MutationTree<EventsState> = {
   },
 
   [EVENTS_SET_ONE]: (state, event: Event) => {
-    setOneEvent(state.events, event);
+    setOneElement(state.events, event);
   },
 
   [EVENTS_REMOVE_ONE]: (state, eventId: string) => {
     const eventIndex = state.events.findIndex((event) => event.id === eventId);
     if (eventIndex !== -1) {
       Vue.delete(state.events, eventIndex);
+    }
+  },
+
+  [EVENT_TYPES_SET_ALL]: (
+    state,
+    payload: EventType[] | { eventTypes: EventType[]; merge?: boolean }
+  ) => {
+    const eventTypes = payload instanceof Array ? payload : payload.eventTypes;
+    const merge = payload instanceof Array ? false : payload.merge === true;
+
+    if (merge) {
+      eventTypes.forEach((eventType) => {
+        setOneElement(state.eventTypes, eventType);
+      });
+    } else {
+      state.eventTypes = eventTypes;
+    }
+  },
+
+  [EVENT_TYPES_SET_ONE]: (state, eventType: EventType) => {
+    setOneElement(state.eventTypes, eventType);
+  },
+
+  [EVENT_TYPES_REMOVE_ONE]: (state, eventTypeId: string) => {
+    const eventTypeIndex = state.eventTypes.findIndex(
+      (eventType) => eventType.id === eventTypeId
+    );
+    if (eventTypeIndex !== -1) {
+      Vue.delete(state.eventTypes, eventTypeIndex);
     }
   }
 };

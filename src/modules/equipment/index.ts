@@ -9,7 +9,8 @@ import { EquipmentState } from './types';
 export * from './types';
 
 export const state: EquipmentState = {
-  equipment: []
+  equipment: [],
+  equipmentTypes: []
 };
 
 export const equipment: Module<EquipmentState, RootState> = {

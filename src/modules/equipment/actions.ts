@@ -9,16 +9,22 @@ import {
   Equipment,
   EquipmentType,
   EQUIPMENT_SEARCH,
-  EQUIPMENT_TYPE_SEARCH,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_FETCH_MY,
   EQUIPMENT_COMMIT,
-  EQUIPMENT_TYPE_COMMIT,
+  EQUIPMENT_DELETE,
   EQUIPMENT_SET_ALL,
   EQUIPMENT_SET_ONE,
-  EQUIPMENT_DELETE,
-  EQUIPMENT_REMOVE_ONE
+  EQUIPMENT_REMOVE_ONE,
+  EQUIPMENT_TYPE_SEARCH,
+  EQUIPMENT_TYPES_FETCH_ALL,
+  EQUIPMENT_TYPES_FETCH_ONE,
+  EQUIPMENT_TYPE_COMMIT,
+  EQUIPMENT_TYPE_DELETE,
+  EQUIPMENT_TYPES_SET_ALL,
+  EQUIPMENT_TYPES_SET_ONE,
+  EQUIPMENT_TYPES_REMOVE_ONE
 } from './types';
 
 export const actions: ActionTree<EquipmentState, RootState> = {
@@ -31,22 +37,6 @@ export const actions: ActionTree<EquipmentState, RootState> = {
         .catch((error) => {
           console.log(EQUIPMENT_SEARCH, error);
           reject();
-        });
-    });
-  },
-
-  [EQUIPMENT_TYPE_SEARCH]: (
-    {},
-    { match = '', all = false }: { match?: string; all?: boolean }
-  ) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`equipmentType?match=${encodeURIComponent(match)}&all=${all}`)
-        .then((response) => getResponseData<EquipmentType[]>(response))
-        .then((equipmentTypes) => resolve(equipmentTypes))
-        .catch((error) => {
-          console.log(EQUIPMENT_TYPE_SEARCH, error);
-          reject(error);
         });
     });
   },
@@ -142,6 +132,54 @@ export const actions: ActionTree<EquipmentState, RootState> = {
     });
   },
 
+  [EQUIPMENT_TYPE_SEARCH]: (
+    {},
+    { match = '', all = false }: { match?: string; all?: boolean }
+  ) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`equipmentType?match=${encodeURIComponent(match)}&all=${all}`)
+        .then((response) => getResponseData<EquipmentType[]>(response))
+        .then((equipmentTypes) => resolve(equipmentTypes))
+        .catch((error) => {
+          console.log(EQUIPMENT_TYPE_SEARCH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_TYPES_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('equipmentType?all=true')
+        .then((response) => getResponseData<EquipmentType[]>(response))
+        .then((equipmentTypes) => {
+          commit(EQUIPMENT_TYPES_SET_ALL, equipmentTypes);
+          resolve(equipmentTypes);
+        })
+        .catch((error) => {
+          console.log(EQUIPMENT_TYPES_FETCH_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_TYPES_FETCH_ONE]: ({ commit }, id: string) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`equipmentType/${id}`)
+        .then((response) => getResponseData<EquipmentType>(response))
+        .then((equipmentType) => {
+          commit(EQUIPMENT_TYPES_SET_ONE, equipmentType);
+          resolve(equipmentType);
+        })
+        .catch((error) => {
+          console.log(EQUIPMENT_TYPES_FETCH_ONE, error);
+          reject(error);
+        });
+    });
+  },
+
   [EQUIPMENT_TYPE_COMMIT]: ({ commit }, equipmentType: EquipmentType) => {
     return new Promise((resolve, reject) => {
       const url = 'equipmentType';
@@ -153,9 +191,39 @@ export const actions: ActionTree<EquipmentState, RootState> = {
 
       request
         .then((response) => getResponseData<EquipmentType>(response))
-        .then((equipmentType) => resolve(equipmentType))
+        .then((equipmentType) => {
+          commit(EQUIPMENT_TYPES_SET_ONE, equipmentType);
+          resolve(equipmentType);
+        })
         .catch((error) => {
           console.log(EQUIPMENT_TYPE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_TYPE_DELETE]: (
+    { commit },
+    equipmentType: string | EquipmentType
+  ) => {
+    return new Promise((resolve, reject) => {
+      const equipmentTypeId =
+        typeof equipmentType === 'string' ? equipmentType : equipmentType.id;
+
+      axios
+        .delete('equipmentType', { data: { id: equipmentTypeId } })
+        .then((response) => {
+          const body = response && response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            commit(EQUIPMENT_TYPES_REMOVE_ONE, equipmentTypeId);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(EQUIPMENT_TYPE_DELETE, error);
           reject(error);
         });
     });

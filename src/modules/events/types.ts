@@ -3,21 +3,32 @@ import { User, UserDefault } from '@/modules/users';
 import moment from 'moment-timezone';
 
 // actions
-export const EVENT_TYPE_SEARCH = 'EVENT_TYPE_SEARCH';
 export const EVENTS_FETCH_ALL = 'EVENTS_FETCH_ALL';
 export const EVENTS_FETCH_ONE = 'EVENTS_FETCH_ONE';
 export const EVENT_COMMIT = 'EVENT_COMMIT';
-export const EVENT_TYPE_COMMIT = 'EVENT_TYPE_COMMIT';
 export const EVENT_DELETE = 'EVENT_DELETE';
+
+export const EVENT_TYPE_SEARCH = 'EVENT_TYPE_SEARCH';
+export const EVENT_TYPES_FETCH_ALL = 'EVENT_TYPES_FETCH_ALL';
+export const EVENT_TYPES_FETCH_ONE = 'EVENT_TYPES_FETCH_ONE';
+export const EVENT_TYPE_COMMIT = 'EVENT_TYPE_COMMIT';
+export const EVENT_TYPE_DELETE = 'EVENT_TYPE_DELETE';
 
 // setters
 export const EVENTS_SET_ALL = 'EVENTS_SET_ALL';
 export const EVENTS_SET_ONE = 'EVENTS_SET_ONE';
 export const EVENTS_REMOVE_ONE = 'EVENTS_REMOVE_ONE';
 
+export const EVENT_TYPES_SET_ALL = 'EVENT_TYPES_SET_ALL';
+export const EVENT_TYPES_SET_ONE = 'EVENT_TYPES_SET_ONE';
+export const EVENT_TYPES_REMOVE_ONE = 'EVENT_TYPES_REMOVE_ONE';
+
 // getters
 export const EVENTS_GET_ALL = 'EVENTS_GET_ALL';
 export const EVENTS_GET_ONE = 'EVENTS_GET_ONE';
+
+export const EVENT_TYPES_GET_ALL = 'EVENT_TYPES_GET_ALL';
+export const EVENT_TYPES_GET_ONE = 'EVENT_TYPES_GET_ONE';
 
 // EventType //
 //////////////
@@ -167,4 +178,5 @@ export class EventDefault implements Event {
 
 export interface EventsState {
   events: Event[];
+  eventTypes: EventType[];
 }

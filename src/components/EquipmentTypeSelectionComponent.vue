@@ -11,26 +11,7 @@
       </template>
     </autocomplete-input-component>
 
-    <b-modal v-model="modalVisible" @keydown.native.enter="onSubmitModal">
-      <template slot="modal-title">
-        Новый тип оборудования
-      </template>
-
-      <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title" :state="!$v.modalData.title.$invalid">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
-        <b-form-input id="type-description-input" type="text" v-model.trim="modalData.description">
-        </b-form-input>
-      </b-form-group>
-
-      <template slot="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Подтвердить</button>
-      </template>
-    </b-modal>
+    <equipment-type-modal-component v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -42,36 +23,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
-
-import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponent.vue';
 
 import {
   EquipmentType,
   EquipmentTypeDefault,
-  EQUIPMENT_TYPE_SEARCH,
-  EQUIPMENT_TYPE_COMMIT
+  EQUIPMENT_TYPE_SEARCH
 } from '@/modules/equipment';
-
-enum ModalState {
-  Hidden,
-  Editing,
-  InProcess,
-  Error
-}
 
 @Component({
   components: {
-    'autocomplete-input-component': AutocompleteInputComponent
-  },
-  mixins: [validationMixin],
-  validations: {
-    modalData: {
-      title: {
-        required,
-        minLength: minLength(1)
-      }
-    }
+    'autocomplete-input-component': AutocompleteInputComponent,
+    'equipment-type-modal-component': EquipmentTypeModalComponent
   }
 })
 export default class EquipmentTypeSelectionComponent extends Vue {
@@ -87,7 +50,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
 
   public equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
 
-  public modalState: ModalState = ModalState.Hidden;
+  public modalVisible: boolean = false;
   public modalData: EquipmentType = new EquipmentTypeDefault();
 
   // Component methods //
@@ -125,42 +88,18 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   // Modal window methods //
   /////////////////////////
 
-  get modalVisible(): boolean {
-    return this.modalState !== ModalState.Hidden;
-  }
-  set modalVisible(show: boolean) {
-    if (!show) {
-      this.modalState = ModalState.Hidden;
-    }
-  }
-
-  public onSubmitModal() {
-    if (
-      (this.$v.modalData && this.$v.modalData.$invalid) ||
-      this.isModalInProcess
-    ) {
-      return;
-    }
-
-    this.modalState = ModalState.InProcess;
-    this.$store
-      .dispatch(EQUIPMENT_TYPE_COMMIT, this.modalData)
-      .then((equipmentType: EquipmentType) => {
-        this.equipmentTypeSelected = equipmentType;
-        this.onInput();
-
-        this.modalState = ModalState.Hidden;
-        this.modalData = new EquipmentTypeDefault();
-      });
-  }
-
   public showModal(search: string) {
+    this.modalData = new EquipmentTypeDefault();
     this.modalData.title = search;
-    this.modalState = ModalState.Editing;
+
+    this.modalVisible = true;
   }
 
-  get isModalInProcess(): boolean {
-    return this.modalState === ModalState.InProcess;
+  public onSubmitModal(equipmentType: EquipmentType) {
+    this.equipmentTypeSelected = equipmentType;
+    this.onInput();
+
+    this.modalVisible = false;
   }
 }
 </script>

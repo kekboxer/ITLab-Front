@@ -163,14 +163,5 @@ export const usersPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import '@/styles/general.scss';
-
-.users-page {
-  .card {
-    @include theme-specific() {
-      background-color: getstyle(card-list-item-background-color);
-    }
-  }
-}
 </style>
 <!-- STYLE END -->
