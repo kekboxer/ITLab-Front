@@ -22,8 +22,8 @@
                 </b-row>
               </b-col>
               <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2">Изменить</b-button>
-                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3">
+                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
+                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEventType(eventType)">
                   <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
                   <span class="d-inline d-md-none">Удалить</span>
                 </b-button>
@@ -46,8 +46,8 @@
                 </b-row>
               </b-col>
               <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2">Изменить</b-button>
-                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3">
+                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
+                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEquipmentType(equipmentType)">
                   <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
                   <span class="d-inline d-md-none">Удалить</span>
                 </b-button>
@@ -81,20 +81,24 @@ import {
   EquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_TYPES_FETCH_ALL,
-  EQUIPMENT_TYPES_GET_ALL
+  EQUIPMENT_TYPES_GET_ALL,
+  EQUIPMENT_TYPE_DELETE
 } from '@/modules/equipment';
 
 import {
   EventType,
   EventTypeDefault,
   EVENT_TYPES_FETCH_ALL,
-  EVENT_TYPES_GET_ALL
+  EVENT_TYPES_GET_ALL,
+  EVENT_TYPE_DELETE
 } from '@/modules/events';
 
 @Component({
   components: {
     Icon,
-    'page-content-component': PageContentComponent
+    'page-content-component': PageContentComponent,
+    'event-type-modal-component': EventTypeModalComponent,
+    'equipment-type-modal-component': EquipmentTypeModalComponent
   }
 })
 export default class TypeEditPage extends Vue {
@@ -109,14 +113,6 @@ export default class TypeEditPage extends Vue {
   public equipmentTypeModalVisible: boolean = false;
   public equipmentTypeModalData: EquipmentType = new EquipmentTypeDefault();
 
-  public onSubmitEventTypeModal: (eventType: EventType) => void = (
-    eventType: EventType
-  ) => undefined
-
-  public onSubmitEquipmentTypeModal: (equipmentType: EquipmentType) => void = (
-    eventType: EventType
-  ) => undefined
-
   // Component methods //
   //////////////////////
 
@@ -129,6 +125,43 @@ export default class TypeEditPage extends Vue {
         this.loadingInProcess = false;
       })
       .catch();
+  }
+
+  // Methods //
+  ////////////
+
+  public showEventTypeModal(eventType?: EventType) {
+    if (eventType) {
+      this.eventTypeModalData = Object.assign({}, eventType);
+    } else {
+      this.eventTypeModalData = new EventTypeDefault();
+    }
+    this.eventTypeModalVisible = true;
+  }
+
+  public removeEventType(eventType: EventType) {
+    this.$store.dispatch(EVENT_TYPE_DELETE, eventType);
+  }
+  
+  public onSubmitEventTypeModal(eventType: EventType) {
+    this.eventTypeModalVisible = false;
+  }
+
+  public showEquipmentTypeModal(equipmentType?: EquipmentType) {
+    if (equipmentType) {
+      this.equipmentTypeModalData = Object.assign({}, equipmentType);
+    } else {
+      this.equipmentTypeModalData = new EquipmentTypeDefault();
+    }
+    this.equipmentTypeModalVisible = true;
+  }
+
+  public removeEquipmentType(equipmentType: EquipmentType) {
+    this.$store.dispatch(EQUIPMENT_TYPE_DELETE, equipmentType);
+  }
+
+  public onSubmitEquipmentTypeModal(equipmentType: EquipmentType) {
+    this.equipmentTypeModalVisible = false;
   }
 
   // Computed data //
