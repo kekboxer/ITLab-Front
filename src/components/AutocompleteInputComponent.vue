@@ -16,8 +16,8 @@
       </li>
       <template v-if="withoutAdding !== true">
         <li class="add-item" v-show="searchString.length > 0" v-if="!checkExistence" @mousedown="preventBlur" @click="onAdd()">
-          <slot name="add-item" v-bind:search="searchString" v-bind:results="results">Добавить
-            <b>{{ searchString }}</b>
+          <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
+            Добавить <b>{{ searchString }}</b>
           </slot>
         </li>
       </template>
@@ -199,7 +199,7 @@ export default class AutocompleteInputComponent extends Vue {
     .add-item {
       list-style: none;
       text-align: left;
-      padding: 4px 10px;
+      padding: 10px;
       cursor: pointer;
       border-top: 1px solid getcolor(white, base);
 

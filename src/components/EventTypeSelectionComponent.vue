@@ -5,10 +5,6 @@
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
-      <template slot="add-item" slot-scope="data">
-        Добавить
-        <b>{{ data.search }}</b>
-      </template>
     </autocomplete-input-component>
 
     <event-type-modal-component v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
