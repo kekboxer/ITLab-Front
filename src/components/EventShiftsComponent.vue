@@ -222,7 +222,7 @@
         <b-button variant="primary" :disabled="!isModalDataInvalid" @click="submitModal(); modalShow = false">Подтвердить</b-button>
       </template>
     </b-modal>
-    <!-- TEMPALTE END -->
+    <!-- MODAL END -->
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -257,6 +257,7 @@ import {
   EventUserRoleDefault,
   EventParticipantDefault
 } from '@/modules/events';
+
 import { Equipment, EquipmentDefault, equipment } from '@/modules/equipment';
 import { UserDefault, User } from '@/modules/users';
 import { PROFILE_WISH } from '@/modules/profile';
@@ -276,7 +277,10 @@ enum ModalState {
 const shiftRangeModalValidator = (component: EventShiftsComponent) => {
   return () => {
     const shiftModalData = component.shiftModalData;
-    return shiftModalData && moment(shiftModalData.beginTime) <= moment(shiftModalData.endTime);
+    return (
+      shiftModalData &&
+      moment(shiftModalData.beginTime) <= moment(shiftModalData.endTime)
+    );
   };
 };
 

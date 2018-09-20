@@ -106,21 +106,30 @@ $theme_map: map-get($themes, theme-light);
   }
 }
 
-@mixin theme-specific() {
-  @each $current, $current_map in $themes {
-    $old: $current;
-    $old_map: $current_map;
+@mixin theme-specific($specified: null) {
+  $old: $theme;
+  $old_map: $theme_map;
 
-    $theme: $current !global;
-    $theme_map: $current_map !global;
+  @if ($specified) {
+    $theme: $specified !global;
+    $theme_map: map-get($map: $themes, $key: $specified) !global;
 
     .#{$theme} & {
       @content
     }
-
-    $theme: $old !global;
-    $theme_map: $old_map !global;
+  } @else {
+    @each $current, $current_map in $themes {
+      $theme: $current !global;
+      $theme_map: $current_map !global;
+  
+      .#{$theme} & {
+        @content
+      }
+    }
   }
+
+  $theme: $old !global;
+  $theme_map: $old_map !global;
 };
 
 @function getstyle($style) {

@@ -151,7 +151,7 @@ export const actions: ActionTree<EquipmentState, RootState> = {
   [EQUIPMENT_TYPES_FETCH_ALL]: ({ commit }) => {
     return new Promise((resolve, reject) => {
       axios
-        .get('equipmentType')
+        .get('equipmentType?all=true')
         .then((response) => getResponseData<EquipmentType[]>(response))
         .then((equipmentTypes) => {
           commit(EQUIPMENT_TYPES_SET_ALL, equipmentTypes);

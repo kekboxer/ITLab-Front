@@ -11,26 +11,7 @@
       </template>
     </autocomplete-input-component>
 
-    <b-modal v-model="modalVisible" @keydown.native.enter="onSubmitModal">
-      <template slot="modal-title">
-        Новый тип события
-      </template>
-
-      <b-form-group id="type-title-group" label="Название" label-for="type-title-input">
-        <b-form-input id="type-title-input" type="text" v-model.trim="modalData.title" :state="!$v.modalData.title.$invalid">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="type-description-group" label="Описание" label-for="type-description-input">
-        <b-form-input id="type-description-input" type="text" v-model.trim="modalData.description">
-        </b-form-input>
-      </b-form-group>
-
-      <template slot="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Подтвердить</button>
-      </template>
-    </b-modal>
+    <event-type-modal-component v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -41,39 +22,19 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
+import EventTypeModalComponent from '@/components/EventTypeModalComponent.vue';
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
-
-import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
   EventType,
   EventTypeDefault,
-  EVENT_TYPE_SEARCH,
-  EVENT_TYPE_COMMIT
+  EVENT_TYPE_SEARCH
 } from '@/modules/events';
-
-enum ModalState {
-  Hidden,
-  Edit,
-  InProcess,
-  Error
-}
 
 @Component({
   components: {
+    'event-type-modal-component': EventTypeModalComponent,
     'autocomplete-input-component': AutocompleteInputComponent
-  },
-  mixins: [validationMixin],
-  validations() {
-    return {
-      modalData: {
-        title: {
-          required,
-          minLength: minLength(1)
-        }
-      }
-    };
   }
 })
 export default class EventTypeSelectionComponent extends Vue {
@@ -89,8 +50,8 @@ export default class EventTypeSelectionComponent extends Vue {
 
   public eventTypeSelected: EventType = new EventTypeDefault();
 
+  public modalVisible: boolean = false;
   public modalData: EventType = new EventTypeDefault();
-  public modalState: ModalState = ModalState.Hidden;
 
   // Component methods //
   //////////////////////
@@ -126,43 +87,18 @@ export default class EventTypeSelectionComponent extends Vue {
   // Modal window methods //
   /////////////////////////
 
-  get modalVisible(): boolean {
-    return this.modalState !== ModalState.Hidden;
-  }
-  set modalVisible(show: boolean) {
-    if (!show) {
-      this.modalState = ModalState.Hidden;
-    }
-  }
+  public onSubmitModal(eventType: EventType) {
+    this.eventTypeSelected = eventType;
+    this.onInput();
 
-  public onSubmitModal() {
-    if (
-      (this.$v.modalData && this.$v.modalData.$invalid) ||
-      this.isModalInProcess
-    ) {
-      return;
-    }
-
-    this.modalState = ModalState.InProcess;
-    this.$store
-      .dispatch(EVENT_TYPE_COMMIT, this.modalData)
-      .then((eventType: EventType) => {
-        this.eventTypeSelected = eventType;
-        this.onInput();
-
-        this.modalState = ModalState.Hidden;
-        this.modalData = new EventTypeDefault();
-      })
-      .catch();
+    this.modalVisible = false;
   }
 
   public showModal(search: string) {
+    this.modalData = new EventTypeDefault();
     this.modalData.title = search;
-    this.modalState = ModalState.Edit;
-  }
 
-  get isModalInProcess(): boolean {
-    return this.modalState === ModalState.InProcess;
+    this.modalVisible = true;
   }
 }
 </script>

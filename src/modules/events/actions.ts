@@ -223,7 +223,7 @@ export const actions: ActionTree<EventsState, RootState> = {
   [EVENT_TYPES_FETCH_ALL]: ({ commit }) => {
     return new Promise((resolve, reject) => {
       axios
-        .get('eventType')
+        .get('eventType?all=true')
         .then((response) => getResponseData<EventType[]>(response))
         .then((eventTypes) => {
           commit(EVENT_TYPES_SET_ALL, eventTypes);
