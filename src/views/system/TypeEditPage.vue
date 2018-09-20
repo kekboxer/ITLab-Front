@@ -9,51 +9,71 @@
       <b-tabs>
         <b-tab title="События" active>
           <br>
-          <b-card v-for="eventType in eventTypes" :key="eventType.id" class="mb-1">
-            <b-row>
-              <b-col>
-                <b-row style="line-height: 31px">
-                  <b-col cols="12" md="6">
-                    <b>{{ eventType.title }}</b>
+          <b-row>
+            <b-col cols="12" sm="auto" class="ml-auto">
+              <b-button variant="success" class="w-100" @click="showEventTypeModal()">Добавить</b-button>
+            </b-col>
+          </b-row>
+          <br>
+          <b-row>
+            <b-col>
+              <b-card v-for="eventType in eventTypes" :key="eventType.id" class="mb-1">
+                <b-row>
+                  <b-col>
+                    <b-row style="line-height: 31px">
+                      <b-col cols="12" md="6">
+                        <b>{{ eventType.title }}</b>
+                      </b-col>
+                      <b-col cols="12" md="6">
+                        {{ eventType.description }}
+                      </b-col>
+                    </b-row>
                   </b-col>
-                  <b-col cols="12" md="6">
-                    {{ eventType.description }}
+                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
+                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEventType(eventType)">
+                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                      <span class="d-inline d-md-none">Удалить</span>
+                    </b-button>
                   </b-col>
                 </b-row>
-              </b-col>
-              <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
-                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEventType(eventType)">
-                  <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
-                  <span class="d-inline d-md-none">Удалить</span>
-                </b-button>
-              </b-col>
-            </b-row>
-          </b-card>
+              </b-card>
+            </b-col>
+          </b-row>
         </b-tab>
         <b-tab title="Оборудование">
           <br>
-          <b-card v-for="equipmentType in equipmentTypes" :key="equipmentType.id" class="mb-1">
-            <b-row>
-              <b-col>
-                <b-row style="line-height: 31px">
-                  <b-col cols="12" md="6">
-                    <b>{{ equipmentType.title }}</b>
+          <b-row>
+            <b-col cols="12" sm="auto" class="ml-auto">
+              <b-button variant="success" class="w-100" @click="showEquipmentTypeModal()">Добавить</b-button>
+            </b-col>
+          </b-row>
+          <br>
+          <b-row>
+            <b-col>
+              <b-card v-for="equipmentType in equipmentTypes" :key="equipmentType.id" class="mb-1">
+                <b-row>
+                  <b-col>
+                    <b-row style="line-height: 31px">
+                      <b-col cols="12" md="6">
+                        <b>{{ equipmentType.title }}</b>
+                      </b-col>
+                      <b-col cols="12" md="6">
+                        {{ equipmentType.description }}
+                      </b-col>
+                    </b-row>
                   </b-col>
-                  <b-col cols="12" md="6">
-                    {{ equipmentType.description }}
+                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
+                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEquipmentType(equipmentType)">
+                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                      <span class="d-inline d-md-none">Удалить</span>
+                    </b-button>
                   </b-col>
                 </b-row>
-              </b-col>
-              <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
-                <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEquipmentType(equipmentType)">
-                  <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
-                  <span class="d-inline d-md-none">Удалить</span>
-                </b-button>
-              </b-col>
-            </b-row>
-          </b-card>
+              </b-card>
+            </b-col>
+          </b-row>
         </b-tab>
       </b-tabs>
     </page-content-component>

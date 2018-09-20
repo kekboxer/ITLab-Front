@@ -73,7 +73,7 @@ export const mutations: MutationTree<EquipmentState> = {
       (equipmentType) => equipmentType.id === equipmentTypeId
     );
     if (equipmentTypeIndex !== -1) {
-      Vue.delete(state.equipment, equipmentTypeIndex);
+      Vue.delete(state.equipmentTypes, equipmentTypeIndex);
     }
   }
 };
