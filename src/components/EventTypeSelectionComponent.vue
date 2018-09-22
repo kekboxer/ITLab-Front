@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" v-model="eventTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -40,6 +40,8 @@ export default class EventTypeSelectionComponent extends Vue {
   @Prop() public value?: EventType;
 
   @Prop() public state?: boolean;
+
+  @Prop() public filter?: (eventType: EventType) => boolean;
 
   // Properties //
   ///////////////

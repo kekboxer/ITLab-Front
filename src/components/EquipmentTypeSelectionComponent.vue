@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" v-model="equipmentTypeSelected" @input="onInput">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -40,6 +40,8 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   @Prop() public value?: EquipmentType;
 
   @Prop() public state?: boolean;
+
+  @Prop() public filter?: (equipmentType: EquipmentType) => boolean;
 
   // Properties //
   ///////////////

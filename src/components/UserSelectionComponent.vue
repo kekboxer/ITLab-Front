@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="user-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :state="state" :without-adding="true" :can-clear="true">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :state="state" :filter="filter" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
         <b>{{ data.item.email}}</b><br>{{ data.item.firstName }} {{ data.item.lastName }}
       </div>
@@ -32,6 +32,8 @@ export default class UserSelectionComponent extends Vue {
   @Prop() public value?: User;
 
   @Prop() public state?: boolean;
+
+  @Prop() public filter?: (user: User) => boolean;
 
   // Properties //
   ///////////////

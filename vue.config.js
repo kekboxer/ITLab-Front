@@ -1,3 +1,10 @@
 module.exports = {
-  productionSourceMap: false
+  productionSourceMap: false,
+  configureWebpack: (config) => {
+    optimization: {
+      splitChunks: {
+        chunks: 'all';
+      }
+    }
+  }
 };

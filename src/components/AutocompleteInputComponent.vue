@@ -17,7 +17,8 @@
       <template v-if="withoutAdding !== true">
         <li class="add-item" v-show="searchString.length > 0" v-if="!checkExistence" @mousedown="preventBlur" @click="onAdd()">
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
-            Добавить <b>{{ searchString }}</b>
+            Добавить
+            <b>{{ searchString }}</b>
           </slot>
         </li>
       </template>
@@ -64,7 +65,8 @@ export default class AutocompleteInputComponent extends Vue {
   @Prop({
     default: (v: object) => {
       return v ? v.toString() : '';
-    }
+    },
+    type: Function
   })
   public stringify?: (value: object) => string;
 
@@ -73,12 +75,20 @@ export default class AutocompleteInputComponent extends Vue {
       if (cb) {
         cb([]);
       }
-    }
+    },
+    type: Function
   })
   public fetch?: (s: string, cb: (arr: object[]) => void) => void;
 
   @Prop({
-    default: (title: string) => undefined
+    default: (e: object): boolean => true,
+    type: Function
+  })
+  public filter?: (e: object) => boolean;
+
+  @Prop({
+    default: (title: string) => undefined,
+    type: Function
   })
   public add?: (title: string) => void;
 
@@ -121,7 +131,9 @@ export default class AutocompleteInputComponent extends Vue {
     this.resultsHidden = false;
     if (this.fetch) {
       this.fetch(this.searchString, (results: object[]) => {
-        this.results = results;
+        this.results = this.filter
+          ? results.filter((e) => this.filter && this.filter(e))
+          : results;
       });
     }
   }

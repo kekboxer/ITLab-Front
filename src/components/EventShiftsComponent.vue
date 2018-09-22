@@ -113,7 +113,7 @@
                         </b-col>
                       </b-row>
                     </li>
-                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(place)">
+                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(shift, place)">
                       Добавить оборудование
                     </li>
                   </div>
@@ -207,7 +207,7 @@
 
       <template v-if="fieldsVisivility.equipment">
         <b-form-group label="Оборудование">
-          <equipment-selection-component v-model="placeEquipmentModalData" :state="!$v.placeEquipmentModalData.$invalid"></equipment-selection-component>
+          <equipment-selection-component v-model="placeEquipmentModalData" :filter="equipmentSelectionFilter" :state="!$v.placeEquipmentModalData.$invalid"></equipment-selection-component>
         </b-form-group>
       </template>
 
@@ -259,7 +259,12 @@ import {
   EVENT_ROLES_FETCH_ALL
 } from '@/modules/events';
 
-import { Equipment, EquipmentDefault, equipment } from '@/modules/equipment';
+import {
+  Equipment,
+  EquipmentDefault,
+  equipment,
+  EquipmentType
+} from '@/modules/equipment';
 import { UserDefault, User } from '@/modules/users';
 import { PROFILE_WISH } from '@/modules/profile';
 import { getNounDeclension } from '@/stuff';
@@ -370,6 +375,8 @@ export default class EventShiftsComponent extends Vue {
     value: EventRole;
     text: string;
   }> = [];
+
+  public equipmentSelectionFilter?: (equipment: Equipment) => boolean;
 
   // Modal data //
   ///////////////
@@ -848,11 +855,12 @@ export default class EventShiftsComponent extends Vue {
   // Place equipment handlers //
   /////////////////////////////
 
-  public onAddPlaceEquipment(place: EventPlace) {
+  public onAddPlaceEquipment(shift: EventShift, place: EventPlace) {
     if (
       !this.placeEquipmentModalData ||
       (this.$v.placeEquipmentModalData &&
-        this.$v.placeEquipmentModalData.$invalid)
+        this.$v.placeEquipmentModalData.$invalid) ||
+      !this.canAddEquipment(shift, place, this.placeEquipmentModalData)
     ) {
       return;
     }
@@ -883,10 +891,23 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public showPlaceEquipmentModal(place: EventPlace) {
+  public showPlaceEquipmentModal(shift: EventShift, place: EventPlace) {
+    this.equipmentSelectionFilter = (equipment: Equipment) =>
+      this.canAddEquipment(shift, place, equipment);
+
     this.placeEquipmentModalData = null;
-    this.submitModal = () => this.onAddPlaceEquipment(place);
+    this.submitModal = () => this.onAddPlaceEquipment(shift, place);
     this.modalState = ModalState.EquipmentAdding;
+  }
+
+  public canAddEquipment(
+    shift: EventShift,
+    place: EventPlace,
+    equipment: Equipment
+  ) {
+    return !shift.places.some((p) =>
+      p.equipment.some((e) => e.delete !== true && e.id === equipment.id)
+    );
   }
 
   // Application handlers
