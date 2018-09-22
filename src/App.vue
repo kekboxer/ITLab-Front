@@ -46,7 +46,6 @@ export default class App extends Vue {
   ////////////
 
   public updateBrowserTitleColor() {
-    console.log('test123');
     const color = this.theme === 'theme-dark' ? '#333333' : '#ffffff';
 
     const metaList: string[] = [

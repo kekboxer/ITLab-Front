@@ -31,7 +31,7 @@
                   </b-col>
                   <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
                     <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEventType(eventType)">
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventType(eventType)">
                       <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
@@ -65,7 +65,7 @@
                   </b-col>
                   <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
                     <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="removeEquipmentType(equipmentType)">
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEquipmentType(equipmentType)">
                       <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
@@ -159,7 +159,11 @@ export default class TypeEditPage extends Vue {
     this.eventTypeModalVisible = true;
   }
 
-  public removeEventType(eventType: EventType) {
+  public onRemoveEventType(eventType: EventType) {
+    if (!confirm('Вы действительно хотите удалить тип события?')) {
+      return;
+    }
+
     this.$store.dispatch(EVENT_TYPE_DELETE, eventType);
   }
 
@@ -176,7 +180,11 @@ export default class TypeEditPage extends Vue {
     this.equipmentTypeModalVisible = true;
   }
 
-  public removeEquipmentType(equipmentType: EquipmentType) {
+  public onRemoveEquipmentType(equipmentType: EquipmentType) {
+    if (!confirm('Вы действительно хотите удалить тип оборудования?')) {
+      return;
+    }
+
     this.$store.dispatch(EQUIPMENT_TYPE_DELETE, equipmentType);
   }
 

@@ -149,7 +149,8 @@ export const actions: ActionTree<EventsState, RootState> = {
                     return {
                       delete: participant.delete,
                       id: participant.user.id,
-                      roleId: participant.role && participant.role.id
+                      eventRoleId:
+                        participant.eventRole && participant.eventRole.id
                     };
                   }),
                   ...place.participants.reduce((acc: any[], participant) => {

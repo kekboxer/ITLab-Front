@@ -105,14 +105,18 @@ export const actions: ActionTree<ProfileState, RootState> = {
 
   [PROFILE_WISH]: (
     {},
-    { place, role }: { place: EventPlace | string; role: EventRole | string }
+    {
+      place,
+      eventRole
+    }: { place: EventPlace | string; eventRole: EventRole | string }
   ) => {
     return new Promise((resolve, reject) => {
       const placeId = typeof place === 'string' ? place : place.id;
-      const roleId = typeof role === 'string' ? role : role.id;
+      const eventRoleId =
+        typeof eventRole === 'string' ? eventRole : eventRole.id;
 
       axios
-        .post(`event/wish/${placeId}/${roleId}`)
+        .post(`event/wish/${placeId}/${eventRoleId}`)
         .then((response) => {
           const body = response.data;
 

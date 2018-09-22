@@ -67,7 +67,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.role.title }}</span><br>
+                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.eventRole.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -83,7 +83,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.role.title }}</span><br>
+                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.eventRole.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -201,7 +201,7 @@
         </b-form-group>
 
         <b-form-group label="Роль">
-          <b-form-select v-model="placeParticipantData.role" :state="!$v.placeParticipantData.role.$invalid" :options="participantRoleOptions"></b-form-select>
+          <b-form-select v-model="placeParticipantData.eventRole" :state="!$v.placeParticipantData.eventRole.$invalid" :options="eventRoleOptions"></b-form-select>
         </b-form-group>
       </template>
 
@@ -213,7 +213,7 @@
 
       <template v-if="fieldsVisivility.application">
         <b-form-group label="Роль">
-          <b-form-select v-model="applicationModalData" :options="participantRoleOptions" :state="!$v.applicationModalData.$invalid"></b-form-select>
+          <b-form-select v-model="applicationModalData" :options="eventRoleOptions" :state="!$v.applicationModalData.$invalid"></b-form-select>
         </b-form-group>
       </template>
 
@@ -326,9 +326,9 @@ const shiftRangeModalValidator = (component: EventShiftsComponent) => {
           required,
           selected: (user?: User) => user && user.id !== ''
         },
-        role: {
+        eventRole: {
           required,
-          selected: (role?: EventRole) => role && role.id !== ''
+          selected: (eventRole?: EventRole) => eventRole && eventRole.id !== ''
         }
       },
       placeEquipmentModalData: {
@@ -337,7 +337,7 @@ const shiftRangeModalValidator = (component: EventShiftsComponent) => {
       },
       applicationModalData: {
         required,
-        selected: (role?: EventRole) => role && role.id !== ''
+        selected: (eventRole?: EventRole) => eventRole && eventRole.id !== ''
       }
     };
   }
@@ -366,7 +366,7 @@ export default class EventShiftsComponent extends Vue {
 
   public modalState: ModalState = ModalState.Hidden;
 
-  public participantRoleOptions: Array<{
+  public eventRoleOptions: Array<{
     value: EventRole;
     text: string;
   }> = [];
@@ -402,8 +402,8 @@ export default class EventShiftsComponent extends Vue {
     });
 
     this.$store.dispatch(EVENT_ROLES_FETCH_ALL).then((result: EventRole[]) => {
-      const participantRoles: EventRole[] = result;
-      this.participantRoleOptions = participantRoles.map((v) => {
+      const eventRoles: EventRole[] = result;
+      this.eventRoleOptions = eventRoles.map((v) => {
         return {
           value: v,
           text: v.title
@@ -805,15 +805,15 @@ export default class EventShiftsComponent extends Vue {
 
     const participant = new EventParticipantDefault();
     participant.user = this.placeParticipantData.user;
-    participant.role = this.placeParticipantData.role;
+    participant.eventRole = this.placeParticipantData.eventRole;
 
     const existingParticipantIndex = place.invited.findIndex(
       (p) =>
         p.user.id === participant.user.id &&
-        (p.role === participant.role ||
-          (p.role != null &&
-            participant.role != null &&
-            p.role.id === participant.role.id))
+        (p.eventRole === participant.eventRole ||
+          (p.eventRole != null &&
+            participant.eventRole != null &&
+            p.eventRole.id === participant.eventRole.id))
     );
 
     if (existingParticipantIndex === -1) {
@@ -897,7 +897,7 @@ export default class EventShiftsComponent extends Vue {
     }
 
     this.$store
-      .dispatch(PROFILE_WISH, { place, role: this.applicationModalData })
+      .dispatch(PROFILE_WISH, { place, eventRole: this.applicationModalData })
       .then((response) => {
         this.$notify({
           title: 'Заявка отправлена',

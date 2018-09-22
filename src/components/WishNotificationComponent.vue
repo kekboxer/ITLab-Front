@@ -25,7 +25,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ data.role.title }}</b>
+            <b>{{ data.eventRole.title }}</b>
           </b-col>
         </b-row>
         <b-row>

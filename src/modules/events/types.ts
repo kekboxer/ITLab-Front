@@ -76,7 +76,7 @@ export class EventRoleDefault implements EventRole {
 
 export interface EventParticipant {
   user: User;
-  role: EventRole;
+  eventRole: EventRole;
 
   delete?: boolean;
   new?: boolean;
@@ -84,7 +84,7 @@ export interface EventParticipant {
 
 export class EventParticipantDefault implements EventParticipant {
   public user: User = new UserDefault();
-  public role: EventRole = new EventRoleDefault();
+  public eventRole: EventRole = new EventRoleDefault();
 }
 
 // EventEquipment //

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import 'globals';
 
 export class Globals {
