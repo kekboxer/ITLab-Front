@@ -39,7 +39,7 @@
             </template>
             <template slot="actions" slot-scope="data" style="overflow: auto">
               <span class="actions-cell">
-                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
+                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right" v-if="canEdit">
                   Изменить
                 </b-button>
                 <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
@@ -200,6 +200,10 @@ export default class EquipmentPage extends Vue {
         };
       }
     );
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEquipment');
   }
 }
 

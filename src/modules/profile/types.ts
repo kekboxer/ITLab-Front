@@ -1,4 +1,4 @@
-import { User } from '@/modules/users';
+import { AccessToken } from '@/stuff';
 
 // local storage
 export const LOCAL_STORAGE_PROFILE_ID = 'user-id';
@@ -27,6 +27,7 @@ export const PROFILE_GET = 'PROFILE_GET';
 export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
 export const PROFILE_REFRESH_TOKEN = 'PROFILE_REFRESH_TOKEN';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
+export const PROFILE_HAS_ROLE = 'PROFILE_HAS_ROLE';
 
 // AuthorizationData //
 //////////////////////
@@ -60,13 +61,6 @@ export class RegistrationDataDefault implements RegistrationData {
   public accessToken: string = '';
 }
 
-// AccessToken //
-////////////////
-
-export interface AccessToken {
-  exp: number;
-}
-
 // UserSession //
 ////////////////
 
@@ -88,8 +82,7 @@ export interface Settings {
 
 export interface ProfileState {
   profileId?: string;
-  accessToken?: string;
-  accessTokenDecoded?: AccessToken;
+  accessToken?: AccessToken;
   refreshToken?: string;
 
   settings: Settings;

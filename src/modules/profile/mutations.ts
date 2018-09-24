@@ -28,13 +28,7 @@ export const mutations: MutationTree<ProfileState> = {
   },
 
   [PROFILE_ACCESS_TOKEN_SET]: (state, token?: string) => {
-    state.accessToken = token;
-
-    if (token) {
-      state.accessTokenDecoded = decodeJWT(state.accessToken);
-    } else {
-      state.accessTokenDecoded = undefined;
-    }
+    state.accessToken = decodeJWT(token) || undefined;
 
     if (token) {
       localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, token);

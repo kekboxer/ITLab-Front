@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Событие&nbsp;
-        <b-button variant="warning" :to="'/events/edit/' + event.id">Изменить</b-button>
+        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEdit">Изменить</b-button>
       </template>
 
       <b-row>
@@ -67,6 +67,7 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
 import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
+import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 @Component({
   components: {
@@ -154,6 +155,10 @@ export default class EventDetailPage extends Vue {
     }
 
     return result;
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEvent');
   }
 }
 

@@ -18,7 +18,7 @@
             </span>
           </strong>
         </b-col>
-        <b-col cols="auto">
+        <b-col cols="auto" v-if="canEdit">
           <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + event.id">Изменить</b-button>
         </b-col>
       </b-row>
@@ -76,6 +76,7 @@ import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/eye-slash';
 
 import { Event } from '@/modules/events';
+import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 enum State {
   Default,
@@ -178,6 +179,10 @@ export default class EventItemComponent extends Vue {
     return moment
       .duration(this.event.totalDurationInMinutes, 'minutes')
       .humanize();
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEvent');
   }
 }
 </script>

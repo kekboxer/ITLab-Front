@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess">
       <template slot="header">
         Пользователи
-        <b-button variant="success" @click="showModal">Пригласить</b-button>
+        <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
       </template>
 
       <b-card-group columns class="mb-3">
@@ -149,6 +149,10 @@ export default class UsersPage extends Vue {
 
   get profileId(): string {
     return this.$store.getters[PROFILE_GET];
+  }
+
+  get canInvite(): boolean {
+    return this.$g.hasRole('CanInviteToSystem');
   }
 }
 
