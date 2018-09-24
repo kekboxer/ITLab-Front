@@ -1,5 +1,5 @@
-import { Equipment } from '@/modules/equipment';
-import { User, UserDefault } from '@/modules/users';
+import { IEquipment } from '@/modules/equipment';
+import { IUser, UserDefault } from '@/modules/users';
 import moment from 'moment-timezone';
 
 // actions
@@ -44,53 +44,42 @@ export const EVENT_ROLES_GET_ONE = 'EVENT_ROLES_GET_ONE';
 // EventType //
 //////////////
 
-export interface EventType {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export class EventTypeDefault implements EventType {
+export class EventTypeDefault {
   public id: string = '';
   public title: string = '';
   public description: string = '';
 }
+
+export interface IEventType extends EventTypeDefault {}
 
 // EventRole //
 //////////////
 
-export interface EventRole {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export class EventRoleDefault implements EventRole {
+export class EventRoleDefault {
   public id: string = '';
   public title: string = '';
   public description: string = '';
 }
 
+export interface IEventRole extends EventRoleDefault {}
+
 // EventParticipant //
 /////////////////////
 
-export interface EventParticipant {
-  user: User;
-  eventRole: EventRole;
+export class EventParticipantDefault {
+  public user: IUser = new UserDefault();
+  public eventRole: IEventRole = new EventRoleDefault();
 
-  delete?: boolean;
-  new?: boolean;
+  public delete?: boolean;
+  public new?: boolean;
 }
 
-export class EventParticipantDefault implements EventParticipant {
-  public user: User = new UserDefault();
-  public eventRole: EventRole = new EventRoleDefault();
-}
+export interface IEventParticipant extends EventParticipantDefault {}
 
 // EventEquipment //
 ///////////////////
 
-export interface EventEquipment extends Equipment {
+export interface IEventEquipment extends IEquipment {
   delete?: boolean;
   new?: boolean;
 }
@@ -98,46 +87,25 @@ export interface EventEquipment extends Equipment {
 // EventPlace //
 ///////////////
 
-export interface EventPlace {
-  id: string;
-  targetParticipantsCount: number;
-  description: string;
-
-  equipment: EventEquipment[];
-
-  participants: EventParticipant[];
-  invited: EventParticipant[];
-  wishers: EventParticipant[];
-
-  delete?: boolean;
-  new?: boolean;
-}
-
-export class EventPlaceDefault implements EventPlace {
+export class EventPlaceDefault {
   public id: string = '';
   public targetParticipantsCount: number = 0;
   public description: string = '';
 
-  public equipment: EventEquipment[] = [];
+  public equipment: IEventEquipment[] = [];
 
-  public participants: EventParticipant[] = [];
-  public invited: EventParticipant[] = [];
-  public wishers: EventParticipant[] = [];
+  public participants: IEventParticipant[] = [];
+  public invited: IEventParticipant[] = [];
+  public wishers: IEventParticipant[] = [];
+
+  public delete?: boolean;
+  public new?: boolean;
 }
+
+export interface IEventPlace extends EventPlaceDefault {}
 
 // EventShift //
 ///////////////
-
-export interface EventShift {
-  id: string;
-  beginTime: Date;
-  endTime: Date;
-  description: string;
-  places: EventPlace[];
-
-  delete?: boolean;
-  new?: boolean;
-}
 
 const getDefaultDate = () => {
   return moment(moment.now())
@@ -145,50 +113,48 @@ const getDefaultDate = () => {
     .toDate();
 };
 
-export class EventShiftDefault implements EventShift {
+export class EventShiftDefault {
   public id: string = '';
   public beginTime: Date = getDefaultDate();
   public endTime: Date = getDefaultDate();
   public description: string = '';
-  public places: EventPlace[] = [new EventPlaceDefault()];
+  public places: IEventPlace[] = [new EventPlaceDefault()];
+
+  public delete?: boolean;
+  public new?: boolean;
 }
+
+export interface IEventShift extends EventShiftDefault {}
 
 // Event //
 //////////
 
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  address: string;
-  eventType?: EventType;
-
-  // List data
-  beginTime?: Date;
-  totalDurationInMinutes?: number;
-
-  targetParticipantsCount?: number;
-  currentParticipantsCount?: number;
-  participating?: boolean;
-
-  // Shifts data
-  shifts?: EventShift[];
-}
-
-export class EventDefault implements Event {
+export class EventDefault {
   public id: string = '';
   public title: string = '';
   public description: string = '';
   public address: string = '';
+  public eventType?: IEventType;
 
-  public shifts: EventShift[] = [new EventShiftDefault()];
+  // List data
+  public beginTime?: Date;
+  public totalDurationInMinutes?: number;
+
+  public targetParticipantsCount?: number;
+  public currentParticipantsCount?: number;
+  public participating?: boolean;
+
+  // Shifts data
+  public shifts: IEventShift[] = [new EventShiftDefault()];
 }
+
+export interface IEvent extends EventDefault {}
 
 // State //
 //////////
 
-export interface EventsState {
-  events: Event[];
-  eventTypes: EventType[];
-  eventRoles: EventRole[];
+export interface IEventsState {
+  events: IEvent[];
+  eventTypes: IEventType[];
+  eventRoles: IEventRole[];
 }

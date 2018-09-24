@@ -4,9 +4,9 @@ import { Vue } from 'vue-property-decorator';
 import { setOneElement } from '@/stuff';
 
 import {
-  EquipmentState,
-  Equipment,
-  EquipmentType,
+  IEquipmentState,
+  IEquipment,
+  IEquipmentType,
   EQUIPMENT_SET_ALL,
   EQUIPMENT_SET_ONE,
   EQUIPMENT_REMOVE_ONE,
@@ -15,10 +15,10 @@ import {
   EQUIPMENT_TYPES_REMOVE_ONE
 } from './types';
 
-export const mutations: MutationTree<EquipmentState> = {
+export const mutations: MutationTree<IEquipmentState> = {
   [EQUIPMENT_SET_ALL]: (
     state,
-    payload: Equipment[] | { equipment: Equipment[]; merge?: boolean }
+    payload: IEquipment[] | { equipment: IEquipment[]; merge?: boolean }
   ) => {
     const equipment = payload instanceof Array ? payload : payload.equipment;
     const merge = payload instanceof Array ? false : payload.merge === true;
@@ -32,7 +32,7 @@ export const mutations: MutationTree<EquipmentState> = {
     }
   },
 
-  [EQUIPMENT_SET_ONE]: (state, equipment: Equipment) => {
+  [EQUIPMENT_SET_ONE]: (state, equipment: IEquipment) => {
     setOneElement(state.equipment, equipment);
   },
 
@@ -48,8 +48,8 @@ export const mutations: MutationTree<EquipmentState> = {
   [EQUIPMENT_TYPES_SET_ALL]: (
     state,
     payload:
-      | EquipmentType[]
-      | { equipmentTypes: EquipmentType[]; merge?: boolean }
+      | IEquipmentType[]
+      | { equipmentTypes: IEquipmentType[]; merge?: boolean }
   ) => {
     const equipmentTypes =
       payload instanceof Array ? payload : payload.equipmentTypes;
@@ -64,7 +64,7 @@ export const mutations: MutationTree<EquipmentState> = {
     }
   },
 
-  [EQUIPMENT_TYPES_SET_ONE]: (state, equipmentType: EquipmentType) => {
+  [EQUIPMENT_TYPES_SET_ONE]: (state, equipmentType: IEquipmentType) => {
     setOneElement(state.equipmentTypes, equipmentType);
   },
 

@@ -1,11 +1,10 @@
 import {
-  EventParticipant,
-  EventType,
+  IEventType,
   EventTypeDefault,
-  EventRole,
+  IEventRole,
   EventRoleDefault
 } from '@/modules/events';
-import { User } from '@/modules/users';
+import { IUser } from '@/modules/users';
 
 // actions
 export const NOTIFICATION_INVITATION_ACCEPT = 'NOTIFICATION_INVITATION_ACCEPT';
@@ -33,39 +32,39 @@ export const NOTIFICATION_INVITATIONS_GET_ALL =
 export const NOTIFICATION_WISHES_GET_ALL = 'NOTIFICATION_WISHES_GET_ALL';
 export const NOTIFICATIONS_GET_COUNT = 'NOTIFICATIONS_GET_COUNT';
 
-// EventNotification //
-//////////////////////
-
-export class EventNotification {
+class Notification {
   public id: string = '';
-  public title: string = '';
-  public eventType: EventType = new EventTypeDefault();
-  public beginTime: Date = new Date(0);
-  public placeId: string = '';
   public creationTime: Date = new Date(0);
-  public role: EventRole = new EventRoleDefault();
 }
 
-// Invitation //
-///////////////
+class EventNotification extends Notification {
+  public title: string = '';
+  public eventType: IEventType = new EventTypeDefault();
+  public beginTime: Date = new Date(0);
+  public placeId: string = '';
+  public role: IEventRole = new EventRoleDefault();
+}
 
-export interface Invitation extends EventNotification {
+// InvitationNotification //
+///////////////////////////
+
+export interface IInvitationNotification extends EventNotification {
   shiftDurationInMinutes: number;
 }
 
-// Wish //
-/////////
+// WishNotification //
+/////////////////////
 
-export interface Wish extends EventNotification {
+export interface IWishNotification extends EventNotification {
   currentParticipantsCount: number;
   targetParticipantsCount: number;
-  user: User;
+  user: IUser;
 }
 
 // State //
 //////////
 
-export interface NotificationsState {
-  eventInvitations: Invitation[];
-  eventWishApplications: Wish[];
+export interface INotificationsState {
+  eventInvitations: IInvitationNotification[];
+  eventWishApplications: IWishNotification[];
 }

@@ -6,10 +6,9 @@ import axios from 'axios';
 import { getResponseData } from '@/stuff';
 
 import {
-  NotificationsState,
-  EventNotification,
-  Invitation,
-  Wish,
+  INotificationsState,
+  IInvitationNotification,
+  IWishNotification,
   NOTIFICATION_INVITATION_ACCEPT,
   NOTIFICATION_INVITATION_REJECT,
   NOTIFICATION_INVITATIONS_FETCH,
@@ -25,7 +24,9 @@ import {
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
-const fixDates = (notification: EventNotification) => {
+const fixDates = (
+  notification: IInvitationNotification | IWishNotification
+) => {
   if (notification.beginTime) {
     notification.beginTime = moment(
       notification.beginTime,
@@ -39,8 +40,11 @@ const fixDates = (notification: EventNotification) => {
   }
 };
 
-export const actions: ActionTree<NotificationsState, RootState> = {
-  [NOTIFICATION_INVITATION_ACCEPT]: ({ commit }, invitation: Invitation) => {
+export const actions: ActionTree<INotificationsState, RootState> = {
+  [NOTIFICATION_INVITATION_ACCEPT]: (
+    { commit },
+    invitation: IInvitationNotification
+  ) => {
     return new Promise((resolve, reject) => {
       axios
         .post(`event/invitation/${invitation.placeId}/accept`)
@@ -55,7 +59,10 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     });
   },
 
-  [NOTIFICATION_INVITATION_REJECT]: ({ commit }, invitation: Invitation) => {
+  [NOTIFICATION_INVITATION_REJECT]: (
+    { commit },
+    invitation: IInvitationNotification
+  ) => {
     return new Promise((resolve, reject) => {
       axios
         .post(`event/invitation/${invitation.placeId}/reject`)
@@ -74,7 +81,7 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/applications/invitations')
-        .then((response) => getResponseData<Invitation[]>(response))
+        .then((response) => getResponseData<IInvitationNotification[]>(response))
         .then((eventInvitations) => {
           eventInvitations.forEach(fixDates);
           commit(NOTIFICATION_INVITATIONS_SET_ALL, eventInvitations);
@@ -87,7 +94,10 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     });
   },
 
-  [NOTIFICATION_WISH_ACCEPT]: ({ commit }, wishApplication: Wish) => {
+  [NOTIFICATION_WISH_ACCEPT]: (
+    { commit },
+    wishApplication: IWishNotification
+  ) => {
     return new Promise((resolve, reject) => {
       axios
         .post(
@@ -106,7 +116,10 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     });
   },
 
-  [NOTIFICATION_WISH_REJECT]: ({ commit }, wishApplication: Wish) => {
+  [NOTIFICATION_WISH_REJECT]: (
+    { commit },
+    wishApplication: IWishNotification
+  ) => {
     return new Promise((resolve, reject) => {
       axios
         .post(
@@ -129,7 +142,7 @@ export const actions: ActionTree<NotificationsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/wishers')
-        .then((response) => getResponseData<Wish[]>(response))
+        .then((response) => getResponseData<IWishNotification[]>(response))
         .then((wishApplications) => {
           wishApplications.forEach(fixDates);
           commit(NOTIFICATION_WISHES_SET_ALL, wishApplications);

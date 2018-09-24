@@ -47,8 +47,8 @@ import EventItemComponent from '@/components/EventItemComponent.vue';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import {
-  Event,
-  EventType,
+  IEvent,
+  IEventType,
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
 } from '@/modules/events';

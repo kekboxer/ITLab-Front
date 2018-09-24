@@ -5,7 +5,7 @@ import { actions, setAxiosAuthHeader } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 import {
-  ProfileState,
+  IProfileState,
   LOCAL_STORAGE_PROFILE_ID,
   LOCAL_STORAGE_ACCESS_TOKEN,
   LOCAL_STORAGE_REFRESH_TOKEN,
@@ -36,14 +36,14 @@ const getStoredData = (): {
   };
 };
 
-export const state: ProfileState = {
+export const state: IProfileState = {
   ...getStoredData(),
   settings: {
     theme: localStorage.getItem(LOCAL_STORAGE_SETTINGS_THEME) || 'light'
   }
 };
 
-export const profile: Module<ProfileState, RootState> = {
+export const profile: Module<IProfileState, RootState> = {
   state,
   getters,
   actions,

@@ -31,40 +31,34 @@ export const EQUIPMENT_TYPES_GET_ONE = 'EQUIPMENT_TYPES_GET_ONE';
 // EquipmentType //
 //////////////////
 
-export interface EquipmentType {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export class EquipmentTypeDefault implements EquipmentType {
+export class EquipmentTypeDefault {
   public id: string = '';
   public title: string = '';
   public description: string = '';
 }
 
+export interface IEquipmentType extends EquipmentTypeDefault {}
+
 // Equipment //
 //////////////
 
-export interface Equipment {
-  id: string;
-  equipmentTypeId?: string;
-  equipmentType?: EquipmentType;
-  serialNumber: string;
-  description?: string;
-  ownerId?: string;
+export class EquipmentDefault {
+  public id: string = '';
+  public serialNumber: string = '';
+
+  public equipmentType?: IEquipmentType;
+  public equipmentTypeId?: string;
+
+  public description?: string;
+  public ownerId?: string;
 }
 
-export class EquipmentDefault implements Equipment {
-  public id: string = '';
-  public equipmentTypeId: string = '';
-  public serialNumber: string = '';
-}
+export interface IEquipment extends EquipmentDefault {}
 
 // State //
 //////////
 
-export interface EquipmentState {
-  equipment: Equipment[];
-  equipmentTypes: EquipmentType[];
+export interface IEquipmentState {
+  equipment: IEquipment[];
+  equipmentTypes: IEquipmentType[];
 }

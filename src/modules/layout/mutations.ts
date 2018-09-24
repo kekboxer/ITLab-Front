@@ -1,9 +1,9 @@
 import { MutationTree } from 'vuex';
 import Vue from 'vue';
 
-import { LayoutState, LAYOUT_BADGE_TEXT_SET } from './types';
+import { ILayoutState, LAYOUT_BADGE_TEXT_SET } from './types';
 
-export const mutations: MutationTree<LayoutState> = {
+export const mutations: MutationTree<ILayoutState> = {
   [LAYOUT_BADGE_TEXT_SET]: (
     state,
     { sectionName, badgeText }: { sectionName: string; badgeText?: string }

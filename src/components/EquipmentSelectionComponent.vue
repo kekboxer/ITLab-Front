@@ -19,7 +19,7 @@ import axios from 'axios';
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
 import {
-  Equipment,
+  IEquipment,
   EquipmentDefault,
   EQUIPMENT_SEARCH
 } from '@/modules/equipment';
@@ -33,22 +33,22 @@ export default class EquipmentSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: Equipment;
+  @Prop() public value?: IEquipment;
 
   @Prop() public state?: boolean;
 
-  @Prop() public filter?: (equipment: Equipment) => boolean;
+  @Prop() public filter?: (equipment: IEquipment) => boolean;
 
   // Properties //
   ///////////////
 
-  public equipmentSelected: Equipment = new EquipmentDefault();
+  public equipmentSelected: IEquipment = new EquipmentDefault();
 
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$watch('value', (value?: Equipment) => {
+    this.$watch('value', (value?: IEquipment) => {
       this.equipmentSelected = value ? value : new EquipmentDefault();
     });
 
@@ -62,7 +62,7 @@ export default class EquipmentSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  public onStringify(equipment: Equipment): string {
+  public onStringify(equipment: IEquipment): string {
     if (equipment.equipmentType) {
       return `${equipment.equipmentType.title} ${equipment.serialNumber}`;
     } else {
@@ -72,7 +72,7 @@ export default class EquipmentSelectionComponent extends Vue {
 
   public onFetch(input: string, cb: (result: object[]) => void) {
     this.$store.dispatch(EQUIPMENT_SEARCH, input).then((equipment) => {
-      cb(equipment as Equipment[]);
+      cb(equipment as IEquipment[]);
     });
   }
 }

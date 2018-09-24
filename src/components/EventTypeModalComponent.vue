@@ -34,7 +34,7 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  EventType,
+  IEventType,
   EventTypeDefault,
   EVENT_TYPE_COMMIT
 } from '@/modules/events';
@@ -65,12 +65,12 @@ export default class EventTypeModalComponent extends Vue {
   @Prop({
     default: new EventTypeDefault()
   })
-  public data!: EventType;
+  public data!: IEventType;
 
   @Prop({
-    default: (equipmentType: EventType) => undefined
+    default: (equipmentType: IEventType) => undefined
   })
-  public onSubmit!: (equipmentType: EventType) => void;
+  public onSubmit!: (equipmentType: IEventType) => void;
 
   @Prop({
     default: (error: any) => undefined
@@ -78,7 +78,7 @@ export default class EventTypeModalComponent extends Vue {
   public onError!: (error: any) => void;
 
   public isModalInProcess: boolean = false;
-  public modalData: EventType = new EventTypeDefault();
+  public modalData: IEventType = new EventTypeDefault();
 
   private visibilityStuff: boolean = false;
 
@@ -90,7 +90,7 @@ export default class EventTypeModalComponent extends Vue {
       this.visibilityStuff = value;
     });
 
-    this.$watch('data', (data: EventType) => {
+    this.$watch('data', (data: IEventType) => {
       this.modalData = data;
     });
   }
@@ -109,7 +109,7 @@ export default class EventTypeModalComponent extends Vue {
     this.isModalInProcess = true;
     this.$store
       .dispatch(EVENT_TYPE_COMMIT, this.modalData)
-      .then((equipmentType: EventType) => {
+      .then((equipmentType: IEventType) => {
         this.$notify({
           title: 'Изменения успешно сохранены',
           duration: 500

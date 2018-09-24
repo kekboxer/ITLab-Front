@@ -22,7 +22,7 @@ import EventTypeModalComponent from '@/components/EventTypeModalComponent.vue';
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
 import {
-  EventType,
+  IEventType,
   EventTypeDefault,
   EVENT_TYPE_SEARCH
 } from '@/modules/events';
@@ -37,25 +37,25 @@ export default class EventTypeSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: EventType;
+  @Prop() public value?: IEventType;
 
   @Prop() public state?: boolean;
 
-  @Prop() public filter?: (eventType: EventType) => boolean;
+  @Prop() public filter?: (eventType: IEventType) => boolean;
 
   // Properties //
   ///////////////
 
-  public eventTypeSelected: EventType = new EventTypeDefault();
+  public eventTypeSelected: IEventType = new EventTypeDefault();
 
   public modalVisible: boolean = false;
-  public modalData: EventType = new EventTypeDefault();
+  public modalData: IEventType = new EventTypeDefault();
 
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$watch('value', (value?: EventType) => {
+    this.$watch('value', (value?: IEventType) => {
       this.eventTypeSelected = value ? value : new EventTypeDefault();
     });
 
@@ -69,14 +69,14 @@ export default class EventTypeSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  public onStringify(eventType: EventType): string {
+  public onStringify(eventType: IEventType): string {
     return eventType.title;
   }
 
   public onChange(input: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(EVENT_TYPE_SEARCH, { match: input })
-      .then((eventTypes: EventType[]) => {
+      .then((eventTypes: IEventType[]) => {
         cb(eventTypes);
       })
       .catch();
@@ -85,7 +85,7 @@ export default class EventTypeSelectionComponent extends Vue {
   // Modal window methods //
   /////////////////////////
 
-  public onSubmitModal(eventType: EventType) {
+  public onSubmitModal(eventType: IEventType) {
     this.eventTypeSelected = eventType;
     this.onInput();
 

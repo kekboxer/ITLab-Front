@@ -48,7 +48,7 @@ import { validationMixin } from 'vuelidate';
 import { required, email } from 'vuelidate/lib/validators';
 
 import {
-  User,
+  IUser,
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
@@ -143,7 +143,7 @@ export default class UsersPage extends Vue {
   // Computed data //
   //////////////////
 
-  get users(): User[] {
+  get users(): IUser[] {
     return this.$store.getters[USERS_GET_ALL];
   }
 

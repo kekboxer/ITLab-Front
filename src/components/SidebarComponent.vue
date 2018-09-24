@@ -40,7 +40,7 @@ import Hammer from 'hammerjs';
 
 import '@/icons/bars';
 
-import { Group, LAYOUT_GROUPS_GET } from '@/modules/layout';
+import { IGroup, LAYOUT_GROUPS_GET } from '@/modules/layout';
 import { PROFILE_LOGOUT } from '@/modules/profile';
 
 import {
@@ -128,7 +128,7 @@ export default class SidebarComponent extends Vue {
   // Computed data //
   //////////////////
 
-  get groups(): Group[] {
+  get groups(): IGroup[] {
     return this.$store.getters[LAYOUT_GROUPS_GET];
   }
 }

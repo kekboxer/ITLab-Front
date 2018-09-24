@@ -73,7 +73,7 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
-  RegistrationData,
+  IRegistrationData,
   RegistrationDataDefault,
   PROFILE_CREATE
 } from '@/modules/profile';
@@ -101,7 +101,7 @@ export default class RegistrationPage extends Vue {
   ////////////////////
 
   public pageState: State = State.Default;
-  public registrationData: RegistrationData = new RegistrationDataDefault();
+  public registrationData: IRegistrationData = new RegistrationDataDefault();
 
   // Component methods //
   //////////////////////

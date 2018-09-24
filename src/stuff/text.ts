@@ -1,4 +1,4 @@
-import { User } from '@/modules/users';
+import { IUser } from '@/modules/users';
 
 export const getNounDeclension = (value: number, forms: string[]): string => {
   let n = Math.abs(value) % 100;
@@ -18,6 +18,6 @@ export const getNounDeclension = (value: number, forms: string[]): string => {
   return forms[2];
 };
 
-export const getUserFullName = (user: User): string => {
+export const getUserFullName = (user: IUser): string => {
   return `${user.firstName} ${user.lastName}`;
 };

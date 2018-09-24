@@ -98,7 +98,7 @@ import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponen
 import 'vue-awesome/icons/times';
 
 import {
-  EquipmentType,
+  IEquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_TYPES_FETCH_ALL,
   EQUIPMENT_TYPES_GET_ALL,
@@ -106,7 +106,7 @@ import {
 } from '@/modules/equipment';
 
 import {
-  EventType,
+  IEventType,
   EventTypeDefault,
   EVENT_TYPES_FETCH_ALL,
   EVENT_TYPES_GET_ALL,
@@ -128,10 +128,10 @@ export default class TypeEditPage extends Vue {
   public loadingInProcess: boolean = true;
 
   public eventTypeModalVisible: boolean = false;
-  public eventTypeModalData: EventType = new EventTypeDefault();
+  public eventTypeModalData: IEventType = new EventTypeDefault();
 
   public equipmentTypeModalVisible: boolean = false;
-  public equipmentTypeModalData: EquipmentType = new EquipmentTypeDefault();
+  public equipmentTypeModalData: IEquipmentType = new EquipmentTypeDefault();
 
   // Component methods //
   //////////////////////
@@ -150,7 +150,7 @@ export default class TypeEditPage extends Vue {
   // Methods //
   ////////////
 
-  public showEventTypeModal(eventType?: EventType) {
+  public showEventTypeModal(eventType?: IEventType) {
     if (eventType) {
       this.eventTypeModalData = Object.assign({}, eventType);
     } else {
@@ -159,7 +159,7 @@ export default class TypeEditPage extends Vue {
     this.eventTypeModalVisible = true;
   }
 
-  public onRemoveEventType(eventType: EventType) {
+  public onRemoveEventType(eventType: IEventType) {
     if (!confirm('Вы действительно хотите удалить тип события?')) {
       return;
     }
@@ -167,11 +167,11 @@ export default class TypeEditPage extends Vue {
     this.$store.dispatch(EVENT_TYPE_DELETE, eventType);
   }
 
-  public onSubmitEventTypeModal(eventType: EventType) {
+  public onSubmitEventTypeModal(eventType: IEventType) {
     this.eventTypeModalVisible = false;
   }
 
-  public showEquipmentTypeModal(equipmentType?: EquipmentType) {
+  public showEquipmentTypeModal(equipmentType?: IEquipmentType) {
     if (equipmentType) {
       this.equipmentTypeModalData = Object.assign({}, equipmentType);
     } else {
@@ -180,7 +180,7 @@ export default class TypeEditPage extends Vue {
     this.equipmentTypeModalVisible = true;
   }
 
-  public onRemoveEquipmentType(equipmentType: EquipmentType) {
+  public onRemoveEquipmentType(equipmentType: IEquipmentType) {
     if (!confirm('Вы действительно хотите удалить тип оборудования?')) {
       return;
     }
@@ -188,18 +188,18 @@ export default class TypeEditPage extends Vue {
     this.$store.dispatch(EQUIPMENT_TYPE_DELETE, equipmentType);
   }
 
-  public onSubmitEquipmentTypeModal(equipmentType: EquipmentType) {
+  public onSubmitEquipmentTypeModal(equipmentType: IEquipmentType) {
     this.equipmentTypeModalVisible = false;
   }
 
   // Computed data //
   //////////////////
 
-  get eventTypes(): EventType[] {
+  get eventTypes(): IEventType[] {
     return this.$store.getters[EVENT_TYPES_GET_ALL];
   }
 
-  get equipmentTypes(): EquipmentType[] {
+  get equipmentTypes(): IEquipmentType[] {
     return this.$store.getters[EQUIPMENT_TYPES_GET_ALL];
   }
 }

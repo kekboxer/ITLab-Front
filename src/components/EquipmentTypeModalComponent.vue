@@ -34,7 +34,7 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  EquipmentType,
+  IEquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_TYPE_COMMIT
 } from '@/modules/equipment';
@@ -65,12 +65,12 @@ export default class EquipmentTypeModalComponent extends Vue {
   @Prop({
     default: new EquipmentTypeDefault()
   })
-  public data!: EquipmentType;
+  public data!: IEquipmentType;
 
   @Prop({
-    default: (equipmentType: EquipmentType) => undefined
+    default: (equipmentType: IEquipmentType) => undefined
   })
-  public onSubmit!: (equipmentType: EquipmentType) => void;
+  public onSubmit!: (equipmentType: IEquipmentType) => void;
 
   @Prop({
     default: (error: any) => undefined
@@ -78,7 +78,7 @@ export default class EquipmentTypeModalComponent extends Vue {
   public onError!: (error: any) => void;
 
   public isModalInProcess: boolean = false;
-  public modalData: EquipmentType = new EquipmentTypeDefault();
+  public modalData: IEquipmentType = new EquipmentTypeDefault();
 
   private visibilityStuff: boolean = false;
 
@@ -90,7 +90,7 @@ export default class EquipmentTypeModalComponent extends Vue {
       this.visibilityStuff = value;
     });
 
-    this.$watch('data', (data: EquipmentType) => {
+    this.$watch('data', (data: IEquipmentType) => {
       this.modalData = data;
     });
   }
@@ -109,7 +109,7 @@ export default class EquipmentTypeModalComponent extends Vue {
     this.isModalInProcess = true;
     this.$store
       .dispatch(EQUIPMENT_TYPE_COMMIT, this.modalData)
-      .then((equipmentType: EquipmentType) => {
+      .then((equipmentType: IEquipmentType) => {
         this.$notify({
           title: 'Изменения успешно сохранены',
           duration: 500

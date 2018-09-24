@@ -6,10 +6,10 @@ import axios from 'axios';
 import { getResponseData } from '@/stuff';
 
 import {
-  EventsState,
-  Event,
-  EventType,
-  EventRole,
+  IEventsState,
+  IEvent,
+  IEventType,
+  IEventRole,
   EVENTS_FETCH_ALL,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
@@ -35,7 +35,7 @@ import {
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
-const fixDates = (event: Event) => {
+const fixDates = (event: IEvent) => {
   if (event.beginTime) {
     event.beginTime = moment(event.beginTime, DATETIME_FORMAT + 'Z').toDate();
   }
@@ -48,7 +48,7 @@ const fixDates = (event: Event) => {
   }
 };
 
-export const actions: ActionTree<EventsState, RootState> = {
+export const actions: ActionTree<IEventsState, RootState> = {
   [EVENTS_FETCH_ALL]: (
     { commit },
     range:
@@ -76,7 +76,7 @@ export const actions: ActionTree<EventsState, RootState> = {
 
       axios
         .get(url)
-        .then((response) => getResponseData<Event[]>(response))
+        .then((response) => getResponseData<IEvent[]>(response))
         .then((events) => {
           events.forEach(fixDates);
           commit(EVENTS_SET_ALL, events);
@@ -93,7 +93,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/' + id)
-        .then((response) => getResponseData<Event>(response))
+        .then((response) => getResponseData<IEvent>(response))
         .then((event) => {
           fixDates(event);
           commit(EVENTS_SET_ONE, event);
@@ -106,7 +106,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_COMMIT]: ({ commit }, event: Event) => {
+  [EVENT_COMMIT]: ({ commit }, event: IEvent) => {
     return new Promise((resolve, reject) => {
       if (event.eventType == null || event.shifts == null) {
         reject();
@@ -177,7 +177,7 @@ export const actions: ActionTree<EventsState, RootState> = {
         : axios.put(url, eventData);
 
       request
-        .then((response) => getResponseData<Event>(response))
+        .then((response) => getResponseData<IEvent>(response))
         .then((event) => {
           commit(EVENTS_SET_ONE, event);
           resolve(event);
@@ -189,7 +189,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_DELETE]: ({ commit }, event: string | Event) => {
+  [EVENT_DELETE]: ({ commit }, event: string | IEvent) => {
     return new Promise((resolve, reject) => {
       const id = typeof event === 'string' ? event : event.id;
 
@@ -219,7 +219,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`eventType?match=${encodeURIComponent(match)}&all=${all}`)
-        .then((response) => getResponseData<EventType[]>(response))
+        .then((response) => getResponseData<IEventType[]>(response))
         .then((eventTypes) => resolve(eventTypes))
         .catch((error) => {
           console.log(EVENT_TYPE_SEARCH, error);
@@ -232,7 +232,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('eventType?all=true')
-        .then((response) => getResponseData<EventType[]>(response))
+        .then((response) => getResponseData<IEventType[]>(response))
         .then((eventTypes) => {
           commit(EVENT_TYPES_SET_ALL, eventTypes);
           resolve(eventTypes);
@@ -248,7 +248,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`eventType/${id}`)
-        .then((response) => getResponseData<EventType>(response))
+        .then((response) => getResponseData<IEventType>(response))
         .then((eventType) => {
           commit(EVENT_TYPES_SET_ONE, eventType);
           resolve(eventType);
@@ -260,7 +260,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_TYPE_COMMIT]: ({ commit }, eventType: EventType) => {
+  [EVENT_TYPE_COMMIT]: ({ commit }, eventType: IEventType) => {
     return new Promise((resolve, reject) => {
       const url = 'eventType';
 
@@ -270,7 +270,7 @@ export const actions: ActionTree<EventsState, RootState> = {
           : axios.put(url, eventType);
 
       request
-        .then((response) => getResponseData<EventType>(response))
+        .then((response) => getResponseData<IEventType>(response))
         .then((eventType) => {
           commit(EVENT_TYPES_SET_ONE, eventType);
           resolve(eventType);
@@ -282,7 +282,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_TYPE_DELETE]: ({ commit }, eventType: string | EventType) => {
+  [EVENT_TYPE_DELETE]: ({ commit }, eventType: string | IEventType) => {
     return new Promise((resolve, reject) => {
       const id = typeof eventType === 'string' ? eventType : eventType.id;
 
@@ -309,7 +309,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('eventRole')
-        .then((response) => getResponseData<EventRole[]>(response))
+        .then((response) => getResponseData<IEventRole[]>(response))
         .then((eventRoles) => {
           commit(EVENT_ROLES_SET_ALL, eventRoles);
           resolve(eventRoles);
@@ -321,7 +321,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_ROLE_COMMIT]: ({ commit }, eventRole: EventRole) => {
+  [EVENT_ROLE_COMMIT]: ({ commit }, eventRole: IEventRole) => {
     return new Promise((resolve, reject) => {
       const url = 'eventRole';
 
@@ -331,7 +331,7 @@ export const actions: ActionTree<EventsState, RootState> = {
           : axios.put(url, eventRole);
 
       request
-        .then((response) => getResponseData<EventRole>(response))
+        .then((response) => getResponseData<IEventRole>(response))
         .then((eventRole) => {
           commit(EVENT_ROLES_SET_ONE, eventRole);
           resolve(eventRole);
@@ -343,7 +343,7 @@ export const actions: ActionTree<EventsState, RootState> = {
     });
   },
 
-  [EVENT_ROLE_DELETE]: ({ commit }, eventRole: string | EventRole) => {
+  [EVENT_ROLE_DELETE]: ({ commit }, eventRole: string | IEventRole) => {
     return new Promise((resolve, reject) => {
       const id = typeof eventRole === 'string' ? eventRole : eventRole.id;
 

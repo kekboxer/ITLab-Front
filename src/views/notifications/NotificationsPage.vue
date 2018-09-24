@@ -38,8 +38,8 @@ import WishNotificationComponent from '@/components/WishNotificationComponent.vu
 import InvitationNotificationComponent from '@/components/InvitationNotificationComponent.vue';
 
 import {
-  Invitation,
-  Wish,
+  IWishNotification,
+  IInvitationNotification,
   NOTIFICATION_INVITATIONS_GET_ALL,
   NOTIFICATION_WISHES_GET_ALL,
   NOTIFICATIONS_FETCH
@@ -47,7 +47,7 @@ import {
 
 interface NotificationHandle {
   type: 'invitation' | 'wish';
-  notification: Invitation | Wish;
+  notification: IInvitationNotification | IWishNotification;
 }
 
 @Component({
@@ -116,11 +116,11 @@ export default class NotificationsPage extends Vue {
     return result;
   }
 
-  get eventInvitations(): Invitation[] {
+  get eventInvitations(): IInvitationNotification[] {
     return this.$store.getters[NOTIFICATION_INVITATIONS_GET_ALL];
   }
 
-  get eventWishes(): Wish[] {
+  get eventWishes(): IWishNotification[] {
     return this.$store.getters[NOTIFICATION_WISHES_GET_ALL];
   }
 }

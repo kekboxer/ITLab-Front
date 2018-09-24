@@ -75,7 +75,7 @@ import 'vue-awesome/icons/clock';
 import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/eye-slash';
 
-import { Event } from '@/modules/events';
+import { IEvent } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 enum State {
@@ -93,7 +93,7 @@ export default class EventItemComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public event!: Event;
+  @Prop() public event!: IEvent;
 
   public dateHovered: boolean = false;
 

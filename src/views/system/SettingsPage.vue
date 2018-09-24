@@ -63,7 +63,7 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 import 'vue-awesome/icons/times';
 
 import {
-  UserSession,
+  IUserSession,
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SETTINGS_THEME_SET,
@@ -80,7 +80,7 @@ export default class SettingsPage extends Vue {
   // Properties //
   ///////////////
 
-  public sessions: UserSession[] = [];
+  public sessions: IUserSession[] = [];
 
   // Component methods //
   //////////////////////
@@ -103,7 +103,7 @@ export default class SettingsPage extends Vue {
       .catch();
   }
 
-  public formatSessionDate(session: UserSession): string {
+  public formatSessionDate(session: IUserSession): string {
     return moment(session.createTime).format('DD.MM.YYYY HH:mm:ss');
   }
 

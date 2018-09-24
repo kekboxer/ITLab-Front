@@ -1,14 +1,13 @@
 import { MutationTree } from 'vuex';
-import { Vue } from 'vue-property-decorator';
 
 import { setOneElement } from '@/stuff';
 
-import { UsersState, User, USERS_SET_ALL, USERS_SET_ONE } from './types';
+import { IUsersState, IUser, USERS_SET_ALL, USERS_SET_ONE } from './types';
 
-export const mutations: MutationTree<UsersState> = {
+export const mutations: MutationTree<IUsersState> = {
   [USERS_SET_ALL]: (
     state,
-    payload: User[] | { users: User[]; merge?: boolean }
+    payload: IUser[] | { users: IUser[]; merge?: boolean }
   ) => {
     const users = payload instanceof Array ? payload : payload.users;
     const merge = payload instanceof Array ? false : payload.merge === true;
@@ -22,7 +21,7 @@ export const mutations: MutationTree<UsersState> = {
     }
   },
 
-  [USERS_SET_ONE]: (state, user: User) => {
+  [USERS_SET_ONE]: (state, user: IUser) => {
     setOneElement(state.users, user);
   }
 };

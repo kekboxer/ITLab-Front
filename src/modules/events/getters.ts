@@ -2,7 +2,7 @@ import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
 import {
-  EventsState,
+  IEventsState,
   EVENTS_GET_ALL,
   EVENTS_GET_ONE,
   EVENT_TYPES_GET_ALL,
@@ -11,7 +11,7 @@ import {
   EVENT_ROLES_GET_ONE
 } from './types';
 
-export const getters: GetterTree<EventsState, RootState> = {
+export const getters: GetterTree<IEventsState, RootState> = {
   [EVENTS_GET_ALL]: (state) => {
     return ({
       beginTime,

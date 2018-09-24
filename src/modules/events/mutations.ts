@@ -4,10 +4,10 @@ import { Vue } from 'vue-property-decorator';
 import { setOneElement } from '@/stuff';
 
 import {
-  EventsState,
-  Event,
-  EventType,
-  EventRole,
+  IEventsState,
+  IEvent,
+  IEventType,
+  IEventRole,
   EVENTS_SET_ALL,
   EVENTS_SET_ONE,
   EVENTS_REMOVE_ONE,
@@ -19,7 +19,7 @@ import {
   EVENT_ROLES_REMOVE_ONE
 } from './types';
 
-const sortEvents = (events: Event[]): Event[] => {
+const sortEvents = (events: IEvent[]): IEvent[] => {
   return events.sort((a, b) => {
     if (a.beginTime && b.beginTime && a.beginTime < b.beginTime) {
       return 1;
@@ -31,10 +31,10 @@ const sortEvents = (events: Event[]): Event[] => {
   });
 };
 
-export const mutations: MutationTree<EventsState> = {
+export const mutations: MutationTree<IEventsState> = {
   [EVENTS_SET_ALL]: (
     state,
-    payload: Event[] | { events: Event[]; merge?: boolean }
+    payload: IEvent[] | { events: IEvent[]; merge?: boolean }
   ) => {
     const events = payload instanceof Array ? payload : payload.events;
     const merge = payload instanceof Array ? false : payload.merge === true;
@@ -50,11 +50,11 @@ export const mutations: MutationTree<EventsState> = {
     state.events = sortEvents(state.events);
   },
 
-  [EVENTS_SET_ONE]: (state, event: Event) => {
+  [EVENTS_SET_ONE]: (state, event: IEvent) => {
     setOneElement(state.events, event);
   },
 
-  [EVENTS_REMOVE_ONE]: (state, event: string | Event) => {
+  [EVENTS_REMOVE_ONE]: (state, event: string | IEvent) => {
     const id = typeof event === 'string' ? event : event.id;
     const eventIndex = state.events.findIndex((event) => event.id === id);
     if (eventIndex !== -1) {
@@ -64,7 +64,7 @@ export const mutations: MutationTree<EventsState> = {
 
   [EVENT_TYPES_SET_ALL]: (
     state,
-    payload: EventType[] | { eventTypes: EventType[]; merge?: boolean }
+    payload: IEventType[] | { eventTypes: IEventType[]; merge?: boolean }
   ) => {
     const eventTypes = payload instanceof Array ? payload : payload.eventTypes;
     const merge = payload instanceof Array ? false : payload.merge === true;
@@ -78,11 +78,11 @@ export const mutations: MutationTree<EventsState> = {
     }
   },
 
-  [EVENT_TYPES_SET_ONE]: (state, eventType: EventType) => {
+  [EVENT_TYPES_SET_ONE]: (state, eventType: IEventType) => {
     setOneElement(state.eventTypes, eventType);
   },
 
-  [EVENT_TYPES_REMOVE_ONE]: (state, eventType: string | EventType) => {
+  [EVENT_TYPES_REMOVE_ONE]: (state, eventType: string | IEventType) => {
     const id = typeof eventType === 'string' ? eventType : eventType.id;
     const eventTypeIndex = state.eventTypes.findIndex(
       (eventType) => eventType.id === id
@@ -94,7 +94,7 @@ export const mutations: MutationTree<EventsState> = {
 
   [EVENT_ROLES_SET_ALL]: (
     state,
-    payload: EventRole[] | { eventRoles: EventRole[]; merge?: boolean }
+    payload: IEventRole[] | { eventRoles: IEventRole[]; merge?: boolean }
   ) => {
     const eventRoles = payload instanceof Array ? payload : payload.eventRoles;
     const merge = payload instanceof Array ? false : payload.merge === true;
@@ -108,11 +108,11 @@ export const mutations: MutationTree<EventsState> = {
     }
   },
 
-  [EVENT_ROLES_SET_ONE]: (state, eventRole: EventRole) => {
+  [EVENT_ROLES_SET_ONE]: (state, eventRole: IEventRole) => {
     setOneElement(state.eventRoles, eventRole);
   },
 
-  [EVENT_ROLES_REMOVE_ONE]: (state, eventRole: string | EventRole) => {
+  [EVENT_ROLES_REMOVE_ONE]: (state, eventRole: string | IEventRole) => {
     const id = typeof eventRole === 'string' ? eventRole : eventRole.id;
     const eventRoleIndex = state.eventRoles.findIndex(
       (eventRole) => eventRole.id === id

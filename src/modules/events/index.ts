@@ -4,17 +4,17 @@ import { RootState } from '@/store';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { EventsState } from './types';
+import { IEventsState } from './types';
 
 export * from './types';
 
-export const state: EventsState = {
+export const state: IEventsState = {
   events: [],
   eventTypes: [],
   eventRoles: []
 };
 
-export const events: Module<EventsState, RootState> = {
+export const events: Module<IEventsState, RootState> = {
   state,
   getters,
   actions,

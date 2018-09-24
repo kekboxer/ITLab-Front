@@ -7,7 +7,8 @@ import store from '@/store';
 import {
   PROFILE_REFRESH_ACCESS,
   PROFILE_AUTHORIZED,
-  PROFILE_REFRESH_TOKEN
+  PROFILE_REFRESH_TOKEN,
+  PROFILE_HAS_ROLE
 } from '@/modules/profile';
 import { LAYOUT_PAGES_GET } from '@/modules/layout';
 
@@ -98,6 +99,21 @@ router.beforeEach((to, from, next) => {
   const development: boolean = to.matched.some(
     (record) => record.meta.development === true
   );
+  const allow: boolean = to.matched.some(
+    (record) =>
+      record.meta.allow == null ||
+      (typeof record.meta.allow === 'string' &&
+        store.getters[PROFILE_HAS_ROLE](record.meta.allow)) ||
+      (Array.isArray(record.meta.allow) &&
+        record.meta.allow.every((role: string) =>
+          store.getters[PROFILE_HAS_ROLE](role)
+        ))
+  );
+
+  if (!allow) {
+    next(false);
+    return;
+  }
 
   if (development) {
     if (process.env.NODE_ENV === 'development') {

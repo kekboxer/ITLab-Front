@@ -66,7 +66,7 @@ import VueMarkdown from 'vue-markdown';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
-import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
+import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 @Component({
@@ -82,7 +82,7 @@ export default class EventDetailPage extends Vue {
 
   public loadingInProcess: boolean = false;
   public notFound: boolean = false;
-  public event: Event = new EventDefault();
+  public event: IEvent = new EventDefault();
 
   // Component methods //
   //////////////////////

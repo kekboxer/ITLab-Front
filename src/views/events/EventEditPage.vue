@@ -87,11 +87,11 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
-  Event,
+  IEvent,
   EventDefault,
-  EventType,
+  IEventType,
   EventTypeDefault,
-  EventShift,
+  IEventShift,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
   EVENT_DELETE,
@@ -120,7 +120,7 @@ enum State {
       event: {
         eventType: {
           required,
-          selected: (eventType?: EventType) => eventType && eventType.id !== ''
+          selected: (eventType?: IEventType) => eventType && eventType.id !== ''
         },
         title: {
           required,
@@ -166,8 +166,8 @@ export default class EventEditPage extends Vue {
   // Event properties //
   /////////////////////
 
-  public event: Event = new EventDefault();
-  public eventShifts: EventShift[] = [];
+  public event: IEvent = new EventDefault();
+  public eventShifts: IEventShift[] = [];
 
   // Component methods //
   //////////////////////
@@ -248,7 +248,7 @@ export default class EventEditPage extends Vue {
     }
   }
 
-  public setEvent(event: Event) {
+  public setEvent(event: IEvent) {
     this.event = event;
     this.eventShifts = event.shifts || [];
   }

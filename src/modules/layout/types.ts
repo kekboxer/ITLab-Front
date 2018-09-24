@@ -1,4 +1,5 @@
 import { RawLocation, RouteConfig } from 'vue-router';
+import { UserRole } from '@/stuff';
 
 // setters
 export const LAYOUT_BADGE_TEXT_SET = 'LAYOUT_BADGE_TEXT_SET';
@@ -9,7 +10,8 @@ export const LAYOUT_GROUPS_GET = 'LAYOUT_GROUPS_GET';
 
 // Section //
 ////////////
-export interface Section {
+
+export interface ISection {
   name: string;
   title: string;
   homeURL: RawLocation;
@@ -20,16 +22,25 @@ export interface Section {
 // Group //
 //////////
 
-export interface Group {
+export interface IGroup {
   name: string;
   title: string;
-  sections: Section[];
+  sections: ISection[];
+}
+
+// PageMeta //
+/////////////
+
+export interface IPageMeta {
+  secure?: boolean;
+  development?: boolean;
+  allow?: UserRole | UserRole[];
 }
 
 // State //
-////////////////
+//////////
 
-export interface LayoutState {
+export interface ILayoutState {
   stuff: RouteConfig[];
-  groups: Group[];
+  groups: IGroup[];
 }

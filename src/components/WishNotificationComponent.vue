@@ -60,7 +60,7 @@ import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import 'vue-awesome/icons/clock';
 
 import {
-  Wish,
+  IWishNotification,
   NOTIFICATION_WISH_ACCEPT,
   NOTIFICATION_WISH_REJECT
 } from '@/modules/notifications';
@@ -80,7 +80,7 @@ export default class WishNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: Wish;
+  @Prop() public data!: IWishNotification;
 
   public currentState: State = State.Default;
 

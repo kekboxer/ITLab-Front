@@ -1,9 +1,9 @@
 import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
-import { LayoutState, LAYOUT_PAGES_GET, LAYOUT_GROUPS_GET } from './types';
+import { ILayoutState, LAYOUT_PAGES_GET, LAYOUT_GROUPS_GET } from './types';
 
-export const getters: GetterTree<LayoutState, RootState> = {
+export const getters: GetterTree<ILayoutState, RootState> = {
   [LAYOUT_PAGES_GET]: (state) => {
     let result = state.stuff.concat();
     state.groups.forEach((group) => {

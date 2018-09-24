@@ -2,7 +2,7 @@ import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
 import {
-  ProfileState,
+  IProfileState,
   PROFILE_GET,
   PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET,
@@ -11,7 +11,7 @@ import {
 } from './types';
 import { UserRole } from '@/stuff';
 
-export const getters: GetterTree<ProfileState, RootState> = {
+export const getters: GetterTree<IProfileState, RootState> = {
   [PROFILE_GET]: (state) => {
     return state.profileId;
   },

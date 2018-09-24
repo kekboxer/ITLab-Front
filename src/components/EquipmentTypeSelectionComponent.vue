@@ -22,7 +22,7 @@ import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.
 import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponent.vue';
 
 import {
-  EquipmentType,
+  IEquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_TYPE_SEARCH
 } from '@/modules/equipment';
@@ -37,25 +37,25 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: EquipmentType;
+  @Prop() public value?: IEquipmentType;
 
   @Prop() public state?: boolean;
 
-  @Prop() public filter?: (equipmentType: EquipmentType) => boolean;
+  @Prop() public filter?: (equipmentType: IEquipmentType) => boolean;
 
   // Properties //
   ///////////////
 
-  public equipmentTypeSelected: EquipmentType = new EquipmentTypeDefault();
+  public equipmentTypeSelected: IEquipmentType = new EquipmentTypeDefault();
 
   public modalVisible: boolean = false;
-  public modalData: EquipmentType = new EquipmentTypeDefault();
+  public modalData: IEquipmentType = new EquipmentTypeDefault();
 
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$watch('value', (value?: EquipmentType) => {
+    this.$watch('value', (value?: IEquipmentType) => {
       this.equipmentTypeSelected = value ? value : new EquipmentTypeDefault();
     });
 
@@ -71,14 +71,14 @@ export default class EquipmentTypeSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  public onStringify(equipmentType: EquipmentType) {
+  public onStringify(equipmentType: IEquipmentType) {
     return equipmentType.title;
   }
 
   public onFetch(title: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(EQUIPMENT_TYPE_SEARCH, { match: title })
-      .then((equipmentTypes: EquipmentType[]) => {
+      .then((equipmentTypes: IEquipmentType[]) => {
         cb(equipmentTypes);
       });
   }
@@ -93,7 +93,7 @@ export default class EquipmentTypeSelectionComponent extends Vue {
     this.modalVisible = true;
   }
 
-  public onSubmitModal(equipmentType: EquipmentType) {
+  public onSubmitModal(equipmentType: IEquipmentType) {
     this.equipmentTypeSelected = equipmentType;
     this.onInput();
 

@@ -5,10 +5,10 @@ import axios from 'axios';
 import { getResponseData } from '@/stuff';
 
 import {
-  ProfileState,
-  AuthorizationData,
-  RegistrationData,
-  UserSession,
+  IProfileState,
+  IAuthorizationData,
+  IRegistrationData,
+  IUserSession,
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_REFRESH_ACCESS,
@@ -22,9 +22,9 @@ import {
   PROFILE_COMMIT
 } from './types';
 
-import { User } from '@/modules/users';
+import { IUser } from '@/modules/users';
 
-import { EventPlace, EventRole } from '@/modules/events';
+import { IEventPlace, IEventRole } from '@/modules/events';
 
 export const setAxiosAuthHeader = (token?: string) => {
   if (token) {
@@ -37,7 +37,7 @@ export const setAxiosAuthHeader = (token?: string) => {
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  user: User;
+  user: IUser;
 }
 
 const handleLogin = (
@@ -53,8 +53,8 @@ const handleLogin = (
   resolve(response);
 };
 
-export const actions: ActionTree<ProfileState, RootState> = {
-  [PROFILE_LOGIN]: ({ commit }, authorizationData: AuthorizationData) => {
+export const actions: ActionTree<IProfileState, RootState> = {
+  [PROFILE_LOGIN]: ({ commit }, authorizationData: IAuthorizationData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('authentication/login', authorizationData)
@@ -91,7 +91,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     });
   },
 
-  [PROFILE_CREATE]: ({}, registrationData: RegistrationData) => {
+  [PROFILE_CREATE]: ({}, registrationData: IRegistrationData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('account', registrationData)
@@ -108,7 +108,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     {
       place,
       eventRole
-    }: { place: EventPlace | string; eventRole: EventRole | string }
+    }: { place: IEventPlace | string; eventRole: IEventRole | string }
   ) => {
     return new Promise((resolve, reject) => {
       const placeId = typeof place === 'string' ? place : place.id;
@@ -133,7 +133,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     });
   },
 
-  [PROFILE_COMMIT]: ({ commit }, user: User) => {
+  [PROFILE_COMMIT]: ({ commit }, user: IUser) => {
     return new Promise((resolve, reject) => {
       axios
         .put('account', {
@@ -141,7 +141,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
           lastName: user.lastName,
           phoneNumber: user.phoneNumber
         })
-        .then((response) => getResponseData<User>(response))
+        .then((response) => getResponseData<IUser>(response))
         .then((user) => {
           commit(PROFILE_SET, user);
           resolve(user);
@@ -157,7 +157,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('authentication/refresh')
-        .then((response) => getResponseData<UserSession>(response))
+        .then((response) => getResponseData<IUserSession>(response))
         .then((sessions) => resolve(sessions))
         .catch((error) => {
           console.log(PROFILE_SESSIONS_FETCH, error);
@@ -166,7 +166,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     });
   },
 
-  [PROFILE_SESSIONS_DELETE]: ({}, sessions: string[] | UserSession[]) => {
+  [PROFILE_SESSIONS_DELETE]: ({}, sessions: string[] | IUserSession[]) => {
     if (sessions.length === 0) {
       return;
     }
@@ -174,7 +174,7 @@ export const actions: ActionTree<ProfileState, RootState> = {
     const sessionIds =
       typeof sessions[0] === 'string'
         ? sessions
-        : (sessions as UserSession[]).map((session) => session.id);
+        : (sessions as IUserSession[]).map((session) => session.id);
 
     return new Promise((resolve, reject) => {
       axios

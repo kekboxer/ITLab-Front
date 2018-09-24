@@ -1,9 +1,9 @@
 import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
-import { UsersState, USERS_GET_ALL, USERS_GET_ONE } from './types';
+import { IUsersState, USERS_GET_ALL, USERS_GET_ONE } from './types';
 
-export const getters: GetterTree<UsersState, RootState> = {
+export const getters: GetterTree<IUsersState, RootState> = {
   [USERS_GET_ALL]: (state) => {
     return state.users;
   },

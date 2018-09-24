@@ -87,9 +87,9 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  Equipment,
+  IEquipment,
   EquipmentDefault,
-  EquipmentType,
+  IEquipmentType,
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_COMMIT,
@@ -97,11 +97,12 @@ import {
 } from '@/modules/equipment';
 
 import {
-  User,
+  IUser,
   UserDefault,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT
 } from '@/modules/users';
+import { IPageMeta } from '@/modules/layout';
 
 enum State {
   Default,
@@ -122,7 +123,7 @@ enum State {
       equipment: {
         equipmentType: {
           required,
-          selected: (equipmentType?: EquipmentType) =>
+          selected: (equipmentType?: IEquipmentType) =>
             equipmentType && equipmentType.id !== ''
         },
         serialNumber: {
@@ -145,11 +146,11 @@ export default class EquipmentEditPage extends Vue {
   // Equipment properties //
   /////////////////////////
 
-  public equipment: Equipment = new EquipmentDefault();
-  public equipmentOwner: User | null = null;
+  public equipment: IEquipment = new EquipmentDefault();
+  public equipmentOwner: IUser | null = null;
 
   public equipmentOwnerModalShow: boolean = false;
-  public equipmentOwnerModalData: User | null = null;
+  public equipmentOwnerModalData: IUser | null = null;
   public equipmentOwnerModalState: State = State.Default;
 
   public mounted() {
@@ -221,7 +222,7 @@ export default class EquipmentEditPage extends Vue {
     }
   }
 
-  public setEquipment(equipment: Equipment) {
+  public setEquipment(equipment: IEquipment) {
     this.equipment = equipment;
 
     if (equipment.ownerId) {
@@ -268,7 +269,7 @@ export default class EquipmentEditPage extends Vue {
           equipment: this.equipment,
           user: this.equipmentOwnerModalData
         })
-        .then((equipment: Equipment) => {
+        .then((equipment: IEquipment) => {
           onSuccess();
         })
         .catch((err) => {
@@ -283,7 +284,7 @@ export default class EquipmentEditPage extends Vue {
           equipment: this.equipment,
           owner: this.equipment.ownerId
         })
-        .then((equipment: Equipment) => {
+        .then((equipment: IEquipment) => {
           if (this.equipmentOwnerModalData) {
             assignEquipment();
           } else {
@@ -313,7 +314,10 @@ export default class EquipmentEditPage extends Vue {
 export const equipmentEditPageRoute: RouteConfig = {
   path: '/equipment/:id',
   name: 'EquipmentEditPage',
-  component: EquipmentEditPage
+  component: EquipmentEditPage,
+  meta: {
+    allow: 'CanEditEquipment'
+  } as IPageMeta
 };
 </script>
 <!-- SCRIPT END -->

@@ -4,15 +4,15 @@ import { RootState } from '@/store';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { UsersState } from './types';
+import { IUsersState } from './types';
 
 export * from './types';
 
-export const state: UsersState = {
+export const state: IUsersState = {
   users: []
 };
 
-export const users: Module<UsersState, RootState> = {
+export const users: Module<IUsersState, RootState> = {
   state,
   getters,
   actions,
