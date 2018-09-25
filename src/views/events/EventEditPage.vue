@@ -97,6 +97,7 @@ import {
   EVENT_DELETE,
   EventShiftDefault
 } from '@/modules/events';
+import { IPageMeta } from '@/modules/layout';
 
 const ADDRESS_ROWS_MAX = 4;
 const ADDRESS_LENGTH_MAX = 250;
@@ -275,7 +276,10 @@ export default class EventEditPage extends Vue {
 export const eventEditPageRoute: RouteConfig = {
   path: '/events/edit/:id',
   name: 'EventEditPage',
-  component: EventEditPage
+  component: EventEditPage,
+  meta: {
+    allow: 'CanEditEvent'
+  } as IPageMeta
 };
 </script>
 <!-- SCRIPT END -->
