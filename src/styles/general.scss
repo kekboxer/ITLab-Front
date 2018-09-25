@@ -114,6 +114,10 @@
   input[type=checkbox] {
     pointer-events: none;
   }
+
+  img {
+    max-width: 100%;
+  }
 }
 
 /* Bootstrap fix */
