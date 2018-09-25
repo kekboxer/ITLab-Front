@@ -348,7 +348,7 @@ export const actions: ActionTree<IEventsState, RootState> = {
       const id = typeof eventRole === 'string' ? eventRole : eventRole.id;
 
       axios
-        .delete('eventType', { data: { id } })
+        .delete('eventRole', { data: { id } })
         .then((response) => {
           const body = response && response.data;
 

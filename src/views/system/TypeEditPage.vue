@@ -41,6 +41,40 @@
             </b-col>
           </b-row>
         </b-tab>
+        <b-tab title="Роли">
+          <br>
+          <b-row>
+            <b-col cols="12" sm="auto" class="ml-auto">
+              <b-button variant="success" class="w-100" @click="showEventRoleModal()">Добавить</b-button>
+            </b-col>
+          </b-row>
+          <br>
+          <b-row>
+            <b-col>
+              <b-card v-for="eventRole in eventRoles" :key="eventRole.id" class="mb-1">
+                <b-row>
+                  <b-col>
+                    <b-row style="line-height: 31px">
+                      <b-col cols="12" md="6">
+                        <b>{{ eventRole.title }}</b>
+                      </b-col>
+                      <b-col cols="12" md="6">
+                        {{ eventRole.description }}
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
+                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventRoleModal(eventRole)">Изменить</b-button>
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventRole(eventRole)">
+                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                      <span class="d-inline d-md-none">Удалить</span>
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+          </b-row>
+        </b-tab>
         <b-tab title="Оборудование">
           <br>
           <b-row>
@@ -79,6 +113,7 @@
     </page-content-component>
 
     <event-type-modal-component v-model="eventTypeModalVisible" :data="eventTypeModalData" :onSubmit="onSubmitEventTypeModal" />
+    <event-role-modal-component v-model="eventRoleModalVisible" :data="eventRoleModalData" :onSubmit="onSubmitEventRoleModal" />
     <equipment-type-modal-component v-model="equipmentTypeModalVisible" :data="equipmentTypeModalData" :onSubmit="onSubmitEquipmentTypeModal" />
   </div>
 </template>
@@ -93,6 +128,7 @@ import { RouteConfig } from 'vue-router';
 import Icon from 'vue-awesome/components/Icon';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventTypeModalComponent from '@/components/EventTypeModalComponent.vue';
+import EventRoleModalComponent from '@/components/EventRoleModalComponent.vue';
 import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponent.vue';
 
 import 'vue-awesome/icons/times';
@@ -108,9 +144,14 @@ import {
 import {
   IEventType,
   EventTypeDefault,
+  IEventRole,
+  EventRoleDefault,
   EVENT_TYPES_FETCH_ALL,
   EVENT_TYPES_GET_ALL,
-  EVENT_TYPE_DELETE
+  EVENT_TYPE_DELETE,
+  EVENT_ROLES_GET_ALL,
+  EVENT_ROLES_FETCH_ALL,
+  EVENT_ROLE_DELETE
 } from '@/modules/events';
 
 @Component({
@@ -118,6 +159,7 @@ import {
     Icon,
     'page-content-component': PageContentComponent,
     'event-type-modal-component': EventTypeModalComponent,
+    'event-role-modal-component': EventRoleModalComponent,
     'equipment-type-modal-component': EquipmentTypeModalComponent
   }
 })
@@ -130,6 +172,9 @@ export default class TypeEditPage extends Vue {
   public eventTypeModalVisible: boolean = false;
   public eventTypeModalData: IEventType = new EventTypeDefault();
 
+  public eventRoleModalVisible: boolean = false;
+  public eventRoleModalData: IEventRole = new EventRoleDefault();
+
   public equipmentTypeModalVisible: boolean = false;
   public equipmentTypeModalData: IEquipmentType = new EquipmentTypeDefault();
 
@@ -139,6 +184,7 @@ export default class TypeEditPage extends Vue {
   public mounted() {
     Promise.all([
       this.$store.dispatch(EVENT_TYPES_FETCH_ALL),
+      this.$store.dispatch(EVENT_ROLES_FETCH_ALL),
       this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL)
     ])
       .then((results) => {
@@ -147,8 +193,8 @@ export default class TypeEditPage extends Vue {
       .catch();
   }
 
-  // Methods //
-  ////////////
+  // EventType modal methods //
+  ////////////////////////////
 
   public showEventTypeModal(eventType?: IEventType) {
     if (eventType) {
@@ -170,6 +216,33 @@ export default class TypeEditPage extends Vue {
   public onSubmitEventTypeModal(eventType: IEventType) {
     this.eventTypeModalVisible = false;
   }
+
+  // EventRole modal methods //
+  ////////////////////////////
+
+  public showEventRoleModal(eventRole?: IEventRole) {
+    if (eventRole) {
+      this.eventRoleModalData = Object.assign({}, eventRole);
+    } else {
+      this.eventRoleModalData = new EventRoleDefault();
+    }
+    this.eventRoleModalVisible = true;
+  }
+
+  public onRemoveEventRole(eventRole?: IEventRole) {
+    if (!confirm('Вы действительно хотите удалить эту роль?')) {
+      return;
+    }
+
+    this.$store.dispatch(EVENT_ROLE_DELETE, eventRole);
+  }
+
+  public onSubmitEventRoleModal(eventRole: IEventRole) {
+    this.eventRoleModalVisible = false;
+  }
+
+  // EquipmentType modal methods //
+  ////////////////////////////////
 
   public showEquipmentTypeModal(equipmentType?: IEquipmentType) {
     if (equipmentType) {
@@ -197,6 +270,10 @@ export default class TypeEditPage extends Vue {
 
   get eventTypes(): IEventType[] {
     return this.$store.getters[EVENT_TYPES_GET_ALL];
+  }
+
+  get eventRoles(): IEventRole[] {
+    return this.$store.getters[EVENT_ROLES_GET_ALL];
   }
 
   get equipmentTypes(): IEquipmentType[] {
