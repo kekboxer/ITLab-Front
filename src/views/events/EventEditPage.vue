@@ -33,7 +33,7 @@
                 </b-tab>
                 <b-tab title="Просмотр">
                   <div class="markdown markdown-preview">
-                    <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
+                    <vue-markdown :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
                   </div>
                 </b-tab>
               </b-tabs>

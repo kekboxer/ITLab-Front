@@ -16,7 +16,7 @@
 
           <b-row>
             <b-col cols="12" md="8" class="order-2 order-md-1 markdown">
-              <vue-markdown :html="false" :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
+              <vue-markdown :breaks="true" :linkify="true" :source="event.description"></vue-markdown>
             </b-col>
             <b-col cols="12" md="4" class="order-1 order-md-1">
               <b-row>
