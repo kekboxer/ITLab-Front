@@ -721,18 +721,22 @@ export default class EventShiftsComponent extends Vue {
     if (place.targetParticipantsCount === 0) {
       return 'Участники не требуются';
     }
+    const countParticipant = place.wishers.length + place.invited.length + place.participants.length;
 
-    const nounNeed = getNounDeclension(place.targetParticipantsCount, [
+    if (countParticipant === 0) {
+      const nounNeed = getNounDeclension(place.targetParticipantsCount, [
       'Нужен',
       'Нужно',
       'Нужно'
-    ]);
-    const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
+      ]);
+      const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
       'участник',
       'участника',
       'участников'
-    ]);
-    return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
+      ]);
+      return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
+    }
+    return `Участников: ${countParticipant} из ${place.targetParticipantsCount}`;
   }
 
   public onEditPlace(shift: IEventShift, placeIndex?: number) {
