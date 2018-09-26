@@ -62,7 +62,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
-import VueMarkdown from 'vue-markdown';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
@@ -71,7 +70,6 @@ import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 @Component({
   components: {
-    'vue-markdown': VueMarkdown,
     'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent
   }

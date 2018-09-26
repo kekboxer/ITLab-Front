@@ -78,7 +78,6 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
-import VueMarkdown from 'vue-markdown';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
@@ -110,7 +109,6 @@ enum State {
 
 @Component({
   components: {
-    'vue-markdown': VueMarkdown,
     'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent,
     'event-type-selection-component': EventTypeSelectionComponent
