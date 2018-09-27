@@ -38,6 +38,12 @@ import VueNotifications from 'vue-notification';
 
 Vue.use(VueNotifications);
 
+// VueMeta
+
+import VueMeta from 'vue-meta';
+
+Vue.use(VueMeta);
+
 // Initialize Vue //
 ///////////////////
 

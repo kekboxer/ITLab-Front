@@ -18,8 +18,9 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
+import { Component, Vue } from 'vue-property-decorator';
+import { Meta } from '@/stuff';
+
 import SidebarComponent from '@/components/SidebarComponent.vue';
 
 import {
@@ -33,6 +34,9 @@ import {
   }
 })
 export default class App extends Vue {
+  // Meta information //
+  /////////////////////
+
   // Component methods //
   //////////////////////
 
