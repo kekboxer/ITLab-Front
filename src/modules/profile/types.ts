@@ -13,6 +13,7 @@ export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
 export const PROFILE_COMMIT = 'PROFILE_COMMIT';
+export const PROFILE_CHANGE_PASSWORD = 'PROFILE_CHANGE_PASSWORD';
 export const PROFILE_SESSIONS_FETCH = 'PROFILE_SESSIONS_FETCH';
 export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
@@ -46,11 +47,23 @@ export class RegistrationDataDefault {
   public firstName: string = '';
   public lastName: string = '';
   public email: string = '';
+  public phoneNumber: string = '';
   public password: string = '';
   public accessToken: string = '';
 }
 
 export interface IRegistrationData extends RegistrationDataDefault {}
+
+// PasswordChangeData //
+///////////////////////
+
+export class PasswordChangeDataDefault {
+  public currentPassword: string = '';
+  public newPassword: string = '';
+  public newPasswordRepeat?: string;
+}
+
+export interface IPasswordChangeData extends PasswordChangeDataDefault {}
 
 // UserSession //
 ////////////////

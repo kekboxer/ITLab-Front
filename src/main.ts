@@ -38,6 +38,14 @@ import VueNotifications from 'vue-notification';
 
 Vue.use(VueNotifications);
 
+// VueMarkdown //
+////////////////
+
+import VueMarkdown from 'vue-markdown';
+
+VueMarkdown.props.anchorAttributes.default = () => ({ target: '_blank' });
+Vue.component('vue-markdown', VueMarkdown);
+
 // VueMeta
 
 import VueMeta from 'vue-meta';

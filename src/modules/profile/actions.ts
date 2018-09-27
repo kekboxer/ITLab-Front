@@ -8,12 +8,14 @@ import {
   IProfileState,
   IAuthorizationData,
   IRegistrationData,
+  IPasswordChangeData,
   IUserSession,
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_REFRESH_ACCESS,
   PROFILE_CREATE,
   PROFILE_WISH,
+  PROFILE_CHANGE_PASSWORD,
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SET,
@@ -148,6 +150,29 @@ export const actions: ActionTree<IProfileState, RootState> = {
         })
         .catch((error) => {
           console.log(PROFILE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROFILE_CHANGE_PASSWORD]: ({ commit }, data: IPasswordChangeData) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put('account/password', {
+          currentPassword: data.currentPassword,
+          newPassword: data.currentPassword
+        })
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode && body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(PROFILE_CHANGE_PASSWORD, error);
           reject(error);
         });
     });

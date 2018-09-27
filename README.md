@@ -9,6 +9,12 @@ Develop | Master
 npm install
 ```
 
+Then create config file with name `.env` in the project root with the following minimal sample content
+```
+NODE_ENV=development                          # or production
+VUE_APP_API_URL=https://path.to.backend/api/  # should be an instance of itlab-back
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
