@@ -78,32 +78,6 @@ export default class SidebarComponent extends Vue {
     this.$store.dispatch(NOTIFICATIONS_FETCH);
   }
 
-  public mounted() {
-    if (this.swipeArea == null) {
-      this.swipeArea = new Hammer(document.getElementById(
-        'app'
-      ) as HTMLElement);
-
-      this.swipeArea.on('swiperight swipeleft', (e) => {
-        console.log('xcvxcv');
-        const width =
-          window.innerWidth ||
-          document.documentElement.clientWidth ||
-          document.body.clientWidth;
-
-        if (width > 576) {
-          return;
-        }
-
-        if (e.type === 'swipeleft' && this.isMobileMenuHidden) {
-          this.isMobileMenuHidden = false;
-        } else {
-          this.isMobileMenuHidden = true;
-        }
-      });
-    }
-  }
-
   // Methods //
   ////////////
 

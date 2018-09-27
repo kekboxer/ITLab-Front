@@ -23,6 +23,7 @@
           <a :href="`${ repositoryUrl }commit/${ lastCommitId }`">{{ lastCommitId.substring(0, 7) }}</a>
         </b-col>
       </b-row>
+      <!--
       <b-row>
         <b-col class="monospace text-right">
           Master:
@@ -39,6 +40,7 @@
           <a href="https://capchik.visualstudio.com/MTU%20Work/_build/latest?definitionId=20" rel="nofollow"><img src="https://camo.githubusercontent.com/f34518e91950b7a37c0fa009742441ba05a6288b/68747470733a2f2f6361706368696b2e76697375616c73747564696f2e636f6d2f4d5455253230576f726b2f5f617069732f6275696c642f7374617475732f525455253230576f726b253230636f6e74726f6c25323066726f6e74" alt="Build status" data-canonical-src="https://capchik.visualstudio.com/MTU%20Work/_apis/build/status/RTU%20Work%20control%20front" style="max-width:100%;"></a>
         </b-col>
       </b-row>
+      -->
     </div>
   </div>
 </template>

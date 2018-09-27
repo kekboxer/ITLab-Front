@@ -32,6 +32,11 @@
               </b-form-input>
             </b-form-group>
 
+            <b-form-group label="Телефон">
+              <b-form-input autocomplete="home-phone" type="tel" v-model.trim="registrationData.phoneNumber" :state="!$v.registrationData.phoneNumber.$invalid" required>
+              </b-form-input>
+            </b-form-group>
+
             <b-form-row>
               <b-col>
                 <span class="text-secondary">
@@ -84,16 +89,25 @@ enum State {
   Error
 }
 
-const baseValidations = {
-  firstName: { required, maxLength: maxLength(32) },
-  lastName: { required, maxLength: maxLength(32) },
-  password: { required, minLength: minLength(6), maxLength: maxLength(32) }
-};
-
 @Component({
   mixins: [validationMixin],
   validations() {
-    return { registrationData: baseValidations };
+    return {
+      registrationData: {
+        firstName: { required, minLength: minLength(1) },
+        lastName: { required, minLength: minLength(1) },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(32)
+        },
+        phoneNumber: {
+          required,
+          phoneValid: (value: string) =>
+            /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/.test(value)
+        }
+      }
+    };
   }
 })
 export default class RegistrationPage extends Vue {
