@@ -1,3 +1,32 @@
+import moment from 'moment-timezone';
+
+export type UserRole =
+  | 'CanEditEquipment'
+  | 'CanEditRoles'
+  | 'CanEditEvent'
+  | 'CanInviteToSystem'
+  | 'CanDeleteEventRole';
+
+interface IAccessToken {
+  nbf: number;
+  exp: number;
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': UserRole[];
+}
+
+export class AccessToken {
+  public readonly creationDate: Date;
+  public readonly expirationDate: Date;
+  public readonly roles: UserRole[];
+
+  constructor(decoded: IAccessToken) {
+    this.creationDate = moment(decoded.nbf * 1000).toDate();
+    this.expirationDate = moment(decoded.exp * 1000).toDate();
+    this.roles =
+      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+      [];
+  }
+}
+
 const urlBase64Decode = (str: string) => {
   let output = str.replace(/-/g, '+').replace(/_/g, '/');
   switch (output.length % 4) {
@@ -16,17 +45,21 @@ const urlBase64Decode = (str: string) => {
   return decodeURIComponent(escape(atob(output)));
 };
 
-export const decodeJWT = (token: string = '') => {
-  if (token === null || token === '') {
-    return { upn: '' };
+export const decodeJWT = (token: string = ''): AccessToken | null => {
+  let parts: string[] = [];
+
+  if (
+    token === null ||
+    token === '' ||
+    (parts = token.split('.')).length !== 3
+  ) {
+    return null;
   }
-  const parts = token.split('.');
-  if (parts.length !== 3) {
-    throw new Error('JWT must have 3 parts');
-  }
+
   const decoded = urlBase64Decode(parts[1]);
-  if (!decoded) {
-    throw new Error('Cannot decode the token');
+  if (decoded) {
+    return new AccessToken(JSON.parse(decoded) as IAccessToken);
+  } else {
+    return null;
   }
-  return JSON.parse(decoded);
 };

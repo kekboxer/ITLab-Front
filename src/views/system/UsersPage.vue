@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess">
       <template slot="header">
         Пользователи
-        <b-button variant="success" @click="showModal">Пригласить</b-button>
+        <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
       </template>
 
       <b-card-group columns class="mb-3">
@@ -48,7 +48,7 @@ import { validationMixin } from 'vuelidate';
 import { required, email } from 'vuelidate/lib/validators';
 
 import {
-  User,
+  IUser,
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
@@ -143,12 +143,16 @@ export default class UsersPage extends Vue {
   // Computed data //
   //////////////////
 
-  get users(): User[] {
+  get users(): IUser[] {
     return this.$store.getters[USERS_GET_ALL];
   }
 
   get profileId(): string {
     return this.$store.getters[PROFILE_GET];
+  }
+
+  get canInvite(): boolean {
+    return this.$g.hasRole('CanInviteToSystem');
   }
 }
 
@@ -163,14 +167,5 @@ export const usersPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import '@/styles/general.scss';
-
-.users-page {
-  .card {
-    @include theme-specific() {
-      background-color: getstyle(card-list-item-background-color);
-    }
-  }
-}
 </style>
 <!-- STYLE END -->

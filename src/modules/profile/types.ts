@@ -1,4 +1,4 @@
-import { User } from '@/modules/users';
+import { AccessToken } from '@/stuff';
 
 // local storage
 export const LOCAL_STORAGE_PROFILE_ID = 'user-id';
@@ -27,32 +27,22 @@ export const PROFILE_GET = 'PROFILE_GET';
 export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
 export const PROFILE_REFRESH_TOKEN = 'PROFILE_REFRESH_TOKEN';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
+export const PROFILE_HAS_ROLE = 'PROFILE_HAS_ROLE';
 
 // AuthorizationData //
 //////////////////////
 
-export interface AuthorizationData {
-  username: string;
-  password: string;
-}
-
-export class AuthorizationDataDefault implements AuthorizationData {
+export class AuthorizationDataDefault {
   public username: string = '';
   public password: string = '';
 }
 
+export interface IAuthorizationData extends AuthorizationDataDefault {}
+
 // RegistractionData //
 //////////////////////
 
-export interface RegistrationData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  accessToken: string;
-}
-
-export class RegistrationDataDefault implements RegistrationData {
+export class RegistrationDataDefault {
   public firstName: string = '';
   public lastName: string = '';
   public email: string = '';
@@ -60,17 +50,12 @@ export class RegistrationDataDefault implements RegistrationData {
   public accessToken: string = '';
 }
 
-// AccessToken //
-////////////////
-
-export interface AccessToken {
-  exp: number;
-}
+export interface IRegistrationData extends RegistrationDataDefault {}
 
 // UserSession //
 ////////////////
 
-export interface UserSession {
+export interface IUserSession {
   id: string;
   userAgent: string;
   createTime: Date;
@@ -79,18 +64,17 @@ export interface UserSession {
 // Settings //
 /////////////
 
-export interface Settings {
+export interface ISettings {
   theme: string;
 }
 
 // State //
 //////////
 
-export interface ProfileState {
+export interface IProfileState {
   profileId?: string;
-  accessToken?: string;
-  accessTokenDecoded?: AccessToken;
+  accessToken?: AccessToken;
   refreshToken?: string;
 
-  settings: Settings;
+  settings: ISettings;
 }

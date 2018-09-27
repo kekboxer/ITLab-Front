@@ -33,6 +33,34 @@ import {
   }
 })
 export default class App extends Vue {
+  // Component methods //
+  //////////////////////
+
+  public created() {
+    this.$watch('theme', (theme: string) => this.updateBrowserTitleColor());
+
+    this.updateBrowserTitleColor();
+  }
+
+  // Methods //
+  ////////////
+
+  public updateBrowserTitleColor() {
+    const color = this.theme === 'theme-dark' ? '#333333' : '#ffffff';
+
+    const metaList: string[] = [
+      'theme-color',
+      'msapplication-navbutton-color',
+      'apple-mobile-web-app-status-bar-style'
+    ];
+
+    metaList.forEach((meta) => {
+      const metaElement = document.querySelector(`meta[name=${meta}]`);
+      if (metaElement) {
+        metaElement.setAttribute('content', color);
+      }
+    });
+  }
 
   // Computed data //
   //////////////////

@@ -4,7 +4,7 @@ import { RootState } from '@/store';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { LayoutState } from './types';
+import { ILayoutState } from './types';
 
 export * from './types';
 
@@ -42,15 +42,20 @@ import { profilePageRoute } from '@/views/profile';
 
 import {
   // @ts-ignore
+  aboutPageRoute,
+  // @ts-ignore
   usersPageRoute,
   // @ts-ignore
   settingsPageRoute,
+  // @ts-ignore,
+  typeEditPageRoute,
   // @ts-ignore
   backendSelectionPageRoute
 } from '@/views/system';
 
-export const state: LayoutState = {
+export const state: ILayoutState = {
   stuff: [
+    aboutPageRoute,
     loginPageRoute,
     registrationPageRoute,
     processingAgreementPageRoute,
@@ -104,6 +109,12 @@ export const state: LayoutState = {
           pages: [usersPageRoute]
         },
         {
+          name: 'typeEdit',
+          title: 'Типы',
+          homeURL: '/type_edit',
+          pages: [typeEditPageRoute]
+        },
+        {
           name: 'profileSettings',
           title: 'Настройки',
           homeURL: '/settings',
@@ -114,7 +125,7 @@ export const state: LayoutState = {
   ]
 };
 
-export const layout: Module<LayoutState, RootState> = {
+export const layout: Module<ILayoutState, RootState> = {
   state,
   getters,
   actions,

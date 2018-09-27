@@ -3,7 +3,7 @@ import { MutationTree } from 'vuex';
 import { decodeJWT } from '@/stuff';
 
 import {
-  ProfileState,
+  IProfileState,
   LOCAL_STORAGE_PROFILE_ID,
   LOCAL_STORAGE_ACCESS_TOKEN,
   LOCAL_STORAGE_REFRESH_TOKEN,
@@ -14,10 +14,10 @@ import {
   PROFILE_SETTINGS_THEME_SET
 } from './types';
 
-import { User } from '@/modules/users';
+import { IUser } from '@/modules/users';
 
-export const mutations: MutationTree<ProfileState> = {
-  [PROFILE_SET]: (state, data?: string | User) => {
+export const mutations: MutationTree<IProfileState> = {
+  [PROFILE_SET]: (state, data?: string | IUser) => {
     state.profileId = data == null || typeof data === 'string' ? data : data.id;
 
     if (state.profileId) {
@@ -28,13 +28,7 @@ export const mutations: MutationTree<ProfileState> = {
   },
 
   [PROFILE_ACCESS_TOKEN_SET]: (state, token?: string) => {
-    state.accessToken = token;
-
-    if (token) {
-      state.accessTokenDecoded = decodeJWT(state.accessToken);
-    } else {
-      state.accessTokenDecoded = undefined;
-    }
+    state.accessToken = decodeJWT(token) || undefined;
 
     if (token) {
       localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, token);

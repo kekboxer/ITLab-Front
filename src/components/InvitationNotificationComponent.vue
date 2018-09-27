@@ -24,7 +24,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ role }}</b>
+            <b>{{ data.eventRole.title }}</b>
           </b-col>
         </b-row>
       </b-col>
@@ -51,7 +51,7 @@ import moment from 'moment';
 import 'vue-awesome/icons/clock';
 
 import {
-  Invitation,
+  IInvitationNotification,
   NOTIFICATION_INVITATION_ACCEPT,
   NOTIFICATION_INVITATION_REJECT
 } from '@/modules/notifications';
@@ -66,7 +66,7 @@ export default class InvitationNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: Invitation;
+  @Prop() public data!: IInvitationNotification;
 
   public currentState: State = State.Default;
 
@@ -89,12 +89,6 @@ export default class InvitationNotificationComponent extends Vue {
     return moment
       .duration(this.data.shiftDurationInMinutes, 'minutes')
       .humanize();
-  }
-
-  get role(): string {
-    return (
-      this.$g.ROLE_TRANSLATIONS.get(this.data.role.name) || this.data.role.name
-    );
   }
 
   get isInProcess(): boolean {

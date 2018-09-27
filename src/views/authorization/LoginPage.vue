@@ -47,7 +47,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
 import {
-  AuthorizationData,
+  IAuthorizationData,
   AuthorizationDataDefault,
   PROFILE_LOGIN
 } from '@/modules/profile';
@@ -66,7 +66,7 @@ export default class LoginPage extends Vue {
   ////////////////////
 
   public pageState: State = State.Default;
-  public authorizationData: AuthorizationData = new AuthorizationDataDefault();
+  public authorizationData: IAuthorizationData = new AuthorizationDataDefault();
 
   // Methods //
   ////////////

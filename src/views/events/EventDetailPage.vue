@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Событие&nbsp;
-        <b-button variant="warning" :to="'/events/edit/' + event.id">Изменить</b-button>
+        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEdit">Изменить</b-button>
       </template>
 
       <b-row>
@@ -62,15 +62,14 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
-import VueMarkdown from 'vue-markdown';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 
-import { Event, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
+import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
+import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 @Component({
   components: {
-    'vue-markdown': VueMarkdown,
     'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent
   }
@@ -81,7 +80,7 @@ export default class EventDetailPage extends Vue {
 
   public loadingInProcess: boolean = false;
   public notFound: boolean = false;
-  public event: Event = new EventDefault();
+  public event: IEvent = new EventDefault();
 
   // Component methods //
   //////////////////////
@@ -154,6 +153,10 @@ export default class EventDetailPage extends Vue {
     }
 
     return result;
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEvent');
   }
 }
 

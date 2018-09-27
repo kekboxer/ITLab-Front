@@ -1,4 +1,4 @@
-@import "@/styles/themes.scss";
+@import '@/styles/themes.scss';
 /* Input field with autocomplete */
 
 .autocomplete-input {
@@ -57,15 +57,26 @@
   }
 }
 
-.nav.nav-tabs .nav-item {
-  margin-bottom: 0;
-  .nav-link {
-    @include theme-specific() {
-      background-color: getstyle(page-background-color);
-    }
-    &.active {
+.nav.nav-tabs {
+  @include theme-specific(theme-light) {
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  @include theme-specific(theme-dark) {
+    border-bottom: 1px solid getstyle(card-list-item-background-color);
+  }
+
+  .nav-item {
+    margin-bottom: 0;
+    .nav-link {
       @include theme-specific() {
-        background-color: getstyle(form-control-background-color);
+        background-color: getstyle(page-background-color);
+      }
+      &.active {
+        @include theme-specific() {
+          color: getstyle(page-font-color);
+          background-color: getstyle(card-list-item-background-color);
+        }
       }
     }
   }
@@ -108,10 +119,16 @@
   }
 }
 
+.card {
+  @include theme-specific() {
+    background-color: getstyle(card-list-item-background-color);
+  }
+}
+
 /* markdown */
 
 .markdown {
-  input[type=checkbox] {
+  input[type='checkbox'] {
     pointer-events: none;
   }
 

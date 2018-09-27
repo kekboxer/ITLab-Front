@@ -4,15 +4,16 @@ import { RootState } from '@/store';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { EquipmentState } from './types';
+import { IEquipmentState } from './types';
 
 export * from './types';
 
-export const state: EquipmentState = {
-  equipment: []
+export const state: IEquipmentState = {
+  equipment: [],
+  equipmentTypes: []
 };
 
-export const equipment: Module<EquipmentState, RootState> = {
+export const equipment: Module<IEquipmentState, RootState> = {
   state,
   getters,
   actions,

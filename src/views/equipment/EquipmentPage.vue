@@ -39,7 +39,7 @@
             </template>
             <template slot="actions" slot-scope="data" style="overflow: auto">
               <span class="actions-cell">
-                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right">
+                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right" v-if="canEdit">
                   Изменить
                 </b-button>
                 <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
@@ -81,13 +81,13 @@ import 'vue-awesome/icons/times';
 import 'vue-awesome/icons/plus';
 
 import {
-  Equipment,
-  EquipmentType,
+  IEquipment,
+  IEquipmentType,
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_GET_ALL
 } from '@/modules/equipment';
 
-import { User, USERS_FETCH_ALL } from '@/modules/users';
+import { IUser, USERS_FETCH_ALL } from '@/modules/users';
 
 @Component({
   components: {
@@ -101,7 +101,7 @@ export default class EquipmentPage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
-  public users: User[] = [];
+  public users: IUser[] = [];
   public equipmentFilterString: string = '';
   public onlyFree: boolean = false;
 
@@ -113,7 +113,7 @@ export default class EquipmentPage extends Vue {
 
     this.$store
       .dispatch(USERS_FETCH_ALL)
-      .then((users: User[]) => {
+      .then((users: IUser[]) => {
         this.users = users;
         return this.$store.dispatch(EQUIPMENT_FETCH_ALL);
       })
@@ -161,7 +161,7 @@ export default class EquipmentPage extends Vue {
     }
   }
 
-  public onEquipmentTableRowClicked(data: Equipment) {
+  public onEquipmentTableRowClicked(data: IEquipment) {
     if (window.innerWidth < 1170) {
       this.$router.push('/equipment/' + data.id);
     }
@@ -190,7 +190,7 @@ export default class EquipmentPage extends Vue {
 
   get items() {
     return this.$store.getters[EQUIPMENT_GET_ALL].map(
-      (equipment: Equipment) => {
+      (equipment: IEquipment) => {
         const owner = this.users.find((user) => user.id === equipment.ownerId);
 
         return {
@@ -200,6 +200,10 @@ export default class EquipmentPage extends Vue {
         };
       }
     );
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEquipment');
   }
 }
 

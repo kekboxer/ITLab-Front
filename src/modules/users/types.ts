@@ -17,15 +17,7 @@ export const USERS_GET_ONE = 'USERS_GET_ONE';
 // User //
 /////////
 
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-}
-
-export class UserDefault implements User {
+export class UserDefault {
   public id: string = '';
   public firstName: string = '';
   public lastName: string = '';
@@ -33,9 +25,11 @@ export class UserDefault implements User {
   public phoneNumber: string = '';
 }
 
+export interface IUser extends UserDefault {}
+
 // State //
 //////////
 
-export interface UsersState {
-  users: User[];
+export interface IUsersState {
+  users: IUser[];
 }

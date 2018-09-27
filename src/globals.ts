@@ -1,17 +1,18 @@
-import Vue from 'vue';
 import 'globals';
+import store from '@/store';
+import { UserRole } from '@/stuff';
+import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 export class Globals {
-  public ROLE_TRANSLATIONS: Map<string, string> = new Map<string, string>([
-    ['Participant', 'Участник'],
-    ['Organizer', 'Организатор']
-  ]);
-
   public SYSTEM_NAME: string = 'ITLab';
 
   public DATETIME_FORMAT: string = 'DD.MM.YYYY HH:mm';
   public DATE_FORMAT: string = 'DD.MM.YYYY';
   public TIME_FORMAT: string = 'HH:mm';
+
+  public hasRole(userRole: UserRole): boolean {
+    return store.getters[PROFILE_HAS_ROLE](userRole);
+  }
 }
 
 const globals: Globals = new Globals();

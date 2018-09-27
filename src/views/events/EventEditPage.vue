@@ -78,7 +78,6 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
-import VueMarkdown from 'vue-markdown';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
 import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
@@ -87,16 +86,17 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
-  Event,
+  IEvent,
   EventDefault,
-  EventType,
+  IEventType,
   EventTypeDefault,
-  EventShift,
+  IEventShift,
   EVENTS_FETCH_ONE,
   EVENT_COMMIT,
   EVENT_DELETE,
   EventShiftDefault
 } from '@/modules/events';
+import { IPageMeta } from '@/modules/layout';
 
 const ADDRESS_ROWS_MAX = 4;
 const ADDRESS_LENGTH_MAX = 250;
@@ -109,7 +109,6 @@ enum State {
 
 @Component({
   components: {
-    'vue-markdown': VueMarkdown,
     'page-content-component': PageContentComponent,
     'event-shifts-component': EventShiftsComponent,
     'event-type-selection-component': EventTypeSelectionComponent
@@ -120,7 +119,7 @@ enum State {
       event: {
         eventType: {
           required,
-          selected: (eventType?: EventType) => eventType && eventType.id !== ''
+          selected: (eventType?: IEventType) => eventType && eventType.id !== ''
         },
         title: {
           required,
@@ -166,8 +165,8 @@ export default class EventEditPage extends Vue {
   // Event properties //
   /////////////////////
 
-  public event: Event = new EventDefault();
-  public eventShifts: EventShift[] = [];
+  public event: IEvent = new EventDefault();
+  public eventShifts: IEventShift[] = [];
 
   // Component methods //
   //////////////////////
@@ -248,7 +247,7 @@ export default class EventEditPage extends Vue {
     }
   }
 
-  public setEvent(event: Event) {
+  public setEvent(event: IEvent) {
     this.event = event;
     this.eventShifts = event.shifts || [];
   }
@@ -275,7 +274,10 @@ export default class EventEditPage extends Vue {
 export const eventEditPageRoute: RouteConfig = {
   path: '/events/edit/:id',
   name: 'EventEditPage',
-  component: EventEditPage
+  component: EventEditPage,
+  meta: {
+    allow: 'CanEditEvent'
+  } as IPageMeta
 };
 </script>
 <!-- SCRIPT END -->

@@ -5,8 +5,8 @@ import axios from 'axios';
 import { getResponseData } from '@/stuff';
 
 import {
-  UsersState,
-  User,
+  IUsersState,
+  IUser,
   USER_INVITE,
   USER_SEARCH,
   USERS_FETCH_ALL,
@@ -17,9 +17,9 @@ import {
   USERS_SET_ONE
 } from './types';
 
-import { Equipment } from '@/modules/equipment';
+import { IEquipment } from '@/modules/equipment';
 
-export const actions: ActionTree<UsersState, RootState> = {
+export const actions: ActionTree<IUsersState, RootState> = {
   [USER_INVITE]: ({}, { email }: { email: string }) => {
     return new Promise((resolve, reject) => {
       axios
@@ -50,7 +50,7 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`user?match=${encodeURIComponent(match)}&count=${all ? -1 : 5}`)
-        .then((response) => getResponseData<User[]>(response))
+        .then((response) => getResponseData<IUser[]>(response))
         .then((users) => resolve(users))
         .catch((error) => {
           console.log(USER_SEARCH, error);
@@ -63,7 +63,7 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('user?count=-1')
-        .then((response) => getResponseData<User[]>(response))
+        .then((response) => getResponseData<IUser[]>(response))
         .then((users) => {
           commit(USERS_SET_ALL, users);
           resolve(users);
@@ -79,7 +79,7 @@ export const actions: ActionTree<UsersState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get(`user/${id}`)
-        .then((response) => getResponseData<User>(response))
+        .then((response) => getResponseData<IUser>(response))
         .then((user) => {
           commit(USERS_SET_ONE, user);
           resolve(user);
@@ -93,7 +93,7 @@ export const actions: ActionTree<UsersState, RootState> = {
 
   [USER_ASSIGN_EQUIPMENT]: (
     {},
-    { equipment, user }: { equipment: Equipment; user: User | string | null }
+    { equipment, user }: { equipment: IEquipment; user: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
       let url: string = 'equipment/user';
@@ -107,7 +107,7 @@ export const actions: ActionTree<UsersState, RootState> = {
 
       axios
         .post(url, { id: equipment.id })
-        .then((response) => getResponseData<Equipment>(response))
+        .then((response) => getResponseData<IEquipment>(response))
         .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(USER_ASSIGN_EQUIPMENT, error);
@@ -118,7 +118,7 @@ export const actions: ActionTree<UsersState, RootState> = {
 
   [USER_REMOVE_EQUIPMENT]: (
     {},
-    { equipment, owner }: { equipment: Equipment; owner: User | string | null }
+    { equipment, owner }: { equipment: IEquipment; owner: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
       let url: string = 'equipment/user';
@@ -132,7 +132,7 @@ export const actions: ActionTree<UsersState, RootState> = {
 
       axios
         .delete(url, { data: { id: equipment.id } })
-        .then((response) => getResponseData<Equipment>(response))
+        .then((response) => getResponseData<IEquipment>(response))
         .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(USER_REMOVE_EQUIPMENT, error);

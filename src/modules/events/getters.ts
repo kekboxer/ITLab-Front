@@ -1,9 +1,17 @@
 import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
-import { EventsState, EVENTS_GET_ALL, EVENTS_GET_ONE } from './types';
+import {
+  IEventsState,
+  EVENTS_GET_ALL,
+  EVENTS_GET_ONE,
+  EVENT_TYPES_GET_ALL,
+  EVENT_TYPES_GET_ONE,
+  EVENT_ROLES_GET_ALL,
+  EVENT_ROLES_GET_ONE
+} from './types';
 
-export const getters: GetterTree<EventsState, RootState> = {
+export const getters: GetterTree<IEventsState, RootState> = {
   [EVENTS_GET_ALL]: (state) => {
     return ({
       beginTime,
@@ -25,9 +33,30 @@ export const getters: GetterTree<EventsState, RootState> = {
       });
     };
   },
+
   [EVENTS_GET_ONE]: (state) => {
     return (id: string) => {
       return state.events.find((v) => v.id === id);
+    };
+  },
+
+  [EVENT_TYPES_GET_ALL]: (state) => {
+    return state.eventTypes;
+  },
+
+  [EVENT_TYPES_GET_ONE]: (state) => {
+    return (id: string) => {
+      return state.eventTypes.find((v) => v.id === id);
+    };
+  },
+
+  [EVENT_ROLES_GET_ALL]: (state) => {
+    return state.eventRoles;
+  },
+
+  [EVENT_ROLES_GET_ONE]: (state) => {
+    return (id: string) => {
+      return state.eventRoles.find((v) => v.id === id);
     };
   }
 };

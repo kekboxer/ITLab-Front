@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="user-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :state="state" :without-adding="true" :can-clear="true">
+    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :state="state" :filter="filter" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
         <b>{{ data.item.email}}</b><br>{{ data.item.firstName }} {{ data.item.lastName }}
       </div>
@@ -18,7 +18,7 @@ import axios from 'axios';
 
 import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
 
-import { User, UserDefault, USER_SEARCH } from '@/modules/users';
+import { IUser, UserDefault, USER_SEARCH } from '@/modules/users';
 
 @Component({
   components: {
@@ -29,20 +29,22 @@ export default class UserSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: User;
+  @Prop() public value?: IUser;
 
   @Prop() public state?: boolean;
+
+  @Prop() public filter?: (user: IUser) => boolean;
 
   // Properties //
   ///////////////
 
-  public userSelected: User = new UserDefault();
+  public userSelected: IUser = new UserDefault();
 
   // Component mthods //
   /////////////////////
 
   public mounted() {
-    this.$watch('value', (value?: User) => {
+    this.$watch('value', (value?: IUser) => {
       this.userSelected = value ? value : new UserDefault();
     });
 
@@ -56,14 +58,14 @@ export default class UserSelectionComponent extends Vue {
   // Autocomplete input methods //
   ///////////////////////////////
 
-  public onStringify(user: User): string {
+  public onStringify(user: IUser): string {
     return user.email;
   }
 
   public onChange(input: string, cb: (result: object[]) => void) {
     this.$store
       .dispatch(USER_SEARCH, { match: input })
-      .then((users: User[]) => {
+      .then((users: IUser[]) => {
         cb(users);
       });
   }

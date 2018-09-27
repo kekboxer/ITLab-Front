@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess">
       <template slot="header">
         События&nbsp;
-        <b-button variant="success" to="events/edit/new">Добавить</b-button>
+        <b-button variant="success" to="events/edit/new" v-if="canEdit">Добавить</b-button>
       </template>
 
       <b-row v-for="event in eventsCurrent" :key="event.id">
@@ -47,8 +47,8 @@ import EventItemComponent from '@/components/EventItemComponent.vue';
 import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import {
-  Event,
-  EventType,
+  IEvent,
+  IEventType,
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
 } from '@/modules/events';
@@ -60,6 +60,9 @@ import {
   }
 })
 export default class EventsPage extends Vue {
+  // Properties //
+  ///////////////
+
   public loadingInProcess: boolean = true;
 
   public currentDate: Date = new Date();
@@ -67,7 +70,10 @@ export default class EventsPage extends Vue {
   public pastEventsLoaded: boolean = false;
   public eventsShowPast: boolean = false;
 
-  public beforeMount() {
+  // Component methods //
+  //////////////////////
+
+  public mounted() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length === 0;
 
     this.$store
@@ -79,6 +85,9 @@ export default class EventsPage extends Vue {
       });
   }
 
+  // Methods //
+  ////////////
+
   public togglePastEvents() {
     if (!this.pastEventsLoaded && !this.eventsShowPast) {
       this.$store.dispatch(EVENTS_FETCH_ALL);
@@ -87,6 +96,9 @@ export default class EventsPage extends Vue {
 
     this.eventsShowPast = !this.eventsShowPast;
   }
+
+  // Computed data //
+  //////////////////
 
   get eventsCurrent() {
     return this.$store.getters[EVENTS_GET_ALL]({
@@ -99,6 +111,10 @@ export default class EventsPage extends Vue {
       beginTime: this.currentDate,
       invert: true
     });
+  }
+
+  get canEdit(): boolean {
+    return this.$g.hasRole('CanEditEvent');
   }
 }
 

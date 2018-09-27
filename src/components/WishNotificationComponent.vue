@@ -25,7 +25,7 @@
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
-            <b>{{ role }}</b>
+            <b>{{ data.eventRole.title }}</b>
           </b-col>
         </b-row>
         <b-row>
@@ -60,7 +60,7 @@ import MailLinkComponent from '@/components/MailLinkComponent.vue';
 import 'vue-awesome/icons/clock';
 
 import {
-  Wish,
+  IWishNotification,
   NOTIFICATION_WISH_ACCEPT,
   NOTIFICATION_WISH_REJECT
 } from '@/modules/notifications';
@@ -80,7 +80,7 @@ export default class WishNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: Wish;
+  @Prop() public data!: IWishNotification;
 
   public currentState: State = State.Default;
 
@@ -94,12 +94,6 @@ export default class WishNotificationComponent extends Vue {
 
   get beginTime(): string {
     return moment(this.data.beginTime).format();
-  }
-
-  get role(): string {
-    const roleName = this.data.role.name;
-
-    return this.$g.ROLE_TRANSLATIONS.get(roleName) || roleName;
   }
 
   get targetParticipantsCount(): string {

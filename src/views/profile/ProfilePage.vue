@@ -84,8 +84,8 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import { PROFILE_GET, PROFILE_COMMIT } from '@/modules/profile';
-import { USERS_FETCH_ONE, User, UserDefault } from '@/modules/users';
-import { Equipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
+import { USERS_FETCH_ONE, IUser, UserDefault } from '@/modules/users';
+import { IEquipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
 
 enum FormState {
   Default,
@@ -124,9 +124,9 @@ export default class ProfilePage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
-  public profileData: User = new UserDefault();
+  public profileData: IUser = new UserDefault();
   public formState: FormState = FormState.Default;
-  public equipment: Equipment[] = [];
+  public equipment: IEquipment[] = [];
 
   // Component methods //
   //////////////////////

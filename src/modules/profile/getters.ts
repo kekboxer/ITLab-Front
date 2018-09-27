@@ -2,14 +2,16 @@ import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
 import {
-  ProfileState,
+  IProfileState,
   PROFILE_GET,
   PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET,
-  PROFILE_REFRESH_TOKEN
+  PROFILE_REFRESH_TOKEN,
+  PROFILE_HAS_ROLE
 } from './types';
+import { UserRole } from '@/stuff';
 
-export const getters: GetterTree<ProfileState, RootState> = {
+export const getters: GetterTree<IProfileState, RootState> = {
   [PROFILE_GET]: (state) => {
     return state.profileId;
   },
@@ -17,8 +19,7 @@ export const getters: GetterTree<ProfileState, RootState> = {
   [PROFILE_AUTHORIZED]: (state) => {
     return (
       state.accessToken !== undefined &&
-      state.accessTokenDecoded !== undefined &&
-      state.accessTokenDecoded.exp * 1000 > Date.now()
+      state.accessToken.expirationDate.getTime() > Date.now()
     );
   },
 
@@ -28,5 +29,11 @@ export const getters: GetterTree<ProfileState, RootState> = {
 
   [PROFILE_SETTINGS_THEME_GET]: (state) => {
     return state.settings.theme;
+  },
+
+  [PROFILE_HAS_ROLE]: (state) => {
+    return (userRole: UserRole) =>
+      state.accessToken !== undefined &&
+      state.accessToken.roles.includes(userRole);
   }
 };

@@ -2,13 +2,13 @@ import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
 import {
-  NotificationsState,
+  INotificationsState,
   NOTIFICATION_INVITATIONS_GET_ALL,
   NOTIFICATION_WISHES_GET_ALL,
   NOTIFICATIONS_GET_COUNT
 } from './types';
 
-export const getters: GetterTree<NotificationsState, RootState> = {
+export const getters: GetterTree<INotificationsState, RootState> = {
   [NOTIFICATION_INVITATIONS_GET_ALL]: (state) => {
     return state.eventInvitations;
   },

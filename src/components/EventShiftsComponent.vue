@@ -67,7 +67,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.eventRole.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -83,7 +83,7 @@
                       <b-row>
                         <b-col cols="auto mr-auto">
                           <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ getRoleTranslation(participant.role) }}</span><br>
+                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.eventRole.title }}</span><br>
                           <mail-link :email="participant.user.email" />
                         </b-col>
                         <b-col cols="auto" v-if="editable">
@@ -113,7 +113,7 @@
                         </b-col>
                       </b-row>
                     </li>
-                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(place)">
+                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(shift, place)">
                       Добавить оборудование
                     </li>
                   </div>
@@ -201,19 +201,19 @@
         </b-form-group>
 
         <b-form-group label="Роль">
-          <b-form-select v-model="placeParticipantData.role" :state="!$v.placeParticipantData.role.$invalid" :options="participantRoleOptions"></b-form-select>
+          <b-form-select v-model="placeParticipantData.eventRole" :state="!$v.placeParticipantData.eventRole.$invalid" :options="eventRoleOptions"></b-form-select>
         </b-form-group>
       </template>
 
       <template v-if="fieldsVisivility.equipment">
         <b-form-group label="Оборудование">
-          <equipment-selection-component v-model="placeEquipmentModalData" :state="!$v.placeEquipmentModalData.$invalid"></equipment-selection-component>
+          <equipment-selection-component v-model="placeEquipmentModalData" :filter="equipmentSelectionFilter" :state="!$v.placeEquipmentModalData.$invalid"></equipment-selection-component>
         </b-form-group>
       </template>
 
       <template v-if="fieldsVisivility.application">
         <b-form-group label="Роль">
-          <b-form-select v-model="applicationModalData" :options="participantRoleOptions" :state="!$v.applicationModalData.$invalid"></b-form-select>
+          <b-form-select v-model="applicationModalData" :options="eventRoleOptions" :state="!$v.applicationModalData.$invalid"></b-form-select>
         </b-form-group>
       </template>
 
@@ -222,7 +222,7 @@
         <b-button variant="primary" :disabled="!isModalDataInvalid" @click="submitModal(); modalShow = false">Подтвердить</b-button>
       </template>
     </b-modal>
-    <!-- TEMPALTE END -->
+    <!-- MODAL END -->
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -247,18 +247,24 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength, helpers } from 'vuelidate/lib/validators';
 
 import {
-  EventShift,
+  IEventShift,
   EventShiftDefault,
-  EventPlace,
+  IEventPlace,
   EventPlaceDefault,
-  EventParticipant,
-  EventEquipment,
-  EventUserRole,
-  EventUserRoleDefault,
-  EventParticipantDefault
+  IEventEquipment,
+  IEventParticipant,
+  EventParticipantDefault,
+  IEventRole,
+  EventRoleDefault,
+  EVENT_ROLES_FETCH_ALL
 } from '@/modules/events';
-import { Equipment, EquipmentDefault, equipment } from '@/modules/equipment';
-import { UserDefault, User } from '@/modules/users';
+
+import {
+  IEquipment,
+  EquipmentDefault,
+  IEquipmentType
+} from '@/modules/equipment';
+import { UserDefault, IUser } from '@/modules/users';
 import { PROFILE_WISH } from '@/modules/profile';
 import { getNounDeclension } from '@/stuff';
 
@@ -276,7 +282,10 @@ enum ModalState {
 const shiftRangeModalValidator = (component: EventShiftsComponent) => {
   return () => {
     const shiftModalData = component.shiftModalData;
-    return shiftModalData && moment(shiftModalData.beginTime) <= moment(shiftModalData.endTime);
+    return (
+      shiftModalData &&
+      moment(shiftModalData.beginTime) <= moment(shiftModalData.endTime)
+    );
   };
 };
 
@@ -319,20 +328,20 @@ const shiftRangeModalValidator = (component: EventShiftsComponent) => {
       placeParticipantData: {
         user: {
           required,
-          selected: (user?: User) => user && user.id !== ''
+          selected: (user?: IUser) => user && user.id !== ''
         },
-        role: {
+        eventRole: {
           required,
-          selected: (role?: EventUserRole) => role && role.id !== ''
+          selected: (eventRole?: IEventRole) => eventRole && eventRole.id !== ''
         }
       },
       placeEquipmentModalData: {
         required,
-        selected: (equipment?: Equipment) => equipment && equipment.id !== ''
+        selected: (equipment?: IEquipment) => equipment && equipment.id !== ''
       },
       applicationModalData: {
         required,
-        selected: (role?: EventUserRole) => role && role.id !== ''
+        selected: (eventRole?: IEventRole) => eventRole && eventRole.id !== ''
       }
     };
   }
@@ -341,7 +350,7 @@ export default class EventShiftsComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: EventShift[];
+  @Prop() public value?: IEventShift[];
 
   // Properties //
   ///////////////
@@ -361,15 +370,17 @@ export default class EventShiftsComponent extends Vue {
 
   public modalState: ModalState = ModalState.Hidden;
 
-  public participantRoleOptions: Array<{
-    value: EventUserRole;
+  public eventRoleOptions: Array<{
+    value: IEventRole;
     text: string;
   }> = [];
+
+  public equipmentSelectionFilter?: (equipment: IEquipment) => boolean;
 
   // Modal data //
   ///////////////
 
-  public shiftModalData: EventShift = new EventShiftDefault();
+  public shiftModalData: IEventShift = new EventShiftDefault();
   public shiftAdditionalModalData: {
     clone: boolean;
     cloneParticipants: boolean;
@@ -383,25 +394,25 @@ export default class EventShiftsComponent extends Vue {
     placeCount: null,
     placeParticipantCount: null
   };
-  public placeModalData: EventPlace = new EventPlaceDefault();
-  public placeParticipantData: EventParticipant | null = null;
-  public placeEquipmentModalData: Equipment | null = null;
-  public applicationModalData: EventUserRole | null = null;
+  public placeModalData: IEventPlace = new EventPlaceDefault();
+  public placeParticipantData: IEventParticipant | null = null;
+  public placeEquipmentModalData: IEquipment | null = null;
+  public applicationModalData: IEventRole | null = null;
 
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$watch('value', (shifts?: EventShift[]) => {
+    this.$watch('value', (shifts?: IEventShift[]) => {
       this.value = shifts ? shifts : [];
     });
 
-    this.fetchUserRoles().then((result) => {
-      const participantRoles: EventUserRole[] = result as EventUserRole[];
-      this.participantRoleOptions = participantRoles.map((v) => {
+    this.$store.dispatch(EVENT_ROLES_FETCH_ALL).then((result: IEventRole[]) => {
+      const eventRoles: IEventRole[] = result;
+      this.eventRoleOptions = eventRoles.map((v) => {
         return {
           value: v,
-          text: this.$g.ROLE_TRANSLATIONS.get(v.name) || v.name
+          text: v.title
         };
       });
     });
@@ -462,7 +473,11 @@ export default class EventShiftsComponent extends Vue {
       case ModalState.ShiftEdit:
       case ModalState.ShiftCreation:
         return (
-          (this.$v.shiftModalData && !this.$v.shiftModalData.$invalid) || false
+          (this.$v.shiftModalData &&
+            !this.$v.shiftModalData.$invalid &&
+            this.$v.shiftAdditionalModalData &&
+            !this.$v.shiftAdditionalModalData.$invalid) ||
+          false
         );
 
       case ModalState.PlaceEdit:
@@ -500,7 +515,7 @@ export default class EventShiftsComponent extends Vue {
   // Shift handlers //
   ///////////////////
 
-  public getShiftEndTime(shift: EventShift): string {
+  public getShiftEndTime(shift: IEventShift): string {
     const shiftBeginDay = moment(shift.beginTime).startOf('day');
     const shiftEndDay = moment(shift.endTime).startOf('day');
 
@@ -511,7 +526,7 @@ export default class EventShiftsComponent extends Vue {
     }
   }
 
-  public getShiftDuration(shift: EventShift): string {
+  public getShiftDuration(shift: IEventShift): string {
     return moment
       .duration(moment(shift.endTime).diff(moment(shift.beginTime)))
       .humanize();
@@ -521,7 +536,9 @@ export default class EventShiftsComponent extends Vue {
     if (
       (shiftIndex && !this.value) ||
       this.shiftModalData == null ||
-      (this.$v.shiftModalData && this.$v.shiftModalData.$invalid)
+      ((this.$v.shiftModalData && this.$v.shiftModalData.$invalid) ||
+        (this.$v.shiftAdditionalModalData &&
+          this.$v.shiftAdditionalModalData.$invalid))
     ) {
       return;
     }
@@ -546,7 +563,7 @@ export default class EventShiftsComponent extends Vue {
             if (currentPlace.delete === true) {
               return places;
             } else {
-              const newPlace: EventPlace = new EventPlaceDefault();
+              const newPlace: IEventPlace = new EventPlaceDefault();
               newPlace.new = true;
               newPlace.targetParticipantsCount =
                 currentPlace.targetParticipantsCount;
@@ -554,13 +571,13 @@ export default class EventShiftsComponent extends Vue {
 
               if (this.shiftAdditionalModalData.cloneParticipants) {
                 const participantsReducer = (
-                  participants: EventParticipant[],
-                  currentParticipant: EventParticipant
+                  participants: IEventParticipant[],
+                  currentParticipant: IEventParticipant
                 ) => {
                   if (currentParticipant.delete === true) {
                     return participants;
                   } else {
-                    const newParticipant: EventParticipant = Object.assign(
+                    const newParticipant: IEventParticipant = Object.assign(
                       {},
                       currentParticipant
                     );
@@ -571,11 +588,11 @@ export default class EventShiftsComponent extends Vue {
                 };
 
                 newPlace.invited = currentPlace.participants
-                  .reduce(participantsReducer, new Array<EventParticipant>())
+                  .reduce(participantsReducer, new Array<IEventParticipant>())
                   .concat(
                     currentPlace.invited.reduce(
                       participantsReducer,
-                      new Array<EventParticipant>()
+                      new Array<IEventParticipant>()
                     )
                   );
               }
@@ -586,7 +603,7 @@ export default class EventShiftsComponent extends Vue {
                     if (currentEquipment.delete === true) {
                       return equipment;
                     } else {
-                      const newEquipment: EventEquipment = Object.assign(
+                      const newEquipment: IEventEquipment = Object.assign(
                         {},
                         currentEquipment
                       );
@@ -595,21 +612,21 @@ export default class EventShiftsComponent extends Vue {
                       return equipment.concat(newEquipment);
                     }
                   },
-                  new Array<Equipment>()
+                  new Array<IEquipment>()
                 );
               }
 
               return places.concat(newPlace);
             }
           },
-          new Array<EventPlace>()
+          new Array<IEventPlace>()
         );
       } else if (
         this.shiftAdditionalModalData.placeCount &&
         this.shiftAdditionalModalData.placeCount > 0
       ) {
         const newPlace = () => {
-          const place: EventPlace = new EventPlaceDefault();
+          const place: IEventPlace = new EventPlaceDefault();
           place.targetParticipantsCount =
             this.shiftAdditionalModalData.placeParticipantCount || 0;
           return place;
@@ -700,25 +717,29 @@ export default class EventShiftsComponent extends Vue {
   // Place handlers //
   ///////////////////
 
-  public getPlaceTargetParticipantsCount(place: EventPlace): string {
+  public getPlaceTargetParticipantsCount(place: IEventPlace): string {
     if (place.targetParticipantsCount === 0) {
       return 'Участники не требуются';
     }
+    const countParticipant = place.wishers.length + place.invited.length + place.participants.length;
 
-    const nounNeed = getNounDeclension(place.targetParticipantsCount, [
+    if (countParticipant === 0) {
+      const nounNeed = getNounDeclension(place.targetParticipantsCount, [
       'Нужен',
       'Нужно',
       'Нужно'
-    ]);
-    const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
+      ]);
+      const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
       'участник',
       'участника',
       'участников'
-    ]);
-    return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
+      ]);
+      return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
+    }
+    return `Участников: ${countParticipant} из ${place.targetParticipantsCount}`;
   }
 
-  public onEditPlace(shift: EventShift, placeIndex?: number) {
+  public onEditPlace(shift: IEventShift, placeIndex?: number) {
     if (
       this.placeModalData == null ||
       (this.$v.placeModalData && this.$v.placeModalData.$invalid)
@@ -740,7 +761,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public removePlace(shift: EventShift, placeIndex: number) {
+  public removePlace(shift: IEventShift, placeIndex: number) {
     const place = shift.places[placeIndex];
     if (place.new === true) {
       Vue.delete(shift.places, placeIndex);
@@ -751,11 +772,11 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public canDeletePlace(shift: EventShift): boolean {
+  public canDeletePlace(shift: IEventShift): boolean {
     return shift.places.filter((v) => !v.delete).length > 1;
   }
 
-  public showPlaceModal(shift: EventShift, placeIndex: number | undefined) {
+  public showPlaceModal(shift: IEventShift, placeIndex: number | undefined) {
     let newState: ModalState;
 
     if (placeIndex != null) {
@@ -784,7 +805,7 @@ export default class EventShiftsComponent extends Vue {
   // Place participant handlers //
   ///////////////////////////////
 
-  public onAddPlaceParticipant(place: EventPlace) {
+  public onAddPlaceParticipant(place: IEventPlace) {
     if (
       this.placeParticipantData == null ||
       (this.$v.placeParticipantData && this.$v.placeParticipantData.$invalid)
@@ -794,15 +815,15 @@ export default class EventShiftsComponent extends Vue {
 
     const participant = new EventParticipantDefault();
     participant.user = this.placeParticipantData.user;
-    participant.role = this.placeParticipantData.role;
+    participant.eventRole = this.placeParticipantData.eventRole;
 
     const existingParticipantIndex = place.invited.findIndex(
       (p) =>
         p.user.id === participant.user.id &&
-        (p.role === participant.role ||
-          (p.role != null &&
-            participant.role != null &&
-            p.role.id === participant.role.id))
+        (p.eventRole === participant.eventRole ||
+          (p.eventRole != null &&
+            participant.eventRole != null &&
+            p.eventRole.id === participant.eventRole.id))
     );
 
     if (existingParticipantIndex === -1) {
@@ -815,7 +836,7 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public removePlaceParticipant(
-    participantsGroup: EventParticipant[],
+    participantsGroup: IEventParticipant[],
     participantIndex: number
   ) {
     const participant = participantsGroup[participantIndex];
@@ -828,7 +849,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public showPlaceInvitedParticipantModal(place: EventPlace) {
+  public showPlaceInvitedParticipantModal(place: IEventPlace) {
     this.placeParticipantData = new EventParticipantDefault();
     this.submitModal = () => this.onAddPlaceParticipant(place);
     this.modalState = ModalState.ParticipantInvitation;
@@ -837,11 +858,12 @@ export default class EventShiftsComponent extends Vue {
   // Place equipment handlers //
   /////////////////////////////
 
-  public onAddPlaceEquipment(place: EventPlace) {
+  public onAddPlaceEquipment(shift: IEventShift, place: IEventPlace) {
     if (
       !this.placeEquipmentModalData ||
       (this.$v.placeEquipmentModalData &&
-        this.$v.placeEquipmentModalData.$invalid)
+        this.$v.placeEquipmentModalData.$invalid) ||
+      !this.canAddEquipment(shift, place, this.placeEquipmentModalData)
     ) {
       return;
     }
@@ -861,7 +883,7 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public removePlaceEquipment(place: EventPlace, equipmentIndex: number) {
+  public removePlaceEquipment(place: IEventPlace, equipmentIndex: number) {
     const equipment = place.equipment[equipmentIndex];
     if (equipment.new === true) {
       Vue.delete(place.equipment, equipmentIndex);
@@ -872,21 +894,34 @@ export default class EventShiftsComponent extends Vue {
     this.onInput();
   }
 
-  public showPlaceEquipmentModal(place: EventPlace) {
+  public showPlaceEquipmentModal(shift: IEventShift, place: IEventPlace) {
+    this.equipmentSelectionFilter = (equipment: IEquipment) =>
+      this.canAddEquipment(shift, place, equipment);
+
     this.placeEquipmentModalData = null;
-    this.submitModal = () => this.onAddPlaceEquipment(place);
+    this.submitModal = () => this.onAddPlaceEquipment(shift, place);
     this.modalState = ModalState.EquipmentAdding;
+  }
+
+  public canAddEquipment(
+    shift: IEventShift,
+    place: IEventPlace,
+    equipment: IEquipment
+  ) {
+    return !shift.places.some((p) =>
+      p.equipment.some((e) => e.delete !== true && e.id === equipment.id)
+    );
   }
 
   // Application handlers
 
-  public onCreateApplication(place: EventPlace) {
+  public onCreateApplication(place: IEventPlace) {
     if (this.$v.applicationModalData && this.$v.applicationModalData.$invalid) {
       return;
     }
 
     this.$store
-      .dispatch(PROFILE_WISH, { place, role: this.applicationModalData })
+      .dispatch(PROFILE_WISH, { place, eventRole: this.applicationModalData })
       .then((response) => {
         this.$notify({
           title: 'Заявка отправлена',
@@ -903,7 +938,7 @@ export default class EventShiftsComponent extends Vue {
       });
   }
 
-  public showApplicationModal(shift: EventShift, placeIndex: number) {
+  public showApplicationModal(shift: IEventShift, placeIndex: number) {
     if (placeIndex < 0 || placeIndex >= shift.places.length) {
       return;
     }
@@ -917,26 +952,7 @@ export default class EventShiftsComponent extends Vue {
   // Computed data //
   //////////////////
 
-  public fetchUserRoles() {
-    return new Promise((resolve, reject) => {
-      axios
-        .get('roles')
-        .then((response) => {
-          const body = response.data;
-          if (body.statusCode === 1) {
-            const roles: EventUserRole[] = body.data;
-            resolve(roles);
-          } else {
-            reject();
-          }
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  }
-
-  get eventShifts(): EventShift[] {
+  get eventShifts(): IEventShift[] {
     return this.value
       ? this.value.sort((a, b) => {
           if (a.beginTime < b.beginTime) {
@@ -948,10 +964,6 @@ export default class EventShiftsComponent extends Vue {
           }
         })
       : [];
-  }
-
-  public getRoleTranslation(role: EventUserRole): string {
-    return this.$g.ROLE_TRANSLATIONS.get(role.name) || role.name;
   }
 }
 </script>
