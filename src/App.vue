@@ -8,7 +8,7 @@
       </template>
 
       <div class="content-wrapper">
-        <router-view/>
+        <router-view />
       </div>
     </div>
   </div>
@@ -19,7 +19,6 @@
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Meta } from '@/stuff';
 
 import SidebarComponent from '@/components/SidebarComponent.vue';
 
@@ -34,9 +33,6 @@ import {
   }
 })
 export default class App extends Vue {
-  // Meta information //
-  /////////////////////
-
   // Component methods //
   //////////////////////
 

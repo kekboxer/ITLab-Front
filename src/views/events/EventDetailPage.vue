@@ -35,10 +35,10 @@
               <template v-if="showElapsed && elapsedTime">
                 (До события {{ elapsedTime }})<br>
               </template>
-              <br>
-              <b>Адрес:</b><br>
-              <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
-              <hr class="d-block d-md-none">
+                <br>
+                <b>Адрес:</b><br>
+                <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
+                <hr class="d-block d-md-none">
             </b-col>
           </b-row>
           <hr>
@@ -61,6 +61,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
+import { Meta } from '@/stuff';
 
 import PageContentComponent from '@/components/PageContentComponent.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
@@ -82,6 +83,18 @@ export default class EventDetailPage extends Vue {
   public notFound: boolean = false;
   public event: IEvent = new EventDefault();
 
+  public pageTitle: string = 'loading...';
+
+  // Meta information //
+  /////////////////////
+
+  @Meta
+  public metaInfo() {
+    return {
+      title: this.pageTitle
+    };
+  }
+
   // Component methods //
   //////////////////////
 
@@ -94,6 +107,7 @@ export default class EventDetailPage extends Vue {
         .dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
           this.event = event;
+          this.pageTitle = this.event.title;
           this.loadingInProcess = false;
         })
         .catch((error) => {
