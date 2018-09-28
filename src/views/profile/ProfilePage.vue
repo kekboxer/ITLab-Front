@@ -34,7 +34,7 @@
           <hr>
           <b-form @submit.prevent="onSubmitPassword">
             <b-form-group label="Текущий пароль">
-              <b-form-input type="password" v-model.trim="passwordData.currentPassword" :state="!$v.passwordData.currentPassword.$invalid">
+              <b-form-input type="password" v-model.trim="passwordData.currentPassword" :state="!$v.passwordData.currentPassword.$invalid ? null : false">
               </b-form-input>
             </b-form-group>
 
@@ -43,7 +43,7 @@
               </b-form-input>
             </b-form-group>
 
-            <b-form-group label="Номер телефона">
+            <b-form-group label="Ещё раз">
               <b-form-input type="password" v-model.trim="passwordData.newPasswordRepeat" :state="!$v.passwordData.newPasswordRepeat.$invalid">
               </b-form-input>
             </b-form-group>
@@ -152,6 +152,7 @@ enum FormState {
           maxLength: maxLength(32)
         },
         newPasswordRepeat: {
+          required,
           sameAsPassword: sameAs('newPassword')
         }
       }
@@ -231,6 +232,7 @@ export default class ProfilePage extends Vue {
           duration: 1500,
           type: 'error'
         });
+        this.passwordData.currentPassword = '';
         this.passwordFormState = FormState.Default;
       });
   }
