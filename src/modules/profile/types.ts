@@ -84,7 +84,7 @@ export interface IPasswordRestoreData extends PasswordRestoreDataDefault {}
 
 export class PasswordRequestDataDefault {
   public email: string = '';
-  public redirectUrl: string = '';
+  public redirectUrl: string = window.location.origin;
 }
 
 export interface IPasswordRequestData extends PasswordRequestDataDefault {}
