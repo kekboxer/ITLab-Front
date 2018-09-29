@@ -16,6 +16,8 @@ import {
   // @ts-ignore
   registrationPageRoute,
   // @ts-ignore
+  passwordRestorePageRoute,
+  // @ts-ignore
   processingAgreementPageRoute
 } from '@/views/authorization';
 
@@ -58,6 +60,7 @@ export const state: ILayoutState = {
     aboutPageRoute,
     loginPageRoute,
     registrationPageRoute,
+    passwordRestorePageRoute,
     processingAgreementPageRoute,
     backendSelectionPageRoute
   ],

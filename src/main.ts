@@ -43,6 +43,7 @@ Vue.use(VueNotifications);
 
 import VueMarkdown from 'vue-markdown';
 
+VueMarkdown.props.html.default = false;
 VueMarkdown.props.anchorAttributes.default = () => ({ target: '_blank' });
 Vue.component('vue-markdown', VueMarkdown);
 

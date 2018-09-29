@@ -2,24 +2,34 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
-import { getResponseData } from '@/stuff';
+import {
+  getResponseData,
+  createResponseCheckHandler,
+  createErrorDataHandler
+} from '@/stuff';
 
 import {
   IProfileState,
   IAuthorizationData,
   IRegistrationData,
+  IPasswordChangeData,
+  IPasswordRestoreData,
   IUserSession,
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_REFRESH_ACCESS,
   PROFILE_CREATE,
   PROFILE_WISH,
+  PROFILE_CHANGE_PASSWORD,
+  PROFILE_REQUEST_PASSWORD,
+  PROFILE_RESTORE_PASSWORD,
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SET,
   PROFILE_ACCESS_TOKEN_SET,
   PROFILE_REFRESH_TOKEN_SET,
-  PROFILE_COMMIT
+  PROFILE_COMMIT,
+  IPasswordRequestData
 } from './types';
 
 import { IUser } from '@/modules/users';
@@ -60,9 +70,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
         .post('authentication/login', authorizationData)
         .then((response) => getResponseData<LoginResponse>(response))
         .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
-        .catch((error) => {
-          reject(error);
-        });
+        .catch(createErrorDataHandler(PROFILE_LOGIN, reject));
     });
   },
 
@@ -84,10 +92,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
         .post('authentication/refresh', data)
         .then((response) => getResponseData<LoginResponse>(response))
         .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
-        .catch((error) => {
-          console.log(PROFILE_REFRESH_ACCESS, error);
-          reject(error);
-        });
+        .catch(createErrorDataHandler(PROFILE_REFRESH_ACCESS, reject));
     });
   },
 
@@ -95,11 +100,8 @@ export const actions: ActionTree<IProfileState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .post('account', registrationData)
-        .then((response) => resolve())
-        .catch((error) => {
-          console.log(PROFILE_CREATE, error);
-          reject(error);
-        });
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_CREATE, reject));
     });
   },
 
@@ -117,19 +119,8 @@ export const actions: ActionTree<IProfileState, RootState> = {
 
       axios
         .post(`event/wish/${placeId}/${eventRoleId}`)
-        .then((response) => {
-          const body = response.data;
-
-          if (body.statusCode && body.statusCode === 1) {
-            resolve();
-          } else {
-            reject();
-          }
-        })
-        .catch((error) => {
-          console.log(PROFILE_WISH, error);
-          reject(error);
-        });
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_WISH, reject));
     });
   },
 
@@ -146,10 +137,38 @@ export const actions: ActionTree<IProfileState, RootState> = {
           commit(PROFILE_SET, user);
           resolve(user);
         })
-        .catch((error) => {
-          console.log(PROFILE_COMMIT, error);
-          reject(error);
-        });
+        .catch(createErrorDataHandler(PROFILE_COMMIT, reject));
+    });
+  },
+
+  [PROFILE_CHANGE_PASSWORD]: ({}, data: IPasswordChangeData) => {
+    return new Promise((resolve, reject) => {
+      delete data.newPasswordRepeat;
+
+      axios
+        .put('account/password', data)
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_CHANGE_PASSWORD, reject));
+    });
+  },
+
+  [PROFILE_REQUEST_PASSWORD]: ({}, data: IPasswordRequestData) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('account/password/requestreset', data)
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_REQUEST_PASSWORD, reject));
+    });
+  },
+
+  [PROFILE_RESTORE_PASSWORD]: ({}, data: IPasswordRestoreData) => {
+    return new Promise((resolve, reject) => {
+      delete data.newPasswordRepeat;
+
+      axios
+        .post('account/password/reset', data)
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_RESTORE_PASSWORD, reject));
     });
   },
 
@@ -158,11 +177,8 @@ export const actions: ActionTree<IProfileState, RootState> = {
       axios
         .get('authentication/refresh')
         .then((response) => getResponseData<IUserSession>(response))
-        .then((sessions) => resolve(sessions))
-        .catch((error) => {
-          console.log(PROFILE_SESSIONS_FETCH, error);
-          reject(error);
-        });
+        .then(resolve)
+        .catch(createErrorDataHandler(PROFILE_SESSIONS_FETCH, reject));
     });
   },
 
@@ -181,19 +197,8 @@ export const actions: ActionTree<IProfileState, RootState> = {
         .delete('authentication/refresh', {
           data: sessionIds
         })
-        .then((response) => {
-          const body = response.data;
-
-          if (body.statusCode && body.statusCode === 1) {
-            resolve();
-          } else {
-            reject();
-          }
-        })
-        .catch((error) => {
-          console.log(PROFILE_SESSIONS_DELETE, error);
-          reject(error);
-        });
+        .then(createResponseCheckHandler(resolve))
+        .catch(createErrorDataHandler(PROFILE_SESSIONS_DELETE, reject));
     });
   }
 };

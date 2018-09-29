@@ -8,13 +8,9 @@
 
       <b-row>
         <b-col cols="12" md="6">
-          <h4>Общая информация</h4>
+          <h4>{{ profileData.email }}</h4>
           <hr>
           <b-form @submit.prevent="onSubmitProfile">
-            <p>
-              <b>{{ profileData.email }}</b>
-            </p>
-
             <b-form-group label="Имя">
               <b-form-input type="text" v-model.trim="profileData.firstName" :state="!$v.profileData.firstName.$invalid">
               </b-form-input>
@@ -30,11 +26,34 @@
               </b-form-input>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isFormInProcess">Сохранить</b-button>
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess">Сохранить</b-button>
           </b-form>
         </b-col>
+        <b-col cols="12" md="6" class="mt-5 mt-md-0">
+          <h4>Смена пароля</h4>
+          <hr>
+          <b-form @submit.prevent="onSubmitPassword">
+            <b-form-group label="Текущий пароль">
+              <b-form-input type="password" v-model.trim="passwordData.currentPassword" :state="!$v.passwordData.currentPassword.$invalid ? null : false">
+              </b-form-input>
+            </b-form-group>
 
-        <b-col cols="12" md="6" class="mt-3 mt-md-0">
+            <b-form-group label="Новый пароль">
+              <b-form-input type="password" v-model.trim="passwordData.newPassword" :state="!$v.passwordData.newPassword.$invalid">
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Ещё раз">
+              <b-form-input type="password" v-model.trim="passwordData.newPasswordRepeat" :state="!$v.passwordData.newPasswordRepeat.$invalid">
+              </b-form-input>
+            </b-form-group>
+
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.passwordData.$invalid || isPasswordFormInProcess">Сохранить</b-button>
+          </b-form>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col class="mt-5">
           <h4>Оборудование</h4>
           <hr>
 
@@ -59,10 +78,6 @@
           </template>
         </b-col>
       </b-row>
-      <hr>
-      <b-row>
-
-      </b-row>
     </page-content-component>
   </div>
 </template>
@@ -81,9 +96,20 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 import 'vue-awesome/icons/times';
 
 import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import {
+  required,
+  minLength,
+  maxLength,
+  sameAs
+} from 'vuelidate/lib/validators';
 
-import { PROFILE_GET, PROFILE_COMMIT } from '@/modules/profile';
+import {
+  IPasswordChangeData,
+  PasswordChangeDataDefault,
+  PROFILE_GET,
+  PROFILE_COMMIT,
+  PROFILE_CHANGE_PASSWORD
+} from '@/modules/profile';
 import { USERS_FETCH_ONE, IUser, UserDefault } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
 
@@ -115,6 +141,20 @@ enum FormState {
           phoneValid: (value: string) =>
             /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/.test(value)
         }
+      },
+      passwordData: {
+        currentPassword: {
+          required
+        },
+        newPassword: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(32)
+        },
+        newPasswordRepeat: {
+          required,
+          sameAsPassword: sameAs('newPassword')
+        }
       }
     };
   }
@@ -124,8 +164,13 @@ export default class ProfilePage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
+
   public profileData: IUser = new UserDefault();
-  public formState: FormState = FormState.Default;
+  public profileFormState: FormState = FormState.Default;
+
+  public passwordData: IPasswordChangeData = new PasswordChangeDataDefault();
+  public passwordFormState: FormState = FormState.Default;
+
   public equipment: IEquipment[] = [];
 
   // Component methods //
@@ -148,7 +193,7 @@ export default class ProfilePage extends Vue {
   ////////////
 
   public onSubmitProfile() {
-    this.formState = FormState.InProcess;
+    this.profileFormState = FormState.InProcess;
     this.$store
       .dispatch(PROFILE_COMMIT, this.profileData)
       .then((profile) => {
@@ -157,7 +202,7 @@ export default class ProfilePage extends Vue {
           duration: 500
         });
         this.profileData = profile;
-        this.formState = FormState.Default;
+        this.profileFormState = FormState.Default;
       })
       .catch((error) => {
         this.$notify({
@@ -165,15 +210,42 @@ export default class ProfilePage extends Vue {
           duration: 1500,
           type: 'error'
         });
-        this.formState = FormState.Default;
+        this.profileFormState = FormState.Default;
+      });
+  }
+
+  public onSubmitPassword() {
+    this.passwordFormState = FormState.InProcess;
+    this.$store
+      .dispatch(PROFILE_CHANGE_PASSWORD, this.passwordData)
+      .then(() => {
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
+        });
+        this.passwordData = new PasswordChangeDataDefault();
+        this.passwordFormState = FormState.Default;
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно сохранить изменения',
+          duration: 1500,
+          type: 'error'
+        });
+        this.passwordData.currentPassword = '';
+        this.passwordFormState = FormState.Default;
       });
   }
 
   // Computed data //
   //////////////////
 
-  get isFormInProcess(): boolean {
-    return this.formState === FormState.InProcess;
+  get isProfileFormInProcess(): boolean {
+    return this.profileFormState === FormState.InProcess;
+  }
+
+  get isPasswordFormInProcess(): boolean {
+    return this.passwordFormState === FormState.InProcess;
   }
 }
 

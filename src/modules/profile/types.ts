@@ -13,6 +13,9 @@ export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
 export const PROFILE_COMMIT = 'PROFILE_COMMIT';
+export const PROFILE_CHANGE_PASSWORD = 'PROFILE_CHANGE_PASSWORD';
+export const PROFILE_REQUEST_PASSWORD = 'PROFILE_REQUEST_PASSWORD';
+export const PROFILE_RESTORE_PASSWORD = 'PROFILE_RESTORE_PASSWORD';
 export const PROFILE_SESSIONS_FETCH = 'PROFILE_SESSIONS_FETCH';
 export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
@@ -52,6 +55,39 @@ export class RegistrationDataDefault {
 }
 
 export interface IRegistrationData extends RegistrationDataDefault {}
+
+// PasswordChangeData //
+///////////////////////
+
+export class PasswordChangeDataDefault {
+  public currentPassword: string = '';
+  public newPassword: string = '';
+  public newPasswordRepeat?: string;
+}
+
+export interface IPasswordChangeData extends PasswordChangeDataDefault {}
+
+// PasswordRestoreData //
+////////////////////////
+
+export class PasswordRestoreDataDefault {
+  public email: string = '';
+  public token: string = '';
+  public newPassword: string = '';
+  public newPasswordRepeat?: string;
+}
+
+export interface IPasswordRestoreData extends PasswordRestoreDataDefault {}
+
+// PasswordRequestData //
+////////////////////////
+
+export class PasswordRequestDataDefault {
+  public email: string = '';
+  public redirectUrl: string = window.location.origin;
+}
+
+export interface IPasswordRequestData extends PasswordRequestDataDefault {}
 
 // UserSession //
 ////////////////

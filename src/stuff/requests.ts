@@ -15,6 +15,33 @@ export const getResponseData = <T>(
   });
 };
 
+export const createResponseCheckHandler = (
+  resolver: (value?: {} | PromiseLike<{}> | undefined) => void
+) => {
+  return (response: AxiosResponse<any>) => {
+    return new Promise((resolve, reject) => {
+      const body = response.data;
+
+      if (body.statusCode && body.statusCode === 1) {
+        resolver();
+        resolve();
+      } else {
+        reject();
+      }
+    });
+  };
+};
+
+export const createErrorDataHandler = (
+  requestName: string,
+  rejector: (reason?: any) => void
+) => {
+  return (error: any) => {
+    console.log(requestName, error);
+    rejector(error);
+  };
+};
+
 export const setOneElement = <T extends { id: string }>(
   array: T[],
   element: T

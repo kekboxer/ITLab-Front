@@ -158,13 +158,6 @@ export default class RegistrationPage extends Vue {
   get isInProcess(): boolean {
     return this.pageState === State.InProcess;
   }
-
-  // Stuff //
-  //////////
-
-  public getDynamicId(): string {
-    return Date.now().toString();
-  }
 }
 
 export const registrationPageRoute: RouteConfig = {

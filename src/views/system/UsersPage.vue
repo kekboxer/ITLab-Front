@@ -2,8 +2,8 @@
 <template>
   <div class="users-page">
     <page-content-component :loading="loadingInProcess">
-      <template slot="header">
-        Пользователи
+      <template slot="header">Пользователи</template>
+      <template slot="header-button">
         <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
       </template>
 
