@@ -94,6 +94,17 @@
                       </b-row>
                     </li>
 
+                    <!-- Participants, who just applied -->
+                    <li class="list-group-item" v-for="(participant, participantIndex) in place.wishers" :key="`place-${placeIndex}-wishers-${participantIndex}`" v-if="!participant.delete">
+                      <b-row>
+                        <b-col cols="auto mr-auto">
+                          <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                          <span class="badge badge-secondary badge-pill noselect" v-b-tooltip.hover title="Подал заявку">{{ participant.eventRole.title }}</span><br>
+                          <mail-link :email="participant.user.email" />
+                        </b-col>
+                      </b-row>
+                    </li>
+
                     <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceInvitedParticipantModal(place)">
                       Пригласить участника
                     </li>
@@ -106,11 +117,11 @@
                         <b-col cols="auto mr-auto">
                           <b>{{ equipment.equipmentType.title }}</b><br>{{ equipment.serialNumber }}
                         </b-col>
-                        <b-col cols="auto" v-if="editable">
-                          <div class="remove-button" @click="removePlaceEquipment(place, equipmentIndex)">
-                            <icon name="times"></icon>
-                          </div>
-                        </b-col>
+                          <b-col cols="auto" v-if="editable">
+                            <div class="remove-button" @click="removePlaceEquipment(place, equipmentIndex)">
+                              <icon name="times"></icon>
+                            </div>
+                          </b-col>
                       </b-row>
                     </li>
                     <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(shift, place)">
@@ -264,8 +275,8 @@ import {
   EquipmentDefault,
   IEquipmentType
 } from '@/modules/equipment';
-import { UserDefault, IUser } from '@/modules/users';
-import { PROFILE_WISH } from '@/modules/profile';
+import { UserDefault, IUser, USERS_GET_ONE } from '@/modules/users';
+import { PROFILE_WISH, PROFILE_GET } from '@/modules/profile';
 import { getNounDeclension } from '@/stuff';
 
 enum ModalState {
@@ -350,12 +361,14 @@ export default class EventShiftsComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: IEventShift[];
+  @Prop()
+  public value?: IEventShift[];
 
   // Properties //
   ///////////////
 
-  @Prop() public editable?: boolean;
+  @Prop()
+  public editable?: boolean;
 
   public modalTitles: Map<ModalState, string> = new Map<ModalState, string>([
     [ModalState.Hidden, ''],
@@ -721,22 +734,25 @@ export default class EventShiftsComponent extends Vue {
     if (place.targetParticipantsCount === 0) {
       return 'Участники не требуются';
     }
-    const countParticipant = place.wishers.length + place.invited.length + place.participants.length;
+    const countParticipant =
+      place.wishers.length + place.invited.length + place.participants.length;
 
     if (countParticipant === 0) {
       const nounNeed = getNounDeclension(place.targetParticipantsCount, [
-      'Нужен',
-      'Нужно',
-      'Нужно'
+        'Нужен',
+        'Нужно',
+        'Нужно'
       ]);
       const nounParticipant = getNounDeclension(place.targetParticipantsCount, [
-      'участник',
-      'участника',
-      'участников'
+        'участник',
+        'участника',
+        'участников'
       ]);
       return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
     }
-    return `Участников: ${countParticipant} из ${place.targetParticipantsCount}`;
+    return `Участников: ${countParticipant} из ${
+      place.targetParticipantsCount
+    }`;
   }
 
   public onEditPlace(shift: IEventShift, placeIndex?: number) {
@@ -927,6 +943,21 @@ export default class EventShiftsComponent extends Vue {
           title: 'Заявка отправлена',
           duration: 500
         });
+
+        if (this.applicationModalData == null) {
+          return;
+        }
+
+        const eventParticipant = new EventParticipantDefault();
+        eventParticipant.user = this.$store.getters[USERS_GET_ONE](
+          this.$store.getters[PROFILE_GET]
+        );
+        eventParticipant.eventRole = Object.assign(
+          {},
+          this.applicationModalData
+        );
+
+        place.wishers.push(eventParticipant);
       })
       .catch((error) => {
         this.$notify({

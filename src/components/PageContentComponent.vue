@@ -5,7 +5,14 @@
       <b-row>
         <b-col>
           <h3 class="page-title">
-            <slot name="header"></slot>
+            <b-row>
+              <b-col cols="auto" class="pr-0">
+                <slot name="header"></slot>
+              </b-col>
+              <b-col cols="auto" class="ml-md-auto">
+                <slot name="header-button"></slot>
+              </b-col>
+            </b-row>
           </h3>
         </b-col>
       </b-row>

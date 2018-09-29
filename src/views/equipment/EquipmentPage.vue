@@ -2,8 +2,8 @@
 <template>
   <div class="equipment-page">
     <page-content-component :loading="loadingInProcess">
-      <template slot="header">
-        Оборудование&nbsp;
+      <template slot="header">Оборудование</template>
+      <template slot="header-button">
         <b-button variant="success" to="equipment/new">Добавить</b-button>
       </template>
 
@@ -29,7 +29,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
+          <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :sort-by="'type'" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
 
             <template slot="type" slot-scope="data">
               {{ data.item.equipmentType.title }}

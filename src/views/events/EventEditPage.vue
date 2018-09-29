@@ -2,17 +2,11 @@
 <template>
   <div class="event-edit-page">
     <page-content-component :loading="loadingInProcess" :not-found="notFound">
-      <template slot="header">
-        Событие
+      <template slot="header">Событие</template>
+      <template slot="header-button">
+        <b-button variant="primary" :to="'/events/' + event.id" v-if="!isNewEvent">Подробнее</b-button>
       </template>
 
-      <b-row v-if="!isNewEvent">
-        <b-col>
-          ID:
-          <span style="font-family: monospace">{{ event.id }}</span>
-          <hr>
-        </b-col>
-      </b-row>
       <b-row>
         <b-col>
           <b-form>

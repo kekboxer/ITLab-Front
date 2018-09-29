@@ -6,13 +6,6 @@
         Оборудование
       </template>
 
-      <b-row v-if="!isNewEquipment">
-        <b-col>
-          ID:
-          <span style="font-family: monospace">{{ equipment.id }}</span>
-          <hr>
-        </b-col>
-      </b-row>
       <b-row>
         <b-col>
           <b-form>

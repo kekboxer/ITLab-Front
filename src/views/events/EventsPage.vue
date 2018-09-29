@@ -2,8 +2,8 @@
 <template>
   <div class="events-page">
     <page-content-component :loading="loadingInProcess">
-      <template slot="header">
-        События&nbsp;
+      <template slot="header">События</template>
+      <template slot="header-button">
         <b-button variant="success" to="events/edit/new" v-if="canEdit">Добавить</b-button>
       </template>
 
@@ -53,6 +53,19 @@ import {
   EVENTS_GET_ALL
 } from '@/modules/events';
 
+const createEventSortPredicate = (asc: boolean = true) => (
+  a: IEvent,
+  b: IEvent
+): number => {
+  if (a.beginTime && b.beginTime && a.beginTime < b.beginTime) {
+    return asc ? -1 : 1;
+  } else if (a.beginTime && b.beginTime && a.beginTime > b.beginTime) {
+    return asc ? 1 : -1;
+  } else {
+    return 0;
+  }
+};
+
 @Component({
   components: {
     'event-item-component': EventItemComponent,
@@ -101,16 +114,16 @@ export default class EventsPage extends Vue {
   //////////////////
 
   get eventsCurrent() {
-    return this.$store.getters[EVENTS_GET_ALL]({
+    return (this.$store.getters[EVENTS_GET_ALL]({
       beginTime: this.currentDate
-    });
+    }) as IEvent[]).sort(createEventSortPredicate());
   }
 
   get eventsPast() {
     return this.$store.getters[EVENTS_GET_ALL]({
       beginTime: this.currentDate,
       invert: true
-    });
+    }).sort(createEventSortPredicate(false));
   }
 
   get canEdit(): boolean {

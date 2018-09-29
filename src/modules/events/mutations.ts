@@ -19,18 +19,6 @@ import {
   EVENT_ROLES_REMOVE_ONE
 } from './types';
 
-const sortEvents = (events: IEvent[]): IEvent[] => {
-  return events.sort((a, b) => {
-    if (a.beginTime && b.beginTime && a.beginTime < b.beginTime) {
-      return 1;
-    } else if (a.beginTime && b.beginTime && a.beginTime > b.beginTime) {
-      return -1;
-    } else {
-      return 0;
-    }
-  });
-};
-
 export const mutations: MutationTree<IEventsState> = {
   [EVENTS_SET_ALL]: (
     state,
@@ -46,8 +34,6 @@ export const mutations: MutationTree<IEventsState> = {
     } else {
       state.events = events;
     }
-
-    state.events = sortEvents(state.events);
   },
 
   [EVENTS_SET_ONE]: (state, event: IEvent) => {
