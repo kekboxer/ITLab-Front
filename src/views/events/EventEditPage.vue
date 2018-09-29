@@ -205,15 +205,13 @@ export default class EventEditPage extends Vue {
         this.setEvent(event);
 
         this.pageState = State.Default;
-        if (this.isNewEvent) {
-          this.isNewEvent = false;
-          this.$router.push({ path: '/events/edit/' + event.id });
-        } else {
-          this.$notify({
-            title: 'Изменения успешно сохранены',
-            duration: 500
-          });
-        }
+
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
+        });
+
+        this.$router.push({ path: '/events/' + event.id });
       })
       .catch((error) => {
         this.pageState = State.Error;
