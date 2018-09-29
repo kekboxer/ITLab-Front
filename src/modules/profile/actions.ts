@@ -28,7 +28,8 @@ import {
   PROFILE_SET,
   PROFILE_ACCESS_TOKEN_SET,
   PROFILE_REFRESH_TOKEN_SET,
-  PROFILE_COMMIT
+  PROFILE_COMMIT,
+  IPasswordRequestData
 } from './types';
 
 import { IUser } from '@/modules/users';
@@ -151,10 +152,10 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_REQUEST_PASSWORD]: ({}, userId: string) => {
+  [PROFILE_REQUEST_PASSWORD]: ({}, data: IPasswordRequestData) => {
     return new Promise((resolve, reject) => {
       axios
-        .post('account/password/requestreset', `"${userId}"`)
+        .post('account/password/requestreset', data)
         .then(createResponseCheckHandler(resolve))
         .catch(createErrorDataHandler(PROFILE_REQUEST_PASSWORD, reject));
     });

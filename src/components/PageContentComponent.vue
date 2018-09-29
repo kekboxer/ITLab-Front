@@ -9,7 +9,7 @@
               <b-col cols="auto" class="pr-0">
                 <slot name="header"></slot>
               </b-col>
-              <b-col cols="auto" class="ml-md-auto">
+              <b-col cols="auto" class="mr-auto">
                 <slot name="header-button"></slot>
               </b-col>
             </b-row>

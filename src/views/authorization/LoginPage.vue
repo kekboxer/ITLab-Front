@@ -30,7 +30,7 @@
             <template v-else>
               <template v-if="!wasFinished">
                 <b-form-group label="Почта">
-                  <b-form-input autocomplete="email" :key="'requset-email'" type="email" v-model.trim="passwordRestoreRequest" :state="!$v.passwordRestoreRequest.$invalid" required>
+                  <b-form-input autocomplete="email" :key="'requset-email'" type="email" v-model.trim="passwordRestoreRequest.email" :state="!$v.passwordRestoreRequest.email.$invalid" required>
                   </b-form-input>
                 </b-form-group>
               </template>
@@ -75,6 +75,8 @@ import { email, required } from 'vuelidate/lib/validators';
 import {
   IAuthorizationData,
   AuthorizationDataDefault,
+  IPasswordRequestData,
+  PasswordRequestDataDefault,
   PROFILE_LOGIN,
   PROFILE_REQUEST_PASSWORD
 } from '@/modules/profile';
@@ -93,8 +95,10 @@ enum FormState {
   validations() {
     return {
       passwordRestoreRequest: {
-        email,
-        required
+        email: {
+          email,
+          required
+        }
       }
     };
   }
@@ -106,7 +110,7 @@ export default class LoginPage extends Vue {
   public formState: FormState = FormState.Default;
   public forgotPassword: boolean = false;
   public authorizationData: IAuthorizationData = new AuthorizationDataDefault();
-  public passwordRestoreRequest: string = '';
+  public passwordRestoreRequest: IPasswordRequestData = new PasswordRequestDataDefault();
 
   // Component methods //
   //////////////////////
@@ -115,7 +119,7 @@ export default class LoginPage extends Vue {
     this.formState = FormState.Default;
     this.forgotPassword = false;
     this.authorizationData = new AuthorizationDataDefault();
-    this.passwordRestoreRequest = '';
+    this.passwordRestoreRequest = new PasswordRequestDataDefault();
   }
 
   // Methods //

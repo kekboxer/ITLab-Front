@@ -13,12 +13,12 @@
             </b-row>
 
             <b-form-group label="Пароль">
-              <b-form-input autocomplete="new-password" type="password" v-model="passwordRestoreData.password" :state="!$v.passwordRestoreData.password.$invalid" required>
+              <b-form-input autocomplete="new-password" type="password" v-model="passwordRestoreData.newPassword" :state="!$v.passwordRestoreData.newPassword.$invalid" required>
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Ещё раз">
-              <b-form-input autocomplete="off" type="password" v-model="passwordRestoreData.passwordRepeat" :state="!$v.passwordRestoreData.passwordRepeat.$invalid" required>
+              <b-form-input autocomplete="off" type="password" v-model="passwordRestoreData.newPasswordRepeat" :state="!$v.passwordRestoreData.newPasswordRepeat.$invalid" required>
               </b-form-input>
             </b-form-group>
 
@@ -66,12 +66,12 @@ enum State {
   validations() {
     return {
       passwordRestoreData: {
-        password: {
+        newPassword: {
           required,
           minLength: minLength(6),
           maxLength: maxLength(32)
         },
-        passwordRepeat: {
+        newPasswordRepeat: {
           required,
           sameAsPassword: sameAs('password')
         }

@@ -68,7 +68,7 @@ export class PasswordChangeDataDefault {
 export interface IPasswordChangeData extends PasswordChangeDataDefault {}
 
 // PasswordRestoreData //
-//////////////////////
+////////////////////////
 
 export class PasswordRestoreDataDefault {
   public email: string = '';
@@ -78,6 +78,16 @@ export class PasswordRestoreDataDefault {
 }
 
 export interface IPasswordRestoreData extends PasswordRestoreDataDefault {}
+
+// PasswordRequestData //
+////////////////////////
+
+export class PasswordRequestDataDefault {
+  public email: string = '';
+  public redirectUrl: string = '';
+}
+
+export interface IPasswordRequestData extends PasswordRequestDataDefault {}
 
 // UserSession //
 ////////////////
