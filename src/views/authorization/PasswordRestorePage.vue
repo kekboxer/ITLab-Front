@@ -73,7 +73,7 @@ enum State {
         },
         newPasswordRepeat: {
           required,
-          sameAsPassword: sameAs('password')
+          sameAsPassword: sameAs('newPassword')
         }
       }
     };
@@ -116,7 +116,6 @@ export default class PasswordRestorePage extends Vue {
         this.passwordRestoreData = new PasswordRestoreDataDefault();
         this.$notify({
           title: 'Пароль успешно изменён',
-          type: 'error',
           duration: 500
         });
         this.$router.push({ name: 'LoginPage' });
