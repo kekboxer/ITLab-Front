@@ -21,9 +21,10 @@ export class AccessToken {
   constructor(decoded: IAccessToken) {
     this.creationDate = moment(decoded.nbf * 1000).toDate();
     this.expirationDate = moment(decoded.exp * 1000).toDate();
-    this.roles =
-      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-      [];
+
+    const roles =
+      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    this.roles = roles ? (typeof roles === 'string' ? [roles] : roles) : [];
   }
 }
 

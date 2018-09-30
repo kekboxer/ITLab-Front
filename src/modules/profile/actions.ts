@@ -143,10 +143,11 @@ export const actions: ActionTree<IProfileState, RootState> = {
 
   [PROFILE_CHANGE_PASSWORD]: ({}, data: IPasswordChangeData) => {
     return new Promise((resolve, reject) => {
-      delete data.newPasswordRepeat;
-
       axios
-        .put('account/password', data)
+        .put('account/password', {
+          ...data,
+          newPasswordRepeat: undefined
+        })
         .then(createResponseCheckHandler(resolve))
         .catch(createErrorDataHandler(PROFILE_CHANGE_PASSWORD, reject));
     });
@@ -163,10 +164,11 @@ export const actions: ActionTree<IProfileState, RootState> = {
 
   [PROFILE_RESTORE_PASSWORD]: ({}, data: IPasswordRestoreData) => {
     return new Promise((resolve, reject) => {
-      delete data.newPasswordRepeat;
-
       axios
-        .post('account/password/reset', data)
+        .post('account/password/reset', {
+          ...data,
+          newPasswordRepeat: undefined
+        })
         .then(createResponseCheckHandler(resolve))
         .catch(createErrorDataHandler(PROFILE_RESTORE_PASSWORD, reject));
     });

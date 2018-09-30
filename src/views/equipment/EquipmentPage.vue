@@ -4,7 +4,7 @@
     <page-content-component :loading="loadingInProcess">
       <template slot="header">Оборудование</template>
       <template slot="header-button">
-        <b-button variant="success" to="equipment/new">Добавить</b-button>
+        <b-button variant="success" to="equipment/new" v-if="canEdit">Добавить</b-button>
       </template>
 
       <b-row>

@@ -10,9 +10,14 @@
             </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" @click="applyChanges">Apply</b-button>
-              <b-button variant="outline-secondary" @click="resetDefaults">Reset</b-button>
             </b-input-group-append>
           </b-input-group>
+        </b-form-group>
+
+        <b-form-group>
+          <b-button variant="outline-secondary" @click="resetDefaults">Default</b-button>
+          <b-button variant="outline-secondary ml-1" @click="setApiUrl('/api/')">/api/</b-button>
+          <b-button variant="outline-secondary ml-1" @click="setApiUrl('http://localhost:5000/')">http://localhost:5000/</b-button>
         </b-form-group>
       </b-form>
     </b-container>
@@ -63,14 +68,13 @@ export default class BackendSelectionPage extends Vue {
   }
 
   public resetDefaults() {
-    localStorage.removeItem('api-url');
-    this.apiUrl = process.env.VUE_APP_API_URL || '/api/';
-    axios.defaults.baseURL = this.apiUrl;
+    this.setApiUrl(process.env.VUE_APP_API_URL || '/api/');
+  }
 
-    this.$notify({
-      text: 'Изменения сохранены',
-      duration: 500
-    });
+  public setApiUrl(url: string) {
+    localStorage.removeItem('api-url');
+    this.apiUrl = url;
+    axios.defaults.baseURL = this.apiUrl;
   }
 }
 

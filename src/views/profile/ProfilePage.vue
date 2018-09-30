@@ -30,30 +30,15 @@
           </b-form>
         </b-col>
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
-          <h4>Смена пароля</h4>
+          <h4>Права в системе</h4>
           <hr>
-          <b-form @submit.prevent="onSubmitPassword">
-            <b-form-group label="Текущий пароль">
-              <b-form-input type="password" v-model.trim="passwordData.currentPassword" :state="!$v.passwordData.currentPassword.$invalid ? null : false">
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Новый пароль">
-              <b-form-input type="password" v-model.trim="passwordData.newPassword" :state="!$v.passwordData.newPassword.$invalid">
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Ещё раз">
-              <b-form-input type="password" v-model.trim="passwordData.newPasswordRepeat" :state="!$v.passwordData.newPasswordRepeat.$invalid">
-              </b-form-input>
-            </b-form-group>
-
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.passwordData.$invalid || isPasswordFormInProcess">Сохранить</b-button>
-          </b-form>
+          <div class="equipment-card" v-for="role in userRoles" :key="`role-${role}`">
+            {{ role }}
+          </div>
         </b-col>
       </b-row>
       <b-row>
-        <b-col class="mt-5">
+        <b-col cols="12" class="mt-5">
           <h4>Оборудование</h4>
           <hr>
 
@@ -96,22 +81,16 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 import 'vue-awesome/icons/times';
 
 import { validationMixin } from 'vuelidate';
-import {
-  required,
-  minLength,
-  maxLength,
-  sameAs
-} from 'vuelidate/lib/validators';
+import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  IPasswordChangeData,
-  PasswordChangeDataDefault,
   PROFILE_GET,
   PROFILE_COMMIT,
-  PROFILE_CHANGE_PASSWORD
+  PROFILE_ROLES_GET
 } from '@/modules/profile';
 import { USERS_FETCH_ONE, IUser, UserDefault } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
+import { UserRole } from '@/stuff';
 
 enum FormState {
   Default,
@@ -141,20 +120,6 @@ enum FormState {
           phoneValid: (value: string) =>
             /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/.test(value)
         }
-      },
-      passwordData: {
-        currentPassword: {
-          required
-        },
-        newPassword: {
-          required,
-          minLength: minLength(6),
-          maxLength: maxLength(32)
-        },
-        newPasswordRepeat: {
-          required,
-          sameAsPassword: sameAs('newPassword')
-        }
       }
     };
   }
@@ -167,9 +132,6 @@ export default class ProfilePage extends Vue {
 
   public profileData: IUser = new UserDefault();
   public profileFormState: FormState = FormState.Default;
-
-  public passwordData: IPasswordChangeData = new PasswordChangeDataDefault();
-  public passwordFormState: FormState = FormState.Default;
 
   public equipment: IEquipment[] = [];
 
@@ -214,29 +176,6 @@ export default class ProfilePage extends Vue {
       });
   }
 
-  public onSubmitPassword() {
-    this.passwordFormState = FormState.InProcess;
-    this.$store
-      .dispatch(PROFILE_CHANGE_PASSWORD, this.passwordData)
-      .then(() => {
-        this.$notify({
-          title: 'Изменения успешно сохранены',
-          duration: 500
-        });
-        this.passwordData = new PasswordChangeDataDefault();
-        this.passwordFormState = FormState.Default;
-      })
-      .catch((error) => {
-        this.$notify({
-          title: 'Невозможно сохранить изменения',
-          duration: 1500,
-          type: 'error'
-        });
-        this.passwordData.currentPassword = '';
-        this.passwordFormState = FormState.Default;
-      });
-  }
-
   // Computed data //
   //////////////////
 
@@ -244,8 +183,8 @@ export default class ProfilePage extends Vue {
     return this.profileFormState === FormState.InProcess;
   }
 
-  get isPasswordFormInProcess(): boolean {
-    return this.passwordFormState === FormState.InProcess;
+  get userRoles(): UserRole[] {
+    return this.$store.getters[PROFILE_ROLES_GET];
   }
 }
 
