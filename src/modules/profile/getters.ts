@@ -7,7 +7,8 @@ import {
   PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET,
   PROFILE_REFRESH_TOKEN,
-  PROFILE_HAS_ROLE
+  PROFILE_HAS_ROLE,
+  PROFILE_ROLES_GET
 } from './types';
 import { UserRole } from '@/stuff';
 
@@ -35,5 +36,9 @@ export const getters: GetterTree<IProfileState, RootState> = {
     return (userRole: UserRole) =>
       state.accessToken !== undefined &&
       state.accessToken.roles.includes(userRole);
+  },
+
+  [PROFILE_ROLES_GET]: (state) => {
+    return state.accessToken ? state.accessToken.roles : [];
   }
 };

@@ -31,6 +31,7 @@ export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
 export const PROFILE_REFRESH_TOKEN = 'PROFILE_REFRESH_TOKEN';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
 export const PROFILE_HAS_ROLE = 'PROFILE_HAS_ROLE';
+export const PROFILE_ROLES_GET = 'PROFILE_ROLES_GET';
 
 // AuthorizationData //
 //////////////////////

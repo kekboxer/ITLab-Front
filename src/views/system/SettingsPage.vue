@@ -20,10 +20,33 @@
           <template v-if="environment === 'development'">
             <a href="/backend_selection" v-if="environment === 'development'" target="blank">Смена API URL</a><br>
           </template>
-          <a href="/about" target="blank">О системе</a>
+            <a href="/about" target="blank">О системе</a>
         </b-col>
+        <b-col cols="12" md="6" class="mt-5 mt-md-0">
+          <h4>Смена пароля</h4>
+          <hr>
+          <b-form @submit.prevent="onSubmitPassword">
+            <b-form-group label="Текущий пароль">
+              <b-form-input type="password" v-model.trim="passwordData.currentPassword" :state="!$v.passwordData.currentPassword.$invalid ? null : false">
+              </b-form-input>
+            </b-form-group>
 
-        <b-col cols="12" md="6" class="mt-3 mt-md-0">
+            <b-form-group label="Новый пароль">
+              <b-form-input type="password" v-model.trim="passwordData.newPassword" :state="!$v.passwordData.newPassword.$invalid">
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Ещё раз">
+              <b-form-input type="password" v-model.trim="passwordData.newPasswordRepeat" :state="!$v.passwordData.newPasswordRepeat.$invalid">
+              </b-form-input>
+            </b-form-group>
+
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.passwordData.$invalid || isPasswordFormInProcess">Сохранить</b-button>
+          </b-form>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col class="mt-5">
           <h4>Сессии</h4>
           <hr>
           <div class="session-card" v-for="(session, sectionIndex) in sessions" :key="session.id">
@@ -62,23 +85,62 @@ import PageContentComponent from '@/components/PageContentComponent.vue';
 
 import 'vue-awesome/icons/times';
 
+import { validationMixin } from 'vuelidate';
+import {
+  required,
+  minLength,
+  maxLength,
+  sameAs
+} from 'vuelidate/lib/validators';
+
 import {
   IUserSession,
+  IPasswordChangeData,
+  PasswordChangeDataDefault,
+  PROFILE_CHANGE_PASSWORD,
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SETTINGS_THEME_SET,
   PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
 
+enum FormState {
+  Default,
+  InProcess,
+  Error
+}
+
 @Component({
   components: {
     Icon,
     'page-content-component': PageContentComponent
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      passwordData: {
+        currentPassword: {
+          required
+        },
+        newPassword: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(32)
+        },
+        newPasswordRepeat: {
+          required,
+          sameAsPassword: sameAs('newPassword')
+        }
+      }
+    };
   }
 })
 export default class SettingsPage extends Vue {
   // Properties //
   ///////////////
+
+  public passwordData: IPasswordChangeData = new PasswordChangeDataDefault();
+  public passwordFormState: FormState = FormState.Default;
 
   public sessions: IUserSession[] = [];
 
@@ -93,6 +155,29 @@ export default class SettingsPage extends Vue {
 
   // Methods //
   ////////////
+
+  public onSubmitPassword() {
+    this.passwordFormState = FormState.InProcess;
+    this.$store
+      .dispatch(PROFILE_CHANGE_PASSWORD, this.passwordData)
+      .then(() => {
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
+        });
+        this.passwordData = new PasswordChangeDataDefault();
+        this.passwordFormState = FormState.Default;
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно сохранить изменения',
+          duration: 1500,
+          type: 'error'
+        });
+        this.passwordData.currentPassword = '';
+        this.passwordFormState = FormState.Default;
+      });
+  }
 
   public removeSession(sessionIndex: number) {
     const session = this.sessions[sessionIndex];
@@ -127,6 +212,10 @@ export default class SettingsPage extends Vue {
 
   get environment(): string {
     return process.env.NODE_ENV || '';
+  }
+
+  get isPasswordFormInProcess(): boolean {
+    return this.passwordFormState === FormState.InProcess;
   }
 }
 
