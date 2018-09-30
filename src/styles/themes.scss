@@ -43,15 +43,10 @@ $themes: (
     sidebar-active-section-highlight-color: $primary,
 
     card-list-item-background-color: getcolor(white, lighter),
-    event-list-item-progrss-color: getcolor(white, light),
-    event-list-item-progrss-font-color: getcolor(black, light),
-    event-list-item-default-state-color: $primary,
-    event-list-item-waiting-state-color: $warning,
-    event-list-item-success-state-color: $success,
 
-    event-shifts-card-title-font-color: getcolor(black, dark),
-    event-shifts-card-title-background: getcolor(white, base),
-    event-shifts-card-items-background: getcolor(white, lighter)
+    event-shifts-places-title-font-color: getcolor(black, dark),
+    event-shifts-places-title-background: getcolor(white, base),
+    event-shifts-places-items-background: getcolor(white, lighter)
   ),
 
   theme-dark: (
@@ -73,14 +68,10 @@ $themes: (
     sidebar-active-section-highlight-color: $primary,
 
     card-list-item-background-color: getcolor(black, light),
-    event-list-item-progrss-color: getcolor(white, light),
-    event-list-item-progrss-font-color: getcolor(black, light),
-    event-list-item-default-state-color: $primary,
-    event-list-item-waiting-state-color: $warning,
-    event-list-item-success-state-color: $success,
-    event-shifts-card-title-font-color: getcolor(white, light),
-    event-shifts-card-title-background: getcolor(white, dark),
-    event-shifts-card-items-background: getcolor(white, base)
+    
+    event-shifts-places-title-font-color: getcolor(white, base),
+    event-shifts-places-title-background: getcolor(black, dark),
+    event-shifts-places-items-background: getcolor(white, base)
   )
 );
 
