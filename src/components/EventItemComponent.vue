@@ -77,6 +77,7 @@ import 'vue-awesome/icons/eye-slash';
 
 import { IEvent } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
+import { getNounDeclension } from '@/stuff';
 
 enum State {
   Default,
@@ -93,7 +94,8 @@ export default class EventItemComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public event!: IEvent;
+  @Prop()
+  public event!: IEvent;
 
   public dateHovered: boolean = false;
 
@@ -172,13 +174,27 @@ export default class EventItemComponent extends Vue {
   }
 
   get duration(): string {
-    if (!this.event.totalDurationInMinutes) {
+    if (!this.event.beginTime || !this.event.endTime) {
       return '';
     }
 
-    return moment
-      .duration(this.event.totalDurationInMinutes, 'minutes')
-      .humanize();
+    const beginTime = moment(this.event.beginTime);
+    const beginTimeDayStart = beginTime.clone().startOf('day');
+
+    const endTime = moment(this.event.endTime);
+    const endTimeDayStart = endTime.clone().startOf('day');
+
+    if (beginTimeDayStart.isSame(endTimeDayStart)) {
+      return moment.duration(endTime.diff(beginTime)).humanize();
+    } else {
+      const dayCount = endTimeDayStart.diff(beginTimeDayStart, 'days') + 1;
+
+      return `${dayCount} ${getNounDeclension(dayCount, [
+        'день',
+        'дня',
+        'дней'
+      ])}`;
+    }
   }
 
   get canEdit(): boolean {
@@ -212,16 +228,6 @@ export default class EventItemComponent extends Vue {
     }
   }
 
-  .progress {
-    @include theme-specific() {
-      background-color: getstyle(event-list-item-progrss-color);
-
-      span {
-        color: getstyle(event-list-item-progrss-font-color);
-      }
-    }
-  }
-
   .button-edit {
     .theme-light & {
       background-color: $warning;
@@ -239,15 +245,15 @@ export default class EventItemComponent extends Vue {
     background-color: getstyle(card-list-item-background-color);
 
     &.default {
-      box-shadow: -4px 0 0 getstyle(event-list-item-default-state-color);
+      box-shadow: -4px 0 0 $primary;
     }
 
     &.waiting {
-      box-shadow: -4px 0 0 getstyle(event-list-item-waiting-state-color);
+      box-shadow: -4px 0 0 $warning;
     }
 
     &.success {
-      box-shadow: -4px 0 0 getstyle(event-list-item-success-state-color);
+      box-shadow: -4px 0 0 $success;
     }
   }
 }

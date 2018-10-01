@@ -40,6 +40,10 @@ const fixDates = (event: IEvent) => {
     event.beginTime = moment(event.beginTime, DATETIME_FORMAT + 'Z').toDate();
   }
 
+  if (event.endTime) {
+    event.endTime = moment(event.endTime, DATETIME_FORMAT + 'Z').toDate();
+  }
+
   if (event.shifts) {
     event.shifts.forEach((shift) => {
       shift.beginTime = moment(shift.beginTime, DATETIME_FORMAT + 'Z').toDate();

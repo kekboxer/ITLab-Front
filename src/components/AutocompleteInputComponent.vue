@@ -2,7 +2,7 @@
 <template>
   <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
     <b-input-group>
-      <b-form-input type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state" ref="input"></b-form-input>
+      <b-form-input autocomplete="off" type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state" ref="input"></b-form-input>
       <b-input-group-append v-if="canClear">
         <b-btn :disabled="!searchString" @click="onClear">
           <icon name="times" style="position: relative; top: -2px;"></icon>

@@ -100,6 +100,8 @@ export class EventPlaceDefault {
 
   public delete?: boolean;
   public new?: boolean;
+
+  public collapsed?: boolean;
 }
 
 export interface IEventPlace extends EventPlaceDefault {}
@@ -122,6 +124,8 @@ export class EventShiftDefault {
 
   public delete?: boolean;
   public new?: boolean;
+
+  public collapsed?: boolean;
 }
 
 export interface IEventShift extends EventShiftDefault {}
@@ -138,7 +142,7 @@ export class EventDefault {
 
   // List data
   public beginTime?: Date;
-  public totalDurationInMinutes?: number;
+  public endTime?: Date;
 
   public targetParticipantsCount?: number;
   public currentParticipantsCount?: number;

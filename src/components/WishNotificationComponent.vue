@@ -17,15 +17,21 @@
           </b-col>
         </b-row>
         <b-row>
-          <b-col cols="5">Начало смены:</b-col>
+          <b-col cols="5">Смена:</b-col>
           <b-col cols="7">
-            <b>{{ data.beginTime | moment($g.DATETIME_FORMAT) }}</b>
+            <b>{{ beginTime }}</b><template v-if="data.shiftDescription"><br>{{ data.shiftDescription }}</template>
           </b-col>
         </b-row>
         <b-row>
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
             <b>{{ data.eventRole.title }}</b>
+          </b-col>
+        </b-row>
+        <b-row v-if="data.placeDescription">
+          <b-col cols="5">Место:</b-col>
+          <b-col cols="7">
+            <b>{{ data.placeDescription }}</b>
           </b-col>
         </b-row>
         <b-row>
@@ -80,9 +86,37 @@ export default class WishNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: IWishNotification;
+  @Prop()
+  public data!: IWishNotification;
 
   public currentState: State = State.Default;
+
+  // Methods //
+  ////////////
+
+  public accept() {
+    this.currentState = State.InProcess;
+    this.$store
+      .dispatch(NOTIFICATION_WISH_ACCEPT, this.data)
+      .then((response) => {
+        this.$notify({
+          title: 'Участник подтверждён',
+          duration: 500
+        });
+      });
+  }
+
+  public reject() {
+    this.currentState = State.InProcess;
+    this.$store
+      .dispatch(NOTIFICATION_WISH_REJECT, this.data)
+      .then((response) => {
+        this.$notify({
+          title: 'Участник отклонён',
+          duration: 500
+        });
+      });
+  }
 
   // Computed data //
   //////////////////
@@ -93,7 +127,7 @@ export default class WishNotificationComponent extends Vue {
   }
 
   get beginTime(): string {
-    return moment(this.data.beginTime).format();
+    return moment(this.data.beginTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
   }
 
   get targetParticipantsCount(): string {
@@ -127,30 +161,6 @@ export default class WishNotificationComponent extends Vue {
 
   get isInProcess(): boolean {
     return this.currentState === State.InProcess;
-  }
-
-  public accept() {
-    this.currentState = State.InProcess;
-    this.$store
-      .dispatch(NOTIFICATION_WISH_ACCEPT, this.data)
-      .then((response) => {
-        this.$notify({
-          title: 'Участник подтверждён',
-          duration: 500
-        });
-      });
-  }
-
-  public reject() {
-    this.currentState = State.InProcess;
-    this.$store
-      .dispatch(NOTIFICATION_WISH_REJECT, this.data)
-      .then((response) => {
-        this.$notify({
-          title: 'Участник отклонён',
-          duration: 500
-        });
-      });
   }
 }
 </script>

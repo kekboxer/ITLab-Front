@@ -51,6 +51,19 @@
 
 /* Theme adaptive form control */
 
+blockquote {
+  margin: 1.5em 20px;
+  padding: 0.5em 10px;
+  
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  @include theme-specific() {
+    box-shadow: -10px 0 0 getstyle(typography-elements-color);
+  }
+}
+
 .form-control {
   @include theme-specific() {
     background-color: getstyle(form-control-background-color);
@@ -61,11 +74,9 @@
   @include theme-specific(theme-light) {
     border-bottom: 1px solid #dee2e6;
   }
-
   @include theme-specific(theme-dark) {
     border-bottom: 1px solid getstyle(card-list-item-background-color);
   }
-
   .nav-item {
     margin-bottom: 0;
     .nav-link {
@@ -131,7 +142,6 @@
   input[type='checkbox'] {
     pointer-events: none;
   }
-
   img {
     max-width: 100%;
   }

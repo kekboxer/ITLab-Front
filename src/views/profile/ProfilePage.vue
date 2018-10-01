@@ -32,9 +32,14 @@
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
           <h4>Права в системе</h4>
           <hr>
-          <div class="equipment-card" v-for="role in userRoles" :key="`role-${role}`">
-            {{ role }}
-          </div>
+          <template v-if="userRoles.length === 0">
+            Доплнительных прав нет
+          </template>
+          <template v-else>
+            <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole}`">
+              {{ userRole }}
+            </div>
+          </template>
         </b-col>
       </b-row>
       <b-row>

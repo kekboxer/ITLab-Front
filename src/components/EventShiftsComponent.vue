@@ -3,10 +3,16 @@
   <div class="event-shifts-component">
     <div class="shift" v-for="(shift, shiftIndex) in eventShifts" :key="`shift-${shiftIndex}`" v-if="!shift.delete">
       <b-row>
-        <b-col cols="12" md="auto" class="ml-md-1 text-center text-md-left mb-2 mb-md-0">
+        <b-col cols="auto" class="noselect" style="cursor: pointer" @click="toggleShift(shiftIndex)">
+          <div style="min-width: 31px; text-align: center;">
+            <icon name="caret-right" style="position: relative; top: -2px;" v-if="isShiftCollapsed(shift)"></icon>
+            <icon name="caret-down" style="position: relative; top: -2px;" v-else></icon>
+          </div>
+        </b-col>
+        <b-col class="text-right text-md-left">
           <b-row>
-            <b-col>
-              <b>{{ shift.beginTime | moment($g.DATETIME_FORMAT) }}</b> &mdash;
+            <b-col style="">
+              <b>{{ getShiftBeginTime(shift) }}</b> &mdash;
               <b>{{ getShiftEndTime(shift) }}</b> ({{ getShiftDuration(shift) }})
             </b-col>
           </b-row>
@@ -16,7 +22,7 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start" v-if="editable">
+        <b-col cols="12" md="auto" class="ml-md-1 mt-2 mt-md-0 d-flex align-content-between align-items-start" v-if="editable">
           <b-button variant="outline-secondary" class="btn-sm w-100 mr-1 order-2 order-md-1" @click="showShiftModal(shiftIndex, true)">Клонировать</b-button>
           <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showShiftModal(shiftIndex)">Изменить</b-button>
           <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveShift(shiftIndex)" v-bind:disabled="!canDeleteShift">
@@ -25,117 +31,125 @@
           </b-button>
         </b-col>
       </b-row>
-      <hr>
-      <b-row>
-        <b-col>
-          <div v-for="(place, placeIndex) in shift.places" :key="`place-${placeIndex}`" class="place" v-if="!place.delete">
-            <div class="place-title drag-handle">
-              <b-row>
-                <b-col cols="12" md="auto" class="ml-md-1 text-center text-md-left mb-2 mb-md-0">
-                  <b-row>
-                    <b-col>
-                      Место #{{ placeIndex + 1}} | {{ getPlaceTargetParticipantsCount(place) }}
-                    </b-col>
-                  </b-row>
-                  <b-row v-if="place.description">
-                    <b-col>
-                      {{ place.description }}
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                  <template v-if="editable">
-                    <b-button variant="outline-secondary" class="btn-sm w-100 mr-md-1 order-2 order-md-1" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
-                    <b-button variant="outline-secondary" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-2" @click="removePlace(shift, placeIndex)" v-if="canDeletePlace(shift)">
-                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
-                      <span class="d-inline d-md-none">Удалить</span>
-                    </b-button>
-                  </template>
-                  <template v-else>
-                    <b-button variant="outline-secondary" class="btn-sm w-100 theme-light-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
-                    <b-button variant="secondary" class="btn-sm w-100 theme-dark-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
-                  </template>
-                </b-col>
-              </b-row>
-            </div>
-            <div class="place-data">
-              <b-row>
-                <b-col cols="12" md="6">
-                  <div class="list-group">
-                    <!-- Accepted participants -->
-                    <li class="list-group-item" v-for="(participant, participantIndex) in place.participants" :key="`place-${placeIndex}-participant-${participantIndex}`" v-if="!participant.delete">
-                      <b-row>
-                        <b-col cols="auto mr-auto">
-                          <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.eventRole.title }}</span><br>
-                          <mail-link :email="participant.user.email" />
-                        </b-col>
-                        <b-col cols="auto" v-if="editable">
-                          <div class="remove-button" @click="removePlaceParticipant(place.participants, participantIndex)">
-                            <icon name="times"></icon>
-                          </div>
-                        </b-col>
-                      </b-row>
-                    </li>
-
-                    <!-- Invited participants -->
-                    <li class="list-group-item" v-for="(participant, participantIndex) in place.invited" :key="`place-${placeIndex}-invited-${participantIndex}`" v-if="!participant.delete">
-                      <b-row>
-                        <b-col cols="auto mr-auto">
-                          <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.eventRole.title }}</span><br>
-                          <mail-link :email="participant.user.email" />
-                        </b-col>
-                        <b-col cols="auto" v-if="editable">
-                          <div class="remove-button" @click="removePlaceParticipant(place.invited, participantIndex)">
-                            <icon name="times"></icon>
-                          </div>
-                        </b-col>
-                      </b-row>
-                    </li>
-
-                    <!-- Participants, who just applied -->
-                    <li class="list-group-item" v-for="(participant, participantIndex) in place.wishers" :key="`place-${placeIndex}-wishers-${participantIndex}`" v-if="!participant.delete">
-                      <b-row>
-                        <b-col cols="auto mr-auto">
-                          <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
-                          <span class="badge badge-secondary badge-pill noselect" v-b-tooltip.hover title="Подал заявку">{{ participant.eventRole.title }}</span><br>
-                          <mail-link :email="participant.user.email" />
-                        </b-col>
-                      </b-row>
-                    </li>
-
-                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceInvitedParticipantModal(place)">
-                      Пригласить участника
-                    </li>
-                  </div>
-                </b-col>
-                <b-col cols="12" md="6" class="mt-2 mt-md-0">
-                  <div class="list-group">
-                    <li class="list-group-item" v-for="(equipment, equipmentIndex) in place.equipment" :key="`place-${placeIndex}-equipment-${equipmentIndex}`" v-if="!equipment.delete">
-                      <b-row>
-                        <b-col cols="auto mr-auto">
-                          <b>{{ equipment.equipmentType.title }}</b><br>{{ equipment.serialNumber }}
-                        </b-col>
+      <template v-if="!isShiftCollapsed(shift)">
+        <hr>
+        <b-row>
+          <b-col>
+            <div v-for="(place, placeIndex) in shift.places" :key="`place-${placeIndex}`" class="place" v-if="!place.delete">
+              <div class="place-title drag-handle">
+                <b-row>
+                  <b-col cols="auto" class="noselect" style="cursor: pointer" @click="togglePlace(shift, placeIndex)">
+                    <div style="min-width: 31px; text-align: center; line-height: 31px">
+                      <icon name="caret-right" style="position: relative; top: -2px;" v-if="isPlaceCollapsed(place)"></icon>
+                      <icon name="caret-down" style="position: relative; top: -2px;" v-else></icon>
+                    </div>
+                  </b-col>
+                  <b-col class="text-right text-md-left mb-2 mb-md-0">
+                    <b-row>
+                      <b-col style="line-height: 31px">
+                        Место #{{ placeIndex + 1}} | {{ getPlaceTargetParticipantsCount(place) }}
+                      </b-col>
+                    </b-row>
+                    <b-row v-if="place.description">
+                      <b-col>
+                        {{ place.description }}
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                  <b-col cols="12" md="auto" class="ml-md-1 mt-1 mt-md-0 d-flex align-content-between align-items-start">
+                    <template v-if="editable">
+                      <b-button variant="outline-secondary" class="btn-sm w-100 mr-md-1 order-2 order-md-1" @click="showPlaceModal(shift, placeIndex)">Изменить</b-button>
+                      <b-button variant="outline-secondary" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-2" @click="removePlace(shift, placeIndex)" v-if="canDeletePlace(shift)">
+                        <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                        <span class="d-inline d-md-none">Удалить</span>
+                      </b-button>
+                    </template>
+                    <template v-else>
+                      <b-button variant="outline-secondary" class="btn-sm w-100 theme-light-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
+                      <b-button variant="secondary" class="btn-sm w-100 theme-dark-only" @click="showApplicationModal(shift, placeIndex)">Подать заявку</b-button>
+                    </template>
+                  </b-col>
+                </b-row>
+              </div>
+              <div class="place-data" v-if="!isPlaceCollapsed(place)">
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="list-group">
+                      <!-- Accepted participants -->
+                      <li class="list-group-item" v-for="(participant, participantIndex) in place.participants" :key="`place-${placeIndex}-participant-${participantIndex}`" v-if="!participant.delete">
+                        <b-row>
+                          <b-col cols="auto mr-auto">
+                            <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                            <span class="badge badge-success badge-pill noselect" v-b-tooltip.hover title="Подтверждённый">{{ participant.eventRole.title }}</span><br>
+                            <mail-link :email="participant.user.email" />
+                          </b-col>
                           <b-col cols="auto" v-if="editable">
-                            <div class="remove-button" @click="removePlaceEquipment(place, equipmentIndex)">
+                            <div class="remove-button" @click="removePlaceParticipant(place.participants, participantIndex)">
                               <icon name="times"></icon>
                             </div>
                           </b-col>
-                      </b-row>
-                    </li>
-                    <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(shift, place)">
-                      Добавить оборудование
-                    </li>
-                  </div>
-                </b-col>
-              </b-row>
+                        </b-row>
+                      </li>
+
+                      <!-- Invited participants -->
+                      <li class="list-group-item" v-for="(participant, participantIndex) in place.invited" :key="`place-${placeIndex}-invited-${participantIndex}`" v-if="!participant.delete">
+                        <b-row>
+                          <b-col cols="auto mr-auto">
+                            <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                            <span class="badge badge-warning badge-pill noselect" v-b-tooltip.hover title="Не подтверждённый">{{ participant.eventRole.title }}</span><br>
+                            <mail-link :email="participant.user.email" />
+                          </b-col>
+                          <b-col cols="auto" v-if="editable">
+                            <div class="remove-button" @click="removePlaceParticipant(place.invited, participantIndex)">
+                              <icon name="times"></icon>
+                            </div>
+                          </b-col>
+                        </b-row>
+                      </li>
+
+                      <!-- Participants, who just applied -->
+                      <li class="list-group-item" v-for="(participant, participantIndex) in place.wishers" :key="`place-${placeIndex}-wishers-${participantIndex}`" v-if="!participant.delete">
+                        <b-row>
+                          <b-col cols="auto mr-auto">
+                            <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                            <span class="badge badge-secondary badge-pill noselect" v-b-tooltip.hover title="Подал заявку">{{ participant.eventRole.title }}</span><br>
+                            <mail-link :email="participant.user.email" />
+                          </b-col>
+                        </b-row>
+                      </li>
+
+                      <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceInvitedParticipantModal(place)">
+                        Пригласить участника
+                      </li>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" class="mt-2 mt-md-0">
+                    <div class="list-group">
+                      <li class="list-group-item" v-for="(equipment, equipmentIndex) in place.equipment" :key="`place-${placeIndex}-equipment-${equipmentIndex}`" v-if="!equipment.delete">
+                        <b-row>
+                          <b-col cols="auto mr-auto">
+                            <b>{{ equipment.equipmentType.title }}</b><br>{{ equipment.serialNumber }}
+                        </b-col>
+                            <b-col cols="auto" v-if="editable">
+                              <div class="remove-button" @click="removePlaceEquipment(place, equipmentIndex)">
+                                <icon name="times"></icon>
+                              </div>
+                            </b-col>
+                        </b-row>
+                      </li>
+                      <li class="list-group-item list-group-item-action group-button" v-if="editable" @click="showPlaceEquipmentModal(shift, place)">
+                        Добавить оборудование
+                      </li>
+                    </div>
+                  </b-col>
+                </b-row>
+              </div>
             </div>
-          </div>
-        </b-col>
-      </b-row>
-      <b-button variant="outline-success" class="w-100 mt-2 theme-light-only" @click="showPlaceModal(shift)" v-if="editable">Добавить место</b-button>
-      <b-button variant="success" class="w-100 mt-2 theme-dark-only" @click="showPlaceModal(shift)" v-if="editable">Добавить место</b-button>
+          </b-col>
+        </b-row>
+        <b-button variant="outline-success" class="w-100 mt-2 theme-light-only" @click="showPlaceModal(shift)" v-if="editable">Добавить место</b-button>
+        <b-button variant="success" class="w-100 mt-2 theme-dark-only" @click="showPlaceModal(shift)" v-if="editable">Добавить место</b-button>
+      </template>
     </div>
 
     <b-row>
@@ -253,6 +267,8 @@ import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import EquipmentSelectionComponent from '@/components/EquipmentSelectionComponent.vue';
 
 import 'vue-awesome/icons/times';
+import 'vue-awesome/icons/caret-right';
+import 'vue-awesome/icons/caret-down';
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength, helpers } from 'vuelidate/lib/validators';
@@ -528,6 +544,10 @@ export default class EventShiftsComponent extends Vue {
   // Shift handlers //
   ///////////////////
 
+  public getShiftBeginTime(shift: IEventShift): string {
+    return moment(shift.beginTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
+  }
+
   public getShiftEndTime(shift: IEventShift): string {
     const shiftBeginDay = moment(shift.beginTime).startOf('day');
     const shiftEndDay = moment(shift.endTime).startOf('day');
@@ -535,14 +555,20 @@ export default class EventShiftsComponent extends Vue {
     if (shiftBeginDay.isSame(shiftEndDay)) {
       return moment(shift.endTime).format(this.$g.TIME_FORMAT);
     } else {
-      return moment(shift.endTime).format(this.$g.DATETIME_FORMAT);
+      return moment(shift.endTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
     }
   }
 
   public getShiftDuration(shift: IEventShift): string {
-    return moment
+    const hourCount = moment
       .duration(moment(shift.endTime).diff(moment(shift.beginTime)))
-      .humanize();
+      .asHours();
+
+    return `${hourCount} ${getNounDeclension(hourCount, [
+      'час',
+      'часа',
+      'часов'
+    ])}`;
   }
 
   public onEditShift(shiftIndex?: number) {
@@ -660,7 +686,7 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public onRemoveShift(shiftIndex: number) {
-    if (!this.value) {
+    if (!this.value || !confirm('Вы действительно хотите удалить смену?')) {
       return;
     }
 
@@ -727,6 +753,23 @@ export default class EventShiftsComponent extends Vue {
     }
   }
 
+  public toggleShift(shiftIndex: number) {
+    if (this.value == null || shiftIndex >= this.value.length) {
+      return;
+    }
+
+    const shift = this.value[shiftIndex];
+    shift.collapsed = !this.isShiftCollapsed(shift);
+
+    Vue.set(this.value, shiftIndex, shift);
+  }
+
+  public isShiftCollapsed(shift: IEventShift) {
+    return (
+      (!this.editable && shift.collapsed == null) || shift.collapsed === true
+    );
+  }
+
   // Place handlers //
   ///////////////////
 
@@ -778,6 +821,10 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public removePlace(shift: IEventShift, placeIndex: number) {
+    if (!confirm('Вы действительно хотите удалить место?')) {
+      return;
+    }
+
     const place = shift.places[placeIndex];
     if (place.new === true) {
       Vue.delete(shift.places, placeIndex);
@@ -816,6 +863,23 @@ export default class EventShiftsComponent extends Vue {
     }
 
     this.modalState = newState;
+  }
+
+  public togglePlace(shift: IEventShift, placeIndex: number) {
+    if (placeIndex >= shift.places.length) {
+      return;
+    }
+
+    const place = shift.places[placeIndex];
+    place.collapsed = !this.isPlaceCollapsed(place);
+
+    Vue.set(shift.places, placeIndex, place);
+  }
+
+  public isPlaceCollapsed(place: IEventPlace) {
+    return (
+      (!this.editable && place.collapsed == null) || place.collapsed === true
+    );
   }
 
   // Place participant handlers //
@@ -980,6 +1044,10 @@ export default class EventShiftsComponent extends Vue {
     this.modalState = ModalState.ApplicationCreation;
   }
 
+  public isAnyTextSelected(): boolean {
+    return window.getSelection() && window.getSelection().toString().length > 0;
+  }
+
   // Computed data //
   //////////////////
 
@@ -1012,13 +1080,12 @@ export default class EventShiftsComponent extends Vue {
     padding: 0.75rem;
     font-size: 1rem;
     line-height: 1.5;
-    color: #495057;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
 
     @include theme-specific() {
-      background-color: getstyle(form-control-background-color);
-      border-color: darken(getstyle(form-control-background-color), 10%);
+      background-color: getstyle(card-list-item-background-color);
+      border-color: darken(getstyle(card-list-item-background-color), 10%);
     }
 
     &:not(:last-child) {
@@ -1026,9 +1093,17 @@ export default class EventShiftsComponent extends Vue {
     }
 
     .place {
-      margin-top: 5px;
       border: 1px solid darken(getcolor(white, base), 10%);
       border-radius: 0.25rem;
+
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
+
+      @include theme-specific() {
+        border-color: getstyle(event-shifts-places-title-background);
+        background-color: darken(getstyle(card-list-item-background-color), 5%);
+      }
 
       .badge {
         margin-left: 5px;
@@ -1051,16 +1126,11 @@ export default class EventShiftsComponent extends Vue {
       }
 
       .place-title {
-        background-color: getcolor(white, base);
         padding: 0.375rem 0.75rem;
 
         .text {
           @extend .noselect;
           line-height: 31px;
-        }
-
-        @include theme-specific() {
-          background-color: getstyle(event-shifts-card-title-background);
         }
       }
 
@@ -1069,7 +1139,7 @@ export default class EventShiftsComponent extends Vue {
 
         .list-group-item {
           @include theme-specific() {
-            background-color: getstyle(event-shifts-card-items-background);
+            background-color: getstyle(card-list-item-background-color);
           }
         }
 

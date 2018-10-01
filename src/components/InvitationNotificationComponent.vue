@@ -12,7 +12,7 @@
         <b-row>
           <b-col cols="5">Начало:</b-col>
           <b-col cols="7">
-            <b>{{ data.beginTime | moment($g.DATETIME_FORMAT) }}</b>
+            <b>{{ beginTime }}</b>
           </b-col>
         </b-row>
         <b-row>
@@ -25,6 +25,12 @@
           <b-col cols="5">Роль:</b-col>
           <b-col cols="7">
             <b>{{ data.eventRole.title }}</b>
+          </b-col>
+        </b-row>
+        <b-row v-if="data.placeDescription">
+          <b-col cols="5">Место:</b-col>
+          <b-col cols="7">
+            <b>{{ data.placeDescription }}</b>
           </b-col>
         </b-row>
       </b-col>
@@ -66,34 +72,13 @@ export default class InvitationNotificationComponent extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public data!: IInvitationNotification;
+  @Prop()
+  public data!: IInvitationNotification;
 
   public currentState: State = State.Default;
 
-  // Computed data //
-  //////////////////
-
-  get beginTime(): string {
-    if (!this.data.beginTime) {
-      return '';
-    }
-
-    return moment(this.data.beginTime).format();
-  }
-
-  get duration(): string {
-    if (!this.data.shiftDurationInMinutes) {
-      return '';
-    }
-
-    return moment
-      .duration(this.data.shiftDurationInMinutes, 'minutes')
-      .humanize();
-  }
-
-  get isInProcess(): boolean {
-    return this.currentState === State.InProcess;
-  }
+  // Methods //
+  ////////////
 
   public accept() {
     this.currentState = State.InProcess;
@@ -117,6 +102,31 @@ export default class InvitationNotificationComponent extends Vue {
           duration: 500
         });
       });
+  }
+
+  // Computed data //
+  //////////////////
+
+  get beginTime(): string {
+    if (!this.data.beginTime) {
+      return '';
+    }
+
+    return moment(this.data.beginTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
+  }
+
+  get duration(): string {
+    if (!this.data.shiftDurationInMinutes) {
+      return '';
+    }
+
+    return moment
+      .duration(this.data.shiftDurationInMinutes, 'minutes')
+      .humanize();
+  }
+
+  get isInProcess(): boolean {
+    return this.currentState === State.InProcess;
   }
 }
 </script>

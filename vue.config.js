@@ -6,5 +6,13 @@ module.exports = {
         chunks: 'all';
       }
     }
+  },
+  chainWebpack: (config) => {
+    if (process.env.NODE_ENV === 'development') {
+      config.plugin('html').tap((args) => {
+        args[0].template = './public/index_dev.html';
+        return args;
+      });
+    }
   }
 };
