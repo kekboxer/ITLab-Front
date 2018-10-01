@@ -41,8 +41,12 @@ class EventNotification extends Notification {
   public title: string = '';
   public eventType: IEventType = new EventTypeDefault();
   public beginTime: Date = new Date(0);
+
   public placeId: string = '';
-  public placeDescription?: string;
+  public placeDescription?: string = '';
+
+  public shiftDescription?: string = '';
+
   public role: IEventRole = new EventRoleDefault();
 }
 

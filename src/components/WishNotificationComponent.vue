@@ -17,9 +17,9 @@
           </b-col>
         </b-row>
         <b-row>
-          <b-col cols="5">Начало смены:</b-col>
+          <b-col cols="5">Смена:</b-col>
           <b-col cols="7">
-            <b>{{ beginTime }}</b>
+            <b>{{ beginTime }}</b><template v-if="data.shiftDescription"><br>{{ data.shiftDescription }}</template>
           </b-col>
         </b-row>
         <b-row>
