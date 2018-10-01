@@ -12,7 +12,7 @@
         <b-col class="text-right text-md-left">
           <b-row>
             <b-col style="">
-              <b>{{ shift.beginTime | moment($g.DATETIME_FORMAT) }}</b> &mdash;
+              <b>{{ getShiftBeginTime(shift) }}</b> &mdash;
               <b>{{ getShiftEndTime(shift) }}</b> ({{ getShiftDuration(shift) }})
             </b-col>
           </b-row>
@@ -544,6 +544,10 @@ export default class EventShiftsComponent extends Vue {
   // Shift handlers //
   ///////////////////
 
+  public getShiftBeginTime(shift: IEventShift): string {
+    return moment(shift.beginTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
+  }
+
   public getShiftEndTime(shift: IEventShift): string {
     const shiftBeginDay = moment(shift.beginTime).startOf('day');
     const shiftEndDay = moment(shift.endTime).startOf('day');
@@ -551,7 +555,7 @@ export default class EventShiftsComponent extends Vue {
     if (shiftBeginDay.isSame(shiftEndDay)) {
       return moment(shift.endTime).format(this.$g.TIME_FORMAT);
     } else {
-      return moment(shift.endTime).format(this.$g.DATETIME_FORMAT);
+      return moment(shift.endTime).format(this.$g.DATETIME_WEEKDAY_FORMAT);
     }
   }
 
