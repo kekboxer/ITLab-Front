@@ -33,7 +33,7 @@
           <h4>Права в системе</h4>
           <hr>
           <template v-if="userRoles.length === 0">
-            Доплнительных прав нет
+            Дополнительных прав нет
           </template>
           <template v-else>
             <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole}`">
