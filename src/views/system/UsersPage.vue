@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="users-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">Пользователи</template>
       <template slot="header-button">
         <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
@@ -14,7 +14,7 @@
           <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
         </b-card>
       </b-card-group>
-    </page-content-component>
+    </page-content>
 
     <b-modal v-model="modalVisible">
       <template slot="modal-title">
@@ -41,8 +41,8 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import { validationMixin } from 'vuelidate';
 import { required, email } from 'vuelidate/lib/validators';
@@ -63,8 +63,8 @@ enum ModalState {
 
 @Component({
   components: {
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent
   },
   mixins: [validationMixin],
   validations: {

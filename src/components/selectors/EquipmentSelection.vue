@@ -1,11 +1,11 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="equipment-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" v-model="equipmentSelected" @input="onInput" :state="state" :filter="filter" :without-adding="true" :can-clear="true">
+  <div class="c-equipment-selection">
+    <autocomplete-input :stringify="onStringify" :fetch="onFetch" v-model="equipmentSelected" @input="onInput" :state="state" :filter="filter" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
         <b>{{ data.item.equipmentType.title }}</b><br>{{ data.item.serialNumber }}
       </div>
-    </autocomplete-input-component>
+    </autocomplete-input>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -16,7 +16,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
-import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
+import CAutocompleteInput from '@/components/stuff/AutocompleteInput.vue';
 
 import {
   IEquipment,
@@ -26,18 +26,21 @@ import {
 
 @Component({
   components: {
-    'autocomplete-input-component': AutocompleteInputComponent
+    'autocomplete-input': CAutocompleteInput
   }
 })
-export default class EquipmentSelectionComponent extends Vue {
+export default class CEquipmentSelection extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: IEquipment;
+  @Prop()
+  public value?: IEquipment;
 
-  @Prop() public state?: boolean;
+  @Prop()
+  public state?: boolean;
 
-  @Prop() public filter?: (equipment: IEquipment) => boolean;
+  @Prop()
+  public filter?: (equipment: IEquipment) => boolean;
 
   // Properties //
   ///////////////
@@ -84,7 +87,7 @@ export default class EquipmentSelectionComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.equipment-selection-component {
+.c-equipment-selection {
   .result-item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 

@@ -1,6 +1,6 @@
 <!-- TEMPALTE BEGIN -->
 <template>
-  <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
+  <div class="c-autocomplete-input" v-bind:class="{ 'hide-results': resultsHidden }">
     <b-input-group>
       <b-form-input autocomplete="off" type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state" ref="input"></b-form-input>
       <b-input-group-append v-if="canClear">
@@ -40,7 +40,7 @@ import 'vue-awesome/icons/times';
     Icon
   }
 })
-export default class AutocompleteInputComponent extends Vue {
+export default class CAutocompleteInput extends Vue {
   // Properties //
   ///////////////
 
@@ -48,9 +48,11 @@ export default class AutocompleteInputComponent extends Vue {
   public searchString: string = '';
   public results: object[] = [];
 
-  @Prop() public value?: object;
+  @Prop()
+  public value?: object;
 
-  @Prop() public state?: boolean;
+  @Prop()
+  public state?: boolean;
 
   @Prop({
     default: false
@@ -186,7 +188,7 @@ export default class AutocompleteInputComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.autocomplete-input-component {
+.c-autocomplete-input {
   position: relative;
 
   .results {

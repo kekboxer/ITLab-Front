@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="sidebar-component" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
+  <div class="c-sidebar" @click="toggleMenu($event)" v-bind:class="{ 'mobile-hidden': isMobileMenuHidden }">
     <span class="menu-open" @click="toggleMenu($event, false)">
       <svgicon name="bars" height="32" class="bars"></svgicon>
     </span>
@@ -25,10 +25,9 @@
         </div>
         <hr>
       </div>
-
-      <div class="exit-button" @click="logout()">Выход</div>
+        <div class="exit-button" @click="logout()">Выход</div>
+      </div>
     </div>
-  </div>
 </template>
 <!-- TEMPLATE END -->
 
@@ -51,7 +50,7 @@ import {
 import { LAYOUT_BADGE_TEXT_SET } from '@/modules/layout';
 
 @Component
-export default class SidebarComponent extends Vue {
+export default class CSidebar extends Vue {
   // Properties //
   ///////////////
 
@@ -114,7 +113,7 @@ export default class SidebarComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.sidebar-component {
+.c-sidebar {
   position: fixed;
   top: 0;
   left: 0;

@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="type-edit-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">
         Типы
       </template>
@@ -110,11 +110,11 @@
           </b-row>
         </b-tab>
       </b-tabs>
-    </page-content-component>
+    </page-content>
 
-    <event-type-modal-component v-model="eventTypeModalVisible" :data="eventTypeModalData" :onSubmit="onSubmitEventTypeModal" />
-    <event-role-modal-component v-model="eventRoleModalVisible" :data="eventRoleModalData" :onSubmit="onSubmitEventRoleModal" />
-    <equipment-type-modal-component v-model="equipmentTypeModalVisible" :data="equipmentTypeModalData" :onSubmit="onSubmitEquipmentTypeModal" />
+    <event-type-modal v-model="eventTypeModalVisible" :data="eventTypeModalData" :onSubmit="onSubmitEventTypeModal" />
+    <event-role-modal v-model="eventRoleModalVisible" :data="eventRoleModalData" :onSubmit="onSubmitEventRoleModal" />
+    <equipment-type-modal v-model="equipmentTypeModalVisible" :data="equipmentTypeModalData" :onSubmit="onSubmitEquipmentTypeModal" />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -126,10 +126,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
 import Icon from 'vue-awesome/components/Icon';
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import EventTypeModalComponent from '@/components/EventTypeModalComponent.vue';
-import EventRoleModalComponent from '@/components/EventRoleModalComponent.vue';
-import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CEventTypeModal from '@/components/modals/EventTypeModal.vue';
+import CEventRoleModal from '@/components/modals/EventRoleModal.vue';
+import CEquipmentTypeModal from '@/components/modals/EquipmentTypeModal.vue';
 
 import 'vue-awesome/icons/times';
 
@@ -157,10 +157,10 @@ import {
 @Component({
   components: {
     Icon,
-    'page-content-component': PageContentComponent,
-    'event-type-modal-component': EventTypeModalComponent,
-    'event-role-modal-component': EventRoleModalComponent,
-    'equipment-type-modal-component': EquipmentTypeModalComponent
+    'page-content': CPageContent,
+    'event-type-modal': CEventTypeModal,
+    'event-role-modal': CEventRoleModal,
+    'equipment-type-modal': CEquipmentTypeModal
   }
 })
 export default class TypeEditPage extends Vue {

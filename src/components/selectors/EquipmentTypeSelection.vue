@@ -1,13 +1,13 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="equipment-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" v-model="equipmentTypeSelected" @input="onInput">
+  <div class="c-equipment-type-selection">
+    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
-    </autocomplete-input-component>
+    </autocomplete-input>
 
-    <equipment-type-modal-component v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
+    <equipment-type-modal v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -18,8 +18,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
-import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
-import EquipmentTypeModalComponent from '@/components/EquipmentTypeModalComponent.vue';
+import CAutocompleteInput from '@/components/stuff/AutocompleteInput.vue';
+import CEquipmentTypeModal from '@/components/modals/EquipmentTypeModal.vue';
 
 import {
   IEquipmentType,
@@ -29,19 +29,22 @@ import {
 
 @Component({
   components: {
-    'autocomplete-input-component': AutocompleteInputComponent,
-    'equipment-type-modal-component': EquipmentTypeModalComponent
+    'autocomplete-input': CAutocompleteInput,
+    'equipment-type-modal': CEquipmentTypeModal
   }
 })
-export default class EquipmentTypeSelectionComponent extends Vue {
+export default class CEquipmentTypeSelection extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: IEquipmentType;
+  @Prop()
+  public value?: IEquipmentType;
 
-  @Prop() public state?: boolean;
+  @Prop()
+  public state?: boolean;
 
-  @Prop() public filter?: (equipmentType: IEquipmentType) => boolean;
+  @Prop()
+  public filter?: (equipmentType: IEquipmentType) => boolean;
 
   // Properties //
   ///////////////

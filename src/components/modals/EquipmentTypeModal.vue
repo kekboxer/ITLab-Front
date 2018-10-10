@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="equipment-type-modal-component">
+  <div class="c-equipment-type-modal">
     <b-modal v-model="isModalVisible" @keydown.native.enter="onSubmitModal">
       <template slot="modal-title">
         Тип оборудования
@@ -50,7 +50,7 @@ import {
     }
   }
 })
-export default class EquipmentTypeModalComponent extends Vue {
+export default class CEquipmentTypeModal extends Vue {
   // v-modal //
   ////////////
 

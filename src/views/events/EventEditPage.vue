@@ -1,7 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="event-edit-page">
-    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+    <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">Событие</template>
       <template slot="header-button">
         <b-button variant="primary" :to="'/events/' + event.id" v-if="!isNewEvent">Подробнее</b-button>
@@ -11,7 +11,7 @@
         <b-col>
           <b-form>
             <b-form-group label="Тип события">
-              <event-type-selection-component v-model="event.eventType" :state="!$v.event.eventType.$invalid"></event-type-selection-component>
+              <event-type-selection v-model="event.eventType" :state="!$v.event.eventType.$invalid"></event-type-selection>
             </b-form-group>
 
             <b-form-group label="Название">
@@ -59,7 +59,7 @@
           </b-form>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -72,9 +72,9 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
-import EventTypeSelectionComponent from '@/components/EventTypeSelectionComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CEventTypeSelection from '@/components/selectors/EventTypeSelection.vue';
+import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength } from 'vuelidate/lib/validators';
@@ -103,9 +103,9 @@ enum State {
 
 @Component({
   components: {
-    'page-content-component': PageContentComponent,
-    'event-shifts-component': EventShiftsComponent,
-    'event-type-selection-component': EventTypeSelectionComponent
+    'page-content': CPageContent,
+    'event-type-selection': CEventTypeSelection,
+    'event-shifts-component': EventShiftsComponent
   },
   mixins: [validationMixin],
   validations() {

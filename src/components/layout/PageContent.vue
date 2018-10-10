@@ -1,6 +1,6 @@
 <!-- TEMPALTE BEGIN -->
 <template>
-  <div class="page-content-component">
+  <div class="c-page-content">
     <b-container class="content">
       <b-row>
         <b-col>
@@ -46,7 +46,7 @@ import '@/icons/loading';
 import '@/icons/404';
 
 @Component
-export default class PageContentComponent extends Vue {
+export default class CPageContent extends Vue {
   // Properties //
   ///////////////
 
@@ -88,7 +88,7 @@ export default class PageContentComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.page-content-component {
+.c-page-content {
   .stub {
     position: absolute;
     top: 50%;
