@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-edit-page">
-    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+    <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Оборудование
       </template>
@@ -10,7 +10,7 @@
         <b-col>
           <b-form>
             <b-form-group id="equipment-type-group" label="Тип оборудования">
-              <equipment-type-selection-component v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection-component>
+              <equipment-type-selection v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection>
             </b-form-group>
 
             <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
@@ -44,7 +44,7 @@
           </b-form>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
 
     <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment" @keydown.native.enter="onSubmitEquipmentOwner">
       <template slot="modal-title">
@@ -52,7 +52,7 @@
       </template>
 
       <b-form-group id="owner-group" label="Владелец" label-for="owner-input">
-        <user-selection-component v-model="equipmentOwnerModalData"></user-selection-component>
+        <user-selection v-model="equipmentOwnerModalData"></user-selection>
       </b-form-group>
 
       <template slot="modal-footer">
@@ -71,10 +71,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
-import EquipmentTypeSelectionComponent from '@/components/EquipmentTypeSelectionComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CUserSelection from '@/components/selectors/UserSelection.vue';
+import CEquipmentTypeSelection from '@/components/selectors/EquipmentTypeSelection.vue';
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
@@ -105,10 +105,10 @@ enum State {
 
 @Component({
   components: {
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent,
-    'user-selection-component': UserSelectionComponent,
-    'equipment-type-selection-component': EquipmentTypeSelectionComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent,
+    'user-selection': CUserSelection,
+    'equipment-type-selection': CEquipmentTypeSelection
   },
   mixins: [validationMixin],
   validations() {

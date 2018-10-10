@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">Оборудование</template>
       <template slot="header-button">
         <b-button variant="success" to="equipment/new" v-if="canEdit">Добавить</b-button>
@@ -61,7 +61,7 @@
           </b-table>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -73,8 +73,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import Icon from 'vue-awesome/components/Icon';
 import 'vue-awesome/icons/times';
@@ -92,8 +92,8 @@ import { IUser, USERS_FETCH_ALL } from '@/modules/users';
 @Component({
   components: {
     Icon,
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent
   }
 })
 export default class EquipmentPage extends Vue {

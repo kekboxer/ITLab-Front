@@ -32,15 +32,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-
 const LOCAL_STORAGE_API_URL = 'api-url';
 
-@Component({
-  components: {
-    'page-content-component': PageContentComponent
-  }
-})
+@Component
 export default class BackendSelectionPage extends Vue {
   // Properties //
   ///////////////

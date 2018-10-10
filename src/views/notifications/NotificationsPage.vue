@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="notifications-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">
         Уведомления
       </template>
@@ -9,8 +9,8 @@
       <template v-if="notifications.length > 0">
         <b-row v-for="(handle, notificationIndex) in notifications" :key="`${handle.type}-${notificationIndex}-${handle.notification.placeId}`">
           <b-col>
-            <invitation-notification-component :data="handle.notification" v-if="handle.type === 'invitation'"></invitation-notification-component>
-            <wish-notification-component :data="handle.notification" v-if="handle.type === 'wish'"></wish-notification-component>
+            <invitation-notification :data="handle.notification" v-if="handle.type === 'invitation'"></invitation-notification>
+            <wish-notification :data="handle.notification" v-if="handle.type === 'wish'"></wish-notification>
           </b-col>
         </b-row>
       </template>
@@ -21,7 +21,7 @@
           </b-col>
         </b-row>
       </template>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -33,9 +33,9 @@ import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import WishNotificationComponent from '@/components/WishNotificationComponent.vue';
-import InvitationNotificationComponent from '@/components/InvitationNotificationComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CWishNotification from '@/components/notifications/WishNotification.vue';
+import CInvitationNotification from '@/components/notifications/InvitationNotification.vue';
 
 import {
   IWishNotification,
@@ -52,9 +52,9 @@ interface NotificationHandle {
 
 @Component({
   components: {
-    'page-content-component': PageContentComponent,
-    'wish-notification-component': WishNotificationComponent,
-    'invitation-notification-component': InvitationNotificationComponent
+    'page-content': CPageContent,
+    'wish-notification': CWishNotification,
+    'invitation-notification': CInvitationNotification
   }
 })
 export default class NotificationsPage extends Vue {

@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="projects-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">
         Проекты
       </template>
@@ -16,7 +16,7 @@
           </a>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -28,16 +28,17 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 @Component({
   components: {
-    'page-content-component': PageContentComponent
+    'page-content': CPageContent
   }
 })
 export default class ProjectsPage extends Vue {
   public APP_ID: string = '5c30d909f3ba9f9e3141a286626f90ea';
-  public APP_TOKEN: string = 'd366bf5ed0622c00e27f4532b7be509371a214a471355740e98374bffdf4a92d';
+  public APP_TOKEN: string =
+    'd366bf5ed0622c00e27f4532b7be509371a214a471355740e98374bffdf4a92d';
 
   // Properties //
   ///////////////
@@ -55,12 +56,9 @@ export default class ProjectsPage extends Vue {
       baseURL: 'https://api.trello.com/1/'
     });
 
-    ai
-      .get(
-        `organizations/mtuitlab/boards?key=${this.APP_ID}&token=${
-          this.APP_TOKEN
-        }`
-      )
+    ai.get(
+      `organizations/mtuitlab/boards?key=${this.APP_ID}&token=${this.APP_TOKEN}`
+    )
       .then((result) => {
         this.boards = result && result.data;
 

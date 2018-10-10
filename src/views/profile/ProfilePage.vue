@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="profile-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">
         Профиль
       </template>
@@ -68,7 +68,7 @@
           </template>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -81,7 +81,7 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
 import Icon from 'vue-awesome/components/Icon';
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import 'vue-awesome/icons/times';
 
@@ -106,7 +106,7 @@ enum FormState {
 @Component({
   components: {
     Icon,
-    'page-content-component': PageContentComponent
+    'page-content': CPageContent
   },
   mixins: [validationMixin],
   validations() {

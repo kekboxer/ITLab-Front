@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="events-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">События</template>
       <template slot="header-button">
         <b-button variant="success" to="events/edit/new" v-if="canEdit">Добавить</b-button>
@@ -9,7 +9,7 @@
 
       <b-row v-for="event in eventsCurrent" :key="event.id">
         <b-col>
-          <event-item-component :event="event"></event-item-component>
+          <event-item :event="event"></event-item>
         </b-col>
       </b-row>
 
@@ -26,12 +26,12 @@
       <div v-if="eventsShowPast">
         <b-row v-for="event in eventsPast" :key="event.id">
           <b-col>
-            <event-item-component :event="event"></event-item-component>
+            <event-item :event="event"></event-item>
           </b-col>
         </b-row>
       </div>
 
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -43,8 +43,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import EventItemComponent from '@/components/EventItemComponent.vue';
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CEventItem from '@/components/EventItem.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import {
   IEvent,
@@ -68,8 +68,8 @@ const createEventSortPredicate = (asc: boolean = true) => (
 
 @Component({
   components: {
-    'event-item-component': EventItemComponent,
-    'page-content-component': PageContentComponent
+    'event-item': CEventItem,
+    'page-content': CPageContent
   }
 })
 export default class EventsPage extends Vue {

@@ -1,7 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="event-detail-page">
-    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+    <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">Событие</template>
       <template slot="header-button">
         <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEdit">Изменить</b-button>
@@ -50,7 +50,7 @@
           </b-row>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -62,15 +62,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import EventShiftsComponent from '@/components/EventShiftsComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 
 @Component({
   components: {
-    'page-content-component': PageContentComponent,
+    'page-content': CPageContent,
     'event-shifts-component': EventShiftsComponent
   }
 })

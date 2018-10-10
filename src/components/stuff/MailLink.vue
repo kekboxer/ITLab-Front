@@ -10,11 +10,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class MailLinkComponent extends Vue {
+export default class CMailLink extends Vue {
   // Properties //
   ///////////////
 
-  @Prop() public email!: string;
+  @Prop()
+  public email!: string;
 }
 </script>
 <!-- SCRIPT END -->
