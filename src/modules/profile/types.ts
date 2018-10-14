@@ -1,3 +1,4 @@
+import { IUser } from '@/modules/users';
 import { AccessToken } from '@/stuff';
 
 // local storage
@@ -7,6 +8,7 @@ export const LOCAL_STORAGE_REFRESH_TOKEN = 'refresh-token';
 export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
 
 // actions
+export const PROFILE_FILL = 'PROFILE_FILL';
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
 export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
@@ -42,6 +44,12 @@ export class AuthorizationDataDefault {
 }
 
 export interface IAuthorizationData extends AuthorizationDataDefault {}
+
+export interface ILoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: IUser;
+}
 
 // RegistractionData //
 //////////////////////

@@ -1,7 +1,7 @@
 import { Module } from 'vuex';
 import { RootState } from '@/store';
 
-import { actions, setAxiosAuthHeader } from './actions';
+import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 import {
@@ -12,7 +12,7 @@ import {
   LOCAL_STORAGE_SETTINGS_THEME
 } from './types';
 
-import { decodeJWT, AccessToken } from '@/stuff';
+import { decodeJWT, AccessToken, setAxiosAuthHeader } from '@/stuff';
 
 export * from './types';
 

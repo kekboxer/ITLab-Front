@@ -12,32 +12,37 @@
           <hr>
           <b-form @submit.prevent="onSubmitProfile">
             <b-form-group label="Имя">
-              <b-form-input type="text" v-model.trim="profileData.firstName" :state="!$v.profileData.firstName.$invalid">
+              <b-form-input type="text" v-model.trim="profileData.firstName" :state="isCurrentUser ? !$v.profileData.firstName.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Фамилия">
-              <b-form-input type="text" v-model.trim="profileData.lastName" :state="!$v.profileData.lastName.$invalid">
+              <b-form-input type="text" v-model.trim="profileData.lastName" :state="isCurrentUser ? !$v.profileData.lastName.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Номер телефона">
-              <b-form-input type="tel" v-model.trim="profileData.phoneNumber" :state="!$v.profileData.phoneNumber.$invalid">
+              <b-form-input type="tel" v-model.trim="profileData.phoneNumber" :state="isCurrentUser ? !$v.profileData.phoneNumber.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess">Сохранить</b-button>
+            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess" v-if="isCurrentUser">Сохранить</b-button>
           </b-form>
         </b-col>
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
           <h4>Права в системе</h4>
           <hr>
           <template v-if="userRoles.length === 0">
-            Дополнительных прав нет
+            <template v-if="userRolesForbidden">
+              У вас нет доступа к правам данного пользователя
+            </template>
+            <template v-else>
+              Дополнительных прав нет
+            </template>
           </template>
           <template v-else>
-            <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole}`">
-              {{ userRole }}
+            <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole.id}`">
+              {{ userRole.name }}
             </div>
           </template>
         </b-col>
@@ -54,7 +59,7 @@
             <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
               <b-row>
                 <b-col cols="auto">
-                  <a :href="`equipment/${equipment.id}`">
+                  <a :href="`/equipment/${equipment.id}`">
                     <b>{{ equipment.equipmentType.title }}</b>
                   </a>
                 </b-col>
@@ -93,8 +98,13 @@ import {
   PROFILE_COMMIT,
   PROFILE_ROLES_GET
 } from '@/modules/profile';
-import { USERS_FETCH_ONE, IUser, UserDefault } from '@/modules/users';
-import { IEquipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
+import {
+  USERS_FETCH_ONE,
+  IUser,
+  UserDefault,
+  USER_ROLES_FETCH
+} from '@/modules/users';
+import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 import { UserRole } from '@/stuff';
 
 enum FormState {
@@ -134,26 +144,56 @@ export default class ProfilePage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
+  public isCurrentUser: boolean = false;
 
   public profileData: IUser = new UserDefault();
   public profileFormState: FormState = FormState.Default;
 
   public equipment: IEquipment[] = [];
 
+  public userRoles: Array<{ id: string; name: UserRole }> = [];
+  public userRolesForbidden: boolean = false;
+
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$store
-      .dispatch(USERS_FETCH_ONE, this.$store.getters[PROFILE_GET])
-      .then((profile) => {
-        this.profileData = profile;
-        this.loadingInProcess = false;
+    this.isCurrentUser = this.$route.params.id == null;
+    const userId = this.isCurrentUser
+      ? this.$store.getters[PROFILE_GET]
+      : this.$route.params.id;
 
-        return this.$store
-          .dispatch(EQUIPMENT_FETCH_MY)
-          .then((equipment) => (this.equipment = equipment));
-      });
+    Promise.all([
+      this.$store.dispatch(USERS_FETCH_ONE, userId),
+      this.$store.dispatch(EQUIPMENT_FETCH_ASSIGNED_TO, userId)
+    ]).then(([profile, equipment]: [IUser, IEquipment[]]) => {
+      this.profileData = profile;
+      this.equipment = equipment;
+
+      this.loadingInProcess = false;
+    });
+
+    if (this.isCurrentUser) {
+      this.userRoles = this.$store.getters[PROFILE_ROLES_GET].map(
+        (role: string, i: number) => {
+          return {
+            id: `local-${i}`,
+            name: role
+          };
+        }
+      );
+    } else {
+      this.$store
+        .dispatch(USER_ROLES_FETCH, userId)
+        .then((userRoles: Array<{ id: string; name: UserRole }>) => {
+          this.userRoles = userRoles;
+        })
+        .catch((error) => {
+          if (error.error.statusCode === 24) {
+            this.userRolesForbidden = true;
+          }
+        });
+    }
   }
 
   // Methods //
@@ -187,14 +227,10 @@ export default class ProfilePage extends Vue {
   get isProfileFormInProcess(): boolean {
     return this.profileFormState === FormState.InProcess;
   }
-
-  get userRoles(): UserRole[] {
-    return this.$store.getters[PROFILE_ROLES_GET];
-  }
 }
 
 export const profilePageRoute = {
-  path: '/profile',
+  path: '/profile/:id?',
   name: 'ProfilePage',
   component: ProfilePage
 } as RouteConfig;

@@ -3,6 +3,7 @@ import { RootState } from '@/store';
 import axios from 'axios';
 
 import {
+  setAxiosAuthHeader,
   getResponseData,
   createResponseCheckHandler,
   createErrorDataHandler
@@ -11,10 +12,12 @@ import {
 import {
   IProfileState,
   IAuthorizationData,
+  ILoginResponse,
   IRegistrationData,
   IPasswordChangeData,
   IPasswordRestoreData,
   IUserSession,
+  PROFILE_FILL,
   PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_REFRESH_ACCESS,
@@ -36,40 +39,27 @@ import { IUser } from '@/modules/users';
 
 import { IEventPlace, IEventRole } from '@/modules/events';
 
-export const setAxiosAuthHeader = (token?: string) => {
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  } else {
-    axios.defaults.headers.common.Authorization = undefined;
-  }
-};
-
-interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: IUser;
-}
-
-const handleLogin = (
-  response: LoginResponse,
-  commit: any,
-  resolve: (value?: {} | PromiseLike<{}>) => void
-) => {
-  setAxiosAuthHeader(response.accessToken);
-
-  commit(PROFILE_SET, response.user.id);
-  commit(PROFILE_ACCESS_TOKEN_SET, response.accessToken);
-  commit(PROFILE_REFRESH_TOKEN_SET, response.refreshToken);
-  resolve(response);
-};
-
 export const actions: ActionTree<IProfileState, RootState> = {
-  [PROFILE_LOGIN]: ({ commit }, authorizationData: IAuthorizationData) => {
+  [PROFILE_FILL]: ({ commit }, loginResponse: ILoginResponse) => {
+    return new Promise((resolve, reject) => {
+      setAxiosAuthHeader(loginResponse.accessToken);
+
+      commit(PROFILE_SET, loginResponse.user.id);
+      commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
+      commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
+      resolve();
+    });
+  },
+
+  [PROFILE_LOGIN]: ({ dispatch }, authorizationData: IAuthorizationData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('authentication/login', authorizationData)
-        .then((response) => getResponseData<LoginResponse>(response))
-        .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
+        .then((response) => getResponseData<ILoginResponse>(response))
+        .then((loginResponse) => {
+          dispatch(PROFILE_FILL, loginResponse);
+          resolve();
+        })
         .catch(createErrorDataHandler(PROFILE_LOGIN, reject));
     });
   },
@@ -84,14 +74,17 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_REFRESH_ACCESS]: ({ commit }, token: string) => {
+  [PROFILE_REFRESH_ACCESS]: ({ dispatch }, token: string) => {
     return new Promise((resolve, reject) => {
       const data: string = `"${token}"`;
 
       axios
         .post('authentication/refresh', data)
-        .then((response) => getResponseData<LoginResponse>(response))
-        .then((loginResponse) => handleLogin(loginResponse, commit, resolve))
+        .then((response) => getResponseData<ILoginResponse>(response))
+        .then((loginResponse) => {
+          dispatch(PROFILE_FILL, loginResponse);
+          resolve();
+        })
         .catch(createErrorDataHandler(PROFILE_REFRESH_ACCESS, reject));
     });
   },

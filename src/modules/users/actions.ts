@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
 import axios from 'axios';
 
-import { getResponseData } from '@/stuff';
+import { getResponseData, UserRole } from '@/stuff';
 
 import {
   IUsersState,
@@ -13,6 +13,7 @@ import {
   USERS_FETCH_ONE,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT,
+  USER_ROLES_FETCH,
   USERS_SET_ALL,
   USERS_SET_ONE
 } from './types';
@@ -118,7 +119,10 @@ export const actions: ActionTree<IUsersState, RootState> = {
 
   [USER_REMOVE_EQUIPMENT]: (
     {},
-    { equipment, owner }: { equipment: IEquipment; owner: IUser | string | null }
+    {
+      equipment,
+      owner
+    }: { equipment: IEquipment; owner: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
       let url: string = 'equipment/user';
@@ -136,6 +140,23 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(USER_REMOVE_EQUIPMENT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_ROLES_FETCH]: ({}, user: IUser | string) => {
+    return new Promise((resolve, reject) => {
+      const userId = typeof user === 'string' ? user : user.id;
+
+      axios
+        .get(`roles/${userId}`)
+        .then((response) =>
+          getResponseData<Array<{ id: string; name: UserRole }>>(response)
+        )
+        .then((userRoles) => resolve(userRoles))
+        .catch((error) => {
+          console.log(USER_ROLES_FETCH, error);
           reject(error);
         });
     });
