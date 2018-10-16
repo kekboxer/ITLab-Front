@@ -1,5 +1,5 @@
 import { RawLocation, RouteConfig } from 'vue-router';
-import { UserRole } from '@/stuff';
+import { UserRoleName } from '../users';
 
 // setters
 export const LAYOUT_BADGE_TEXT_SET = 'LAYOUT_BADGE_TEXT_SET';
@@ -34,7 +34,7 @@ export interface IGroup {
 export interface IPageMeta {
   secure?: boolean;
   development?: boolean;
-  allow?: UserRole | UserRole[];
+  allow?: UserRoleName | UserRoleName[];
 }
 
 // State //

@@ -16,8 +16,10 @@
 
         <b-form-group>
           <b-button variant="outline-secondary" @click="resetDefaults">Default</b-button>
-          <b-button variant="outline-secondary ml-1" @click="setApiUrl('/api/')">/api/</b-button>
-          <b-button variant="outline-secondary ml-1" @click="setApiUrl('http://localhost:5000/')">http://localhost:5000/</b-button>
+          
+          <b-button variant="outline-secondary ml-1" v-for="(url, index) in backendApiVariants" :key="`url-${index}`" @click="setApiUrl(url)">
+            {{ url }}
+          </b-button>
         </b-form-group>
       </b-form>
     </b-container>
@@ -40,6 +42,11 @@ export default class BackendSelectionPage extends Vue {
   ///////////////
 
   public apiUrl: string = '';
+
+  public backendApiVariants = [
+    '/api/',
+    'http://localhost:5000/api/'
+  ];
 
   // Component methods //
   //////////////////////

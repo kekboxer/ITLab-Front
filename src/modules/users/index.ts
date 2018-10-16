@@ -9,7 +9,8 @@ import { IUsersState } from './types';
 export * from './types';
 
 export const state: IUsersState = {
-  users: []
+  users: [],
+  userRoles: []
 };
 
 export const users: Module<IUsersState, RootState> = {

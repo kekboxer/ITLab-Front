@@ -26,29 +26,17 @@
               </b-form-input>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess" v-if="isCurrentUser">Сохранить</b-button>
+            <b-form-row>
+              <b-col cols="12">
+                <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess" v-if="isCurrentUser">Сохранить</b-button>
+              </b-col>
+              <b-col cols="12" class="mt-3">
+                <b-button variant="secondary" class="w-100" @click="isRolesModalVisible = true">Изменить права</b-button>
+              </b-col>
+            </b-form-row>
           </b-form>
         </b-col>
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
-          <h4>Права в системе</h4>
-          <hr>
-          <template v-if="userRoles.length === 0">
-            <template v-if="userRolesForbidden">
-              У вас нет доступа к правам данного пользователя
-            </template>
-            <template v-else>
-              Дополнительных прав нет
-            </template>
-          </template>
-          <template v-else>
-            <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole.id}`">
-              {{ userRole.name }}
-            </div>
-          </template>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" class="mt-5">
           <h4>Оборудование</h4>
           <hr>
 
@@ -74,6 +62,8 @@
         </b-col>
       </b-row>
     </page-content>
+
+    <user-roles-modal v-model="isRolesModalVisible" :user="profileData" />
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -87,6 +77,7 @@ import moment from 'moment-timezone';
 
 import Icon from 'vue-awesome/components/Icon';
 import CPageContent from '@/components/layout/PageContent.vue';
+import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
 
 import 'vue-awesome/icons/times';
 
@@ -102,10 +93,10 @@ import {
   USERS_FETCH_ONE,
   IUser,
   UserDefault,
-  USER_ROLES_FETCH
+  USER_ROLES_FETCH,
+  IUserRole
 } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
-import { UserRole } from '@/stuff';
 
 enum FormState {
   Default,
@@ -116,7 +107,8 @@ enum FormState {
 @Component({
   components: {
     Icon,
-    'page-content': CPageContent
+    'page-content': CPageContent,
+    'user-roles-modal': CUserRolesModal
   },
   mixins: [validationMixin],
   validations() {
@@ -151,8 +143,7 @@ export default class ProfilePage extends Vue {
 
   public equipment: IEquipment[] = [];
 
-  public userRoles: Array<{ id: string; name: UserRole }> = [];
-  public userRolesForbidden: boolean = false;
+  public isRolesModalVisible: boolean = false;
 
   // Component methods //
   //////////////////////
@@ -172,28 +163,6 @@ export default class ProfilePage extends Vue {
 
       this.loadingInProcess = false;
     });
-
-    if (this.isCurrentUser) {
-      this.userRoles = this.$store.getters[PROFILE_ROLES_GET].map(
-        (role: string, i: number) => {
-          return {
-            id: `local-${i}`,
-            name: role
-          };
-        }
-      );
-    } else {
-      this.$store
-        .dispatch(USER_ROLES_FETCH, userId)
-        .then((userRoles: Array<{ id: string; name: UserRole }>) => {
-          this.userRoles = userRoles;
-        })
-        .catch((error) => {
-          if (error.error.statusCode === 24) {
-            this.userRolesForbidden = true;
-          }
-        });
-    }
   }
 
   // Methods //
