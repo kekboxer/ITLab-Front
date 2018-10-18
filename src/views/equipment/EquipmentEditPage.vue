@@ -32,10 +32,10 @@
 
             <b-form-row class="buttons">
               <b-col cols="12" md="auto">
-                <b-button class="w-100 submit-button" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess" @click="onSubmit">Подтвердить</b-button>
+                <b-button class="w-100 submit-button" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess" @click="onSubmit" v-if="canEditEquipment">Подтвердить</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
-                <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
+                <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal" v-if="canEditEquipmentOwner">Изменить владельца</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
                 <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
@@ -46,7 +46,7 @@
       </b-row>
     </page-content>
 
-    <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment" @keydown.native.enter="onSubmitEquipmentOwner">
+    <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment && canEditEquipmentOwner" @keydown.native.enter="onSubmitEquipmentOwner">
       <template slot="modal-title">
         Назначение владельца
       </template>
@@ -302,6 +302,14 @@ export default class EquipmentEditPage extends Vue {
   get isModalInProcess(): boolean {
     return this.equipmentOwnerModalState === State.InProcess;
   }
+
+  get canEditEquipment(): boolean {
+    return this.$g.hasRole('CanEditEquipment');
+  }
+
+  get canEditEquipmentOwner(): boolean {
+    return this.$g.hasRole('CanEditEquipmentOwner');
+  }
 }
 
 export const equipmentEditPageRoute: RouteConfig = {
@@ -309,7 +317,7 @@ export const equipmentEditPageRoute: RouteConfig = {
   name: 'EquipmentEditPage',
   component: EquipmentEditPage,
   meta: {
-    allow: 'CanEditEquipment'
+    allow: ['CanEditEquipment', 'CanEditEquipment']
   } as IPageMeta
 };
 </script>

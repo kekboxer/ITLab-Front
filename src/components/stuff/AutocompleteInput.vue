@@ -10,7 +10,7 @@
       </b-input-group-append>
     </b-input-group>
 
-    <ul class="results" v-show="!resultsHidden && (withoutAdding !== true && searchString.length > 0 || results.length > 0)">
+    <ul class="results" v-show="!resultsHidden">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown="preventBlur" @click.stop="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
@@ -19,6 +19,13 @@
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
             Добавить
             <b>{{ searchString }}</b>
+          </slot>
+        </li>
+      </template>
+      <template v-else-if="results.length === 0">
+        <li class="add-item" v-show="searchString.length > 0" v-if="!checkExistence">
+          <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
+            Не найдено
           </slot>
         </li>
       </template>

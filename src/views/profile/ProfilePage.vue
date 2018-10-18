@@ -31,7 +31,7 @@
                 <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess" v-if="isCurrentUser">Сохранить</b-button>
               </b-col>
               <b-col cols="12" class="mt-3">
-                <b-button variant="secondary" class="w-100" @click="isRolesModalVisible = true">Изменить права</b-button>
+                <b-button variant="secondary" class="w-100" @click="isRolesModalVisible = true" v-if="canEditRoles">Изменить права</b-button>
               </b-col>
             </b-form-row>
           </b-form>
@@ -63,7 +63,7 @@
       </b-row>
     </page-content>
 
-    <user-roles-modal v-model="isRolesModalVisible" :user="profileData" />
+    <user-roles-modal v-model="isRolesModalVisible" :user="profileData" v-if="canEditRoles" />
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -195,6 +195,10 @@ export default class ProfilePage extends Vue {
 
   get isProfileFormInProcess(): boolean {
     return this.profileFormState === FormState.InProcess;
+  }
+
+  get canEditRoles(): boolean {
+    return this.$g.hasRole('CanEditRoles');
   }
 }
 

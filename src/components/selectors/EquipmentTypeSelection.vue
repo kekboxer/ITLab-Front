@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="c-equipment-type-selection">
-    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" v-model="equipmentTypeSelected" @input="onInput">
+    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" :without-adding="canEditEquipmentType()" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -101,6 +101,13 @@ export default class CEquipmentTypeSelection extends Vue {
     this.onInput();
 
     this.modalVisible = false;
+  }
+
+  // Computed data //
+  //////////////////
+
+  public canEditEquipmentType(): boolean {
+    return this.$g.hasRole('CanEditEquipmentType');
   }
 }
 </script>

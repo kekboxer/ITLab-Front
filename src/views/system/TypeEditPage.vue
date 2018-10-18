@@ -11,7 +11,7 @@
           <br>
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
-              <b-button variant="success" class="w-100" @click="showEventTypeModal()">Добавить</b-button>
+              <b-button variant="success" class="w-100" @click="showEventTypeModal()" v-if="canEditEventType">Добавить</b-button>
             </b-col>
           </b-row>
           <br>
@@ -29,7 +29,7 @@
                       </b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
+                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start" v-if="canEditEventType">
                     <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
                     <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventType(eventType)">
                       <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
@@ -64,8 +64,8 @@
                     </b-row>
                   </b-col>
                   <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventRoleModal(eventRole)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventRole(eventRole)">
+                    <b-button variant="warning" class="btn-sm w-100 order-3 order-md-2" v-bind:class="{'mr-md-1': canDeleteEventRole }" @click="showEventRoleModal(eventRole)">Изменить</b-button>
+                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventRole(eventRole)" v-if="canDeleteEventRole">
                       <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
@@ -79,7 +79,7 @@
           <br>
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
-              <b-button variant="success" class="w-100" @click="showEquipmentTypeModal()">Добавить</b-button>
+              <b-button variant="success" class="w-100" @click="showEquipmentTypeModal()" v-if="canEditEquipmentType">Добавить</b-button>
             </b-col>
           </b-row>
           <br>
@@ -97,7 +97,7 @@
                       </b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
+                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start" v-if="canEditEquipmentType">
                     <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
                     <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEquipmentType(equipmentType)">
                       <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
@@ -272,12 +272,24 @@ export default class TypeEditPage extends Vue {
     return this.$store.getters[EVENT_TYPES_GET_ALL];
   }
 
+  get canEditEventType(): boolean {
+    return this.$g.hasRole('CanEditEventType');
+  }
+
   get eventRoles(): IEventRole[] {
     return this.$store.getters[EVENT_ROLES_GET_ALL];
   }
 
+  get canDeleteEventRole(): boolean {
+    return this.$g.hasRole('CanDeleteEventRole');
+  }
+
   get equipmentTypes(): IEquipmentType[] {
     return this.$store.getters[EQUIPMENT_TYPES_GET_ALL];
+  }
+
+  get canEditEquipmentType(): boolean {
+    return this.$g.hasRole('CanEditEquipmentType');
   }
 }
 

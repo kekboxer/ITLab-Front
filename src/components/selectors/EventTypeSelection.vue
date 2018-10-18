@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="c-event-type-selection">
-    <autocomplete-input :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" v-model="eventTypeSelected" @input="onInput">
+    <autocomplete-input :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEventType()" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -100,6 +100,13 @@ export default class EventTypeSelectionComponent extends Vue {
     this.modalData.title = search;
 
     this.modalVisible = true;
+  }
+
+  // Computed data //
+  //////////////////
+
+  get canEditEventType(): boolean {
+    return this.$g.hasRole('CanEditEventType');
   }
 }
 </script>
