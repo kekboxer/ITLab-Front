@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="c-equipment-type-selection">
-    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" :without-adding="canEditEquipmentType()" v-model="equipmentTypeSelected" @input="onInput">
+    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEquipmentType()" v-model="equipmentTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
