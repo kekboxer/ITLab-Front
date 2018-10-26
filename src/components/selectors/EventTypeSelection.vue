@@ -105,7 +105,7 @@ export default class EventTypeSelectionComponent extends Vue {
   // Computed data //
   //////////////////
 
-  get canEditEventType(): boolean {
+  public canEditEventType(): boolean {
     return this.$g.hasRole('CanEditEventType');
   }
 }

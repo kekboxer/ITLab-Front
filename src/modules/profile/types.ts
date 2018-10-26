@@ -6,6 +6,7 @@ export const LOCAL_STORAGE_PROFILE_ID = 'user-id';
 export const LOCAL_STORAGE_ACCESS_TOKEN = 'access-token';
 export const LOCAL_STORAGE_REFRESH_TOKEN = 'refresh-token';
 export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
+export const LOCAL_STORAGE_ROLES = 'roles';
 
 // actions
 export const PROFILE_FILL = 'PROFILE_FILL';

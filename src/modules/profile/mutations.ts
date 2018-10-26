@@ -12,7 +12,8 @@ import {
   PROFILE_ACCESS_TOKEN_SET,
   PROFILE_REFRESH_TOKEN_SET,
   PROFILE_SETTINGS_THEME_SET,
-  PROFILE_ROLES_SET
+  PROFILE_ROLES_SET,
+  LOCAL_STORAGE_ROLES
 } from './types';
 
 import { IUser, UserRoleName } from '@/modules/users';
@@ -55,5 +56,6 @@ export const mutations: MutationTree<IProfileState> = {
 
   [PROFILE_ROLES_SET]: (state, roles: UserRoleName[]) => {
     state.roles = roles;
+    localStorage.setItem(LOCAL_STORAGE_ROLES, btoa(JSON.stringify(roles)));
   }
 };
