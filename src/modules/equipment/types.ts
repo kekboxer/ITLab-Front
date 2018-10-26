@@ -46,6 +46,7 @@ export interface IEquipmentType extends EquipmentTypeDefault {}
 export class EquipmentDefault {
   public id: string = '';
   public serialNumber: string = '';
+  public number: number = 0;
 
   public equipmentType?: IEquipmentType;
   public equipmentTypeId?: string;

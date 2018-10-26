@@ -9,6 +9,13 @@
       <b-row>
         <b-col>
           <b-form>
+            <b-form-row v-if="!isNewEquipment">
+              <b-col>
+                Номер: {{ equipment.number }}
+                <hr>
+              </b-col>
+            </b-form-row>
+
             <b-form-group id="equipment-type-group" label="Тип оборудования">
               <equipment-type-selection v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection>
             </b-form-group>

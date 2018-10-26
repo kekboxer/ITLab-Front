@@ -34,8 +34,8 @@
             <template slot="type" slot-scope="data">
               {{ data.item.equipmentType.title }}
             </template>
-            <template slot="serialNumber" slot-scope="data">
-              <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+            <template slot="number" slot-scope="data">
+              <span style="font-family: monospace">{{ data.item.number }}</span>
             </template>
             <template slot="actions" slot-scope="data" style="overflow: auto">
               <span class="actions-cell">
@@ -49,14 +49,34 @@
             </template>
 
             <template slot="row-details" slot-scope="data">
-              Владелец:
-              <template v-if="data.item.owner">
-                <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
-                <mail-link :email="data.item.owner.email" />
-              </template>
-              <template v-else>
-                Лаборатория
-              </template>
+              <b-row>
+                <b-col cols="auto">
+                  <b-row>
+                    <b-col cols="12">
+                      Владелец:
+                    </b-col>
+                    <b-col cols="12">
+                      Серийный номер:
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="12">
+                      <template v-if="data.item.owner">
+                        <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
+                        <mail-link :email="data.item.owner.email" />
+                      </template>
+                      <template v-else>
+                        Лаборатория
+                      </template>
+                    </b-col>
+                    <b-col cols="12">
+                      <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
             </template>
           </b-table>
         </b-col>
@@ -178,8 +198,8 @@ export default class EquipmentPage extends Vue {
         sortable: true
       },
       {
-        key: 'serialNumber',
-        label: 'Серийный номер'
+        key: 'number',
+        label: 'Номер'
       },
       {
         key: 'actions',
