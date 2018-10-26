@@ -4,21 +4,15 @@ import { UserRoleName } from '@/modules/users';
 interface IAccessToken {
   nbf: number;
   exp: number;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': UserRoleName[];
 }
 
 export class AccessToken {
   public readonly creationDate: Date;
   public readonly expirationDate: Date;
-  public readonly roles: UserRoleName[];
 
   constructor(decoded: IAccessToken) {
     this.creationDate = moment(decoded.nbf * 1000).toDate();
     this.expirationDate = moment(decoded.exp * 1000).toDate();
-
-    const roles =
-      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    this.roles = roles ? (typeof roles === 'string' ? [roles] : roles) : [];
   }
 }
 

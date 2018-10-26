@@ -1,4 +1,4 @@
-import { IUser } from '@/modules/users';
+import { IUser, UserRoleName } from '@/modules/users';
 import { AccessToken } from '@/stuff';
 
 // local storage
@@ -23,6 +23,7 @@ export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
 // setters
 export const PROFILE_SET = 'PROFILE_SET';
+export const PROFILE_ROLES_SET = 'PROFILE_ROLES_SET';
 export const PROFILE_ACCESS_TOKEN_SET = 'PROFILE_ACCESS_TOKEN_SET';
 export const PROFILE_REFRESH_TOKEN_SET = 'PROFILE_REFRESH_TOKEN_SET';
 export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
@@ -48,6 +49,7 @@ export interface IAuthorizationData extends AuthorizationDataDefault {}
 export interface ILoginResponse {
   accessToken: string;
   refreshToken: string;
+  roles: UserRoleName[];
   user: IUser;
 }
 
@@ -121,6 +123,7 @@ export interface IProfileState {
   profileId?: string;
   accessToken?: AccessToken;
   refreshToken?: string;
+  roles: UserRoleName[];
 
   settings: ISettings;
 }

@@ -33,12 +33,10 @@ export const getters: GetterTree<IProfileState, RootState> = {
   },
 
   [PROFILE_HAS_ROLE]: (state) => {
-    return (userRole: UserRoleName) =>
-      state.accessToken !== undefined &&
-      state.accessToken.roles.includes(userRole);
+    return (userRole: UserRoleName) => state.roles.includes(userRole);
   },
 
   [PROFILE_ROLES_GET]: (state) => {
-    return state.accessToken ? state.accessToken.roles : [];
+    return state.roles;
   }
 };

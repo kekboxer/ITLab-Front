@@ -32,7 +32,8 @@ import {
   PROFILE_ACCESS_TOKEN_SET,
   PROFILE_REFRESH_TOKEN_SET,
   PROFILE_COMMIT,
-  IPasswordRequestData
+  IPasswordRequestData,
+  PROFILE_ROLES_SET
 } from './types';
 
 import { IUser } from '@/modules/users';
@@ -47,6 +48,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
       commit(PROFILE_SET, loginResponse.user.id);
       commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
       commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
+      commit(PROFILE_ROLES_SET, loginResponse.roles);
       resolve();
     });
   },

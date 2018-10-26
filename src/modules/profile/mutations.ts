@@ -11,10 +11,11 @@ import {
   PROFILE_SET,
   PROFILE_ACCESS_TOKEN_SET,
   PROFILE_REFRESH_TOKEN_SET,
-  PROFILE_SETTINGS_THEME_SET
+  PROFILE_SETTINGS_THEME_SET,
+  PROFILE_ROLES_SET
 } from './types';
 
-import { IUser } from '@/modules/users';
+import { IUser, UserRoleName } from '@/modules/users';
 
 export const mutations: MutationTree<IProfileState> = {
   [PROFILE_SET]: (state, data?: string | IUser) => {
@@ -50,5 +51,9 @@ export const mutations: MutationTree<IProfileState> = {
   [PROFILE_SETTINGS_THEME_SET]: (state, theme: string = 'light') => {
     state.settings.theme = theme;
     localStorage.setItem(LOCAL_STORAGE_SETTINGS_THEME, state.settings.theme);
+  },
+
+  [PROFILE_ROLES_SET]: (state, roles: UserRoleName[]) => {
+    state.roles = roles;
   }
 };

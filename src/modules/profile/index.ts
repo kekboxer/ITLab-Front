@@ -38,6 +38,7 @@ const getStoredData = (): {
 
 export const state: IProfileState = {
   ...getStoredData(),
+  roles: [],
   settings: {
     theme: localStorage.getItem(LOCAL_STORAGE_SETTINGS_THEME) || 'light'
   }
