@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import Router, { RawLocation } from 'vue-router';
 import axios from 'axios';
 
 import store from '@/store';
@@ -15,7 +15,6 @@ import { LAYOUT_PAGES_GET } from '@/modules/layout';
 Vue.use(Router);
 
 // Initialize axios
-
 axios.defaults.baseURL =
   localStorage.getItem('api-url') || process.env.VUE_APP_API_URL || '/api/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -32,6 +31,17 @@ const router: Router = new Router({
 // Initialize authorization
 let refreshingToken: boolean = false;
 let subscribers: Array<(accessToken?: string) => void> = [];
+
+const getBaseUrl = () => {
+  return '/';
+};
+
+const getRedirectionPage = (originPath?: string) => {
+  return {
+    name: 'LoginPage',
+    params: { to: originPath }
+  } as RawLocation;
+};
 
 const refreshAccessToken = () => {
   if (refreshingToken) {
@@ -52,10 +62,7 @@ const refreshAccessToken = () => {
     })
     .catch(() => {
       notifySubscribers();
-      router.push({
-        name: 'LoginPage',
-        params: { to: router.currentRoute.path }
-      });
+      router.push(getRedirectionPage(router.currentRoute.path));
       refreshingToken = false;
     });
 };
@@ -75,7 +82,6 @@ axios.interceptors.response.use(
       return new Promise((resolve, reject) => {
         subscribers.push((accessToken?: string) => {
           if (accessToken) {
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             resolve(axios(originalRequest));
           } else {
             reject({ error: body });
@@ -119,7 +125,7 @@ router.beforeEach((to, from, next) => {
     if (process.env.NODE_ENV === 'development') {
       next();
     } else {
-      next({ name: 'EventsPage' });
+      next(getBaseUrl());
     }
     return;
   }
@@ -134,11 +140,11 @@ router.beforeEach((to, from, next) => {
         if (accessToken) {
           next();
         } else {
-          next({ name: 'LoginPage', params: { to: to.path } });
+          router.push(getRedirectionPage(to.path));
         }
       });
     } else {
-      next({ name: 'LoginPage', params: { to: to.path } });
+      router.push(getRedirectionPage(to.path));
     }
   } else {
     next();

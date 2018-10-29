@@ -1,3 +1,4 @@
+import { IUser, UserRoleName } from '@/modules/users';
 import { AccessToken } from '@/stuff';
 
 // local storage
@@ -5,8 +6,10 @@ export const LOCAL_STORAGE_PROFILE_ID = 'user-id';
 export const LOCAL_STORAGE_ACCESS_TOKEN = 'access-token';
 export const LOCAL_STORAGE_REFRESH_TOKEN = 'refresh-token';
 export const LOCAL_STORAGE_SETTINGS_THEME = 'theme';
+export const LOCAL_STORAGE_ROLES = 'roles';
 
 // actions
+export const PROFILE_FILL = 'PROFILE_FILL';
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
 export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_REFRESH_ACCESS = 'PROFILE_REFRESH_ACCESS';
@@ -21,6 +24,7 @@ export const PROFILE_SESSIONS_DELETE = 'PROFILE_SESSIONS_DELETE';
 
 // setters
 export const PROFILE_SET = 'PROFILE_SET';
+export const PROFILE_ROLES_SET = 'PROFILE_ROLES_SET';
 export const PROFILE_ACCESS_TOKEN_SET = 'PROFILE_ACCESS_TOKEN_SET';
 export const PROFILE_REFRESH_TOKEN_SET = 'PROFILE_REFRESH_TOKEN_SET';
 export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
@@ -42,6 +46,13 @@ export class AuthorizationDataDefault {
 }
 
 export interface IAuthorizationData extends AuthorizationDataDefault {}
+
+export interface ILoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  roles: UserRoleName[];
+  user: IUser;
+}
 
 // RegistractionData //
 //////////////////////
@@ -113,6 +124,7 @@ export interface IProfileState {
   profileId?: string;
   accessToken?: AccessToken;
   refreshToken?: string;
+  roles: UserRoleName[];
 
   settings: ISettings;
 }

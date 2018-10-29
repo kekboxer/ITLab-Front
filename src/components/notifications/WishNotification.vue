@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="wish-notification-component">
+  <div class="c-wish-notification">
     <b-row>
       <b-col cols="12" md="7">
         <h4>Заявка</h4>
@@ -61,7 +61,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Icon from 'vue-awesome/components/Icon';
 import moment from 'moment';
 
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
 
 import 'vue-awesome/icons/clock';
 
@@ -79,10 +79,10 @@ enum State {
 
 @Component({
   components: {
-    'mail-link': MailLinkComponent
+    'mail-link': CMailLink
   }
 })
-export default class WishNotificationComponent extends Vue {
+export default class CWishNotification extends Vue {
   // Properties //
   ///////////////
 
@@ -171,7 +171,7 @@ export default class WishNotificationComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.wish-notification-component {
+.c-wish-notification {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;

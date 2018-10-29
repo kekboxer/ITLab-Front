@@ -1,20 +1,25 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="users-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">Пользователи</template>
       <template slot="header-button">
         <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
       </template>
 
       <b-card-group columns class="mb-3">
-        <b-card v-for="user in users" :key="user.id" v-bind:class="{ 'border-primary': user.id === profileId }" :title="`${ user.firstName } ${ user.lastName }`">
-          Email:
-          <mail-link :email="user.email" /><br>
-          <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+        <b-card v-for="user in users" :key="user.id" v-bind:class="{ 'border-primary': user.id === profileId }" no-body>
+          <b-card-body>
+            <b-link :to="getProfileLink(user)" class="profile-link">
+              <h4>{{user.firstName}} {{user.lastName}}</h4>
+            </b-link>
+            Email:
+            <mail-link :email="user.email" /><br>
+            <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+          </b-card-body>
         </b-card>
       </b-card-group>
-    </page-content-component>
+    </page-content>
 
     <b-modal v-model="modalVisible">
       <template slot="modal-title">
@@ -41,8 +46,8 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import { validationMixin } from 'vuelidate';
 import { required, email } from 'vuelidate/lib/validators';
@@ -63,8 +68,8 @@ enum ModalState {
 
 @Component({
   components: {
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent
   },
   mixins: [validationMixin],
   validations: {
@@ -132,6 +137,11 @@ export default class UsersPage extends Vue {
     this.modalState = ModalState.Editing;
   }
 
+  public getProfileLink(user: IUser): string {
+    const userId = user.id === this.profileId ? '' : `/${user.id}`;
+    return `/profile${userId}`;
+  }
+
   get canSubmitModal(): boolean {
     return this.modalData.email != null && this.modalData.email !== '';
   }
@@ -167,5 +177,18 @@ export const usersPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
+@import '@/styles/general.scss';
+
+.users-page {
+  .card {
+    .card-body {
+      .profile-link {
+        @include theme-specific() {
+          color: getstyle(page-font-color);
+        }
+      }
+    }
+  }
+}
 </style>
 <!-- STYLE END -->

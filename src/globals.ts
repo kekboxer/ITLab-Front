@@ -1,7 +1,7 @@
 import 'globals';
 import store from '@/store';
-import { UserRole } from '@/stuff';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
+import { UserRoleName } from './modules/users';
 
 export class Globals {
   public SYSTEM_NAME: string = 'ITLab';
@@ -11,7 +11,7 @@ export class Globals {
   public DATE_FORMAT: string = 'DD.MM.YYYY';
   public TIME_FORMAT: string = 'HH:mm';
 
-  public hasRole(userRole: UserRole): boolean {
+  public hasRole(userRole: UserRoleName): boolean {
     return store.getters[PROFILE_HAS_ROLE](userRole);
   }
 }

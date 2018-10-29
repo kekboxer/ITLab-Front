@@ -1,5 +1,13 @@
 import Vue from 'vue';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+
+export const setAxiosAuthHeader = (token?: string) => {
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    axios.defaults.headers.common.Authorization = undefined;
+  }
+};
 
 export const getResponseData = <T>(
   response: AxiosResponse<any>

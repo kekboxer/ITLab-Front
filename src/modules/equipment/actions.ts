@@ -12,6 +12,7 @@ import {
   EQUIPMENT_FETCH_ALL,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_FETCH_MY,
+  EQUIPMENT_FETCH_ASSIGNED_TO,
   EQUIPMENT_COMMIT,
   EQUIPMENT_DELETE,
   EQUIPMENT_SET_ALL,
@@ -26,6 +27,7 @@ import {
   EQUIPMENT_TYPES_SET_ONE,
   EQUIPMENT_TYPES_REMOVE_ONE
 } from './types';
+import { IUser } from '@/modules/users';
 
 export const actions: ActionTree<IEquipmentState, RootState> = {
   [EQUIPMENT_SEARCH]: ({}, match: string = '') => {
@@ -81,6 +83,21 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
         .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(EQUIPMENT_FETCH_MY, error);
+          reject(error);
+        });
+    });
+  },
+
+  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({}, user: IUser | string) => {
+    return new Promise((resolve, reject) => {
+      const userId = typeof user === 'string' ? user : user.id;
+
+      axios
+        .get(`equipment/user/${userId}`)
+        .then((response) => getResponseData<IEquipment>(response))
+        .then((equipment) => resolve(equipment))
+        .catch((error) => {
+          console.log(EQUIPMENT_FETCH_ASSIGNED_TO, error);
           reject(error);
         });
     });

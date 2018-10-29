@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-edit-page">
-    <page-content-component :loading="loadingInProcess" :not-found="notFound">
+    <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Оборудование
       </template>
@@ -9,8 +9,15 @@
       <b-row>
         <b-col>
           <b-form>
+            <b-form-row v-if="!isNewEquipment">
+              <b-col>
+                Номер: {{ equipment.number }}
+                <hr>
+              </b-col>
+            </b-form-row>
+
             <b-form-group id="equipment-type-group" label="Тип оборудования">
-              <equipment-type-selection-component v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection-component>
+              <equipment-type-selection v-model="equipment.equipmentType" :state="!$v.equipment.equipmentType.$invalid"></equipment-type-selection>
             </b-form-group>
 
             <b-form-group id="serial-number-title-group" label="Серийный номер" label-for="title-input">
@@ -32,10 +39,10 @@
 
             <b-form-row class="buttons">
               <b-col cols="12" md="auto">
-                <b-button class="w-100 submit-button" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess" @click="onSubmit">Подтвердить</b-button>
+                <b-button class="w-100 submit-button" variant="primary" :disabled="$v.equipment.$invalid || isPageInProcess" @click="onSubmit" v-if="canEditEquipment">Подтвердить</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
-                <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal">Изменить владельца</b-button>
+                <b-button class="w-100" variant="warning" :disabled="isPageInProcess" @click="showEquipmentOwnerModal" v-if="canEditEquipmentOwner">Изменить владельца</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEquipment">
                 <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
@@ -44,15 +51,15 @@
           </b-form>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
 
-    <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment" @keydown.native.enter="onSubmitEquipmentOwner">
+    <b-modal v-model="equipmentOwnerModalShow" v-if="!isNewEquipment && canEditEquipmentOwner" @keydown.native.enter="onSubmitEquipmentOwner">
       <template slot="modal-title">
         Назначение владельца
       </template>
 
       <b-form-group id="owner-group" label="Владелец" label-for="owner-input">
-        <user-selection-component v-model="equipmentOwnerModalData"></user-selection-component>
+        <user-selection v-model="equipmentOwnerModalData"></user-selection>
       </b-form-group>
 
       <template slot="modal-footer">
@@ -71,10 +78,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
-import EquipmentTypeSelectionComponent from '@/components/EquipmentTypeSelectionComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CUserSelection from '@/components/selectors/UserSelection.vue';
+import CEquipmentTypeSelection from '@/components/selectors/EquipmentTypeSelection.vue';
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
@@ -105,10 +112,10 @@ enum State {
 
 @Component({
   components: {
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent,
-    'user-selection-component': UserSelectionComponent,
-    'equipment-type-selection-component': EquipmentTypeSelectionComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent,
+    'user-selection': CUserSelection,
+    'equipment-type-selection': CEquipmentTypeSelection
   },
   mixins: [validationMixin],
   validations() {
@@ -302,6 +309,14 @@ export default class EquipmentEditPage extends Vue {
   get isModalInProcess(): boolean {
     return this.equipmentOwnerModalState === State.InProcess;
   }
+
+  get canEditEquipment(): boolean {
+    return this.$g.hasRole('CanEditEquipment');
+  }
+
+  get canEditEquipmentOwner(): boolean {
+    return this.$g.hasRole('CanEditEquipmentOwner');
+  }
 }
 
 export const equipmentEditPageRoute: RouteConfig = {
@@ -309,7 +324,7 @@ export const equipmentEditPageRoute: RouteConfig = {
   name: 'EquipmentEditPage',
   component: EquipmentEditPage,
   meta: {
-    allow: 'CanEditEquipment'
+    allow: ['CanEditEquipment', 'CanEditEquipment']
   } as IPageMeta
 };
 </script>

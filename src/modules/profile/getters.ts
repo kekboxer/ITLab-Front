@@ -10,7 +10,7 @@ import {
   PROFILE_HAS_ROLE,
   PROFILE_ROLES_GET
 } from './types';
-import { UserRole } from '@/stuff';
+import { UserRoleName } from '../users';
 
 export const getters: GetterTree<IProfileState, RootState> = {
   [PROFILE_GET]: (state) => {
@@ -33,12 +33,10 @@ export const getters: GetterTree<IProfileState, RootState> = {
   },
 
   [PROFILE_HAS_ROLE]: (state) => {
-    return (userRole: UserRole) =>
-      state.accessToken !== undefined &&
-      state.accessToken.roles.includes(userRole);
+    return (userRole: UserRoleName) => state.roles.includes(userRole);
   },
 
   [PROFILE_ROLES_GET]: (state) => {
-    return state.accessToken ? state.accessToken.roles : [];
+    return state.roles;
   }
 };

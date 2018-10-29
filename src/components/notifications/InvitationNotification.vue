@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="invitation-notification-component">
+  <div class="c-invitation-notification">
     <b-row>
       <b-col cols="12" md="7">
         <h4>Приглашение</h4>
@@ -68,7 +68,7 @@ enum State {
 }
 
 @Component
-export default class InvitationNotificationComponent extends Vue {
+export default class CInvitationNotification extends Vue {
   // Properties //
   ///////////////
 
@@ -137,7 +137,7 @@ export default class InvitationNotificationComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.invitation-notification-component {
+.c-invitation-notification {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;

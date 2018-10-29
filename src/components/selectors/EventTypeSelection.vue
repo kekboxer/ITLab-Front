@@ -1,13 +1,13 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="event-type-selection-component">
-    <autocomplete-input-component :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" v-model="eventTypeSelected" @input="onInput">
+  <div class="c-event-type-selection">
+    <autocomplete-input :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEventType()" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
-    </autocomplete-input-component>
+    </autocomplete-input>
 
-    <event-type-modal-component v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
+    <event-type-modal v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -18,8 +18,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 
-import EventTypeModalComponent from '@/components/EventTypeModalComponent.vue';
-import AutocompleteInputComponent from '@/components/AutocompleteInputComponent.vue';
+import CEventTypeModal from '@/components/modals/EventTypeModal.vue';
+import CAutocompleteInput from '@/components/stuff/AutocompleteInput.vue';
 
 import {
   IEventType,
@@ -29,19 +29,22 @@ import {
 
 @Component({
   components: {
-    'event-type-modal-component': EventTypeModalComponent,
-    'autocomplete-input-component': AutocompleteInputComponent
+    'event-type-modal': CEventTypeModal,
+    'autocomplete-input': CAutocompleteInput
   }
 })
 export default class EventTypeSelectionComponent extends Vue {
   // v-model //
   ////////////
 
-  @Prop() public value?: IEventType;
+  @Prop()
+  public value?: IEventType;
 
-  @Prop() public state?: boolean;
+  @Prop()
+  public state?: boolean;
 
-  @Prop() public filter?: (eventType: IEventType) => boolean;
+  @Prop()
+  public filter?: (eventType: IEventType) => boolean;
 
   // Properties //
   ///////////////
@@ -97,6 +100,13 @@ export default class EventTypeSelectionComponent extends Vue {
     this.modalData.title = search;
 
     this.modalVisible = true;
+  }
+
+  // Computed data //
+  //////////////////
+
+  public canEditEventType(): boolean {
+    return this.$g.hasRole('CanEditEventType');
   }
 }
 </script>

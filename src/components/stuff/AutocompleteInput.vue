@@ -1,6 +1,6 @@
 <!-- TEMPALTE BEGIN -->
 <template>
-  <div class="autocomplete-input-component" v-bind:class="{ 'hide-results': resultsHidden }">
+  <div class="c-autocomplete-input" v-bind:class="{ 'hide-results': resultsHidden }">
     <b-input-group>
       <b-form-input autocomplete="off" type="text" v-model="searchString" @input.native="onInput" @blur.native="onBlur" :state="state" ref="input"></b-form-input>
       <b-input-group-append v-if="canClear">
@@ -10,7 +10,7 @@
       </b-input-group-append>
     </b-input-group>
 
-    <ul class="results" v-show="!resultsHidden && (withoutAdding !== true && searchString.length > 0 || results.length > 0)">
+    <ul class="results" v-show="!resultsHidden">
       <li v-for="(result, index) in results" :key="'result-' + index" class="result-item" @mousedown="preventBlur" @click.stop="onSelect(result)">
         <slot name="result-item" v-bind:search="searchString" v-bind:item="result" v-bind:results="results">{{ stringify && stringify(result) }}</slot>
       </li>
@@ -19,6 +19,13 @@
           <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
             Добавить
             <b>{{ searchString }}</b>
+          </slot>
+        </li>
+      </template>
+      <template v-else-if="results.length === 0">
+        <li class="add-item" v-show="searchString.length > 0" v-if="!checkExistence">
+          <slot name="add-item" v-bind:search="searchString" v-bind:results="results">
+            Не найдено
           </slot>
         </li>
       </template>
@@ -40,7 +47,7 @@ import 'vue-awesome/icons/times';
     Icon
   }
 })
-export default class AutocompleteInputComponent extends Vue {
+export default class CAutocompleteInput extends Vue {
   // Properties //
   ///////////////
 
@@ -48,9 +55,11 @@ export default class AutocompleteInputComponent extends Vue {
   public searchString: string = '';
   public results: object[] = [];
 
-  @Prop() public value?: object;
+  @Prop()
+  public value?: object;
 
-  @Prop() public state?: boolean;
+  @Prop()
+  public state?: boolean;
 
   @Prop({
     default: false
@@ -186,7 +195,7 @@ export default class AutocompleteInputComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.autocomplete-input-component {
+.c-autocomplete-input {
   position: relative;
 
   .results {

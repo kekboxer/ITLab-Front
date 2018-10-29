@@ -2,7 +2,14 @@ import { MutationTree } from 'vuex';
 
 import { setOneElement } from '@/stuff';
 
-import { IUsersState, IUser, USERS_SET_ALL, USERS_SET_ONE } from './types';
+import {
+  IUsersState,
+  IUser,
+  IUserRole,
+  USERS_SET_ALL,
+  USERS_SET_ONE,
+  USER_ROLES_SET_ALL
+} from './types';
 
 export const mutations: MutationTree<IUsersState> = {
   [USERS_SET_ALL]: (
@@ -23,5 +30,21 @@ export const mutations: MutationTree<IUsersState> = {
 
   [USERS_SET_ONE]: (state, user: IUser) => {
     setOneElement(state.users, user);
+  },
+
+  [USER_ROLES_SET_ALL]: (
+    state,
+    payload: IUserRole[] | { userRoles: IUserRole[]; merge?: boolean }
+  ) => {
+    const roles = payload instanceof Array ? payload : payload.userRoles;
+    const merge = payload instanceof Array ? false : payload.merge === true;
+
+    if (merge) {
+      roles.forEach((role) => {
+        setOneElement(state.userRoles, role);
+      });
+    } else {
+      state.userRoles = roles;
+    }
   }
 };

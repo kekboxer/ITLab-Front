@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">Оборудование</template>
       <template slot="header-button">
         <b-button variant="success" to="equipment/new" v-if="canEdit">Добавить</b-button>
@@ -34,8 +34,8 @@
             <template slot="type" slot-scope="data">
               {{ data.item.equipmentType.title }}
             </template>
-            <template slot="serialNumber" slot-scope="data">
-              <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+            <template slot="number" slot-scope="data">
+              <span style="font-family: monospace">{{ data.item.number }}</span>
             </template>
             <template slot="actions" slot-scope="data" style="overflow: auto">
               <span class="actions-cell">
@@ -49,19 +49,39 @@
             </template>
 
             <template slot="row-details" slot-scope="data">
-              Владелец:
-              <template v-if="data.item.owner">
-                <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
-                <mail-link :email="data.item.owner.email" />
-              </template>
-              <template v-else>
-                Лаборатория
-              </template>
+              <b-row>
+                <b-col cols="auto">
+                  <b-row>
+                    <b-col cols="12">
+                      Владелец:
+                    </b-col>
+                    <b-col cols="12">
+                      Серийный номер:
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="12">
+                      <template v-if="data.item.owner">
+                        <b>{{ data.item.owner.firstName }} {{ data.item.owner.lastName }}</b>,
+                        <mail-link :email="data.item.owner.email" />
+                      </template>
+                      <template v-else>
+                        Лаборатория
+                      </template>
+                    </b-col>
+                    <b-col cols="12">
+                      <span style="font-family: monospace">{{ data.item.serialNumber }}</span>
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
             </template>
           </b-table>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -73,8 +93,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 
-import PageContentComponent from '@/components/PageContentComponent.vue';
-import MailLinkComponent from '@/components/MailLinkComponent.vue';
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
 import Icon from 'vue-awesome/components/Icon';
 import 'vue-awesome/icons/times';
@@ -92,8 +112,8 @@ import { IUser, USERS_FETCH_ALL } from '@/modules/users';
 @Component({
   components: {
     Icon,
-    'mail-link': MailLinkComponent,
-    'page-content-component': PageContentComponent
+    'mail-link': CMailLink,
+    'page-content': CPageContent
   }
 })
 export default class EquipmentPage extends Vue {
@@ -178,8 +198,8 @@ export default class EquipmentPage extends Vue {
         sortable: true
       },
       {
-        key: 'serialNumber',
-        label: 'Серийный номер'
+        key: 'number',
+        label: 'Номер'
       },
       {
         key: 'actions',

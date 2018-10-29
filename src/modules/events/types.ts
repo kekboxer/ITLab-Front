@@ -162,3 +162,72 @@ export interface IEventsState {
   eventTypes: IEventType[];
   eventRoles: IEventRole[];
 }
+
+// Usefull stuff //
+//////////////////
+
+export const cloneEventPlace = (
+  place: IEventPlace,
+  {
+    cloneEquipment,
+    cloneParticipants
+  }: {
+    cloneEquipment: boolean;
+    cloneParticipants: boolean;
+  }
+): IEventPlace => {
+  const result: IEventPlace = new EventPlaceDefault();
+
+  result.new = true;
+  result.targetParticipantsCount = place.targetParticipantsCount;
+  result.description = place.description;
+
+  if (cloneEquipment) {
+    result.equipment = result.equipment.reduce(
+      (equipment, currentEquipment) => {
+        if (currentEquipment.delete === true) {
+          return equipment;
+        } else {
+          const newEquipment: IEventEquipment = Object.assign(
+            {},
+            currentEquipment
+          );
+          newEquipment.new = true;
+
+          return equipment.concat(newEquipment);
+        }
+      },
+      new Array<IEquipment>()
+    );
+  }
+
+  if (cloneParticipants) {
+    const participantsReducer = (
+      participants: IEventParticipant[],
+      currentParticipant: IEventParticipant
+    ) => {
+      if (currentParticipant.delete === true) {
+        return participants;
+      } else {
+        const newParticipant: IEventParticipant = Object.assign(
+          {},
+          currentParticipant
+        );
+        newParticipant.new = true;
+
+        return participants.concat(newParticipant);
+      }
+    };
+
+    result.invited = place.participants
+      .reduce(participantsReducer, new Array<IEventParticipant>())
+      .concat(
+        place.invited.reduce(
+          participantsReducer,
+          new Array<IEventParticipant>()
+        )
+      );
+  }
+
+  return result;
+};

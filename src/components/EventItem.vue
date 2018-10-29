@@ -1,6 +1,6 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="event-item-component" v-bind:class="currentState">
+  <div class="c-event-item" v-bind:class="currentState">
     <div class="title-row">
       <b-row>
         <b-col cols="auto mr-auto" @mouseup="checkDateHover">
@@ -90,7 +90,7 @@ enum State {
     icon: Icon
   }
 })
-export default class EventItemComponent extends Vue {
+export default class CEventItem extends Vue {
   // Properties //
   ///////////////
 
@@ -209,7 +209,7 @@ export default class EventItemComponent extends Vue {
 <style lang="scss">
 @import '@/styles/general.scss';
 
-.event-item-component {
+.c-event-item {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   margin: 10px;

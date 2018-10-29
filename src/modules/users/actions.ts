@@ -7,14 +7,19 @@ import { getResponseData } from '@/stuff';
 import {
   IUsersState,
   IUser,
+  IUserRole,
   USER_INVITE,
   USER_SEARCH,
   USERS_FETCH_ALL,
   USERS_FETCH_ONE,
   USER_ASSIGN_EQUIPMENT,
   USER_REMOVE_EQUIPMENT,
+  USER_ROLES_FETCH,
+  USER_ROLE_ASSIGN,
+  USER_ROLE_DISCHARGE,
   USERS_SET_ALL,
-  USERS_SET_ONE
+  USERS_SET_ONE,
+  USER_ROLES_SET_ALL
 } from './types';
 
 import { IEquipment } from '@/modules/equipment';
@@ -118,7 +123,10 @@ export const actions: ActionTree<IUsersState, RootState> = {
 
   [USER_REMOVE_EQUIPMENT]: (
     {},
-    { equipment, owner }: { equipment: IEquipment; owner: IUser | string | null }
+    {
+      equipment,
+      owner
+    }: { equipment: IEquipment; owner: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
       let url: string = 'equipment/user';
@@ -136,6 +144,80 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((equipment) => resolve(equipment))
         .catch((error) => {
           console.log(USER_REMOVE_EQUIPMENT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_ROLES_FETCH]: ({ commit }, user?: IUser | string) => {
+    return new Promise((resolve, reject) => {
+      const userId = user
+        ? typeof user === 'string'
+          ? user
+          : user.id
+        : undefined;
+
+      axios
+        .get(`roles/${userId || ''}`)
+        .then((response) => getResponseData<IUserRole[]>(response))
+        .then((userRoles) => {
+          if (user) {
+            commit(USER_ROLES_SET_ALL, userRoles);
+          }
+          resolve(userRoles);
+        })
+        .catch((error) => {
+          console.log(USER_ROLES_FETCH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_ROLE_ASSIGN]: (
+    {},
+    { user, role }: { user: IUser | string; role: IUserRole | string }
+  ) => {
+    return new Promise((resolve, reject) => {
+      const userId = typeof user === 'string' ? user : user.id;
+      const roleId = typeof role === 'string' ? role : role.id;
+      axios
+        .post(`roles/${userId}/${roleId}`)
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(USER_ROLE_ASSIGN, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_ROLE_DISCHARGE]: (
+    {},
+    { user, role }: { user: IUser | string; role: IUserRole | string }
+  ) => {
+    return new Promise((resolve, reject) => {
+      const userId = typeof user === 'string' ? user : user.id;
+      const roleId = typeof role === 'string' ? role : role.id;
+      axios
+        .delete(`roles/${userId}/${roleId}`)
+        .then((response) => {
+          const body = response.data;
+
+          if (body.statusCode === 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(USER_ROLE_DISCHARGE, error);
           reject(error);
         });
     });

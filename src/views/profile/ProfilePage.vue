@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="profile-page">
-    <page-content-component :loading="loadingInProcess">
+    <page-content :loading="loadingInProcess">
       <template slot="header">
         Профиль
       </template>
@@ -12,38 +12,31 @@
           <hr>
           <b-form @submit.prevent="onSubmitProfile">
             <b-form-group label="Имя">
-              <b-form-input type="text" v-model.trim="profileData.firstName" :state="!$v.profileData.firstName.$invalid">
+              <b-form-input type="text" v-model.trim="profileData.firstName" :state="isCurrentUser ? !$v.profileData.firstName.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Фамилия">
-              <b-form-input type="text" v-model.trim="profileData.lastName" :state="!$v.profileData.lastName.$invalid">
+              <b-form-input type="text" v-model.trim="profileData.lastName" :state="isCurrentUser ? !$v.profileData.lastName.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Номер телефона">
-              <b-form-input type="tel" v-model.trim="profileData.phoneNumber" :state="!$v.profileData.phoneNumber.$invalid">
+              <b-form-input type="tel" v-model.trim="profileData.phoneNumber" :state="isCurrentUser ? !$v.profileData.phoneNumber.$invalid : null" :readonly="!isCurrentUser">
               </b-form-input>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess">Сохранить</b-button>
+            <b-form-row>
+              <b-col cols="12">
+                <b-button type="submit" variant="primary" class="w-100" :disabled="$v.profileData.$invalid || isProfileFormInProcess" v-if="isCurrentUser">Сохранить</b-button>
+              </b-col>
+              <b-col cols="12" class="mt-3">
+                <b-button variant="secondary" class="w-100" @click="isRolesModalVisible = true" v-if="canEditRoles">Изменить права</b-button>
+              </b-col>
+            </b-form-row>
           </b-form>
         </b-col>
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
-          <h4>Права в системе</h4>
-          <hr>
-          <template v-if="userRoles.length === 0">
-            Дополнительных прав нет
-          </template>
-          <template v-else>
-            <div class="equipment-card" v-for="userRole in userRoles" :key="`role-${userRole}`">
-              {{ userRole }}
-            </div>
-          </template>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" class="mt-5">
           <h4>Оборудование</h4>
           <hr>
 
@@ -54,7 +47,7 @@
             <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
               <b-row>
                 <b-col cols="auto">
-                  <a :href="`equipment/${equipment.id}`">
+                  <a :href="`/equipment/${equipment.id}`">
                     <b>{{ equipment.equipmentType.title }}</b>
                   </a>
                 </b-col>
@@ -68,7 +61,9 @@
           </template>
         </b-col>
       </b-row>
-    </page-content-component>
+    </page-content>
+
+    <user-roles-modal v-model="isRolesModalVisible" :user="profileData" v-if="canEditRoles" />
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -81,7 +76,8 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
 import Icon from 'vue-awesome/components/Icon';
-import PageContentComponent from '@/components/PageContentComponent.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
 
 import 'vue-awesome/icons/times';
 
@@ -93,9 +89,14 @@ import {
   PROFILE_COMMIT,
   PROFILE_ROLES_GET
 } from '@/modules/profile';
-import { USERS_FETCH_ONE, IUser, UserDefault } from '@/modules/users';
-import { IEquipment, EQUIPMENT_FETCH_MY } from '@/modules/equipment';
-import { UserRole } from '@/stuff';
+import {
+  USERS_FETCH_ONE,
+  IUser,
+  UserDefault,
+  USER_ROLES_FETCH,
+  IUserRole
+} from '@/modules/users';
+import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 
 enum FormState {
   Default,
@@ -106,7 +107,8 @@ enum FormState {
 @Component({
   components: {
     Icon,
-    'page-content-component': PageContentComponent
+    'page-content': CPageContent,
+    'user-roles-modal': CUserRolesModal
   },
   mixins: [validationMixin],
   validations() {
@@ -134,26 +136,33 @@ export default class ProfilePage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
+  public isCurrentUser: boolean = false;
 
   public profileData: IUser = new UserDefault();
   public profileFormState: FormState = FormState.Default;
 
   public equipment: IEquipment[] = [];
 
+  public isRolesModalVisible: boolean = false;
+
   // Component methods //
   //////////////////////
 
   public mounted() {
-    this.$store
-      .dispatch(USERS_FETCH_ONE, this.$store.getters[PROFILE_GET])
-      .then((profile) => {
-        this.profileData = profile;
-        this.loadingInProcess = false;
+    this.isCurrentUser = this.$route.params.id == null;
+    const userId = this.isCurrentUser
+      ? this.$store.getters[PROFILE_GET]
+      : this.$route.params.id;
 
-        return this.$store
-          .dispatch(EQUIPMENT_FETCH_MY)
-          .then((equipment) => (this.equipment = equipment));
-      });
+    Promise.all([
+      this.$store.dispatch(USERS_FETCH_ONE, userId),
+      this.$store.dispatch(EQUIPMENT_FETCH_ASSIGNED_TO, userId)
+    ]).then(([profile, equipment]: [IUser, IEquipment[]]) => {
+      this.profileData = profile;
+      this.equipment = equipment;
+
+      this.loadingInProcess = false;
+    });
   }
 
   // Methods //
@@ -188,13 +197,13 @@ export default class ProfilePage extends Vue {
     return this.profileFormState === FormState.InProcess;
   }
 
-  get userRoles(): UserRole[] {
-    return this.$store.getters[PROFILE_ROLES_GET];
+  get canEditRoles(): boolean {
+    return this.$g.hasRole('CanEditRoles');
   }
 }
 
 export const profilePageRoute = {
-  path: '/profile',
+  path: '/profile/:id?',
   name: 'ProfilePage',
   component: ProfilePage
 } as RouteConfig;

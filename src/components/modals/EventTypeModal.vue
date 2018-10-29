@@ -1,9 +1,9 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="event-role-modal-component">
+  <div class="c-event-type-modal">
     <b-modal v-model="isModalVisible" @keydown.native.enter="onSubmitModal">
       <template slot="modal-title">
-        Роль в событии
+        Тип события
       </template>
 
       <b-form-group label="Название">
@@ -34,9 +34,9 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  IEventRole,
-  EventRoleDefault,
-  EVENT_ROLE_COMMIT
+  IEventType,
+  EventTypeDefault,
+  EVENT_TYPE_COMMIT
 } from '@/modules/events';
 
 @Component({
@@ -50,7 +50,7 @@ import {
     }
   }
 })
-export default class EventRoleModalComponent extends Vue {
+export default class CEventTypeModal extends Vue {
   // v-modal //
   ////////////
 
@@ -63,14 +63,14 @@ export default class EventRoleModalComponent extends Vue {
   ///////////////
 
   @Prop({
-    default: new EventRoleDefault()
+    default: new EventTypeDefault()
   })
-  public data!: IEventRole;
+  public data!: IEventType;
 
   @Prop({
-    default: (equipmentType: IEventRole) => undefined
+    default: (equipmentType: IEventType) => undefined
   })
-  public onSubmit!: (equipmentType: IEventRole) => void;
+  public onSubmit!: (equipmentType: IEventType) => void;
 
   @Prop({
     default: (error: any) => undefined
@@ -78,7 +78,7 @@ export default class EventRoleModalComponent extends Vue {
   public onError!: (error: any) => void;
 
   public isModalInProcess: boolean = false;
-  public modalData: IEventRole = new EventRoleDefault();
+  public modalData: IEventType = new EventTypeDefault();
 
   private visibilityStuff: boolean = false;
 
@@ -90,7 +90,7 @@ export default class EventRoleModalComponent extends Vue {
       this.visibilityStuff = value;
     });
 
-    this.$watch('data', (data: IEventRole) => {
+    this.$watch('data', (data: IEventType) => {
       this.modalData = data;
     });
   }
@@ -108,13 +108,13 @@ export default class EventRoleModalComponent extends Vue {
 
     this.isModalInProcess = true;
     this.$store
-      .dispatch(EVENT_ROLE_COMMIT, this.modalData)
-      .then((eventRole: IEventRole) => {
+      .dispatch(EVENT_TYPE_COMMIT, this.modalData)
+      .then((equipmentType: IEventType) => {
         this.$notify({
           title: 'Изменения успешно сохранены',
           duration: 500
         });
-        this.onSubmit(eventRole);
+        this.onSubmit(equipmentType);
         this.isModalInProcess = false;
       })
       .catch((error) => {
