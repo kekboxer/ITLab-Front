@@ -23,7 +23,7 @@ export const getters: GetterTree<IEventsState, RootState> = {
       return state.events.filter((event) => {
         const condition =
           beginTime === undefined ||
-          (event.beginTime && event.beginTime > beginTime);
+          (event.endTime && event.endTime > beginTime);
 
         if (invert) {
           return !condition;
