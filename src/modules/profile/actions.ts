@@ -125,6 +125,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
         .put('account', {
           firstName: user.firstName,
           lastName: user.lastName,
+          middleName: user.middleName || '',
           phoneNumber: user.phoneNumber
         })
         .then((response) => getResponseData<IUser>(response))

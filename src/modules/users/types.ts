@@ -70,6 +70,7 @@ export class UserDefault {
   public firstName: string = '';
   public lastName: string = '';
   public email: string = '';
+  public middleName: string = '';
   public phoneNumber: string = '';
   public properties?: IUserProperty[];
 }
