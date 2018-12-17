@@ -83,20 +83,28 @@ export default class CSummaryModal extends Vue {
   public async onSubmitModal() {
     console.log(this.selected);
 
-    let data: string = "";
+    let data: any = null;
     try {
-      const result = await axios.post("summary", {
-        targetEventTypes: this.selected
-      });
+      const result = await axios.post(
+        "summary",
+        {
+          targetEventTypes: this.selected
+        },
+        {
+          responseType: "blob"
+        }
+      );
+
       data = result.data;
     } catch (body) {
       data = body.error;
     } finally {
-      const a = document.createElement("a");
-      const blob = new Blob(["\ufeff", data], { type: "test/csv" });
-      a.href = window.URL.createObjectURL(blob);
-      a.download = "summary.csv";
-      a.click();
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "summary.xlsx");
+      document.body.appendChild(link);
+      link.click();
     }
 
     this.isModalInProcess = false;
