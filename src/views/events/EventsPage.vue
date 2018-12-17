@@ -20,8 +20,8 @@
           <b-button
             variant="secondary"
             style="width: 100%"
-            @click="downloadSummary()"
-          >Итоги для повышки <icon name="file-excel"></icon>
+            @click="summaryVisible = true"
+          >Итоги для повышки <icon name="table"></icon>
           </b-button>
         </b-col>
       </b-row>
@@ -60,6 +60,8 @@
       </div>
 
     </page-content>
+
+    <summary-modal v-model="summaryVisible" />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -73,10 +75,11 @@ import axios from "axios";
 
 import CEventItem from "@/components/EventItem.vue";
 import CPageContent from "@/components/layout/PageContent.vue";
+import CSummaryModal from "@/components/modals/SummaryModal.vue";
 
 import Icon from "vue-awesome/components/Icon";
 
-import "vue-awesome/icons/file-excel";
+import "vue-awesome/icons/table";
 
 import {
   IEvent,
@@ -102,7 +105,8 @@ const createEventSortPredicate = (asc: boolean = true) => (
   components: {
     Icon,
     "event-item": CEventItem,
-    "page-content": CPageContent
+    "page-content": CPageContent,
+    "summary-modal": CSummaryModal
   }
 })
 export default class EventsPage extends Vue {
@@ -115,6 +119,8 @@ export default class EventsPage extends Vue {
 
   public pastEventsLoaded: boolean = false;
   public eventsShowPast: boolean = false;
+
+  public summaryVisible: boolean = false;
 
   // Component methods //
   //////////////////////
@@ -141,22 +147,6 @@ export default class EventsPage extends Vue {
     }
 
     this.eventsShowPast = !this.eventsShowPast;
-  }
-
-  public async downloadSummary() {
-    let data: string = "";
-    try {
-      const result = await axios.get("/summary");
-      data = result.data;
-    } catch (body) {
-      data = body.error;
-    } finally {
-      const a = document.createElement("a");
-      const blob = new Blob(["\ufeff", data], { type: "test/csv" });
-      a.href = window.URL.createObjectURL(blob);
-      a.download = "summary.csv";
-      a.click();
-    }
   }
 
   // Computed data //
