@@ -8,6 +8,7 @@
 
       <b-form-group>
         <b-form-checkbox-group
+          stacked
           v-model="selected"
           :options="options"
         >
@@ -81,7 +82,7 @@ export default class CSummaryModal extends Vue {
   ////////////
 
   public async onSubmitModal() {
-    console.log(this.selected);
+    this.isModalInProcess = true;
 
     let data: any = null;
     try {
