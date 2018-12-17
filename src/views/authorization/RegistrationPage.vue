@@ -2,8 +2,17 @@
 <template>
   <div class="registration-page fullscreen-height">
     <b-container class="fullscreen-height">
-      <b-row align-v="center" align-h="center" class="fullscreen-height">
-        <b-col class="form-card" cols="10" md="5" lg="4">
+      <b-row
+        align-v="center"
+        align-h="center"
+        class="fullscreen-height"
+      >
+        <b-col
+          class="form-card"
+          cols="10"
+          md="5"
+          lg="4"
+        >
 
           <b-form @submit.prevent="onSubmit">
             <b-row>
@@ -13,27 +22,66 @@
             </b-row>
 
             <b-form-group label="Почта">
-              <b-form-input autocomplete="email" type="email" v-model.trim="registrationData.email" required readonly>
+              <b-form-input
+                autocomplete="email"
+                type="email"
+                v-model.trim="registrationData.email"
+                required
+                readonly
+              >
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Пароль">
-              <b-form-input autocomplete="new-password" type="password" v-model="registrationData.password" :state="!$v.registrationData.password.$invalid" required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Имя">
-              <b-form-input autocomplete="given-name" type="text" v-model.trim="registrationData.firstName" :state="!$v.registrationData.firstName.$invalid" required>
+              <b-form-input
+                autocomplete="new-password"
+                type="password"
+                v-model="registrationData.password"
+                :state="!$v.registrationData.password.$invalid"
+                required
+              >
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Фамилия">
-              <b-form-input autocomplete="family-name" type="text" v-model.trim="registrationData.lastName" :state="!$v.registrationData.lastName.$invalid" required>
+              <b-form-input
+                autocomplete="family-name"
+                type="text"
+                v-model.trim="registrationData.lastName"
+                :state="!$v.registrationData.lastName.$invalid"
+                required
+              >
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Имя">
+              <b-form-input
+                autocomplete="given-name"
+                type="text"
+                v-model.trim="registrationData.firstName"
+                :state="!$v.registrationData.firstName.$invalid"
+                required
+              >
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Отчество">
+              <b-form-input
+                autocomplete="middle-name"
+                type="text"
+                v-model.trim="registrationData.middleName"
+              >
               </b-form-input>
             </b-form-group>
 
             <b-form-group label="Телефон">
-              <b-form-input autocomplete="home-phone" type="tel" v-model.trim="registrationData.phoneNumber" :state="!$v.registrationData.phoneNumber.$invalid" required>
+              <b-form-input
+                autocomplete="home-phone"
+                type="tel"
+                v-model.trim="registrationData.phoneNumber"
+                :state="!$v.registrationData.phoneNumber.$invalid"
+                required
+              >
               </b-form-input>
             </b-form-group>
 
@@ -42,7 +90,10 @@
                 <span class="text-secondary">
                   <small>
                     Подтверждая регистрацию вы даёте своё
-                    <router-link to="/processing_agreement" class="text-secondary">
+                    <router-link
+                      to="/processing_agreement"
+                      class="text-secondary"
+                    >
                       <u>согласие на обработку персональных данных</u>
                     </router-link>.
                   </small>
@@ -52,12 +103,20 @@
 
             <b-form-row>
               <b-col>
-                <b-button class="submit-button w-100 mt-2" type="submit" :disabled="$v.registrationData.$invalid || isInProcess" variant="primary">Подтвердить</b-button>
+                <b-button
+                  class="submit-button w-100 mt-2"
+                  type="submit"
+                  :disabled="$v.registrationData.$invalid || isInProcess"
+                  variant="primary"
+                >Подтвердить</b-button>
               </b-col>
             </b-form-row>
 
             <b-form-row>
-              <router-link to="/login" class="btn btn-link text-secondary w-100 mt-2">У меня уже есть аккаунт</router-link>
+              <router-link
+                to="/login"
+                class="btn btn-link text-secondary w-100 mt-2"
+              >У меня уже есть аккаунт</router-link>
             </b-form-row>
           </b-form>
 
@@ -71,17 +130,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { RouteConfig } from 'vue-router';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { RouteConfig } from "vue-router";
 
-import { validationMixin } from 'vuelidate';
-import { required, minLength, maxLength } from 'vuelidate/lib/validators';
+import { validationMixin } from "vuelidate";
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 import {
   IRegistrationData,
   RegistrationDataDefault,
   PROFILE_CREATE
-} from '@/modules/profile';
+} from "@/modules/profile";
 
 enum State {
   Default,
@@ -121,7 +180,7 @@ export default class RegistrationPage extends Vue {
   //////////////////////
 
   public mounted() {
-    const fallback = () => this.$router.replace({ name: 'LoginPage' });
+    const fallback = () => this.$router.replace({ name: "LoginPage" });
 
     const regex = /^#e=(.+)&c=(.+)$/;
     const matchResult = this.$route.hash.match(regex);
@@ -143,13 +202,13 @@ export default class RegistrationPage extends Vue {
     this.pageState = State.InProcess;
     this.$store
       .dispatch(PROFILE_CREATE, this.registrationData)
-      .then((result) => {
+      .then(result => {
         this.registrationData = new RegistrationDataDefault();
-        this.$router.push({ name: 'LoginPage' });
+        this.$router.push({ name: "LoginPage" });
 
         this.pageState = State.Default;
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
         this.pageState = State.Error;
       });
@@ -161,8 +220,8 @@ export default class RegistrationPage extends Vue {
 }
 
 export const registrationPageRoute: RouteConfig = {
-  path: '/register',
-  name: 'RegistrationPage',
+  path: "/register",
+  name: "RegistrationPage",
   component: RegistrationPage,
   meta: {
     secure: false,
@@ -175,7 +234,7 @@ export const registrationPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import '@/styles/general.scss';
+@import "@/styles/general.scss";
 
 .registration-page {
   @include media-breakpoint-down(sm) {
