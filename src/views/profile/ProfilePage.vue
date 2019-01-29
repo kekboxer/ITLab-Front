@@ -13,13 +13,12 @@
         >
           <h4>{{ profileData.email }}</h4>
           <hr>
-          <b-form @submit.prevent="onSubmitProfile">
+          <b-form @submit.prevent="onSubmitProfile" v-if="isCurrentUser">
             <b-form-group label="Фамилия">
               <b-form-input
                 type="text"
                 v-model.trim="profileData.lastName"
                 :state="isCurrentUser ? !$v.profileData.lastName.$invalid : null"
-                :readonly="!isCurrentUser"
               >
               </b-form-input>
             </b-form-group>
@@ -29,7 +28,6 @@
                 type="text"
                 v-model.trim="profileData.firstName"
                 :state="isCurrentUser ? !$v.profileData.firstName.$invalid : null"
-                :readonly="!isCurrentUser"
               >
               </b-form-input>
             </b-form-group>
@@ -38,7 +36,6 @@
               <b-form-input
                 type="text"
                 v-model.trim="profileData.middleName"
-                :readonly="!isCurrentUser"
               >
               </b-form-input>
             </b-form-group>
@@ -48,7 +45,6 @@
                 type="tel"
                 v-model.trim="profileData.phoneNumber"
                 :state="isCurrentUser ? !$v.profileData.phoneNumber.$invalid : null"
-                :readonly="!isCurrentUser"
               >
               </b-form-input>
             </b-form-group>
@@ -76,6 +72,10 @@
               </b-col>
             </b-form-row>
           </b-form>
+          <h4 v-else>
+            {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}<br>
+            <template v-if="profileData.phoneNumber">Телефон: {{ profileData.phoneNumber }}</template>
+          </h4>
         </b-col>
         <b-col
           cols="12"
