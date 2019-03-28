@@ -30,7 +30,10 @@
             </b-link>
             Email:
             <mail-link :email="user.email" /><br>
-            <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+            <template v-if="user.phoneNumber">
+              Телефон:
+              <phone-link :phone="user.phoneNumber" /><br>
+            </template>
           </b-card-body>
         </b-card>
       </b-card-group>
@@ -80,6 +83,7 @@ import { Vue, Component } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
 
 import CMailLink from "@/components/stuff/MailLink.vue";
+import CPhoneLink from "@/components/stuff/PhoneLink.vue";
 import CPageContent from "@/components/layout/PageContent.vue";
 
 import { validationMixin } from "vuelidate";
@@ -102,6 +106,7 @@ enum ModalState {
 @Component({
   components: {
     "mail-link": CMailLink,
+    "phone-link": CPhoneLink,
     "page-content": CPageContent
   },
   mixins: [validationMixin],
