@@ -11,7 +11,9 @@
           cols="12"
           md="6"
         >
-          <h4>{{ profileData.email }}</h4>
+          <h4>
+            <mail-link :email="profileData.email" />
+          </h4>
           <hr>
           <b-form @submit.prevent="onSubmitProfile" v-if="isCurrentUser">
             <b-form-group label="Фамилия">
@@ -74,7 +76,10 @@
           </b-form>
           <h4 v-else>
             {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}<br>
-            <template v-if="profileData.phoneNumber">Телефон: {{ profileData.phoneNumber }}</template>
+            <template v-if="profileData.phoneNumber">
+              Телефон:
+              <phone-link :phone="profileData.phoneNumber" />
+            </template>
           </h4>
         </b-col>
         <b-col
@@ -128,6 +133,9 @@ import { Component, Vue } from "vue-property-decorator";
 import { RouteConfig } from "vue-router";
 import moment from "moment-timezone";
 
+import CMailLink from "@/components/stuff/MailLink.vue";
+import CPhoneLink from "@/components/stuff/PhoneLink.vue";
+
 import Icon from "vue-awesome/components/Icon";
 import CPageContent from "@/components/layout/PageContent.vue";
 import CUserRolesModal from "@/components/modals/UserRolesModal.vue";
@@ -160,6 +168,8 @@ enum FormState {
 @Component({
   components: {
     Icon,
+    "mail-link": CMailLink,
+    "phone-link": CPhoneLink,
     "page-content": CPageContent,
     "user-roles-modal": CUserRolesModal
   },
