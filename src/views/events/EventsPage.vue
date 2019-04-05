@@ -69,24 +69,24 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import axios from "axios";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import axios from 'axios';
 
-import CEventItem from "@/components/EventItem.vue";
-import CPageContent from "@/components/layout/PageContent.vue";
-import CSummaryModal from "@/components/modals/SummaryModal.vue";
+import CEventItem from '@/components/EventItem.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CSummaryModal from '@/components/modals/SummaryModal.vue';
 
-import Icon from "vue-awesome/components/Icon";
+import Icon from 'vue-awesome/components/Icon';
 
-import "vue-awesome/icons/table";
+import 'vue-awesome/icons/table';
 
 import {
   IEvent,
   IEventType,
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
-} from "@/modules/events";
+} from '@/modules/events';
 
 const createEventSortPredicate = (asc: boolean = true) => (
   a: IEvent,
@@ -104,9 +104,9 @@ const createEventSortPredicate = (asc: boolean = true) => (
 @Component({
   components: {
     Icon,
-    "event-item": CEventItem,
-    "page-content": CPageContent,
-    "summary-modal": CSummaryModal
+    'event-item': CEventItem,
+    'page-content': CPageContent,
+    'summary-modal': CSummaryModal
   }
 })
 export default class EventsPage extends Vue {
@@ -132,7 +132,7 @@ export default class EventsPage extends Vue {
       .dispatch(EVENTS_FETCH_ALL, {
         dateBegin: this.eventsShowPast ? undefined : this.currentDate
       })
-      .then(result => {
+      .then((result) => {
         this.loadingInProcess = false;
       });
   }
@@ -166,13 +166,13 @@ export default class EventsPage extends Vue {
   }
 
   get canEdit(): boolean {
-    return this.$g.hasRole("CanEditEvent");
+    return this.$g.hasRole('CanEditEvent');
   }
 }
 
 export const eventsPageRoute: RouteConfig = {
-  path: "/events",
-  name: "EventsPage",
+  path: '/events',
+  name: 'EventsPage',
   component: EventsPage
 };
 </script>
@@ -181,7 +181,7 @@ export const eventsPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .events-page {
   .load-more {
