@@ -761,7 +761,7 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public isAnyTextSelected(): boolean {
-    return window.getSelection() && window.getSelection().toString().length > 0;
+    return window.getSelection() != null && window.getSelection()!.toString().length > 0;
   }
 
   // Computed data //
