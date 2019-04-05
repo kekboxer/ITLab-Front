@@ -129,35 +129,35 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import moment from "moment-timezone";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import moment from 'moment-timezone';
 
-import CMailLink from "@/components/stuff/MailLink.vue";
-import CPhoneLink from "@/components/stuff/PhoneLink.vue";
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPhoneLink from '@/components/stuff/PhoneLink.vue';
 
-import Icon from "vue-awesome/components/Icon";
-import CPageContent from "@/components/layout/PageContent.vue";
-import CUserRolesModal from "@/components/modals/UserRolesModal.vue";
+import Icon from 'vue-awesome/components/Icon';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
 
-import "vue-awesome/icons/times";
+import 'vue-awesome/icons/times';
 
-import { validationMixin } from "vuelidate";
-import { required, minLength } from "vuelidate/lib/validators";
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
   PROFILE_GET,
   PROFILE_COMMIT,
   PROFILE_ROLES_GET
-} from "@/modules/profile";
+} from '@/modules/profile';
 import {
   USERS_FETCH_ONE,
   IUser,
   UserDefault,
   USER_ROLES_FETCH,
   IUserRole
-} from "@/modules/users";
-import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from "@/modules/equipment";
+} from '@/modules/users';
+import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 
 enum FormState {
   Default,
@@ -168,10 +168,10 @@ enum FormState {
 @Component({
   components: {
     Icon,
-    "mail-link": CMailLink,
-    "phone-link": CPhoneLink,
-    "page-content": CPageContent,
-    "user-roles-modal": CUserRolesModal
+    'mail-link': CMailLink,
+    'phone-link': CPhoneLink,
+    'page-content': CPageContent,
+    'user-roles-modal': CUserRolesModal
   },
   mixins: [validationMixin],
   validations() {
@@ -235,19 +235,19 @@ export default class ProfilePage extends Vue {
     this.profileFormState = FormState.InProcess;
     this.$store
       .dispatch(PROFILE_COMMIT, this.profileData)
-      .then(profile => {
+      .then((profile) => {
         this.$notify({
-          title: "Изменения успешно сохранены",
+          title: 'Изменения успешно сохранены',
           duration: 500
         });
         this.profileData = profile;
         this.profileFormState = FormState.Default;
       })
-      .catch(error => {
+      .catch((error) => {
         this.$notify({
-          title: "Невозможно сохранить изменения",
+          title: 'Невозможно сохранить изменения',
           duration: 1500,
-          type: "error"
+          type: 'error'
         });
         this.profileFormState = FormState.Default;
       });
@@ -261,13 +261,13 @@ export default class ProfilePage extends Vue {
   }
 
   get canEditRoles(): boolean {
-    return this.$g.hasRole("CanEditRoles");
+    return this.$g.hasRole('CanEditRoles');
   }
 }
 
 export const profilePageRoute = {
-  path: "/profile/:id?",
-  name: "ProfilePage",
+  path: '/profile/:id?',
+  name: 'ProfilePage',
   component: ProfilePage
 } as RouteConfig;
 </script>
@@ -276,7 +276,7 @@ export const profilePageRoute = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .profile-page {
   .equipment-card {

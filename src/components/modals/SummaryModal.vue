@@ -36,9 +36,9 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import axios from "axios";
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { IEventType, EVENT_TYPES_FETCH_ALL } from "@/modules/events";
+import axios from 'axios';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { IEventType, EVENT_TYPES_FETCH_ALL } from '@/modules/events';
 
 @Component
 export default class CSummaryModal extends Vue {
@@ -64,14 +64,14 @@ export default class CSummaryModal extends Vue {
   //////////////////////
 
   public mounted() {
-    this.$watch("value", (value: boolean) => {
+    this.$watch('value', (value: boolean) => {
       this.visibilityStuff = value;
     });
 
     this.$store
       .dispatch(EVENT_TYPES_FETCH_ALL)
       .then((eventTypes: IEventType[]) => {
-        this.options = eventTypes.map(eventType => ({
+        this.options = eventTypes.map((eventType) => ({
           text: eventType.title,
           value: eventType.id
         }));
@@ -87,12 +87,12 @@ export default class CSummaryModal extends Vue {
     let data: any = null;
     try {
       const result = await axios.post(
-        "summary",
+        'summary',
         {
           targetEventTypes: this.selected
         },
         {
-          responseType: "blob"
+          responseType: 'blob'
         }
       );
 
@@ -101,9 +101,9 @@ export default class CSummaryModal extends Vue {
       data = body.error;
     } finally {
       const url = window.URL.createObjectURL(new Blob([data]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", "summary.xlsx");
+      link.setAttribute('download', 'summary.xlsx');
       document.body.appendChild(link);
       link.click();
     }
@@ -113,7 +113,7 @@ export default class CSummaryModal extends Vue {
   }
 
   set isModalVisible(value: boolean) {
-    this.$emit("input", value);
+    this.$emit('input', value);
   }
 
   // Computed data //
