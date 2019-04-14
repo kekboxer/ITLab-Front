@@ -72,8 +72,21 @@
                   v-if="canEditRoles"
                 >Изменить права</b-button>
               </b-col>
+              <b-col
+                cols="12"
+                class="mt-3"
+              >
+                <b-button
+                  variant="secondary"
+                  class="w-100"
+                  @click.prevent="onSubmitVk"
+                >Привязать VK аккаунт</b-button>
+              </b-col>
             </b-form-row>
+            
           </b-form>
+          
+            
           <h4 v-else>
             {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}<br>
             <template v-if="profileData.phoneNumber">
@@ -122,6 +135,24 @@
       :user="profileData"
       v-if="canEditRoles"
     />
+
+    <b-modal v-model="bindVkModalVisible">
+      <template slot="modal-title">
+        Привязать VK аккаунт
+      </template>
+      <p>
+        Чтобы привязать свой аккаунт, отправьте текст ниже в сообщество VK:
+      </p>
+      {{profileData.vkData}}
+      <template slot="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="bindVkModalVisible = false"
+        >Закрыть</button>
+      </template>
+    </b-modal>
+
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -148,7 +179,8 @@ import { required, minLength } from 'vuelidate/lib/validators';
 import {
   PROFILE_GET,
   PROFILE_COMMIT,
-  PROFILE_ROLES_GET
+  PROFILE_ROLES_GET,
+  PROFILE_VK_ACCOUNT
 } from '@/modules/profile';
 import {
   USERS_FETCH_ONE,
@@ -208,6 +240,8 @@ export default class ProfilePage extends Vue {
 
   public isRolesModalVisible: boolean = false;
 
+  public bindVkModalVisible: boolean = false;
+
   // Component methods //
   //////////////////////
 
@@ -246,6 +280,25 @@ export default class ProfilePage extends Vue {
       .catch((error) => {
         this.$notify({
           title: 'Невозможно сохранить изменения',
+          duration: 1500,
+          type: 'error'
+        });
+        this.profileFormState = FormState.Default;
+      });
+  }
+
+  public onSubmitVk(){
+    this.profileFormState = FormState.InProcess;
+    this.$store
+      .dispatch(PROFILE_VK_ACCOUNT, this.profileData)
+      .then((profile) => {
+        this.profileData = profile;
+        this.profileFormState = FormState.Default;
+        this.bindVkModalVisible = true;
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно привязать',
           duration: 1500,
           type: 'error'
         });
