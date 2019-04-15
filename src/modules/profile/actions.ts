@@ -33,12 +33,14 @@ import {
   PROFILE_REFRESH_TOKEN_SET,
   PROFILE_COMMIT,
   IPasswordRequestData,
-  PROFILE_ROLES_SET
+  PROFILE_ROLES_SET,
+  PROFILE_VK_ACCOUNT
 } from './types';
 
 import { IUser } from '@/modules/users';
 
 import { IEventPlace, IEventRole } from '@/modules/events';
+import { isBuffer } from 'util';
 
 export const actions: ActionTree<IProfileState, RootState> = {
   [PROFILE_FILL]: ({ commit }, loginResponse: ILoginResponse) => {
@@ -134,6 +136,21 @@ export const actions: ActionTree<IProfileState, RootState> = {
           resolve(user);
         })
         .catch(createErrorDataHandler(PROFILE_COMMIT, reject));
+    });
+  },
+
+  [PROFILE_VK_ACCOUNT]: ({}, user: IUser) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('account/property/vk')
+        .then((response) =>{
+          user.vkData = response.data.data;
+          resolve(user);
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
     });
   },
 

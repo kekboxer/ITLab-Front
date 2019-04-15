@@ -73,6 +73,7 @@ export class UserDefault {
   public middleName: string = '';
   public phoneNumber: string = '';
   public properties?: IUserProperty[];
+  public vkData: string = '';
 }
 
 export interface IUser extends UserDefault {}
