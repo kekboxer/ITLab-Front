@@ -3,7 +3,7 @@
   <div class="c-user-selection">
     <autocomplete-input :stringify="onStringify" :fetch="onChange" v-model="userSelected" @input="onInput" :state="state" :filter="filter" :without-adding="true" :can-clear="true">
       <div slot="result-item" slot-scope="data">
-        <b>{{ data.item.email}}</b><br>{{ data.item.firstName }} {{ data.item.lastName }}
+        <b>{{ data.item.email}}</b><br>{{ data.item.lastName }} {{ data.item.firstName }} {{ data.item.middleName }} 
       </div>
     </autocomplete-input>
   </div>
