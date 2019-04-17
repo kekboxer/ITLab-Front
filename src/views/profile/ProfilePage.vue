@@ -11,7 +11,9 @@
           cols="12"
           md="6"
         >
-          <h4>{{ profileData.email }}</h4>
+          <h4>
+            <mail-link :email="profileData.email" />
+          </h4>
           <hr>
           <b-form @submit.prevent="onSubmitProfile" v-if="isCurrentUser">
             <b-form-group label="Фамилия">
@@ -70,11 +72,27 @@
                   v-if="canEditRoles"
                 >Изменить права</b-button>
               </b-col>
+              <b-col
+                cols="12"
+                class="mt-3"
+              >
+                <b-button
+                  variant="secondary"
+                  class="w-100"
+                  @click.prevent="onSubmitVk"
+                >Привязать VK аккаунт</b-button>
+              </b-col>
             </b-form-row>
+            
           </b-form>
+          
+            
           <h4 v-else>
             {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}<br>
-            <template v-if="profileData.phoneNumber">Телефон: {{ profileData.phoneNumber }}</template>
+            <template v-if="profileData.phoneNumber">
+              Телефон:
+              <phone-link :phone="profileData.phoneNumber" />
+            </template>
           </h4>
         </b-col>
         <b-col
@@ -117,6 +135,24 @@
       :user="profileData"
       v-if="canEditRoles"
     />
+
+    <b-modal v-model="bindVkModalVisible">
+      <template slot="modal-title">
+        Привязать VK аккаунт
+      </template>
+      <p>
+        Чтобы привязать свой аккаунт, отправьте текст ниже в сообщество VK:
+      </p>
+      {{profileData.vkData}}
+      <template slot="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="bindVkModalVisible = false"
+        >Закрыть</button>
+      </template>
+    </b-modal>
+
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -124,32 +160,36 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
-import moment from "moment-timezone";
+import { Component, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
+import moment from 'moment-timezone';
 
-import Icon from "vue-awesome/components/Icon";
-import CPageContent from "@/components/layout/PageContent.vue";
-import CUserRolesModal from "@/components/modals/UserRolesModal.vue";
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPhoneLink from '@/components/stuff/PhoneLink.vue';
 
-import "vue-awesome/icons/times";
+import Icon from 'vue-awesome/components/Icon';
+import CPageContent from '@/components/layout/PageContent.vue';
+import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
 
-import { validationMixin } from "vuelidate";
-import { required, minLength } from "vuelidate/lib/validators";
+import 'vue-awesome/icons/times';
+
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
   PROFILE_GET,
   PROFILE_COMMIT,
-  PROFILE_ROLES_GET
-} from "@/modules/profile";
+  PROFILE_ROLES_GET,
+  PROFILE_VK_ACCOUNT
+} from '@/modules/profile';
 import {
   USERS_FETCH_ONE,
   IUser,
   UserDefault,
   USER_ROLES_FETCH,
   IUserRole
-} from "@/modules/users";
-import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from "@/modules/equipment";
+} from '@/modules/users';
+import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 
 enum FormState {
   Default,
@@ -160,8 +200,10 @@ enum FormState {
 @Component({
   components: {
     Icon,
-    "page-content": CPageContent,
-    "user-roles-modal": CUserRolesModal
+    'mail-link': CMailLink,
+    'phone-link': CPhoneLink,
+    'page-content': CPageContent,
+    'user-roles-modal': CUserRolesModal
   },
   mixins: [validationMixin],
   validations() {
@@ -198,6 +240,8 @@ export default class ProfilePage extends Vue {
 
   public isRolesModalVisible: boolean = false;
 
+  public bindVkModalVisible: boolean = false;
+
   // Component methods //
   //////////////////////
 
@@ -225,19 +269,38 @@ export default class ProfilePage extends Vue {
     this.profileFormState = FormState.InProcess;
     this.$store
       .dispatch(PROFILE_COMMIT, this.profileData)
-      .then(profile => {
+      .then((profile) => {
         this.$notify({
-          title: "Изменения успешно сохранены",
+          title: 'Изменения успешно сохранены',
           duration: 500
         });
         this.profileData = profile;
         this.profileFormState = FormState.Default;
       })
-      .catch(error => {
+      .catch((error) => {
         this.$notify({
-          title: "Невозможно сохранить изменения",
+          title: 'Невозможно сохранить изменения',
           duration: 1500,
-          type: "error"
+          type: 'error'
+        });
+        this.profileFormState = FormState.Default;
+      });
+  }
+
+  public onSubmitVk(){
+    this.profileFormState = FormState.InProcess;
+    this.$store
+      .dispatch(PROFILE_VK_ACCOUNT, this.profileData)
+      .then((profile) => {
+        this.profileData = profile;
+        this.profileFormState = FormState.Default;
+        this.bindVkModalVisible = true;
+      })
+      .catch((error) => {
+        this.$notify({
+          title: 'Невозможно привязать',
+          duration: 1500,
+          type: 'error'
         });
         this.profileFormState = FormState.Default;
       });
@@ -251,13 +314,13 @@ export default class ProfilePage extends Vue {
   }
 
   get canEditRoles(): boolean {
-    return this.$g.hasRole("CanEditRoles");
+    return this.$g.hasRole('CanEditRoles');
   }
 }
 
 export const profilePageRoute = {
-  path: "/profile/:id?",
-  name: "ProfilePage",
+  path: '/profile/:id?',
+  name: 'ProfilePage',
   component: ProfilePage
 } as RouteConfig;
 </script>
@@ -266,7 +329,7 @@ export const profilePageRoute = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .profile-page {
   .equipment-card {

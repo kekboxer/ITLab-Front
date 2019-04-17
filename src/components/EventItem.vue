@@ -104,8 +104,8 @@ export default class CEventItem extends Vue {
 
   public checkDateHover() {
     if (
-      !window.getSelection() ||
-      window.getSelection().toString().length === 0
+      window.getSelection() == null ||
+      window.getSelection()!.toString().length === 0
     ) {
       this.dateHovered = !this.dateHovered;
     }

@@ -152,7 +152,7 @@
                         <b-row v-if="!participant.delete">
                           <b-col cols="auto mr-auto">
                             <b-link :to="`/profile/${participant.user.id}`" class="profile-link">
-                              <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                              <b>{{participant.user.lastName}} {{participant.user.firstName}} {{participant.user.middleName}}</b>
                             </b-link>
                             <span
                               class="badge badge-success badge-pill noselect"
@@ -182,7 +182,7 @@
                         <b-row v-if="!participant.delete">
                           <b-col cols="auto mr-auto">
                             <b-link :to="`/profile/${participant.user.id}`" class="profile-link">
-                              <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                              <b>{{participant.user.lastName}} {{participant.user.firstName}} {{participant.user.middleName}}</b>
                             </b-link>
                             <span
                               class="badge badge-warning badge-pill noselect"
@@ -212,7 +212,7 @@
                         <b-row v-if="!participant.delete">
                           <b-col cols="auto mr-auto">
                             <b-link :to="`/profile/${participant.user.id}`" class="profile-link">
-                              <b>{{participant.user.firstName}} {{participant.user.lastName}}</b>
+                              <b>{{participant.user.lastName}} {{participant.user.firstName}} {{participant.user.middleName}}</b>
                             </b-link>
                             <span
                               class="badge badge-secondary badge-pill noselect"
@@ -761,7 +761,7 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public isAnyTextSelected(): boolean {
-    return window.getSelection() && window.getSelection().toString().length > 0;
+    return window.getSelection() != null && window.getSelection()!.toString().length > 0;
   }
 
   // Computed data //

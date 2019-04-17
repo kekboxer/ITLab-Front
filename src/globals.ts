@@ -1,4 +1,4 @@
-import 'globals';
+// import 'globals';
 import store from '@/store';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 import { UserRoleName } from './modules/users';

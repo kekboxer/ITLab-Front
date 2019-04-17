@@ -130,17 +130,17 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
-import { validationMixin } from "vuelidate";
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import { validationMixin } from 'vuelidate';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 import {
   IRegistrationData,
   RegistrationDataDefault,
   PROFILE_CREATE
-} from "@/modules/profile";
+} from '@/modules/profile';
 
 enum State {
   Default,
@@ -180,7 +180,7 @@ export default class RegistrationPage extends Vue {
   //////////////////////
 
   public mounted() {
-    const fallback = () => this.$router.replace({ name: "LoginPage" });
+    const fallback = () => this.$router.replace({ name: 'LoginPage' });
 
     const regex = /^#e=(.+)&c=(.+)$/;
     const matchResult = this.$route.hash.match(regex);
@@ -202,13 +202,13 @@ export default class RegistrationPage extends Vue {
     this.pageState = State.InProcess;
     this.$store
       .dispatch(PROFILE_CREATE, this.registrationData)
-      .then(result => {
+      .then((result) => {
         this.registrationData = new RegistrationDataDefault();
-        this.$router.push({ name: "LoginPage" });
+        this.$router.push({ name: 'LoginPage' });
 
         this.pageState = State.Default;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         this.pageState = State.Error;
       });
@@ -220,8 +220,8 @@ export default class RegistrationPage extends Vue {
 }
 
 export const registrationPageRoute: RouteConfig = {
-  path: "/register",
-  name: "RegistrationPage",
+  path: '/register',
+  name: 'RegistrationPage',
   component: RegistrationPage,
   meta: {
     secure: false,
@@ -234,7 +234,7 @@ export const registrationPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .registration-page {
   @include media-breakpoint-down(sm) {

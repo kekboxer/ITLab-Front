@@ -30,7 +30,10 @@
             </b-link>
             Email:
             <mail-link :email="user.email" /><br>
-            <template v-if="user.phoneNumber">Телефон: {{ user.phoneNumber }}</template>
+            <template v-if="user.phoneNumber">
+              Телефон:
+              <phone-link :phone="user.phoneNumber" /><br>
+            </template>
           </b-card-body>
         </b-card>
       </b-card-group>
@@ -76,22 +79,23 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import { RouteConfig } from "vue-router";
+import { Vue, Component } from 'vue-property-decorator';
+import { RouteConfig } from 'vue-router';
 
-import CMailLink from "@/components/stuff/MailLink.vue";
-import CPageContent from "@/components/layout/PageContent.vue";
+import CMailLink from '@/components/stuff/MailLink.vue';
+import CPhoneLink from '@/components/stuff/PhoneLink.vue';
+import CPageContent from '@/components/layout/PageContent.vue';
 
-import { validationMixin } from "vuelidate";
-import { required, email } from "vuelidate/lib/validators";
+import { validationMixin } from 'vuelidate';
+import { required, email } from 'vuelidate/lib/validators';
 
 import {
   IUser,
   USERS_GET_ALL,
   USERS_FETCH_ALL,
   USER_INVITE
-} from "@/modules/users";
-import { PROFILE_GET } from "@/modules/profile";
+} from '@/modules/users';
+import { PROFILE_GET } from '@/modules/profile';
 
 enum ModalState {
   Hidden,
@@ -101,8 +105,9 @@ enum ModalState {
 
 @Component({
   components: {
-    "mail-link": CMailLink,
-    "page-content": CPageContent
+    'mail-link': CMailLink,
+    'phone-link': CPhoneLink,
+    'page-content': CPageContent
   },
   mixins: [validationMixin],
   validations: {
@@ -131,7 +136,7 @@ export default class UsersPage extends Vue {
   public mounted() {
     this.loadingInProcess = this.$store.getters[USERS_GET_ALL].lenth === 0;
 
-    this.$store.dispatch(USERS_FETCH_ALL).then(result => {
+    this.$store.dispatch(USERS_FETCH_ALL).then((result) => {
       this.loadingInProcess = false;
     });
   }
@@ -156,7 +161,7 @@ export default class UsersPage extends Vue {
     this.modalState = ModalState.InProcess;
     this.$store.dispatch(USER_INVITE, this.modalData).then(() => {
       this.$notify({
-        title: "Приглашение отправлено!",
+        title: 'Приглашение отправлено!',
         duration: 500
       });
 
@@ -171,12 +176,12 @@ export default class UsersPage extends Vue {
   }
 
   public getProfileLink(user: IUser): string {
-    const userId = user.id === this.profileId ? "" : `/${user.id}`;
+    const userId = user.id === this.profileId ? '' : `/${user.id}`;
     return `/profile${userId}`;
   }
 
   get canSubmitModal(): boolean {
-    return this.modalData.email != null && this.modalData.email !== "";
+    return this.modalData.email != null && this.modalData.email !== '';
   }
 
   get isModalInProcess(): boolean {
@@ -195,13 +200,13 @@ export default class UsersPage extends Vue {
   }
 
   get canInvite(): boolean {
-    return this.$g.hasRole("CanInviteToSystem");
+    return this.$g.hasRole('CanInviteToSystem');
   }
 }
 
 export const usersPageRoute: RouteConfig = {
-  path: "/users",
-  name: "UsersPage",
+  path: '/users',
+  name: 'UsersPage',
   component: UsersPage
 };
 </script>
@@ -210,7 +215,7 @@ export const usersPageRoute: RouteConfig = {
 
 <!-- STYLE BEGIN -->
 <style lang="scss">
-@import "@/styles/general.scss";
+@import '@/styles/general.scss';
 
 .users-page {
   .card {
