@@ -20,3 +20,14 @@ steps:
 
      VUE_APP_AZURE_ORGANIZATION=https://dev.azure.com/rtuitlab/ITLab/
      VUE_APP_BUILD_ID=$(Build.BuildId)
+- task: Npm@1
+  inputs:
+    command: 'install'
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'dist'
+    ArtifactName: 'itlab-front-develop'
