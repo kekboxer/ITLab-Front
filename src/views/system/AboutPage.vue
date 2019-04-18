@@ -20,7 +20,7 @@
           Commit:
         </b-col>
         <b-col>
-          <a :href="`${ repositoryUrl }commit/${ lastCommitId }`">{{ lastCommitId.substring(0, 7) }}</a>
+          <a :href="`${ repositoryUrl }/commit/${ lastCommitId }`">{{ lastCommitId.substring(0, 7) }}</a>
         </b-col>
       </b-row>
       <!--
