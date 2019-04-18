@@ -1,0 +1,17 @@
+pool:
+  name: Default
+steps:
+- task: eliostruyf.build-task.custom-build-task.file-creator@2
+  displayName: 'File Creator'
+  inputs:
+    fileoverwrite: true
+    filepath: .env
+    filecontent: |
+     VUE_APP_API_URL=/api/
+     NODE_ENV=production
+
+     VUE_APP_REPOSITORY=$(Build.Repository.Uri)
+     VUE_APP_LAST_COMMIT=$(Build.SourceVersion)
+
+     VUE_APP_AZURE_ORGANIZATION=https://dev.azure.com/rtuitlab/ITLab/
+     VUE_APP_BUILD_ID=$(Build.BuildId)
