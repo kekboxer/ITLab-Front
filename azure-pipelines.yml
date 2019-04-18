@@ -1,0 +1,36 @@
+trigger:
+  - master
+
+name: $(BuildID)
+
+pool:
+  name: Default
+steps:
+- task: eliostruyf.build-task.custom-build-task.file-creator@2
+  displayName: 'File Creator'
+  inputs:
+    fileoverwrite: true
+    filepath: .env
+    filecontent: |
+     VUE_APP_API_URL=/api/
+     NODE_ENV=production
+
+     VUE_APP_REPOSITORY=$(Build.Repository.Uri)
+     VUE_APP_LAST_COMMIT=$(Build.SourceVersion)
+
+     VUE_APP_AZURE_ORGANIZATION=https://dev.azure.com/rtuitlab/ITLab/
+     VUE_APP_BUILD_ID=$(Build.BuildId)
+- task: Npm@1
+  displayName: npm install
+  inputs:
+    command: 'install'
+- task: Npm@1
+  displayName: npm run build
+  inputs:
+    command: 'custom'
+    customCommand: 'run masterbuild'
+- task: PublishBuildArtifacts@1
+  displayName: publish build artifact itlab-front-master
+  inputs:
+    PathtoPublish: 'dist'
+    ArtifactName: 'itlab-front-master'
