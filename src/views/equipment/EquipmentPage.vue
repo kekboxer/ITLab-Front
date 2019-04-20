@@ -29,7 +29,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :sort-by="'type'" :fields="fields" :filter="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
+          <b-table class="equipment-table" :hover="true" :fixed="true" :items="items" :sort-by="'type'" :fields="fields" :filter="filterProperty" :filter-function="onEquipmentTableFilter" :sort-compare="onEquipmentTableSort" @row-clicked="onEquipmentTableRowClicked">
 
             <template slot="type" slot-scope="data">
               {{ data.item.equipmentType.title }}
@@ -224,6 +224,10 @@ export default class EquipmentPage extends Vue {
 
   get canEdit(): boolean {
     return this.$g.hasRole('CanEditEquipment');
+  }
+
+  get filterProperty() {
+    return this.equipmentFilterString + this.onlyFree ? 'free' : ''
   }
 }
 
