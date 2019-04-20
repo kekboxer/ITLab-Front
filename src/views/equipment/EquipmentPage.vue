@@ -246,6 +246,14 @@ export const equipmentPageRoute: RouteConfig = {
 
 .equipment-page {
   .equipment-table {
+    @include theme-specific() {
+      color: getstyle(page-font-color);
+
+      tr:hover {
+        color: getstyle(page-font-color);
+      }
+    }
+
     @include media-breakpoint-down(md) {
       .actions-head {
         display: none;
