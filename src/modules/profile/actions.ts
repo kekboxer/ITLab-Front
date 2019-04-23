@@ -143,7 +143,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('account/property/vk')
-        .then((response) =>{
+        .then((response) => {
           user.vkData = response.data.data;
           resolve(user);
         })

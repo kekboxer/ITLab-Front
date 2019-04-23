@@ -287,7 +287,7 @@ export default class ProfilePage extends Vue {
       });
   }
 
-  public onSubmitVk(){
+  public onSubmitVk() {
     this.profileFormState = FormState.InProcess;
     this.$store
       .dispatch(PROFILE_VK_ACCOUNT, this.profileData)
