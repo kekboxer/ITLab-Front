@@ -1,5 +1,6 @@
 import { ActionTree } from 'vuex';
 import { RootState } from '@/store';
+import globals from '@/globals';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
@@ -81,7 +82,9 @@ export const actions: ActionTree<INotificationsState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('event/applications/invitations')
-        .then((response) => getResponseData<IInvitationNotification[]>(response))
+        .then((response) =>
+          getResponseData<IInvitationNotification[]>(response)
+        )
         .then((eventInvitations) => {
           eventInvitations.forEach(fixDates);
           commit(NOTIFICATION_INVITATIONS_SET_ALL, eventInvitations);
@@ -157,10 +160,13 @@ export const actions: ActionTree<INotificationsState, RootState> = {
 
   [NOTIFICATIONS_FETCH]: ({ dispatch }) => {
     return new Promise((resolve, reject) => {
-      Promise.all([
-        dispatch(NOTIFICATION_INVITATIONS_FETCH),
-        dispatch(NOTIFICATION_WISHES_FETCH)
-      ])
+      const requests = [dispatch(NOTIFICATION_INVITATIONS_FETCH)];
+
+      if (globals.hasRole('CanEditEvent')) {
+        requests.push(dispatch(NOTIFICATION_WISHES_FETCH));
+      }
+
+      Promise.all(requests)
         .then((results) => {
           const [invitations, wishes] = results;
           resolve({

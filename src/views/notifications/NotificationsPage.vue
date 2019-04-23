@@ -74,8 +74,9 @@ export default class NotificationsPage extends Vue {
       .then((results) => {
         this.loadingInProcess = false;
       })
-      .then()
-      .catch();
+      .catch(() => {
+        this.loadingInProcess = false;
+      });
   }
 
   // Computed data //

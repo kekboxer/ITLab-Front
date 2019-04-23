@@ -227,7 +227,7 @@ export default class EquipmentPage extends Vue {
   }
 
   get filterProperty() {
-    return this.equipmentFilterString + this.onlyFree ? 'free' : ''
+    return this.equipmentFilterString + this.onlyFree ? 'free' : '';
   }
 }
 
