@@ -21,6 +21,10 @@ blockquote {
   }
 }
 
+.tabs .tab-content .tab-pane:focus {
+  outline: none;
+}
+
 .nav.nav-tabs {
   @include theme-specific(theme-light) {
     border-bottom: 1px solid #dee2e6;
