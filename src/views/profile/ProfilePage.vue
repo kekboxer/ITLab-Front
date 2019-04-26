@@ -141,9 +141,16 @@
         Привязать VK аккаунт
       </template>
       <p>
-        Чтобы привязать свой аккаунт, отправьте текст ниже в сообщество VK:
+        Чтобы привязать свой аккаунт, отправьте текст ниже в <b-link :href="vkGroupDialogUrl" target="_blank">сообщество VK</b-link>
       </p>
-      {{profileData.vkData}}
+      
+      <b-input-group>
+        <b-input readonly="" v-model="profileData.vkData"></b-input>
+        <b-input-group-append>
+          <b-button variant="outline-primary" @click="copyVkData"><icon name="copy" /></b-button>
+        </b-input-group-append>
+      </b-input-group>
+
       <template slot="modal-footer">
         <button
           type="button"
@@ -172,6 +179,7 @@ import CPageContent from '@/components/layout/PageContent.vue';
 import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
 
 import 'vue-awesome/icons/times';
+import 'vue-awesome/icons/copy';
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
@@ -190,6 +198,7 @@ import {
   IUserRole
 } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
+import { copyToClipboard } from '../../stuff';
 
 enum FormState {
   Default,
@@ -294,6 +303,9 @@ export default class ProfilePage extends Vue {
       .then((profile) => {
         this.profileData = profile;
         this.profileFormState = FormState.Default;
+
+        this.copyVkData();
+
         this.bindVkModalVisible = true;
       })
       .catch((error) => {
@@ -306,6 +318,15 @@ export default class ProfilePage extends Vue {
       });
   }
 
+  public copyVkData() {
+    this.$notify({
+      title: 'Код скопирован в буффер обмена',
+      duration: 1500,
+      type: 'info'
+    });
+    copyToClipboard(this.profileData.vkData);
+  }
+
   // Computed data //
   //////////////////
 
@@ -315,6 +336,10 @@ export default class ProfilePage extends Vue {
 
   get canEditRoles(): boolean {
     return this.$g.hasRole('CanEditRoles');
+  }
+
+  get vkGroupDialogUrl(): string {
+    return process.env.VUE_APP_VK_GROUP_DIALOG_URL || '';
   }
 }
 

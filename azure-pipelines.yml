@@ -20,6 +20,8 @@ steps:
 
      VUE_APP_AZURE_ORGANIZATION=https://dev.azure.com/rtuitlab/ITLab/
      VUE_APP_BUILD_ID=$(Build.BuildId)
+
+     VUE_APP_VK_GROUP_DIALOG_URL=$(VkGroupDialogUrl)
 - task: Npm@1
   displayName: npm install
   inputs:
