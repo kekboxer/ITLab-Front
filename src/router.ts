@@ -76,8 +76,6 @@ axios.interceptors.response.use(
     }
 
     if (body.statusCode === 12) {
-      refreshAccessToken();
-
       const originalRequest = response.config;
       return new Promise((resolve, reject) => {
         subscribers.push((accessToken?: string) => {
@@ -87,6 +85,8 @@ axios.interceptors.response.use(
             reject({ error: body });
           }
         });
+
+        refreshAccessToken();
       });
     } else {
       throw { error: body };
@@ -134,8 +134,6 @@ router.beforeEach((to, from, next) => {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else if (store.getters[PROFILE_REFRESH_TOKEN] != null) {
-      refreshAccessToken();
-
       subscribers.push((accessToken?: string) => {
         if (accessToken) {
           next();
@@ -143,6 +141,8 @@ router.beforeEach((to, from, next) => {
           router.push(getRedirectionPage(to.path));
         }
       });
+
+      refreshAccessToken();
     } else {
       router.push(getRedirectionPage(to.path));
     }
