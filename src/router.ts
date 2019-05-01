@@ -83,6 +83,7 @@ axios.interceptors.response.use(
       return new Promise((resolve, reject) => {
         subscribers.push((accessToken?: AccessToken) => {
           if (accessToken) {
+            originalRequest.baseURL = ''; // prevent axios from double url concatenation
             originalRequest.headers.Authorization = createAxiosAuthHeader(accessToken.original);
             resolve(axios(originalRequest));
           } else {
