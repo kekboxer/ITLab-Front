@@ -8,9 +8,11 @@ import {
   PROFILE_REFRESH_ACCESS,
   PROFILE_AUTHORIZED,
   PROFILE_REFRESH_TOKEN,
-  PROFILE_HAS_ROLE
+  PROFILE_HAS_ROLE,
+  PROFILE_ACCESS_TOKEN
 } from '@/modules/profile';
 import { LAYOUT_PAGES_GET } from '@/modules/layout';
+import { createAxiosAuthHeader, AccessToken } from './stuff';
 
 Vue.use(Router);
 
@@ -30,7 +32,7 @@ const router: Router = new Router({
 
 // Initialize authorization
 let refreshingToken: boolean = false;
-let subscribers: Array<(accessToken?: string) => void> = [];
+let subscribers: Array<(accessToken?: AccessToken) => void> = [];
 
 const getBaseUrl = () => {
   return '/';
@@ -48,16 +50,17 @@ const refreshAccessToken = () => {
     return;
   }
 
-  const notifySubscribers = (accessToken?: string) => {
-    subscribers = subscribers.filter((cb) => cb(accessToken));
-  };
-
   refreshingToken = true;
+
+  const notifySubscribers = (accessToken?: AccessToken) => {
+    subscribers.map((cb) => cb(accessToken));
+    subscribers = [];
+  };
 
   store
     .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
-    .then((response) => {
-      notifySubscribers(response.accessToken);
+    .then(() => {
+      notifySubscribers(store.getters[PROFILE_ACCESS_TOKEN]);
       refreshingToken = false;
     })
     .catch(() => {
@@ -76,17 +79,19 @@ axios.interceptors.response.use(
     }
 
     if (body.statusCode === 12) {
-      refreshAccessToken();
-
       const originalRequest = response.config;
       return new Promise((resolve, reject) => {
-        subscribers.push((accessToken?: string) => {
+        subscribers.push((accessToken?: AccessToken) => {
           if (accessToken) {
+            originalRequest.baseURL = ''; // prevent axios from double url concatenation
+            originalRequest.headers.Authorization = createAxiosAuthHeader(accessToken.original);
             resolve(axios(originalRequest));
           } else {
             reject({ error: body });
           }
         });
+
+        refreshAccessToken();
       });
     } else {
       throw { error: body };
@@ -134,15 +139,15 @@ router.beforeEach((to, from, next) => {
     if (store.getters[PROFILE_AUTHORIZED]) {
       next();
     } else if (store.getters[PROFILE_REFRESH_TOKEN] != null) {
-      refreshAccessToken();
-
-      subscribers.push((accessToken?: string) => {
+      subscribers.push((accessToken?: AccessToken) => {
         if (accessToken) {
           next();
         } else {
           router.push(getRedirectionPage(to.path));
         }
       });
+
+      refreshAccessToken();
     } else {
       router.push(getRedirectionPage(to.path));
     }
