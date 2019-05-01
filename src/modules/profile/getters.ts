@@ -6,6 +6,7 @@ import {
   PROFILE_GET,
   PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET,
+  PROFILE_ACCESS_TOKEN,
   PROFILE_REFRESH_TOKEN,
   PROFILE_HAS_ROLE,
   PROFILE_ROLES_GET
@@ -22,6 +23,10 @@ export const getters: GetterTree<IProfileState, RootState> = {
       state.accessToken !== undefined &&
       state.accessToken.expirationDate.getTime() > Date.now()
     );
+  },
+
+  [PROFILE_ACCESS_TOKEN]: (state) => {
+    return state.accessToken;
   },
 
   [PROFILE_REFRESH_TOKEN]: (state) => {

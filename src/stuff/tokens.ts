@@ -9,10 +9,12 @@ interface IAccessToken {
 export class AccessToken {
   public readonly creationDate: Date;
   public readonly expirationDate: Date;
+  public readonly original: string;
 
-  constructor(decoded: IAccessToken) {
+  constructor(decoded: IAccessToken, original: string) {
     this.creationDate = moment(decoded.nbf * 1000).toDate();
     this.expirationDate = moment(decoded.exp * 1000).toDate();
+    this.original = original;
   }
 }
 
@@ -47,7 +49,7 @@ export const decodeJWT = (token: string = ''): AccessToken | null => {
 
   const decoded = urlBase64Decode(parts[1]);
   if (decoded) {
-    return new AccessToken(JSON.parse(decoded) as IAccessToken);
+    return new AccessToken(JSON.parse(decoded) as IAccessToken, token);
   } else {
     return null;
   }
