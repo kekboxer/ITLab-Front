@@ -12,7 +12,7 @@
           <hr>
 
           <b-form @submit.prevent="onSubmitEvent">
-            <b-form-group horizontal label="Тема:" class="noselect">
+            <b-form-group :label-cols="3" label="Тема:" class="noselect">
               <b-form-radio-group v-model="theme" class="pt-2" :options="themes" />
             </b-form-group>
           </b-form>
