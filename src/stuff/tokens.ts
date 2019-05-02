@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import { UserRoleName } from '@/modules/users';
+import { IUserSession } from '@/modules/profile';
 
 interface IAccessToken {
   nbf: number;
@@ -53,4 +54,17 @@ export const decodeJWT = (token: string = ''): AccessToken | null => {
   } else {
     return null;
   }
+};
+
+export const extractUserSessionId = (refreshToken: string): string => {
+  const decoded = urlBase64Decode(refreshToken);
+
+  const token = JSON.parse(decoded) as {
+    RefreshTokenId: string,
+    UserId: string,
+    Token: string,
+    UserAgent: string
+  };
+
+  return token.RefreshTokenId;
 };
