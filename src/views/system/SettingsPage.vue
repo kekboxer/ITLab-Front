@@ -47,15 +47,22 @@
       </b-row>
       <b-row>
         <b-col class="mt-5">
-          <h4>Сессии</h4>
+          <b-row>
+            <b-col cols="auto">
+              <h4>Сессии</h4>
+            </b-col>
+            <b-col cols="auto" class="ml-auto">
+              <b-button variant="outline-danger" @click="clearSessions" :disabled="isSessionsFormInProcess">Очистить</b-button>
+            </b-col>
+          </b-row>
           <hr>
-          <div class="session-card" v-for="(session, sectionIndex) in sessions" :key="session.id">
+          <div class="session-card" v-for="session in sessions" :key="`session-${session.id}`">
             <b-row>
               <b-col cols="auto">
                 <b>{{ formatSessionDate(session) }}</b>
               </b-col>
-              <b-col cols="auto" class="ml-auto">
-                <div class="remove-button" @click="removeSession(sectionIndex)">
+              <b-col cols="auto" class="ml-auto" v-if="!isCurrentSession(session)">
+                <div class="remove-button" @click="removeSession(session)">
                   <icon name="times"></icon>
                 </div>
               </b-col>
@@ -101,8 +108,13 @@ import {
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SETTINGS_THEME_SET,
-  PROFILE_SETTINGS_THEME_GET
+  PROFILE_SETTINGS_THEME_GET,
+  PROFILE_REFRESH_TOKEN
 } from '@/modules/profile';
+
+import {
+  extractUserSessionId
+} from '@/stuff/tokens';
 
 enum FormState {
   Default,
@@ -144,6 +156,8 @@ export default class SettingsPage extends Vue {
 
   public sessions: IUserSession[] = [];
 
+  public sessionsState: FormState = FormState.Default;
+
   // Component methods //
   //////////////////////
 
@@ -179,17 +193,48 @@ export default class SettingsPage extends Vue {
       });
   }
 
-  public removeSession(sessionIndex: number) {
-    const session = this.sessions[sessionIndex];
+  public clearSessions() {
+    if (this.isSessionsFormInProcess) {
+      return;
+    }
+    this.sessionsState = FormState.InProcess;
+
+    this.$store
+      .dispatch(
+        PROFILE_SESSIONS_DELETE,
+        this.sessions.filter((s) => !this.isCurrentSession(s)).map((s) => s.id)
+      )
+      .then((response) => {
+        this.sessions = this.sessions.filter((s) => this.isCurrentSession(s));
+        this.sessionsState = FormState.Default;
+      })
+      .catch(() => (this.sessionsState = FormState.Default));
+  }
+
+  public removeSession(session: IUserSession) {
+    if (this.isCurrentSession(session)) {
+      return;
+    }
 
     this.$store
       .dispatch(PROFILE_SESSIONS_DELETE, [session.id])
-      .then((response) => Vue.delete(this.sessions, sessionIndex))
+      .then((response) => {
+        const sessionIndex = this.sessions.findIndex((s) => s.id === session.id);
+        Vue.delete(this.sessions, sessionIndex);
+      })
       .catch();
   }
 
   public formatSessionDate(session: IUserSession): string {
     return moment(session.createTime).format('DD.MM.YYYY HH:mm:ss');
+  }
+
+  public isCurrentSession(session: IUserSession): boolean {
+    const currentSessionId = extractUserSessionId(
+      this.$store.getters[PROFILE_REFRESH_TOKEN]
+    );
+
+    return session.id === currentSessionId;
   }
 
   set theme(themeName: string) {
@@ -216,6 +261,14 @@ export default class SettingsPage extends Vue {
 
   get isPasswordFormInProcess(): boolean {
     return this.passwordFormState === FormState.InProcess;
+  }
+
+  get isSessionsFormInProcess(): boolean {
+    return (
+      this.sessionsState === FormState.InProcess ||
+      this.sessions.filter((s) => this.isCurrentSession(s)).length ===
+        this.sessions.length
+    );
   }
 }
 

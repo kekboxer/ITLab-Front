@@ -191,7 +191,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     return new Promise((resolve, reject) => {
       axios
         .get('authentication/refresh')
-        .then((response) => getResponseData<IUserSession>(response))
+        .then((response) => getResponseData<IUserSession[]>(response))
         .then(resolve)
         .catch(createErrorDataHandler(PROFILE_SESSIONS_FETCH, reject));
     });
