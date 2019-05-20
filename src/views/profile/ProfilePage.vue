@@ -65,12 +65,6 @@
                 cols="12"
                 class="mt-3"
               >
-                <b-button
-                  variant="secondary"
-                  class="w-100"
-                  @click="isRolesModalVisible = true"
-                  v-if="canEditRoles"
-                >Изменить права</b-button>
               </b-col>
               <b-col
                 cols="12"
@@ -94,6 +88,13 @@
               <phone-link :phone="profileData.phoneNumber" />
             </template>
           </h4>
+
+          <b-button
+            variant="secondary"
+            class="w-100 mt-2"
+            @click="isRolesModalVisible = true"
+            v-if="canEditRoles"
+          >Изменить права</b-button>
         </b-col>
         <b-col
           cols="12"
