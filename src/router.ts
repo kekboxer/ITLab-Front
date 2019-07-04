@@ -56,7 +56,7 @@ const refreshAccessToken = () => {
     subscribers.map((cb) => cb(accessToken));
     subscribers = [];
   };
-  
+
   store
     .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
     .then(() => {
@@ -76,7 +76,7 @@ axios.interceptors.response.use(
 
     if (response.status === 200 || response.status === 201 || response.status === 204) {
       return response;
-    }else {
+    } else {
       throw { error: body };
     }
 
@@ -92,16 +92,16 @@ axios.interceptors.response.use(
             originalRequest.baseURL = ''; // prevent axios from double url concatenation
             originalRequest.headers.Authorization = createAxiosAuthHeader(accessToken.original);
             resolve(axios(originalRequest));
-            
+
           } else {
             reject({ error: body });
           }
         });
 
-      refreshAccessToken();
-         
+        refreshAccessToken();
+
       });
-    }else{
+    } else {
       console.log(error);
       throw error;
     }
