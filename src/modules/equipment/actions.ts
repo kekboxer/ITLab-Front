@@ -109,7 +109,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
 
       const request =
         equipment.id === ''
-          ? axios.post(url, equipment)
+          ? axios.post(url,equipment)
           : axios.put(url, equipment);
 
       request
@@ -133,9 +133,9 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
       axios
         .delete('equipment', { data: { id: equipmentId } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EQUIPMENT_REMOVE_ONE, equipmentId);
             resolve();
           } else {
@@ -232,7 +232,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
         .then((response) => {
           const body = response && response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EQUIPMENT_TYPES_REMOVE_ONE, equipmentTypeId);
             resolve();
           } else {

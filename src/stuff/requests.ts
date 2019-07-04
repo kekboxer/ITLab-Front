@@ -15,10 +15,10 @@ export const getResponseData = <T>(
   response: AxiosResponse<any>
 ): Promise<T> => {
   return new Promise((resolve, reject) => {
-    const body = response && response.data;
+    const body = response.data;
 
-    if (body && body.statusCode === 1 && body.data) {
-      resolve(body.data as T);
+    if (response.status === 200 || response.status === 201 || response.status === 204) {
+      resolve(body as T);
     } else {
       reject();
     }
@@ -32,7 +32,7 @@ export const createResponseCheckHandler = (
     return new Promise((resolve, reject) => {
       const body = response.data;
 
-      if (body.statusCode && body.statusCode === 1) {
+      if (response.status === 200 || response.status === 204) {
         resolver();
         resolve();
       } else {

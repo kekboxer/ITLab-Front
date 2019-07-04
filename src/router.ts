@@ -56,7 +56,7 @@ const refreshAccessToken = () => {
     subscribers.map((cb) => cb(accessToken));
     subscribers = [];
   };
-
+  
   store
     .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
     .then(() => {
@@ -74,32 +74,37 @@ axios.interceptors.response.use(
   (response) => {
     const body = response.data;
 
-    if (body.statusCode === 1) {
+    if (response.status === 200 || response.status === 201 || response.status === 204) {
       return response;
+    }else {
+      throw { error: body };
     }
 
-    if (body.statusCode === 12) {
-      const originalRequest = response.config;
+  },
+  (error) => {
+
+    const body = error.response.data;
+    if (error.response.status === 401) {
+      const originalRequest = error.response.config;
       return new Promise((resolve, reject) => {
         subscribers.push((accessToken?: AccessToken) => {
           if (accessToken) {
             originalRequest.baseURL = ''; // prevent axios from double url concatenation
             originalRequest.headers.Authorization = createAxiosAuthHeader(accessToken.original);
             resolve(axios(originalRequest));
+            
           } else {
             reject({ error: body });
           }
         });
 
-        refreshAccessToken();
+      refreshAccessToken();
+         
       });
-    } else {
-      throw { error: body };
+    }else{
+      console.log(error);
+      throw error;
     }
-  },
-  (error) => {
-    console.log(error);
-    throw error;
   }
 );
 

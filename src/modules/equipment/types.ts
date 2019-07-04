@@ -35,7 +35,10 @@ export const EQUIPMENT_TYPES_GET_ONE = 'EQUIPMENT_TYPES_GET_ONE';
 export class EquipmentTypeDefault {
   public id: string = '';
   public title: string = '';
+  public shortTitle: string = '';
   public description: string = '';
+  public rootId: string = '';
+  public parentId: string = '';
 }
 
 export interface IEquipmentType extends EquipmentTypeDefault {}
@@ -53,6 +56,8 @@ export class EquipmentDefault {
 
   public description?: string;
   public ownerId?: string;
+  public parentId?: string;
+  public children?: [];
 }
 
 export interface IEquipment extends EquipmentDefault {}
