@@ -35,7 +35,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();
@@ -185,7 +185,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();
@@ -210,7 +210,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();

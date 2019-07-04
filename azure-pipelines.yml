@@ -1,7 +1,8 @@
 trigger:
   - master
+  - develop
 
-name: $(BuildID)
+name: $(BuildID)-$(Build.SourceBranchName)
 
 pool:
   name: Default
@@ -32,7 +33,7 @@ steps:
     command: 'custom'
     customCommand: 'run build'
 - task: PublishBuildArtifacts@1
-  displayName: publish build artifact itlab-front-master
+  displayName: publish build artifact itlab-front-$(Build.SourceBranchName)
   inputs:
     PathtoPublish: 'dist'
-    ArtifactName: 'itlab-front-master'
+    ArtifactName: 'itlab-front-$(Build.SourceBranchName)'
