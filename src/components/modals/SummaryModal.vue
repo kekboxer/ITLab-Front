@@ -7,6 +7,7 @@
       </template>
 
       <b-form-group>
+        <h5 v-if="options.length === 0">Нет событий.</h5>
         <b-form-checkbox-group
           stacked
           v-model="selected"
@@ -14,7 +15,7 @@
         >
         </b-form-checkbox-group>
       </b-form-group>
-
+      
       <template slot="modal-footer">
         <button
           type="button"
