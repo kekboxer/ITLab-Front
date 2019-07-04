@@ -81,7 +81,6 @@ export const actions: ActionTree<IProfileState, RootState> = {
   [PROFILE_REFRESH_ACCESS]: ({ dispatch }, token: string) => {
     return new Promise((resolve, reject) => {
       const data: string = `"${token}"`;
-
       axios
         .post('authentication/refresh', data)
         .then((response) => getResponseData<ILoginResponse>(response))
@@ -144,7 +143,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
       axios
         .get('account/property/vk')
         .then((response) => {
-          user.vkData = response.data.data;
+          user.vkData = response.data;
           resolve(user);
         })
         .catch((error) => {

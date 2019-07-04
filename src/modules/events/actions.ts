@@ -200,9 +200,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete(`event/${id}`)
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENTS_REMOVE_ONE, id);
             resolve();
           } else {
@@ -293,9 +293,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete('eventType', { data: { id } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENT_TYPES_REMOVE_ONE, id);
             resolve();
           } else {
@@ -354,9 +354,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete('eventRole', { data: { id } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENT_ROLES_REMOVE_ONE, id);
             resolve();
           } else {
