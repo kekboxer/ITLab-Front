@@ -30,7 +30,7 @@ steps:
   displayName: npm run build
   inputs:
     command: 'custom'
-    customCommand: 'run masterbuild'
+    customCommand: 'run build'
 - task: PublishBuildArtifacts@1
   displayName: publish build artifact itlab-front-master
   inputs:
