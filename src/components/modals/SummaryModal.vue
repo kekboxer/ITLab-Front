@@ -15,9 +15,7 @@
         >
         </b-form-checkbox-group>
       </b-form-group>
-      <b-form>
-        
-      </b-form>
+      
       <template slot="modal-footer">
         <button
           type="button"
@@ -88,9 +86,9 @@ export default class CSummaryModal extends Vue {
     this.isModalInProcess = true;
 
     let data: any = null;
-
-      const response = await axios.post(
-        'bad',
+    try {
+      const result = await axios.post(
+        'summary',
         {
           targetEventTypes: this.selected
         },
@@ -99,17 +97,17 @@ export default class CSummaryModal extends Vue {
         }
       );
 
-      if(Math.floor(response.status / 100) === 5){
-        alert("Произошла ошибка, попробуйте позже. Error " + response.status)
-      }else{
-        data = response.data;
-        const url = window.URL.createObjectURL(new Blob([data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'summary.xlsx');
-        document.body.appendChild(link);
-        link.click();
-      }
+      data = result.data;
+    } catch (body) {
+      data = body.error;
+    } finally {
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'summary.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    }
 
     this.isModalInProcess = false;
     this.isModalVisible = false;
