@@ -88,7 +88,7 @@ export default class CSummaryModal extends Vue {
     let data: any = null;
     return new Promise((resolve, reject)=>{
       axios
-        .post('bad',
+        .post('summary',
           {
             targetEventTypes: this.selected
           },
