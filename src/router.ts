@@ -102,6 +102,12 @@ axios.interceptors.response.use(
         refreshAccessToken();
 
       });
+    } else if (Math.floor(error.response.status / 100 ) === 5){
+      const originalRequest = error.response.config;
+      setTimeout(()=>{
+          originalRequest.baseURL = '';
+          axios(originalRequest);
+      }, 4000);
     } else {
       console.log(error);
       throw error;

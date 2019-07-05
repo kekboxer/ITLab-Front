@@ -88,7 +88,7 @@ export default class CSummaryModal extends Vue {
     let data: any = null;
     return new Promise((resolve, reject)=>{
       axios
-        .post('summary',
+        .post('bad',
           {
             targetEventTypes: this.selected
           },
@@ -109,13 +109,16 @@ export default class CSummaryModal extends Vue {
           this.isModalVisible = false;
           resolve();
           }else{
-            alert("Проблемы с сервером, попробуйте позже.");
+            this.$notify({
+              title: 'Проблемы с сервером, попробуйте позже.',
+              duration: 1500,
+              type: 'error'
+            });
             this.isModalInProcess = false;
             this.isModalVisible = false;
           }
         })
         .catch((error)=>{
-          alert("Проблемы с сервером, попробуйте позже.");
           console.log(error);
           reject(error);
         });
