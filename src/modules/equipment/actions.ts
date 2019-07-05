@@ -30,7 +30,7 @@ import {
 import { IUser } from '@/modules/users';
 
 export const actions: ActionTree<IEquipmentState, RootState> = {
-  [EQUIPMENT_SEARCH]: ({}, match: string = '') => {
+  [EQUIPMENT_SEARCH]: ({ }, match: string = '') => {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment?match=${encodeURIComponent(match)}`)
@@ -88,7 +88,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
     });
   },
 
-  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({}, user: IUser | string) => {
+  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, user: IUser | string) => {
     return new Promise((resolve, reject) => {
       const userId = typeof user === 'string' ? user : user.id;
 
@@ -109,7 +109,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
 
       const request =
         equipment.id === ''
-          ? axios.post(url,equipment)
+          ? axios.post(url, equipment)
           : axios.put(url, equipment);
 
       request
@@ -150,7 +150,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
   },
 
   [EQUIPMENT_TYPE_SEARCH]: (
-    {},
+    { },
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
