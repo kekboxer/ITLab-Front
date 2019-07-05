@@ -2,7 +2,8 @@
 
 Develop | Master
 --- | ---
-[![Build status](https://capchik.visualstudio.com/MTU%20Work/_apis/build/status/RTU%20Work%20control%20front)](https://capchik.visualstudio.com/MTU%20Work/_build/latest?definitionId=20) | [![Build status](https://capchik.visualstudio.com/MTU%20Work/_apis/build/status/RTU%20IT%20Lab%20front-master)](https://capchik.visualstudio.com/MTU%20Work/_build/latest?definitionId=33)
+[![Build Status](https://dev.azure.com/rtuitlab/RTU%20IT%20Lab/_apis/build/status/ITLabRTUMIREA.ITLab-Front?branchName=develop)](https://dev.azure.com/rtuitlab/RTU%20IT%20Lab/_build/latest?definitionId=64&branchName=develop) | [![Build status](https://dev.azure.com/rtuitlab/RTU%20IT%20Lab/_apis/build/status/ITLabRTUMIREA.ITLab-Front?branchName=master)](https://dev.azure.com/rtuitlab/RTU%20IT%20Lab/_build/latest?definitionId=64&branchName=master)
+
 
 ## Project setup
 ```
