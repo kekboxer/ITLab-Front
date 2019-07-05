@@ -86,31 +86,40 @@ export default class CSummaryModal extends Vue {
     this.isModalInProcess = true;
 
     let data: any = null;
-    try {
-      const result = await axios.post(
-        'summary',
-        {
-          targetEventTypes: this.selected
-        },
-        {
-          responseType: 'blob'
-        }
-      );
-
-      data = result.data;
-    } catch (body) {
-      data = body.error;
-    } finally {
-      const url = window.URL.createObjectURL(new Blob([data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'summary.xlsx');
-      document.body.appendChild(link);
-      link.click();
-    }
-
-    this.isModalInProcess = false;
-    this.isModalVisible = false;
+    return new Promise((resolve, reject)=>{
+      axios
+        .post('summary',
+          {
+            targetEventTypes: this.selected
+          },
+          {
+            responseType: 'blob'
+          }
+        )
+        .then((response)=>{
+          if(response && response.status === 200){
+          data = response.data;
+          const url = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'summary.xlsx');
+          document.body.appendChild(link);
+          link.click();
+          this.isModalInProcess = false;
+          this.isModalVisible = false;
+          resolve();
+          }else{
+            alert("Проблемы с сервером, попробуйте позже.");
+            this.isModalInProcess = false;
+            this.isModalVisible = false;
+          }
+        })
+        .catch((error)=>{
+          alert("Проблемы с сервером, попробуйте позже.");
+          console.log(error);
+          reject(error);
+        });
+    })
   }
 
   set isModalVisible(value: boolean) {

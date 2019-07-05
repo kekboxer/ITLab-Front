@@ -73,8 +73,7 @@ const refreshAccessToken = () => {
 axios.interceptors.response.use(
   (response) => {
     const body = response.data;
-
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
+    if (Math.floor(response.status / 100) === 2) {
       return response;
     }else {
       throw { error: body };
@@ -82,9 +81,11 @@ axios.interceptors.response.use(
 
   },
   (error) => {
-
-    const body = error.response.data;
-    if (error.response.status === 401) {
+    if(!error.response){
+      return;
+    }
+     if (error.response.status === 401) {
+      const body = error.response.data;
       const originalRequest = error.response.config;
       return new Promise((resolve, reject) => {
         subscribers.push((accessToken?: AccessToken) => {
