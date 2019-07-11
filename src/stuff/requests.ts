@@ -60,6 +60,8 @@ export const setOneElement = <T extends { id: string }>(
     return value.id === element.id;
   });
 
+  console.log(currentElementIndex + ' INDEX');
+
   if (currentElementIndex === -1) {
     array.push(element);
   } else {

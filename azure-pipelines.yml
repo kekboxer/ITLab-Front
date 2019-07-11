@@ -24,9 +24,10 @@ steps:
 
      VUE_APP_VK_GROUP_DIALOG_URL=$(VkGroupDialogUrl)
 - task: Npm@1
-  displayName: npm install
+  displayName: npm ci
   inputs:
-    command: 'install'
+    command: 'custom'
+    customCommand: 'ci'
 - task: Npm@1
   displayName: npm run build
   inputs:

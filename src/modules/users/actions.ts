@@ -19,7 +19,12 @@ import {
   USER_ROLE_DISCHARGE,
   USERS_SET_ALL,
   USERS_SET_ONE,
-  USER_ROLES_SET_ALL
+  USER_ROLES_SET_ALL,
+  USER_PROPERTY_TYPE_COMMIT,
+  USER_PROPERTY_TYPES_SET_ONE,
+  USER_PROPERTY_TYPES_FETCH_ALL,
+  USER_PROPERTY_TYPES_SET_ALL,
+  IUserPropertyType
 } from './types';
 
 import { IEquipment } from '@/modules/equipment';
@@ -221,5 +226,44 @@ export const actions: ActionTree<IUsersState, RootState> = {
           reject(error);
         });
     });
-  }
+  },
+
+  [USER_PROPERTY_TYPE_COMMIT]: ({ commit }, userPropertyType: IUserPropertyType) => {
+    return new Promise((resolve, reject) => {
+      const url = 'account/property/type';
+
+      const request =
+      userPropertyType.id === ''
+          ? axios.post(url, userPropertyType)
+          : axios.put(url, userPropertyType);
+
+      request
+        .then((response) => getResponseData<IUserPropertyType>(response))
+        .then((userPropertyType) => {
+          commit(USER_PROPERTY_TYPES_SET_ONE, userPropertyType);
+          resolve(userPropertyType);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_TYPES_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('account/property/type')
+        .then((response: any) => getResponseData<IUserPropertyType[]>(response))
+        .then((userPropertyTypes) => {
+          commit(USER_PROPERTY_TYPES_SET_ALL, userPropertyTypes);
+          resolve(userPropertyTypes);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
 };

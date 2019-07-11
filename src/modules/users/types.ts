@@ -8,16 +8,21 @@ export const USER_REMOVE_EQUIPMENT = 'PROFILE_REMOVE_EQUIPMENT';
 export const USER_ROLES_FETCH = 'USER_ROLES_FETCH';
 export const USER_ROLE_ASSIGN = 'USER_ROLE_ASSIGN';
 export const USER_ROLE_DISCHARGE = 'USER_ROLE_DISCHARGE';
+export const USER_PROPERTY_TYPE_COMMIT = 'USER_PROPERTY_TYPE_COMMIT';
+export const USER_PROPERTY_TYPES_FETCH_ALL = 'USER_PROPERTY_TYPES_FETCH_ALL';
 
 // setters
 export const USERS_SET_ALL = 'USERS_SET_ALL';
 export const USERS_SET_ONE = 'USERS_SET_ONE';
 export const USER_ROLES_SET_ALL = 'USER_ROLES_SET_ALL';
+export const USER_PROPERTY_TYPES_SET_ONE = 'USER_PROPERTY_TYPES_SET_ONE';
+export const USER_PROPERTY_TYPES_SET_ALL = 'USER_PROPERTY_TYPES_SET_ALL';
 
 // getters
 export const USERS_GET_ALL = 'USERS_GET_ALL';
 export const USERS_GET_ONE = 'USERS_GET_ONE';
 export const USER_ROLES_GET_ALL = 'USER_ROLES_GET_ALL';
+export const USER_PROPERTY_TYPES_GET_ALL = 'USER_PROPERTY_TYPES_GET_ALL';
 
 // UserRoles //
 //////////////
@@ -84,4 +89,5 @@ export interface IUser extends UserDefault {}
 export interface IUsersState {
   users: IUser[];
   userRoles: IUserRole[];
+  userPropertyTypes: IUserPropertyType[];
 }
