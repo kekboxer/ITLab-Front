@@ -24,10 +24,16 @@ import {
   USER_PROPERTY_TYPES_SET_ONE,
   USER_PROPERTY_TYPES_FETCH_ALL,
   USER_PROPERTY_TYPES_SET_ALL,
-  IUserPropertyType
+  USER_PROPERTIES_FETCH_ALL,
+  USER_PROPERTY_COMMIT,
+  USER_PROPERTY_DELETE,
+  IUserPropertyType,
+  IUserProperty
 } from './types';
 
 import { IEquipment } from '@/modules/equipment';
+import { resolve } from 'path';
+import { rejects } from 'assert';
 
 export const actions: ActionTree<IUsersState, RootState> = {
   [USER_INVITE]: ({}, { email }: { email: string }) => {
@@ -266,4 +272,52 @@ export const actions: ActionTree<IUsersState, RootState> = {
     });
   },
 
+  [USER_PROPERTIES_FETCH_ALL]:()=>{
+    return new Promise((resolve, reject) => {
+      axios
+        .get('account/property')
+        .then((response: any) => getResponseData<IUserProperty[]>(response))
+        .then((userProperties) => {
+          resolve(userProperties);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_COMMIT]:({commit}, {
+    userPropertyValue,
+    userPropertyId,
+    }) => {
+    return new Promise((resolve, reject) =>{
+      axios
+       .put('account/property', {value: userPropertyValue, id:userPropertyId})
+       .then((response) => getResponseData<IUserProperty>(response))
+       .then((userProperty) => {
+         resolve(userProperty);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_DELETE]:({},{
+    userPropertyId
+  })=>{
+    return new Promise((resolve, reject)=>{
+      axios
+        .delete('account/property', {data: {id: userPropertyId}})
+        .then((response)=> {
+          resolve();
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  }
 };
