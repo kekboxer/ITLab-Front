@@ -2,27 +2,21 @@
 <template>
   <div class="profile-page">
     <page-content :loading="loadingInProcess">
-      <template slot="header">
-        Профиль
-      </template>
+      <template slot="header">Профиль</template>
 
       <b-row>
-        <b-col
-          cols="12"
-          md="6"
-        >
+        <b-col cols="12" md="6">
           <h4>
             <mail-link :email="profileData.email" />
           </h4>
-          <hr>
+          <hr />
           <b-form @submit.prevent="onSubmitProfile" v-if="isCurrentUser">
             <b-form-group label="Фамилия">
               <b-form-input
                 type="text"
                 v-model.trim="profileData.lastName"
                 :state="isCurrentUser ? !$v.profileData.lastName.$invalid : null"
-              >
-              </b-form-input>
+              ></b-form-input>
             </b-form-group>
 
             <b-form-group label="Имя">
@@ -30,16 +24,11 @@
                 type="text"
                 v-model.trim="profileData.firstName"
                 :state="isCurrentUser ? !$v.profileData.firstName.$invalid : null"
-              >
-              </b-form-input>
+              ></b-form-input>
             </b-form-group>
 
             <b-form-group label="Отчество">
-              <b-form-input
-                type="text"
-                v-model.trim="profileData.middleName"
-              >
-              </b-form-input>
+              <b-form-input type="text" v-model.trim="profileData.middleName"></b-form-input>
             </b-form-group>
 
             <b-form-group label="Номер телефона">
@@ -47,8 +36,19 @@
                 type="tel"
                 v-model.trim="profileData.phoneNumber"
                 :state="isCurrentUser ? !$v.profileData.phoneNumber.$invalid : null"
-              >
-              </b-form-input>
+              ></b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Параметры пользователя">
+              <template v-if="profileData.properties && profileData.properties.length !== 0">
+                <div
+                  v-for="property in profileData.properties"
+                  v-bind:key="property.id"
+                >{{property.userPropertyType.name}} : {{property.value}}</div>
+              </template>
+              <template v-else>
+                <h6>Параметры не указаны</h6>
+              </template>
             </b-form-group>
 
             <b-form-row>
@@ -61,15 +61,15 @@
                   v-if="isCurrentUser"
                 >Сохранить</b-button>
               </b-col>
-              <b-col
-                cols="12"
-                class="mt-3"
-              >
+
+              <b-col cols="12" class="mt-3">
+                <b-button
+                  variant="success"
+                  class="w-100"
+                  @click="userPropertiesModalVisible = true"
+                >Добавить параметры пользователя</b-button>
               </b-col>
-              <b-col
-                cols="12"
-                class="mt-3"
-              >
+              <b-col cols="12" class="mt-3">
                 <b-button
                   variant="secondary"
                   class="w-100"
@@ -77,12 +77,13 @@
                 >Привязать VK аккаунт</b-button>
               </b-col>
             </b-form-row>
-            
           </b-form>
+
           
-            
+
           <h4 v-else>
-            {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}<br>
+            {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}
+            <br />
             <template v-if="profileData.phoneNumber">
               Телефон:
               <phone-link :phone="profileData.phoneNumber" />
@@ -96,23 +97,13 @@
             v-if="canEditRoles"
           >Изменить права</b-button>
         </b-col>
-        <b-col
-          cols="12"
-          md="6"
-          class="mt-5 mt-md-0"
-        >
+        <b-col cols="12" md="6" class="mt-5 mt-md-0">
           <h4>Оборудование</h4>
-          <hr>
+          <hr />
 
-          <template v-if="equipment.length === 0">
-            Оборудования на руках нет
-          </template>
+          <template v-if="equipment.length === 0">Оборудования на руках нет</template>
           <template v-else>
-            <div
-              class="equipment-card"
-              v-for="equipment in equipment"
-              :key="equipment.id"
-            >
+            <div class="equipment-card" v-for="equipment in equipment" :key="equipment.id">
               <b-row>
                 <b-col cols="auto">
                   <a :href="`/equipment/${equipment.id}`">
@@ -131,36 +122,29 @@
       </b-row>
     </page-content>
 
-    <user-roles-modal
-      v-model="isRolesModalVisible"
-      :user="profileData"
-      v-if="canEditRoles"
-    />
+    <user-roles-modal v-model="isRolesModalVisible" :user="profileData" v-if="canEditRoles" />
+    <user-properties-modal v-model="userPropertiesModalVisible" :user="profileData"/>
 
     <b-modal v-model="bindVkModalVisible">
-      <template slot="modal-title">
-        Привязать VK аккаунт
-      </template>
+      <template slot="modal-title">Привязать VK аккаунт</template>
       <p>
-        Чтобы привязать свой аккаунт, отправьте текст ниже в <b-link :href="vkGroupDialogUrl" target="_blank">сообщество VK</b-link>
+        Чтобы привязать свой аккаунт, отправьте текст ниже в
+        <b-link :href="vkGroupDialogUrl" target="_blank">сообщество VK</b-link>
       </p>
-      
+
       <b-input-group>
-        <b-input readonly="" v-model="profileData.vkData"></b-input>
+        <b-input readonly v-model="profileData.vkData"></b-input>
         <b-input-group-append>
-          <b-button variant="outline-primary" @click="copyVkData"><icon name="copy" /></b-button>
+          <b-button variant="outline-primary" @click="copyVkData">
+            <icon name="copy" />
+          </b-button>
         </b-input-group-append>
       </b-input-group>
 
       <template slot="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click="bindVkModalVisible = false"
-        >Закрыть</button>
+        <button type="button" class="btn btn-secondary" @click="bindVkModalVisible = false">Закрыть</button>
       </template>
     </b-modal>
-
   </div>
 </template>
 <!-- TEMPALTE END -->
@@ -170,7 +154,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
-import moment from 'moment-timezone';
+import moment, { isMoment } from 'moment-timezone';
 
 import CMailLink from '@/components/stuff/MailLink.vue';
 import CPhoneLink from '@/components/stuff/PhoneLink.vue';
@@ -178,6 +162,7 @@ import CPhoneLink from '@/components/stuff/PhoneLink.vue';
 import Icon from 'vue-awesome/components/Icon';
 import CPageContent from '@/components/layout/PageContent.vue';
 import CUserRolesModal from '@/components/modals/UserRolesModal.vue';
+import CUserPropertiesModal from '@/components/modals/UserPropertiesModal.vue';
 
 import 'vue-awesome/icons/times';
 import 'vue-awesome/icons/copy';
@@ -196,7 +181,9 @@ import {
   IUser,
   UserDefault,
   USER_ROLES_FETCH,
-  IUserRole
+  IUserRole,
+  IUserProperty,
+  USER_PROPERTIES_FETCH_ALL
 } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 import { copyToClipboard } from '../../stuff';
@@ -213,7 +200,8 @@ enum FormState {
     'mail-link': CMailLink,
     'phone-link': CPhoneLink,
     'page-content': CPageContent,
-    'user-roles-modal': CUserRolesModal
+    'user-roles-modal': CUserRolesModal,
+    'user-properties-modal': CUserPropertiesModal
   },
   mixins: [validationMixin],
   validations() {
@@ -251,6 +239,8 @@ export default class ProfilePage extends Vue {
   public isRolesModalVisible: boolean = false;
 
   public bindVkModalVisible: boolean = false;
+
+  public userPropertiesModalVisible: boolean = false;
 
   // Component methods //
   //////////////////////

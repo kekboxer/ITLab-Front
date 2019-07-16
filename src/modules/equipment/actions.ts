@@ -204,7 +204,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
       const request =
         equipmentType.id === ''
           ? axios.post(url, equipmentType)
-          : axios.put(url, equipmentType);
+          : axios.put(url, [equipmentType]);
 
       request
         .then((response) => getResponseData<IEquipmentType>(response))

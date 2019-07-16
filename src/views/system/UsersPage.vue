@@ -34,6 +34,9 @@
               Телефон:
               <phone-link :phone="user.phoneNumber" /><br>
             </template>
+            <div v-for="property in user.properties" :key="property.id">
+              {{property.userPropertyType.name}} : {{property.value}}
+            </div>
           </b-card-body>
         </b-card>
       </b-card-group>
