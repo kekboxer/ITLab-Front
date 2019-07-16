@@ -7,7 +7,10 @@
         <b-input-group :prepend="userProperty.name" class="mt-3">
           <b-form-input type="text" v-model.trim="userProperty.value"></b-form-input>
           <b-input-group-append>
-            <b-button variant="outline-success" @click="saveUserProperty(userProperty.value, userProperty.id)">Сохранить</b-button>
+            <b-button
+              variant="outline-success"
+              @click="saveUserProperty(userProperty.value, userProperty.id)"
+            >Сохранить</b-button>
           </b-input-group-append>
         </b-input-group>
       </div>
@@ -69,18 +72,24 @@ export default class CUserPropertiesModal extends Vue {
       });
     this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL).then((testI) => {
       this.modalData = testI.map((i: any) => {
-        return {
-          id: i.id,
-          name: i.name,
-          value:
-            this.user.properties.find((userProperty: IUserProperty) => {
-              return userProperty.userPropertyType.id === i.id;
-            }) === undefined
-              ? ''
-              : this.user.properties.find((userProperty: IUserProperty) => {
-                  return userProperty.userPropertyType.id === i.id;
-                }).value
-        };
+        if (this.user.properties) {
+          let tmp = this.user.properties.find((userProperty: IUserProperty) => {
+            return userProperty.userPropertyType.id === i.id;
+          });
+          if (tmp) {
+            return {
+              id: i.id,
+              name: i.name,
+              value: tmp.value
+            };
+          } else {
+            return {
+              id: i.id,
+              name: i.name,
+              value: ''
+            };
+          }
+        }
       });
     });
     this.$watch('value', (value: boolean) => {
