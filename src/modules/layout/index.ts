@@ -19,7 +19,7 @@ import {
   passwordRestorePageRoute,
   // @ts-ignore
   processingAgreementPageRoute,
-  // @ts-ignore 
+  // @ts-ignore
   loginCallBackPageRoute,
 } from '@/views/authorization';
 

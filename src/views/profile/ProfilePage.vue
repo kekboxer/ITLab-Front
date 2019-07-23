@@ -245,8 +245,11 @@ export default class ProfilePage extends Vue {
   public async mounted() {
     this.isCurrentUser = this.$route.params.id == null;
     let userId = '';
-    if (this.isCurrentUser) userId = (await this.$userManager.getUserId()) || '';
-    else userId = this.$route.params.id;
+    if (this.isCurrentUser) {
+      userId = (await this.$userManager.getUserId()) || '';
+    } else {
+      userId = this.$route.params.id;
+    }
 
     Promise.all([
       this.$store.dispatch(USERS_FETCH_ONE, userId),

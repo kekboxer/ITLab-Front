@@ -44,7 +44,7 @@ export default (userManager: UserManager): Router => {
       request.headers.Authorization = `Bearer ${accessToken}`;
       return request;
     }
-  )
+  );
 
   axios.interceptors.response.use(
     (response) => {
