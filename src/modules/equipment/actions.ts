@@ -27,7 +27,6 @@ import {
   EQUIPMENT_TYPES_SET_ONE,
   EQUIPMENT_TYPES_REMOVE_ONE
 } from './types';
-import { IUser } from '@/modules/users';
 
 export const actions: ActionTree<IEquipmentState, RootState> = {
   [EQUIPMENT_SEARCH]: ({ }, match: string = '') => {
@@ -88,10 +87,8 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
     });
   },
 
-  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, user: string) => {
+  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, userId: string) => {
     return new Promise((resolve, reject) => {
-      const userId = user;
-
       axios
         .get(`equipment/user/${userId}`)
         .then((response) => getResponseData<IEquipment>(response))

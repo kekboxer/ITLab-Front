@@ -1,10 +1,8 @@
 import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
-import userManager from '@/UserManager';
 
 import {
   IProfileState,
-  PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET,
   PROFILE_HAS_ROLE,
   PROFILE_ROLES_GET
@@ -12,9 +10,6 @@ import {
 import { UserRoleName } from '../users';
 
 export const getters: GetterTree<IProfileState, RootState> = {
-  [PROFILE_AUTHORIZED]: (state) => {
-    return userManager.isAuthorized;
-  },
 
   [PROFILE_SETTINGS_THEME_GET]: (state) => {
     return state.settings.theme;

@@ -73,7 +73,6 @@ export default class CUserRolesModal extends Vue {
     deep: true
   })
   public onUserChanged(user: IUser) {
-    console.log(user);
     Promise.all([
       this.$store.dispatch(USER_ROLES_FETCH),
       this.$store.dispatch(USER_ROLES_FETCH, this.user)

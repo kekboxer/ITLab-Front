@@ -27,20 +27,12 @@ export const PROFILE_SETTINGS_THEME_SET = 'PROFILE_SETTINGS_THEME_SET';
 
 // getters
 export const PROFILE_GET = 'PROFILE_GET';
-export const PROFILE_AUTHORIZED = 'PROFILE_AUTHORIZED';
 export const PROFILE_SETTINGS_THEME_GET = 'PROFILE_SETTINGS_THEME_GET';
 export const PROFILE_HAS_ROLE = 'PROFILE_HAS_ROLE';
 export const PROFILE_ROLES_GET = 'PROFILE_ROLES_GET';
 
 // AuthorizationData //
 //////////////////////
-
-export class AuthorizationDataDefault {
-  public username: string = '';
-  public password: string = '';
-}
-
-export interface IAuthorizationData extends AuthorizationDataDefault { }
 
 export interface LoginEvent {
   userId: string;

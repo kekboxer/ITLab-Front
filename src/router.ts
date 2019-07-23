@@ -37,8 +37,7 @@ axios.interceptors.request.use(
   async (request) => {
     const accessToken = await userManager.accessToken();
     if (accessToken == null) {
-      // TODO: exit application (?)
-      return Promise.reject();
+      router.push('/login');
     }
     request.headers['Authorization'] = `Bearer ${accessToken}`;
     return request;
@@ -112,7 +111,6 @@ router.beforeEach(async (to, from, next) => {
       next();
     }
     else {
-      // TODO: exit application (?)
       next("/login");
     }
   } else {

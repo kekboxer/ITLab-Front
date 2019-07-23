@@ -45,8 +45,6 @@ import { email, required } from 'vuelidate/lib/validators';
 import userManager from "@/UserManager";
 
 import {
-  IAuthorizationData,
-  AuthorizationDataDefault,
   IPasswordRequestData,
   PasswordRequestDataDefault,
   PROFILE_LOGIN,
@@ -69,7 +67,6 @@ export default class LoginPage extends Vue {
 
   public formState: FormState = FormState.Default;
   public forgotPassword: boolean = false;
-  public authorizationData: IAuthorizationData = new AuthorizationDataDefault();
   public passwordRestoreRequest: IPasswordRequestData = new PasswordRequestDataDefault();
 
   // Component methods //
@@ -78,7 +75,6 @@ export default class LoginPage extends Vue {
   public mounted() {
     this.formState = FormState.Default;
     this.forgotPassword = false;
-    this.authorizationData = new AuthorizationDataDefault();
     this.passwordRestoreRequest = new PasswordRequestDataDefault();
   }
 

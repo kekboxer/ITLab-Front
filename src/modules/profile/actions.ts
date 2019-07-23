@@ -10,14 +10,12 @@ import {
 
 import {
   IProfileState,
-  IAuthorizationData,
   LoginEvent,
   IRegistrationData,
   IPasswordChangeData,
   IPasswordRestoreData,
   IUserSession,
   PROFILE_FILL,
-  PROFILE_LOGIN,
   PROFILE_LOGOUT,
   PROFILE_CREATE,
   PROFILE_WISH,
@@ -38,8 +36,6 @@ import { IUser, UserRoleName } from '@/modules/users';
 import { IEventPlace, IEventRole } from '@/modules/events';
 import userManager from '@/UserManager';
 
-import { isBuffer } from 'util';
-
 export const actions: ActionTree<IProfileState, RootState> = {
   [PROFILE_FILL]: ({ commit }, loginResponse: LoginEvent) => {
     return new Promise((resolve, reject) => {
@@ -49,7 +45,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_LOGOUT]: ({ commit }) => {
+  [PROFILE_LOGOUT]: ({ }) => {
     return userManager.signout();
   },
 

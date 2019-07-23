@@ -30,10 +30,6 @@ class UserManager {
       return null;
     return user.access_token;
   }
-
-  public get isAuthorized(): boolean {
-    return true;
-  }
 }
 
 const oidcManager = new Oidc.UserManager({

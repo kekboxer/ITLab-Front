@@ -25,8 +25,7 @@ import CSidebar from '@/components/layout/Sidebar.vue';
 import userManager from '@/UserManager';
 
 import {
-  PROFILE_SETTINGS_THEME_GET,
-  PROFILE_AUTHORIZED,
+  PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
 
 @Component({

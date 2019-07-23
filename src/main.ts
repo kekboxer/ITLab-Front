@@ -57,15 +57,6 @@ import oidcManager from '@/UserManager';
 import App from './App.vue';
 
 Vue.prototype.$g = globals;
-
-// Initialize OIDC
-
-import { PROFILE_SET } from '@/modules/profile';
-
-
-  // TODO: move this to vuex action:
-  //       - get roles
-  //       - get profile info
   
  new Vue({
     store,
