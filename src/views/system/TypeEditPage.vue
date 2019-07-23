@@ -2,19 +2,22 @@
 <template>
   <div class="type-edit-page">
     <page-content :loading="loadingInProcess">
-      <template slot="header">
-        Типы
-      </template>
+      <template slot="header">Типы</template>
 
       <b-tabs>
         <b-tab title="События" active>
-          <br>
+          <br />
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
-              <b-button variant="success" class="w-100" @click="showEventTypeModal()" v-if="canEditEventType">Добавить</b-button>
+              <b-button
+                variant="success"
+                class="w-100"
+                @click="showEventTypeModal()"
+                v-if="canEditEventType"
+              >Добавить</b-button>
             </b-col>
           </b-row>
-          <br>
+          <br />
           <b-row>
             <b-col>
               <b-card v-for="eventType in eventTypes" :key="eventType.id" class="mb-1">
@@ -24,15 +27,30 @@
                       <b-col cols="12" md="6">
                         <b>{{ eventType.title }}</b>
                       </b-col>
-                      <b-col cols="12" md="6">
-                        {{ eventType.description }}
-                      </b-col>
+                      <b-col cols="12" md="6">{{ eventType.description }}</b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start" v-if="canEditEventType">
-                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEventTypeModal(eventType)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventType(eventType)">
-                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-auto d-flex align-content-between align-items-start"
+                    v-if="canEditEventType"
+                  >
+                    <b-button
+                      variant="warning"
+                      class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+                      @click="showEventTypeModal(eventType)"
+                    >Изменить</b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                      @click="onRemoveEventType(eventType)"
+                    >
+                      <icon
+                        name="times"
+                        class="d-none d-md-inline"
+                        style="position: relative; top: -2px;"
+                      ></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
                   </b-col>
@@ -42,13 +60,13 @@
           </b-row>
         </b-tab>
         <b-tab title="Роли">
-          <br>
+          <br />
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
               <b-button variant="success" class="w-100" @click="showEventRoleModal()">Добавить</b-button>
             </b-col>
           </b-row>
-          <br>
+          <br />
           <b-row>
             <b-col>
               <b-card v-for="eventRole in eventRoles" :key="eventRole.id" class="mb-1">
@@ -58,15 +76,31 @@
                       <b-col cols="12" md="6">
                         <b>{{ eventRole.title }}</b>
                       </b-col>
-                      <b-col cols="12" md="6">
-                        {{ eventRole.description }}
-                      </b-col>
+                      <b-col cols="12" md="6">{{ eventRole.description }}</b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                    <b-button variant="warning" class="btn-sm w-100 order-3 order-md-2" v-bind:class="{'mr-md-1': canDeleteEventRole }" @click="showEventRoleModal(eventRole)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEventRole(eventRole)" v-if="canDeleteEventRole">
-                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-auto d-flex align-content-between align-items-start"
+                  >
+                    <b-button
+                      variant="warning"
+                      class="btn-sm w-100 order-3 order-md-2"
+                      v-bind:class="{'mr-md-1': canDeleteEventRole }"
+                      @click="showEventRoleModal(eventRole)"
+                    >Изменить</b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                      @click="onRemoveEventRole(eventRole)"
+                      v-if="canDeleteEventRole"
+                    >
+                      <icon
+                        name="times"
+                        class="d-none d-md-inline"
+                        style="position: relative; top: -2px;"
+                      ></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
                   </b-col>
@@ -76,13 +110,18 @@
           </b-row>
         </b-tab>
         <b-tab title="Оборудование">
-          <br>
+          <br />
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
-              <b-button variant="success" class="w-100" @click="showEquipmentTypeModal()" v-if="canEditEquipmentType">Добавить</b-button>
+              <b-button
+                variant="success"
+                class="w-100"
+                @click="showEquipmentTypeModal()"
+                v-if="canEditEquipmentType"
+              >Добавить</b-button>
             </b-col>
           </b-row>
-          <br>
+          <br />
           <b-row>
             <b-col>
               <b-card v-for="equipmentType in equipmentTypes" :key="equipmentType.id" class="mb-1">
@@ -92,15 +131,30 @@
                       <b-col cols="12" md="6">
                         <b>{{ equipmentType.title }}</b>
                       </b-col>
-                      <b-col cols="12" md="6">
-                        {{ equipmentType.description }}
-                      </b-col>
+                      <b-col cols="12" md="6">{{ equipmentType.description }}</b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start" v-if="canEditEquipmentType">
-                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showEquipmentTypeModal(equipmentType)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEquipmentType(equipmentType)">
-                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-auto d-flex align-content-between align-items-start"
+                    v-if="canEditEquipmentType"
+                  >
+                    <b-button
+                      variant="warning"
+                      class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+                      @click="showEquipmentTypeModal(equipmentType)"
+                    >Изменить</b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                      @click="onRemoveEquipmentType(equipmentType)"
+                    >
+                      <icon
+                        name="times"
+                        class="d-none d-md-inline"
+                        style="position: relative; top: -2px;"
+                      ></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
                   </b-col>
@@ -111,31 +165,54 @@
         </b-tab>
 
         <b-tab title="Параметры пользователя">
-          <br>
+          <br />
           <b-row>
             <b-col cols="12" sm="auto" class="ml-auto">
-              <b-button variant="success" class="w-100" @click="showUserPropertyTypeModal()" v-if="canEditEquipmentType">Добавить</b-button>
+              <b-button
+                variant="success"
+                class="w-100"
+                @click="showUserPropertyTypeModal()"
+                v-if="canEditEquipmentType"
+              >Добавить</b-button>
             </b-col>
           </b-row>
-          <br>
+          <br />
           <b-row>
             <b-col>
-              <b-card v-for="userPropertyType in userPropertyTypes" :key="userPropertyType.id" class="mb-1">
+              <b-card
+                v-for="userPropertyType in userPropertyTypes"
+                :key="userPropertyType.id"
+                class="mb-1"
+              >
                 <b-row>
                   <b-col>
                     <b-row style="line-height: 31px">
                       <b-col cols="12" md="6">
                         <b>{{ userPropertyType.name }}</b>
                       </b-col>
-                      <b-col cols="12" md="6">
-                        {{ userPropertyType.description }}
-                      </b-col>
+                      <b-col cols="12" md="6">{{ userPropertyType.description }}</b-col>
                     </b-row>
                   </b-col>
-                  <b-col cols="12" md="auto" class="ml-md-auto d-flex align-content-between align-items-start">
-                    <b-button variant="warning" class="btn-sm w-100 mr-md-1 order-3 order-md-2" @click="showUserPropertyTypeModal(userPropertyType)">Изменить</b-button>
-                    <b-button variant="outline-danger" class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3" @click="onRemoveEquipmentType(equipmentType)">
-                      <icon name="times" class="d-none d-md-inline" style="position: relative; top: -2px;"></icon>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-auto d-flex align-content-between align-items-start"
+                  >
+                    <b-button
+                      variant="warning"
+                      class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+                      @click="showUserPropertyTypeModal(userPropertyType)"
+                    >Изменить</b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                      @click="onRemoveEquipmentType(equipmentType)"
+                    >
+                      <icon
+                        name="times"
+                        class="d-none d-md-inline"
+                        style="position: relative; top: -2px;"
+                      ></icon>
                       <span class="d-inline d-md-none">Удалить</span>
                     </b-button>
                   </b-col>
@@ -144,14 +221,29 @@
             </b-col>
           </b-row>
         </b-tab>
-
       </b-tabs>
     </page-content>
 
-    <event-type-modal v-model="eventTypeModalVisible" :data="eventTypeModalData" :onSubmit="onSubmitEventTypeModal" />
-    <event-role-modal v-model="eventRoleModalVisible" :data="eventRoleModalData" :onSubmit="onSubmitEventRoleModal" />
-    <equipment-type-modal v-model="equipmentTypeModalVisible" :data="equipmentTypeModalData" :onSubmit="onSubmitEquipmentTypeModal" />
-    <user-property-type-modal v-model="userPropertyTypeModalVisible" :data="userPropertyTypeModalData" :onSubmit="onSubmitUserPropertyTypeModal"/>
+    <event-type-modal
+      v-model="eventTypeModalVisible"
+      :data="eventTypeModalData"
+      :onSubmit="onSubmitEventTypeModal"
+    />
+    <event-role-modal
+      v-model="eventRoleModalVisible"
+      :data="eventRoleModalData"
+      :onSubmit="onSubmitEventRoleModal"
+    />
+    <equipment-type-modal
+      v-model="equipmentTypeModalVisible"
+      :data="equipmentTypeModalData"
+      :onSubmit="onSubmitEquipmentTypeModal"
+    />
+    <user-property-type-modal
+      v-model="userPropertyTypeModalVisible"
+      :data="userPropertyTypeModalData"
+      :onSubmit="onSubmitUserPropertyTypeModal"
+    />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -192,11 +284,11 @@ import {
   EVENT_ROLE_DELETE
 } from '@/modules/events';
 
-import { 
-  IUserPropertyType, 
+import {
+  IUserPropertyType,
   UserPropertyTypeDefault,
   USER_PROPERTY_TYPES_GET_ALL,
-  USER_PROPERTY_TYPES_FETCH_ALL 
+  USER_PROPERTY_TYPES_FETCH_ALL
 } from '../../modules/users';
 
 @Component({
@@ -235,7 +327,7 @@ export default class TypeEditPage extends Vue {
       this.$store.dispatch(EVENT_TYPES_FETCH_ALL),
       this.$store.dispatch(EVENT_ROLES_FETCH_ALL),
       this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL),
-      this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL),
+      this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL)
     ])
       .then((results) => {
         this.loadingInProcess = false;
@@ -318,7 +410,7 @@ export default class TypeEditPage extends Vue {
   // UserPropertyType modal methods //
   ////////////////////////////////
 
-  public showUserPropertyTypeModal(userPropertyType?: IUserPropertyType){
+  public showUserPropertyTypeModal(userPropertyType?: IUserPropertyType) {
     if (userPropertyType) {
       this.userPropertyTypeModalData = Object.assign({}, userPropertyType);
     } else {

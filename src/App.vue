@@ -22,8 +22,6 @@ import { Component, Vue } from 'vue-property-decorator';
 
 import CSidebar from '@/components/layout/Sidebar.vue';
 
-import userManager from '@/UserManager';
-
 import {
   PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
@@ -45,7 +43,7 @@ export default class App extends Vue {
   }
 
   public async mounted() {
-    this.isAuthorized = await userManager.signedin();
+    this.isAuthorized = await this.$userManager.signedIn();
   }
   // Methods //
   ////////////

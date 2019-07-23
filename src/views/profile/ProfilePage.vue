@@ -168,8 +168,6 @@ import 'vue-awesome/icons/copy';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import userManager from '@/UserManager';
-
 import {
   PROFILE_COMMIT,
   PROFILE_ROLES_GET,
@@ -247,7 +245,7 @@ export default class ProfilePage extends Vue {
   public async mounted() {
     this.isCurrentUser = this.$route.params.id == null;
     let userId = '';
-    if (this.isCurrentUser) userId = (await userManager.getUserId()) || '';
+    if (this.isCurrentUser) userId = (await this.$userManager.getUserId()) || '';
     else userId = this.$route.params.id;
 
     Promise.all([

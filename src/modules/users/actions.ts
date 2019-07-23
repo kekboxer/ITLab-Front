@@ -36,7 +36,7 @@ import { resolve } from 'path';
 import { rejects } from 'assert';
 
 export const actions: ActionTree<IUsersState, RootState> = {
-  [USER_INVITE]: ({}, { email }: { email: string }) => {
+  [USER_INVITE]: ({ }, { email }: { email: string }) => {
     return new Promise((resolve, reject) => {
       axios
         .post('user', {
@@ -60,7 +60,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_SEARCH]: (
-    {},
+    { },
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
@@ -108,7 +108,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ASSIGN_EQUIPMENT]: (
-    {},
+    { },
     { equipment, user }: { equipment: IEquipment; user: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
@@ -133,7 +133,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_REMOVE_EQUIPMENT]: (
-    {},
+    { },
     {
       equipment,
       owner
@@ -185,7 +185,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ROLE_ASSIGN]: (
-    {},
+    { },
     { user, role }: { user: IUser | string; role: IUserRole | string }
   ) => {
     return new Promise((resolve, reject) => {
@@ -210,7 +210,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ROLE_DISCHARGE]: (
-    {},
+    { },
     { user, role }: { user: IUser | string; role: IUserRole | string }
   ) => {
     return new Promise((resolve, reject) => {
@@ -239,7 +239,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
       const url = 'account/property/type';
 
       const request =
-      userPropertyType.id === ''
+        userPropertyType.id === ''
           ? axios.post(url, userPropertyType)
           : axios.put(url, userPropertyType);
 
@@ -272,7 +272,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
     });
   },
 
-  [USER_PROPERTIES_FETCH_ALL]:()=>{
+  [USER_PROPERTIES_FETCH_ALL]: () => {
     return new Promise((resolve, reject) => {
       axios
         .get('account/property')
@@ -287,16 +287,16 @@ export const actions: ActionTree<IUsersState, RootState> = {
     });
   },
 
-  [USER_PROPERTY_COMMIT]:({commit}, {
+  [USER_PROPERTY_COMMIT]: ({ commit }, {
     userPropertyValue,
     userPropertyId,
-    }) => {
-    return new Promise((resolve, reject) =>{
+  }) => {
+    return new Promise((resolve, reject) => {
       axios
-       .put('account/property', {value: userPropertyValue, id:userPropertyId})
-       .then((response) => getResponseData<IUserProperty>(response))
-       .then((userProperty) => {
-         resolve(userProperty);
+        .put('account/property', { value: userPropertyValue, id: userPropertyId })
+        .then((response) => getResponseData<IUserProperty>(response))
+        .then((userProperty) => {
+          resolve(userProperty);
         })
         .catch((error) => {
           console.log(USER_PROPERTY_TYPES_SET_ALL, error);
@@ -305,13 +305,13 @@ export const actions: ActionTree<IUsersState, RootState> = {
     });
   },
 
-  [USER_PROPERTY_DELETE]:({},{
+  [USER_PROPERTY_DELETE]: ({ }, {
     userPropertyId
-  })=>{
-    return new Promise((resolve, reject)=>{
+  }) => {
+    return new Promise((resolve, reject) => {
       axios
-        .delete('account/property', {data: {id: userPropertyId}})
-        .then((response)=> {
+        .delete('account/property', { data: { id: userPropertyId } })
+        .then((response) => {
           resolve();
         })
         .catch((error) => {
