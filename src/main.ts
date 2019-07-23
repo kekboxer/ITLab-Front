@@ -51,14 +51,15 @@ Vue.component('vue-markdown', VueMarkdown);
 ///////////////////
 
 import globals from '@/globals';
-import router from '@/router';
 import store from '@/store';
+import router from '@/router';
+import oidcManager from '@/UserManager';
 import App from './App.vue';
 
 Vue.prototype.$g = globals;
-
-new Vue({
-  store,
-  router,
-  render: (h) => h(App)
-}).$mount('#app');
+  
+ new Vue({
+    store,
+    router,
+    render: (h) => h(App)
+  }).$mount('#app');

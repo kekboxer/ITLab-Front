@@ -3,7 +3,6 @@ import { RootState } from '@/store';
 import axios from 'axios';
 
 import {
-  setAxiosAuthHeader,
   getResponseData,
   createResponseCheckHandler,
   createErrorDataHandler
@@ -11,16 +10,13 @@ import {
 
 import {
   IProfileState,
-  IAuthorizationData,
-  ILoginResponse,
+  LoginEvent,
   IRegistrationData,
   IPasswordChangeData,
   IPasswordRestoreData,
   IUserSession,
   PROFILE_FILL,
-  PROFILE_LOGIN,
   PROFILE_LOGOUT,
-  PROFILE_REFRESH_ACCESS,
   PROFILE_CREATE,
   PROFILE_WISH,
   PROFILE_CHANGE_PASSWORD,
@@ -29,70 +25,31 @@ import {
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SET,
-  PROFILE_ACCESS_TOKEN_SET,
-  PROFILE_REFRESH_TOKEN_SET,
   PROFILE_COMMIT,
   IPasswordRequestData,
   PROFILE_ROLES_SET,
   PROFILE_VK_ACCOUNT
 } from './types';
 
-import { IUser } from '@/modules/users';
+import { IUser, UserRoleName } from '@/modules/users';
 
 import { IEventPlace, IEventRole } from '@/modules/events';
-import { isBuffer } from 'util';
+import userManager from '@/UserManager';
 
 export const actions: ActionTree<IProfileState, RootState> = {
-  [PROFILE_FILL]: ({ commit }, loginResponse: ILoginResponse) => {
+  [PROFILE_FILL]: ({ commit }, loginResponse: LoginEvent) => {
     return new Promise((resolve, reject) => {
-      setAxiosAuthHeader(loginResponse.accessToken);
-
-      commit(PROFILE_SET, loginResponse.user.id);
-      commit(PROFILE_ACCESS_TOKEN_SET, loginResponse.accessToken);
-      commit(PROFILE_REFRESH_TOKEN_SET, loginResponse.refreshToken);
+      commit(PROFILE_SET, loginResponse.userId);
       commit(PROFILE_ROLES_SET, loginResponse.roles);
       resolve();
     });
   },
 
-  [PROFILE_LOGIN]: ({ dispatch }, authorizationData: IAuthorizationData) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .post('authentication/login', authorizationData)
-        .then((response) => getResponseData<ILoginResponse>(response))
-        .then((loginResponse) => {
-          dispatch(PROFILE_FILL, loginResponse);
-          resolve();
-        })
-        .catch(createErrorDataHandler(PROFILE_LOGIN, reject));
-    });
+  [PROFILE_LOGOUT]: ({ }) => {
+    return userManager.signout();
   },
 
-  [PROFILE_LOGOUT]: ({ commit }) => {
-    return new Promise((resolve) => {
-      setAxiosAuthHeader(undefined);
-
-      commit(PROFILE_ACCESS_TOKEN_SET, undefined);
-      commit(PROFILE_REFRESH_TOKEN_SET, undefined);
-      resolve();
-    });
-  },
-
-  [PROFILE_REFRESH_ACCESS]: ({ dispatch }, token: string) => {
-    return new Promise((resolve, reject) => {
-      const data: string = `"${token}"`;
-      axios
-        .post('authentication/refresh', data)
-        .then((response) => getResponseData<ILoginResponse>(response))
-        .then((loginResponse) => {
-          dispatch(PROFILE_FILL, loginResponse);
-          resolve();
-        })
-        .catch(createErrorDataHandler(PROFILE_REFRESH_ACCESS, reject));
-    });
-  },
-
-  [PROFILE_CREATE]: ({}, registrationData: IRegistrationData) => {
+  [PROFILE_CREATE]: ({ }, registrationData: IRegistrationData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('account', registrationData)
@@ -102,7 +59,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
   },
 
   [PROFILE_WISH]: (
-    {},
+    { },
     {
       place,
       eventRole
@@ -138,7 +95,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_VK_ACCOUNT]: ({}, user: IUser) => {
+  [PROFILE_VK_ACCOUNT]: ({ }, user: IUser) => {
     return new Promise((resolve, reject) => {
       axios
         .get('account/property/vk')
@@ -153,7 +110,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_CHANGE_PASSWORD]: ({}, data: IPasswordChangeData) => {
+  [PROFILE_CHANGE_PASSWORD]: ({ }, data: IPasswordChangeData) => {
     return new Promise((resolve, reject) => {
       axios
         .put('account/password', {
@@ -165,7 +122,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_REQUEST_PASSWORD]: ({}, data: IPasswordRequestData) => {
+  [PROFILE_REQUEST_PASSWORD]: ({ }, data: IPasswordRequestData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('account/password/requestreset', data)
@@ -174,7 +131,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_RESTORE_PASSWORD]: ({}, data: IPasswordRestoreData) => {
+  [PROFILE_RESTORE_PASSWORD]: ({ }, data: IPasswordRestoreData) => {
     return new Promise((resolve, reject) => {
       axios
         .post('account/password/reset', {
@@ -186,7 +143,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_SESSIONS_FETCH]: ({}) => {
+  [PROFILE_SESSIONS_FETCH]: ({ }) => {
     return new Promise((resolve, reject) => {
       axios
         .get('authentication/refresh')
@@ -196,7 +153,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
     });
   },
 
-  [PROFILE_SESSIONS_DELETE]: ({}, sessions: string[] | IUserSession[]) => {
+  [PROFILE_SESSIONS_DELETE]: ({ }, sessions: string[] | IUserSession[]) => {
     if (sessions.length === 0) {
       return;
     }

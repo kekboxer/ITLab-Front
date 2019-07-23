@@ -18,7 +18,9 @@ import {
   // @ts-ignore
   passwordRestorePageRoute,
   // @ts-ignore
-  processingAgreementPageRoute
+  processingAgreementPageRoute,
+  // @ts-ignore 
+  loginCallBackPageRoute,
 } from '@/views/authorization';
 
 // @ts-ignore
@@ -42,6 +44,7 @@ import { projectsPageRoute } from '@/views/projects';
 // @ts-ignore
 import { profilePageRoute } from '@/views/profile';
 
+
 import {
   // @ts-ignore
   aboutPageRoute,
@@ -59,6 +62,7 @@ export const state: ILayoutState = {
   stuff: [
     aboutPageRoute,
     loginPageRoute,
+    loginCallBackPageRoute,
     registrationPageRoute,
     passwordRestorePageRoute,
     processingAgreementPageRoute,
