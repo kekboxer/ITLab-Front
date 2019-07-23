@@ -51,14 +51,24 @@ Vue.component('vue-markdown', VueMarkdown);
 ///////////////////
 
 import globals from '@/globals';
-import router from '@/router';
 import store from '@/store';
+import router from '@/router';
+import oidcManager from '@/UserManager';
 import App from './App.vue';
 
 Vue.prototype.$g = globals;
 
-new Vue({
-  store,
-  router,
-  render: (h) => h(App)
-}).$mount('#app');
+// Initialize OIDC
+
+import { PROFILE_SET } from '@/modules/profile';
+
+
+  // TODO: move this to vuex action:
+  //       - get roles
+  //       - get profile info
+  
+ new Vue({
+    store,
+    router,
+    render: (h) => h(App)
+  }).$mount('#app');

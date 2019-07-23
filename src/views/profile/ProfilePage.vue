@@ -79,8 +79,6 @@
             </b-form-row>
           </b-form>
 
-          
-
           <h4 v-else>
             {{ profileData.lastName }} {{ profileData.firstName }} {{ profileData.middleName }}
             <br />
@@ -123,7 +121,7 @@
     </page-content>
 
     <user-roles-modal v-model="isRolesModalVisible" :user="profileData" v-if="canEditRoles" />
-    <user-properties-modal v-model="userPropertiesModalVisible" :user="profileData"/>
+    <user-properties-modal v-model="userPropertiesModalVisible" :user="profileData" />
 
     <b-modal v-model="bindVkModalVisible">
       <template slot="modal-title">Привязать VK аккаунт</template>
@@ -170,8 +168,9 @@ import 'vue-awesome/icons/copy';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
+import userManager from '@/UserManager';
+
 import {
-  PROFILE_GET,
   PROFILE_COMMIT,
   PROFILE_ROLES_GET,
   PROFILE_VK_ACCOUNT
@@ -245,11 +244,11 @@ export default class ProfilePage extends Vue {
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.isCurrentUser = this.$route.params.id == null;
-    const userId = this.isCurrentUser
-      ? this.$store.getters[PROFILE_GET]
-      : this.$route.params.id;
+    let userId = '';
+    if (this.isCurrentUser) userId = (await userManager.getUserId()) || '';
+    else userId = this.$route.params.id;
 
     Promise.all([
       this.$store.dispatch(USERS_FETCH_ONE, userId),

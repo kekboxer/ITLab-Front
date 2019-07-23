@@ -88,9 +88,9 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
     });
   },
 
-  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, user: IUser | string) => {
+  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, user: string) => {
     return new Promise((resolve, reject) => {
-      const userId = typeof user === 'string' ? user : user.id;
+      const userId = user;
 
       axios
         .get(`equipment/user/${userId}`)

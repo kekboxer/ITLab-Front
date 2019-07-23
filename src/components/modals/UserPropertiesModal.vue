@@ -4,7 +4,7 @@
     <b-modal v-model="isModalVisible">
       <template slot="modal-title">Параметры пользователя</template>
       <div v-for="userProperty in modalData" :key="userProperty.id">
-        <b-input-group :prepend="userProperty.name" class="mt-3">
+        <b-input-group size="sm" :prepend="userProperty.name" class="mt-3">
           <b-form-input type="text" v-model.trim="userProperty.value"></b-form-input>
           <b-input-group-append>
             <b-button
