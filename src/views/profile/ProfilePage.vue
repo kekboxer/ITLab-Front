@@ -184,6 +184,7 @@ import {
 } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 import { copyToClipboard } from '../../stuff';
+import configuration from '../../stuff/configuration';
 
 enum FormState {
   Default,
@@ -330,7 +331,7 @@ export default class ProfilePage extends Vue {
   }
 
   get vkGroupDialogUrl(): string {
-    return process.env.VUE_APP_VK_GROUP_DIALOG_URL || '';
+    return configuration.VUE_APP_VK_GROUP_DIALOG_URL || '';
   }
 }
 
