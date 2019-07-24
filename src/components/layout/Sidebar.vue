@@ -93,7 +93,6 @@ export default class CSidebar extends Vue {
 
   public async logout() {
     await this.$userManager.signout();
-    this.$router.push({ name: 'LoginPage' });
   }
 
   // Computed data //
