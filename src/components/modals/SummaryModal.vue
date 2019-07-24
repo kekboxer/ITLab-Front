@@ -86,7 +86,7 @@ export default class CSummaryModal extends Vue {
     this.isModalInProcess = true;
 
     let data: any = null;
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       axios
         .post('summary',
           {
@@ -96,8 +96,8 @@ export default class CSummaryModal extends Vue {
             responseType: 'blob'
           }
         )
-        .then((response)=>{
-          if(response && response.status === 200){
+        .then((response) => {
+          if (response && response.status === 200) {
           data = response.data;
           const url = window.URL.createObjectURL(new Blob([data]));
           const link = document.createElement('a');
@@ -108,7 +108,7 @@ export default class CSummaryModal extends Vue {
           this.isModalInProcess = false;
           this.isModalVisible = false;
           resolve();
-          }else{
+          } else {
             this.$notify({
               title: 'Проблемы с сервером, попробуйте позже.',
               duration: 1500,
@@ -118,11 +118,11 @@ export default class CSummaryModal extends Vue {
             this.isModalVisible = false;
           }
         })
-        .catch((error)=>{
+        .catch((error) => {
           console.log(error);
           reject(error);
         });
-    })
+    });
   }
 
   set isModalVisible(value: boolean) {

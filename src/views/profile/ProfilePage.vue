@@ -168,8 +168,6 @@ import 'vue-awesome/icons/copy';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import userManager from '@/UserManager';
-
 import {
   PROFILE_COMMIT,
   PROFILE_ROLES_GET,
@@ -186,6 +184,7 @@ import {
 } from '@/modules/users';
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 import { copyToClipboard } from '../../stuff';
+import configuration from '../../stuff/configuration';
 
 enum FormState {
   Default,
@@ -247,8 +246,11 @@ export default class ProfilePage extends Vue {
   public async mounted() {
     this.isCurrentUser = this.$route.params.id == null;
     let userId = '';
-    if (this.isCurrentUser) userId = (await userManager.getUserId()) || '';
-    else userId = this.$route.params.id;
+    if (this.isCurrentUser) {
+      userId = (await this.$userManager.getUserId()) || '';
+    } else {
+      userId = this.$route.params.id;
+    }
 
     Promise.all([
       this.$store.dispatch(USERS_FETCH_ONE, userId),
@@ -329,7 +331,7 @@ export default class ProfilePage extends Vue {
   }
 
   get vkGroupDialogUrl(): string {
-    return process.env.VUE_APP_VK_GROUP_DIALOG_URL || '';
+    return configuration.VUE_APP_VK_GROUP_DIALOG_URL || '';
   }
 }
 

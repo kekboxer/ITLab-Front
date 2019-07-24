@@ -116,7 +116,8 @@ export default class CEquipmentTypeModal extends Vue {
           duration: 500
         });
         this.onSubmit(equipmentType);
-        this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL), //Fetch all types, because after the change an empty element is created (temporarily?)
+        // Fetch all types, because after the change an empty element is created (temporarily?)
+        this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL),
         this.isModalInProcess = false;
       })
       .catch((error) => {

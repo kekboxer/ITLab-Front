@@ -42,7 +42,6 @@ import { RouteConfig } from 'vue-router';
 
 import { validationMixin } from 'vuelidate';
 import { email, required } from 'vuelidate/lib/validators';
-import userManager from "@/UserManager";
 
 import {
   IPasswordRequestData,
@@ -112,7 +111,7 @@ export default class LoginPage extends Vue {
 
     //     this.formState = FormState.Error;
     //   });
-    await userManager.signin();
+    await this.$userManager.signin();
   }
 
   public onSubmitRestoreForm() {

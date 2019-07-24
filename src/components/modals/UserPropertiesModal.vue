@@ -57,9 +57,9 @@ export default class CUserPropertiesModal extends Vue {
 
   public isModalInProcess: boolean = false;
 
-  private visibilityStuff: boolean = false;
-
   public modalData: any[] = [];
+
+  private visibilityStuff: boolean = false;
 
   // Component methods //
   //////////////////////
@@ -73,7 +73,7 @@ export default class CUserPropertiesModal extends Vue {
     this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL).then((testI) => {
       this.modalData = testI.map((i: any) => {
         if (this.user.properties) {
-          let tmp = this.user.properties.find((userProperty: IUserProperty) => {
+          const tmp = this.user.properties.find((userProperty: IUserProperty) => {
             return userProperty.userPropertyType.id === i.id;
           });
           if (tmp) {
@@ -103,6 +103,10 @@ export default class CUserPropertiesModal extends Vue {
 
   // Computed data //
   //////////////////
+
+  get isModalVisible(): boolean {
+    return this.visibilityStuff;
+  }
 
   public saveUserProperty(userPropertyValue: string, userPropertyId: string) {
     userPropertyValue
@@ -158,10 +162,6 @@ export default class CUserPropertiesModal extends Vue {
           type: 'error'
         });
       });
-  }
-
-  get isModalVisible(): boolean {
-    return this.visibilityStuff;
   }
 
   get userPropertyTypes(): IUserPropertyType[] {
