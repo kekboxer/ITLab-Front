@@ -9,7 +9,6 @@ export const LOCAL_STORAGE_ROLES = 'roles';
 // actions
 export const PROFILE_FILL = 'PROFILE_FILL';
 export const PROFILE_LOGIN = 'PROFILE_REQUEST';
-export const PROFILE_LOGOUT = 'PROFILE_LOGOUT';
 export const PROFILE_CREATE = 'PROFILE_CREATE';
 export const PROFILE_WISH = 'PROFILE_WISH';
 export const PROFILE_COMMIT = 'PROFILE_COMMIT';

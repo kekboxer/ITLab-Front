@@ -120,7 +120,8 @@ export default class CUserPropertyTypeModal extends Vue {
           duration: 500
         });
         this.onSubmit(userPropertyType);
-        this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL), //Fetch all types, because after the change an empty element is created (temporarily?)
+        // Fetch all types, because after the change an empty element is created (temporarily?)
+        this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL),
           (this.isModalInProcess = false);
       })
       .catch((error) => {
