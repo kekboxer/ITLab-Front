@@ -276,15 +276,13 @@ export const actions: ActionTree<IUsersState, RootState> = {
 
   [USER_PROPERTY_TYPE_DELETE]: (
     { commit },
-    userPropertyType: string | IUserPropertyType
+    userPropertyType: IUserPropertyType
   ) => {
     return new Promise((resolve, reject) => {
-      const id =
-        typeof userPropertyType === 'string' ? userPropertyType : userPropertyType.id;
+      const id = userPropertyType.id;
       axios
-        .delete(`property/type/${id}`)
+        .delete(`account/property/type/${id}`)
         .then((response) => {
-
           if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(USER_PROPERTY_TYPES_REMOVE_ONE, id);
             resolve();

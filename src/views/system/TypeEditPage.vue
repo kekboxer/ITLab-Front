@@ -440,12 +440,12 @@ export default class TypeEditPage extends Vue {
     this.userPropertyTypeModalVisible = false;
   }
 
-  public onRemoveUserPropertyType(equipmentType: IEquipmentType) {
+  public onRemoveUserPropertyType(userPropertyType: IUserPropertyType) {
     if (!confirm('Вы действительно хотите удалить тип параметров пользователя?')) {
       return;
     }
 
-    this.$store.dispatch(USER_PROPERTY_TYPE_DELETE, equipmentType);
+    this.$store.dispatch(USER_PROPERTY_TYPE_DELETE, userPropertyType);
   }
 
   // Computed data //
