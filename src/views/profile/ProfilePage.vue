@@ -44,7 +44,7 @@
                 <div
                   v-for="property in profileData.properties"
                   v-bind:key="property.id"
-                >{{property.userPropertyType.name}} : {{property.value}}</div>
+                >{{property.userPropertyType.title}} : {{property.value}}</div>
               </template>
               <template v-else>
                 <h6>Параметры не указаны</h6>
@@ -326,8 +326,8 @@ export default class ProfilePage extends Vue {
     return this.profileFormState === FormState.InProcess;
   }
 
-  get canEditRoles(): boolean {
-    return this.$g.hasRole('CanEditRoles');
+  get canEditRoles() {
+    return this.$userManager.userHasRole('CanEditRoles');
   }
 
   get vkGroupDialogUrl(): string {

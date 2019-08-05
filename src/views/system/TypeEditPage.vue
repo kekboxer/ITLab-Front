@@ -188,7 +188,7 @@
                   <b-col>
                     <b-row style="line-height: 31px">
                       <b-col cols="12" md="6">
-                        <b>{{ userPropertyType.name }}</b>
+                        <b>{{ userPropertyType.title }}</b>
                       </b-col>
                       <b-col cols="12" md="6">{{ userPropertyType.description }}</b-col>
                     </b-row>
@@ -199,14 +199,16 @@
                     class="ml-md-auto d-flex align-content-between align-items-start"
                   >
                     <b-button
+                      v-if="!userPropertyType.isLocked"
                       variant="warning"
                       class="btn-sm w-100 mr-md-1 order-3 order-md-2"
                       @click="showUserPropertyTypeModal(userPropertyType)"
                     >Изменить</b-button>
                     <b-button
+                      v-if="!userPropertyType.isLocked"
                       variant="outline-danger"
                       class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
-                      @click="onRemoveEquipmentType(equipmentType)"
+                      @click="onRemoveUserPropertyType(userPropertyType)"
                     >
                       <icon
                         name="times"
@@ -288,7 +290,8 @@ import {
   IUserPropertyType,
   UserPropertyTypeDefault,
   USER_PROPERTY_TYPES_GET_ALL,
-  USER_PROPERTY_TYPES_FETCH_ALL
+  USER_PROPERTY_TYPES_FETCH_ALL,
+  USER_PROPERTY_TYPE_DELETE
 } from '../../modules/users';
 
 @Component({
@@ -319,10 +322,14 @@ export default class TypeEditPage extends Vue {
   public userPropertyTypeModalVisible: boolean = false;
   public userPropertyTypeModalData: IUserPropertyType = new UserPropertyTypeDefault();
 
+  private canEditEventType: boolean | null = false;
+  private canDeleteEventRole: boolean | null = false;
+  private canEditEquipmentType: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     Promise.all([
       this.$store.dispatch(EVENT_TYPES_FETCH_ALL),
       this.$store.dispatch(EVENT_ROLES_FETCH_ALL),
@@ -333,6 +340,16 @@ export default class TypeEditPage extends Vue {
         this.loadingInProcess = false;
       })
       .catch();
+
+    this.canEditEventType = await this.$userManager.userHasRole(
+      'CanEditEventType'
+    );
+    this.canDeleteEventRole = await this.$userManager.userHasRole(
+      'CanDeleteEventRole'
+    );
+    this.canEditEquipmentType = await this.$userManager.userHasRole(
+      'CanEditEquipmentType'
+    );
   }
 
   // EventType modal methods //
@@ -423,6 +440,14 @@ export default class TypeEditPage extends Vue {
     this.userPropertyTypeModalVisible = false;
   }
 
+  public onRemoveUserPropertyType(userPropertyType: IUserPropertyType) {
+    if (!confirm('Вы действительно хотите удалить тип параметров пользователя?')) {
+      return;
+    }
+
+    this.$store.dispatch(USER_PROPERTY_TYPE_DELETE, userPropertyType);
+  }
+
   // Computed data //
   //////////////////
 
@@ -430,24 +455,12 @@ export default class TypeEditPage extends Vue {
     return this.$store.getters[EVENT_TYPES_GET_ALL];
   }
 
-  get canEditEventType(): boolean {
-    return this.$g.hasRole('CanEditEventType');
-  }
-
   get eventRoles(): IEventRole[] {
     return this.$store.getters[EVENT_ROLES_GET_ALL];
   }
 
-  get canDeleteEventRole(): boolean {
-    return this.$g.hasRole('CanDeleteEventRole');
-  }
-
   get equipmentTypes(): IEquipmentType[] {
     return this.$store.getters[EQUIPMENT_TYPES_GET_ALL];
-  }
-
-  get canEditEquipmentType(): boolean {
-    return this.$g.hasRole('CanEditEquipmentType');
   }
 
   get userPropertyTypes(): IUserPropertyType[] {

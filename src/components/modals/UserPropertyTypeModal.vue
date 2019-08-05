@@ -7,8 +7,8 @@
       <b-form-group label="Название">
         <b-form-input
           type="text"
-          v-model.trim="modalData.name"
-          :state="!$v.modalData.name.$invalid"
+          v-model.trim="modalData.title"
+          :state="!$v.modalData.title.$invalid"
         ></b-form-input>
       </b-form-group>
 
@@ -48,7 +48,7 @@ import {
   mixins: [validationMixin],
   validations: {
     modalData: {
-      name: {
+      title: {
         required,
         minLength: minLength(1)
       }

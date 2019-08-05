@@ -197,8 +197,8 @@ export default class CEventItem extends Vue {
     }
   }
 
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEvent');
+  get canEdit() {
+    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 </script>

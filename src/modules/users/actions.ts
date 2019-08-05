@@ -28,7 +28,9 @@ import {
   USER_PROPERTY_COMMIT,
   USER_PROPERTY_DELETE,
   IUserPropertyType,
-  IUserProperty
+  USER_PROPERTY_TYPES_REMOVE_ONE,
+  IUserProperty,
+  USER_PROPERTY_TYPE_DELETE
 } from './types';
 
 import { IEquipment } from '@/modules/equipment';
@@ -267,6 +269,29 @@ export const actions: ActionTree<IUsersState, RootState> = {
         })
         .catch((error) => {
           console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_TYPE_DELETE]: (
+    { commit },
+    userPropertyType: IUserPropertyType
+  ) => {
+    return new Promise((resolve, reject) => {
+      const id = userPropertyType.id;
+      axios
+        .delete(`account/property/type/${id}`)
+        .then((response) => {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
+            commit(USER_PROPERTY_TYPES_REMOVE_ONE, id);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPE_DELETE, error);
           reject(error);
         });
     });

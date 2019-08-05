@@ -86,10 +86,10 @@ export default (userManager: UserManager): Router => {
       (record) =>
         record.meta.allow == null ||
         (typeof record.meta.allow === 'string' &&
-          store.getters[PROFILE_HAS_ROLE](record.meta.allow)) ||
+          userManager.userHasRole(record.meta.allow)) ||
         (Array.isArray(record.meta.allow) &&
           record.meta.allow.every((role: string) =>
-            store.getters[PROFILE_HAS_ROLE](role)
+          userManager.userHasRole(role)
           ))
     );
 

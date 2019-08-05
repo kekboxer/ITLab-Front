@@ -106,8 +106,8 @@ export default class CEquipmentTypeSelection extends Vue {
   // Computed data //
   //////////////////
 
-  public canEditEquipmentType(): boolean {
-    return this.$g.hasRole('CanEditEquipmentType');
+  public canEditEquipmentType() {
+    return this.$userManager.userHasRole('CanEditEquipmentType');
   }
 }
 </script>

@@ -4,7 +4,7 @@
     <b-modal v-model="isModalVisible">
       <template slot="modal-title">Параметры пользователя</template>
       <div v-for="userProperty in modalData" :key="userProperty.id">
-        <b-input-group size="sm" :prepend="userProperty.name" class="mt-3">
+        <b-input-group size="sm" :prepend="userProperty.title" class="mt-3">
           <b-form-input type="text" v-model.trim="userProperty.value"></b-form-input>
           <b-input-group-append>
             <b-button
@@ -79,13 +79,13 @@ export default class CUserPropertiesModal extends Vue {
           if (tmp) {
             return {
               id: i.id,
-              name: i.name,
+              title: i.title,
               value: tmp.value
             };
           } else {
             return {
               id: i.id,
-              name: i.name,
+              title: i.title,
               value: ''
             };
           }

@@ -91,4 +91,3 @@ axios.get(`${window.location.origin}/config.json`)
       render: (h) => h(App)
     }).$mount('#app');
   });
-
