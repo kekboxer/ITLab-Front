@@ -37,4 +37,20 @@ export class UserManager {
     }
     return user.access_token;
   }
+
+  public async getUserRoles(): Promise<any> {
+    const user = await this.oidcManager.getUser();
+    if (!user) {
+      return null;
+    }
+    return user.profile.role;
+  }
+
+  public async userHasRole(userRoleName: string): Promise<boolean | null> {
+    const user = await this.oidcManager.getUser();
+    if (!user) {
+      return null;
+    }
+    return user.profile.role.includes(userRoleName);
+  }
 }

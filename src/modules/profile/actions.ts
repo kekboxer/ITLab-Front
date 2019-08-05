@@ -15,7 +15,6 @@ import {
   IPasswordChangeData,
   IPasswordRestoreData,
   IUserSession,
-  PROFILE_FILL,
   PROFILE_CREATE,
   PROFILE_WISH,
   PROFILE_CHANGE_PASSWORD,
@@ -35,13 +34,6 @@ import { IUser, UserRoleName } from '@/modules/users';
 import { IEventPlace, IEventRole } from '@/modules/events';
 
 export const actions: ActionTree<IProfileState, RootState> = {
-  [PROFILE_FILL]: ({ commit }, loginResponse: LoginEvent) => {
-    return new Promise((resolve, reject) => {
-      commit(PROFILE_SET, loginResponse.userId);
-      commit(PROFILE_ROLES_SET, loginResponse.roles);
-      resolve();
-    });
-  },
 
   [PROFILE_CREATE]: ({ }, registrationData: IRegistrationData) => {
     return new Promise((resolve, reject) => {

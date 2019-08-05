@@ -13,6 +13,8 @@ export const USER_PROPERTY_TYPES_FETCH_ALL = 'USER_PROPERTY_TYPES_FETCH_ALL';
 export const USER_PROPERTIES_FETCH_ALL = 'USER_PROPERTIES_FETCH_ALL';
 export const USER_PROPERTY_COMMIT = 'USER_PROPERTY_COMMIT';
 export const USER_PROPERTY_DELETE = 'USER_PROPERTY_DELETE';
+export const USER_PROPERTY_TYPE_DELETE = 'USER_PROPERTY_TYPE_DELETE';
+export const USER_PROPERTY_TYPES_REMOVE_ONE = 'USER_PROPERTY_TYPES_REMOVE_ONE';
 
 // setters
 export const USERS_SET_ALL = 'USERS_SET_ALL';
@@ -53,8 +55,10 @@ export interface IUserRole extends UserRoleDefault {}
 
 export class UserPropertyTypeDefault {
   public id: string = '';
-  public name: string = '';
+  public title: string = '';
   public description: string = '';
+  public instancesCount: number = 0;
+  public isLocked: boolean = false;
 }
 
 export interface IUserPropertyType extends UserPropertyTypeDefault {}

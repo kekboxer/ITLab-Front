@@ -1,4 +1,5 @@
 import { MutationTree } from 'vuex';
+import { Vue } from 'vue-property-decorator';
 
 import { setOneElement } from '@/stuff';
 
@@ -11,7 +12,8 @@ import {
   USER_ROLES_SET_ALL,
   USER_PROPERTY_TYPES_SET_ONE,
   USER_PROPERTY_TYPES_SET_ALL,
-  IUserPropertyType
+  IUserPropertyType,
+  USER_PROPERTY_TYPES_REMOVE_ONE
 } from './types';
 
 export const mutations: MutationTree<IUsersState> = {
@@ -71,6 +73,15 @@ export const mutations: MutationTree<IUsersState> = {
       });
     } else {
       state.userRoles = roles;
+    }
+  },
+
+  [USER_PROPERTY_TYPES_REMOVE_ONE]: (state, userPropertyTypeId: string) => {
+    const userPropertyTypeIndex = state.userPropertyTypes.findIndex(
+      (userPropertyType) => userPropertyType.id === userPropertyTypeId
+    );
+    if (userPropertyTypeIndex !== -1) {
+      Vue.delete(state.userPropertyTypes, userPropertyTypeIndex);
     }
   }
 };

@@ -202,8 +202,8 @@ export default class UsersPage extends Vue {
     return this.$store.getters[PROFILE_GET];
   }
 
-  get canInvite(): boolean {
-    return this.$g.hasRole('CanInviteToSystem');
+  get canInvite() {
+    return this.$userManager.userHasRole('CanInviteToSystem');
   }
 }
 

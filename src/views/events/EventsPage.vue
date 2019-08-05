@@ -165,8 +165,8 @@ export default class EventsPage extends Vue {
     }).sort(createEventSortPredicate(false));
   }
 
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEvent');
+  get canEdit() {
+    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 

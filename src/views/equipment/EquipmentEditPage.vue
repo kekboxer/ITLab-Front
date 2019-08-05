@@ -310,12 +310,12 @@ export default class EquipmentEditPage extends Vue {
     return this.equipmentOwnerModalState === State.InProcess;
   }
 
-  get canEditEquipment(): boolean {
-    return this.$g.hasRole('CanEditEquipment');
+  get canEditEquipment() {
+    return this.$userManager.userHasRole('CanEditEquipment');
   }
 
-  get canEditEquipmentOwner(): boolean {
-    return this.$g.hasRole('CanEditEquipmentOwner');
+  get canEditEquipmentOwner() {
+    return this.$userManager.userHasRole('CanEditEquipmentOwner');
   }
 }
 
