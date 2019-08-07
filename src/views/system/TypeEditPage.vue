@@ -172,7 +172,7 @@
                 variant="success"
                 class="w-100"
                 @click="showUserPropertyTypeModal()"
-                v-if="canEditEquipmentType"
+                v-if="canEditUserPropertyTypes"
               >Добавить</b-button>
             </b-col>
           </b-row>
@@ -325,6 +325,7 @@ export default class TypeEditPage extends Vue {
   private canEditEventType: boolean | null = false;
   private canDeleteEventRole: boolean | null = false;
   private canEditEquipmentType: boolean | null = false;
+  private canEditUserPropertyTypes: boolean | null = false;
 
   // Component methods //
   //////////////////////
@@ -349,6 +350,9 @@ export default class TypeEditPage extends Vue {
     );
     this.canEditEquipmentType = await this.$userManager.userHasRole(
       'CanEditEquipmentType'
+    );
+    this.canEditUserPropertyTypes = await this.$userManager.userHasRole(
+      'canEditUserPropertyTypes'
     );
   }
 

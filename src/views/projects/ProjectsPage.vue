@@ -2,20 +2,91 @@
 <template>
   <div class="projects-page">
     <page-content :loading="loadingInProcess">
-      <template slot="header">
-        Проекты
+      <template slot="header">Проекты</template>
+      <template slot="header-button">
+        <b-button variant="success" to="projects/new">Добавить</b-button>
       </template>
 
       <b-row>
-        <b-col v-for="board in boards" :key="board.id" class="mb-3" lg="3" md="4" sm="6" cols="12">
-          <a class="board-tile" :href="board.url" v-bind:style="getStyle(board)">
-            <span class="board-tile-fade"></span>
-            <span class="board-tile-details is-badged">
-              <span :title="board.name" dir="auto" class="board-tile-details-name">{{ board.name }}</span>
-            </span>
-          </a>
+            <b-col>
+              <b-card v-for="project in projects" :key="project.id" class="mb-1">
+                <b-row>
+                  <b-col>
+                    <b-row style="line-height: 31px">
+                      <b-col cols="12" md="6">
+                        <b>{{ project.name }}</b>
+                      </b-col>
+                      <b-col cols="12" md="6" v-for="tag in project.projectTags" :key="tag">{{tag}}</b-col>
+                    </b-row>
+                  </b-col>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-auto d-flex align-content-between align-items-start"
+                  >
+                    <b-button
+                      variant="warning"
+                      class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+
+                      :to="'projects/' + project.id"
+                      
+                    >Изменить</b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                      @click="onRemoveProject(project)"
+                    >
+                      <icon
+                        name="times"
+                        class="d-none d-md-inline"
+                        style="position: relative; top: -2px;"
+                      ></icon>
+                      <span class="d-inline d-md-none">Удалить</span>
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+          </b-row>
+
+
+      <!-- <b-row>
+        <b-col>
+          <b-card v-for="project in projects" :key="project.id" class="mb-1">
+            <b-col>
+              <b-row>
+                <b-col cols="12" md="6">
+                  <b>{{ project.name }}</b>
+                  <span v-for="tag in project.projectTags" :key="tag">{{tag}}</span>
+                </b-col>
+              </b-row>
+            </b-col>
+            <b-col
+              cols="12"
+              md="auto"
+              class="ml-md-auto d-flex align-content-between align-items-start"
+            >
+              <b-button
+                variant="warning"
+                class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+                @click="showEventTypeModal(eventType)"
+              >Изменить</b-button>
+              <b-button
+                variant="outline-danger"
+                class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
+                @click="onRemoveEventType(eventType)"
+              >
+                <icon
+                  name="times"
+                  class="d-none d-md-inline"
+                  style="position: relative; top: -2px;"
+                ></icon>
+                <span class="d-inline d-md-none">Удалить</span>
+              </b-button>
+            </b-col>
+          </b-card>
         </b-col>
-      </b-row>
+      </b-row> -->
     </page-content>
   </div>
 </template>
@@ -27,11 +98,15 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
+import Icon from 'vue-awesome/components/Icon';
+
+import { IProject, PROJECTS_FETCH_ALL, PROJECTS_GET_ALL, PROJECT_DELETE } from '@/modules/projects';
 
 import CPageContent from '@/components/layout/PageContent.vue';
 
 @Component({
   components: {
+    Icon,
     'page-content': CPageContent
   }
 })
@@ -44,7 +119,7 @@ export default class ProjectsPage extends Vue {
   ///////////////
 
   public loadingInProcess: boolean = true;
-  public boards: any[] = [];
+  public projects: any[] = [];
 
   // Component methods //
   //////////////////////
@@ -52,34 +127,19 @@ export default class ProjectsPage extends Vue {
   public mounted() {
     this.loadingInProcess = true;
 
-    const ai = axios.create({
-      baseURL: 'https://api.trello.com/1/'
+    this.$store.dispatch(PROJECTS_FETCH_ALL).then((projects) => {
+      this.projects = projects;
+      this.loadingInProcess = false;
     });
-
-    ai.get(
-      `organizations/mtuitlab/boards?key=${this.APP_ID}&token=${this.APP_TOKEN}`
-    )
-      .then((result) => {
-        this.boards = result && result.data;
-
-        this.loadingInProcess = false;
-      })
-      .catch((err) => {
-        console.log('ERROR', err);
-      });
   }
 
-  // Computed data //
-  //////////////////
+  public onRemoveProject(project: IProject) {
+      if (!confirm('Вы действительно хотите удалить проект?')) {
+        return;
+      }
 
-  public getStyle(board: any) {
-    return {
-      backgroundColor: board.prefs.backgroundColor,
-      backgroundImage: board.prefs.backgroundImageScaled
-        ? `url(${board.prefs.backgroundImageScaled[1].url})`
-        : undefined
-    };
-  }
+      this.$store.dispatch(PROJECT_DELETE, project);
+    }
 }
 
 export const projectsPageRoute: RouteConfig = {
