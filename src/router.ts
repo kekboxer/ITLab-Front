@@ -4,9 +4,6 @@ import axios from 'axios';
 
 import store from '@/store';
 
-import {
-  PROFILE_HAS_ROLE,
-} from '@/modules/profile';
 import { LAYOUT_PAGES_GET } from '@/modules/layout';
 import { UserManager } from './UserManager';
 
@@ -61,7 +58,12 @@ export default (userManager: UserManager): Router => {
         return;
       }
       if (error.response.status === 401) {
-        // TODO: request roles
+        userManager.signInSilent()
+        .then(()=>{
+          const originalRequest = error.response.config;
+          originalRequest.baseURL = '';
+          axios(originalRequest);
+        });
       } else if (Math.floor(error.response.status / 100) === 5) {
         const originalRequest = error.response.config;
         setTimeout(() => {

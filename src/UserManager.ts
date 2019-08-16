@@ -21,6 +21,10 @@ export class UserManager {
     return this.oidcManager.signinRedirect();
   }
 
+  public signInSilent(): Promise<any> {
+    return this.oidcManager.signinSilent();
+  }
+
   public signout(): Promise<any> {
     return this.oidcManager.signoutRedirect();
   }
