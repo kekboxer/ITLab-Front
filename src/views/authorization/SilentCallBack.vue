@@ -14,12 +14,9 @@ import Oidc from 'oidc-client';
 @Component
 export default class SilentCallBack extends Vue {
   public async mounted() {
-    const manager = new Oidc.UserManager({ response_mode: 'query' });
+    const manager = new Oidc.UserManager({});
     manager
       .signinSilentCallback()
-      .then(() => {
-        console.log('Silent login');
-      })
       .catch((e) => {
         console.error(e);
       });

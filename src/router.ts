@@ -59,11 +59,11 @@ export default (userManager: UserManager): Router => {
       }
       if (error.response.status === 401) {
         userManager.signInSilent()
-        .then(()=>{
-          const originalRequest = error.response.config;
-          originalRequest.baseURL = '';
-          axios(originalRequest);
-        });
+          .then(() => {
+            const originalRequest = error.response.config;
+            originalRequest.baseURL = '';
+            axios(originalRequest);
+          });
       } else if (Math.floor(error.response.status / 100) === 5) {
         const originalRequest = error.response.config;
         setTimeout(() => {
@@ -91,7 +91,7 @@ export default (userManager: UserManager): Router => {
           userManager.userHasRole(record.meta.allow)) ||
         (Array.isArray(record.meta.allow) &&
           record.meta.allow.every((role: string) =>
-          userManager.userHasRole(role)
+            userManager.userHasRole(role)
           ))
     );
 
