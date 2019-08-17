@@ -81,7 +81,9 @@ axios.get(`${window.location.origin}/config.json`)
       redirect_uri: configuration.VUE_APP_REDIRECT_URI,
       response_type: configuration.VUE_APP_RESPONSE_TYPE,
       scope: configuration.VUE_APP_SCOPE,
-      post_logout_redirect_uri: configuration.VUE_APP_POST_LOGOUT_REDIRECT_URI
+      post_logout_redirect_uri: configuration.VUE_APP_POST_LOGOUT_REDIRECT_URI,
+      automaticSilentRenew: true,
+      silent_redirect_uri: configuration.VUE_APP_SILENT_REDIRECT_URI
     }));
 
     Vue.prototype.$userManager = userManager;

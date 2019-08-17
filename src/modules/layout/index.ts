@@ -21,6 +21,8 @@ import {
   processingAgreementPageRoute,
   // @ts-ignore
   loginCallBackPageRoute,
+  // @ts-ignore
+  silentCallBackPageRoute,
 } from '@/views/authorization';
 
 // @ts-ignore
@@ -39,7 +41,7 @@ import {
 import { equipmentPageRoute, equipmentEditPageRoute } from '@/views/equipment';
 
 // @ts-ignore
-import { projectsPageRoute } from '@/views/projects';
+import { projectsPageRoute, projectEditPageRoute } from '@/views/projects';
 
 // @ts-ignore
 import { profilePageRoute } from '@/views/profile';
@@ -63,6 +65,7 @@ export const state: ILayoutState = {
     aboutPageRoute,
     loginPageRoute,
     loginCallBackPageRoute,
+    silentCallBackPageRoute,
     registrationPageRoute,
     passwordRestorePageRoute,
     processingAgreementPageRoute,
@@ -101,7 +104,7 @@ export const state: ILayoutState = {
           name: 'projects',
           title: 'Проекты',
           homeURL: '/projects',
-          pages: [projectsPageRoute]
+          pages: [projectsPageRoute, projectEditPageRoute]
         }
       ]
     },
