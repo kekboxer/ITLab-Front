@@ -8,47 +8,35 @@
       </template>
 
       <b-row>
-            <b-col>
-              <b-card v-for="project in projects" :key="project.id" class="mb-1">
-                <b-row>
-                  <b-col>
-                    <b-row style="line-height: 31px">
-                      <b-col cols="12" md="6">
-                        <b>{{ project.name }}</b>
-                      </b-col>
-                      <b-col cols="12" md="6" v-for="tag in project.projectTags" :key="tag">{{tag}}</b-col>
-                    </b-row>
-                  </b-col>
-                  <b-col
-                    cols="12"
-                    md="auto"
-                    class="ml-md-auto d-flex align-content-between align-items-start"
-                  >
-                    <b-button
-                      variant="warning"
-                      class="btn-sm w-100 mr-md-1 order-3 order-md-2"
-
-                      :to="'projects/' + project.id"
-                      
-                    >Изменить</b-button>
-                    <b-button
-                      variant="outline-danger"
-                      class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
-                      @click="onRemoveProject(project)"
-                    >
-                      <icon
-                        name="times"
-                        class="d-none d-md-inline"
-                        style="position: relative; top: -2px;"
-                      ></icon>
-                      <span class="d-inline d-md-none">Удалить</span>
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-          </b-row>
-
+        <b-col
+          v-for="project in projects"
+          :key="project.id"
+          class="mb-3"
+          lg="3"
+          md="4"
+          sm="6"
+          cols="12"
+        >
+          <b-card>
+            <span><b>{{project.name}}</b></span>
+            <br />
+            <span><b>{{project.shortDescription}}</b></span>
+            <br />
+            <div v-for="tag in project.projectTags" :key="tag.id" style="display: inline-block">
+              <span class="tag-color" :style="{ background: tag.color}"></span>
+              <span>
+                {{tag.value}}
+              </span>
+              &nbsp;
+            </div>
+            <b-button
+              variant="secondary"
+              class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+              :to="'projects/' + project.id"
+            >Подробнее</b-button>
+          </b-card>
+        </b-col>
+      </b-row>
 
       <!-- <b-row>
         <b-col>
@@ -86,7 +74,7 @@
             </b-col>
           </b-card>
         </b-col>
-      </b-row> -->
+      </b-row>-->
     </page-content>
   </div>
 </template>
@@ -100,7 +88,12 @@ import { RouteConfig } from 'vue-router';
 import axios from 'axios';
 import Icon from 'vue-awesome/components/Icon';
 
-import { IProject, PROJECTS_FETCH_ALL, PROJECTS_GET_ALL, PROJECT_DELETE } from '@/modules/projects';
+import {
+  IProject,
+  PROJECTS_FETCH_ALL,
+  PROJECTS_GET_ALL,
+  PROJECT_DELETE
+} from '@/modules/projects';
 
 import CPageContent from '@/components/layout/PageContent.vue';
 
@@ -132,14 +125,6 @@ export default class ProjectsPage extends Vue {
       this.loadingInProcess = false;
     });
   }
-
-  public onRemoveProject(project: IProject) {
-      if (!confirm('Вы действительно хотите удалить проект?')) {
-        return;
-      }
-
-      this.$store.dispatch(PROJECT_DELETE, project);
-    }
 }
 
 export const projectsPageRoute: RouteConfig = {

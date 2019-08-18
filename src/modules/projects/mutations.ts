@@ -7,7 +7,8 @@ import {
   IProjectState,
   IProject,
   PROJECTS_SET_ALL,
-  PROJECT_REMOVE_ONE
+  PROJECT_REMOVE_ONE,
+  PROJECT_SET_ONE
 } from './types';
 
 export const mutations: MutationTree<IProjectState> = {
@@ -27,6 +28,10 @@ export const mutations: MutationTree<IProjectState> = {
     }
   },
 
+  [PROJECT_SET_ONE]: (state, project: IProject) => {
+    setOneElement(state.projects, project);
+  },
+
   [PROJECT_REMOVE_ONE]: (state, projectId: string) => {
     const projectIndex = state.projects.findIndex(
       (project) => project.id === projectId
@@ -34,5 +39,5 @@ export const mutations: MutationTree<IProjectState> = {
     if (projectIndex !== -1) {
       Vue.delete(state.projects, projectIndex);
     }
-  },
+  }
 };

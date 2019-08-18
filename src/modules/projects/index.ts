@@ -9,7 +9,8 @@ import { IProjectState } from './types';
 export * from './types';
 
 export const state: IProjectState = {
-  projects: []
+  projects: [],
+  tags: []
 };
 
 export const projects: Module<IProjectState, RootState> = {
