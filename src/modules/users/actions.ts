@@ -243,7 +243,10 @@ export const actions: ActionTree<IUsersState, RootState> = {
       const request =
         userPropertyType.id === ''
           ? axios.post(url, userPropertyType)
-          : axios.put(url, userPropertyType);
+          : axios.put(`account/property/type/${userPropertyType.id}`, {
+            title: userPropertyType.title,
+            description: userPropertyType.description
+          });
 
       request
         .then((response) => getResponseData<IUserPropertyType>(response))
