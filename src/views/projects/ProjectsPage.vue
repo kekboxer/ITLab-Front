@@ -4,39 +4,46 @@
     <page-content :loading="loadingInProcess">
       <template slot="header">Проекты</template>
       <template slot="header-button">
-        <b-button variant="success" to="projects/new">Добавить</b-button>
+        <b-button v-if="canEditUserPropertyTypes" variant="success" to="projects/new">Добавить</b-button>
       </template>
 
-      <b-row>
-        <b-col
-          v-for="project in projects"
-          :key="project.id"
-          class="mb-3"
-          lg="3"
-          md="4"
-          sm="6"
-          cols="12"
-        >
-          <b-card>
-            <span><b>{{project.name}}</b></span>
-            <br />
-            <span><b>{{project.shortDescription}}</b></span>
-            <br />
-            <div v-for="tag in project.projectTags" :key="tag.id" style="display: inline-block">
-              <span class="tag-color" :style="{ background: tag.color}"></span>
+      <template v-if="canEditUserPropertyTypes">
+        <b-row>
+          <b-col
+            v-for="project in projects"
+            :key="project.id"
+            class="mb-3"
+            lg="3"
+            md="4"
+            sm="6"
+            cols="12"
+          >
+            <b-card>
               <span>
-                {{tag.value}}
+                <b>{{project.name}}</b>
               </span>
-              &nbsp;
-            </div>
-            <b-button
-              variant="secondary"
-              class="btn-sm w-100 mr-md-1 order-3 order-md-2"
-              :to="'projects/' + project.id"
-            >Подробнее</b-button>
-          </b-card>
-        </b-col>
-      </b-row>
+              <br />
+              <span>
+                <b>{{project.shortDescription}}</b>
+              </span>
+              <br />
+              <div v-for="tag in project.projectTags" :key="tag.id" style="display: inline-block">
+                <span class="tag-color" :style="{ background: tag.color}"></span>
+                <span>{{tag.value}}</span>
+                &nbsp;
+              </div>
+              <b-button
+                variant="secondary"
+                class="btn-sm w-100 mr-md-1 order-3 order-md-2"
+                :to="'projects/' + project.id"
+              >Подробнее</b-button>
+            </b-card>
+          </b-col>
+        </b-row>
+      </template>
+      <template v-else>
+        <h3>Раздел находится в разработке</h3>
+      </template>
 
       <!-- <b-row>
         <b-col>
@@ -114,16 +121,22 @@ export default class ProjectsPage extends Vue {
   public loadingInProcess: boolean = true;
   public projects: any[] = [];
 
+  private canEditUserPropertyTypes: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.loadingInProcess = true;
 
     this.$store.dispatch(PROJECTS_FETCH_ALL).then((projects) => {
       this.projects = projects;
       this.loadingInProcess = false;
     });
+
+    this.canEditUserPropertyTypes = await this.$userManager.userHasRole(
+      'CanEditUserPropertyTypes'
+    );
   }
 }
 

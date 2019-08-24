@@ -38,6 +38,13 @@ import VueNotifications from 'vue-notification';
 
 Vue.use(VueNotifications);
 
+// DateRangePicker
+
+import VMdDateRangePicker from 'v-md-date-range-picker';
+// import 'v-md-date-range-picker/dist/v-md-date-range-picker.css';
+
+Vue.use(VMdDateRangePicker);
+
 // VueMarkdown //
 ////////////////
 

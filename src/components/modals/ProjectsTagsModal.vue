@@ -5,8 +5,17 @@
       <template slot="modal-title">Теги</template>
 
       <template>
-        <div v-for="state in tagsState" :key="state.tag.id">
-          <b-form-checkbox class="noselect" v-model="state.checked">
+        <div
+          v-for="(state, stateIndex) in tagsState"
+          :key="state.tag.id"
+          style="display: flex; justify-content: space-between"
+        >
+          <b-form-checkbox
+            class="noselect"
+            style="display: inline-block"
+            v-model="state.checked"
+            @click.native.prevent="onChangeTagState(stateIndex)"
+          >
             <b-row class="justify-content-between" style="margin:5px">
               <span>
                 <span class="tag-color" :style="{ background: state.tag.color}"></span>
@@ -14,16 +23,16 @@
                   <b>{{state.tag.value}}</b>
                 </span>
               </span>
-              <b-button-group>
-                <b-button variant="outline-secondary" size="sm">
-                  <icon name="edit" size="2px"></icon>
-                </b-button>
-                <b-button variant="outline-danger" size="sm" @click="onDeleteTag(state)">
-                  <icon name="times" size="2px"></icon>
-                </b-button>
-              </b-button-group>
             </b-row>
           </b-form-checkbox>
+          <b-button-group>
+            <b-button variant="outline-secondary" size="sm">
+              <icon name="edit" size="2px"></icon>
+            </b-button>
+            <b-button variant="outline-danger" size="sm" @click="onDeleteTag(state)">
+              <icon name="times" size="2px"></icon>
+            </b-button>
+          </b-button-group>
           <template v-if="isChangeTag">
             <div>
               <b-input-group prepend="Название:" class="mt-3">
@@ -46,13 +55,18 @@
       <template v-if="isNewTag">
         <div>
           <b-input-group prepend="Название:" class="mt-3">
-            <b-form-input type="text" v-model="newTag.value"></b-form-input>
+            <b-form-input type="text" v-model="newTag.value" :state="!$v.newTag.value.$invalid"></b-form-input>
           </b-input-group>
           <b-input-group prepend="Цвет:" class="mt-3">
-            <b-form-input type="text" v-model="newTag.color"></b-form-input>
+            <b-form-input type="text" v-model="newTag.color" :state="!$v.newTag.color.$invalid"></b-form-input>
           </b-input-group>
         </div>
-        <b-button variant="outline-success" class="w-50 mt-3" @click="onSubmitNewTag">Сохранить</b-button>
+        <b-button
+          variant="outline-success"
+          class="w-50 mt-3"
+          @click="onSubmitNewTag"
+          :disabled="$v.newTag.$invalid"
+        >Сохранить</b-button>
         <b-button variant="outline-danger" class="w-50 mt-3" @click="isNewTag = false">Отменить</b-button>
       </template>
 
@@ -85,9 +99,16 @@ import {
   TagDefalult,
   IProject,
   TAGS_FETCH,
-  PROJECT_TAGS_FETCH
+  PROJECT_TAGS_FETCH,
+  PROJECT_TAG_DISCHARGE,
+  PROJECT_TAG_ASSIGN,
+  PROJECT_FETCH_ONE
 } from '../../modules/projects';
+
 import Icon from 'vue-awesome/components/Icon';
+
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
 
 class TagState {
   public checked: boolean = false;
@@ -98,6 +119,21 @@ class TagState {
 @Component({
   components: {
     Icon
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      newTag: {
+        value: {
+          required,
+          minLength: minLength(1)
+        },
+        color: {
+          required,
+          colorValid: (value: string) => /#[a-f0-9]{6}\b/gi.test(value)
+        }
+      }
+    };
   }
 })
 export default class CProjectsTagsModal extends Vue {
@@ -129,7 +165,6 @@ export default class CProjectsTagsModal extends Vue {
     this.$watch('value', (value: boolean) => {
       this.visibilityStuff = value;
     });
-    console.log(this.$route.params.id);
   }
 
   @Watch('project', {
@@ -182,13 +217,44 @@ export default class CProjectsTagsModal extends Vue {
     }
   }
 
-  public addTagToProject(tag: ITag) {
-    axios.post(`projects/${this.project.id}/tags/${tag.id}`).then(() => {
-      this.$notify({
-        title: 'Тег успешно добавлен.',
-        duration: 500
+  public onChangeTagState(stateIndex: number) {
+    const state = this.tagsState[stateIndex];
+    if (state == null) {
+      return;
+    }
+
+    Vue.set(this.tagsState, stateIndex, { ...state, inProcess: true });
+    this.$store
+      .dispatch(state.checked ? PROJECT_TAG_DISCHARGE : PROJECT_TAG_ASSIGN, {
+        projectId: this.project.id,
+        tagId: state.tag.id
+      })
+      .then(() => {
+        Vue.set(this.tagsState, stateIndex, {
+          ...state,
+          checked: !state.checked,
+          inProcess: false
+        });
+      })
+      .then(() => {
+        this.$store
+          .dispatch(PROJECT_FETCH_ONE, this.project.id)
+          .then((project) => {
+            this.project.tags = project.tags;
+          });
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
+        });
+      })
+      .catch((error) => {
+        Vue.set(this.tagsState, stateIndex, { ...state, inProcess: false });
+        this.$notify({
+          title: 'Невозможно сохранить изменения',
+          duration: 1500,
+          type: 'error'
+        });
       });
-    });
   }
 
   public onSubmitNewTag() {
@@ -197,9 +263,7 @@ export default class CProjectsTagsModal extends Vue {
       .then((response) => {
         this.isNewTag = false;
         const tagState = new TagState();
-        tagState.tag = this.newTag;
-        tagState.checked = false;
-        tagState.inProcess = false;
+        tagState.tag = response.data;
         this.tagsState.push(tagState);
         this.newTag = new TagDefalult();
         this.$notify({

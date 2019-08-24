@@ -5,6 +5,8 @@ export const PROJECT_FETCH_ONE = 'PROJECT_FETCH_ONE';
 export const PROJECT_COMMIT = 'PROJECT_COMMIT';
 export const PROJECT_TAGS_FETCH = 'PROJECT_TAGS_FETCH';
 export const TAGS_FETCH = 'TAGS_FETCH';
+export const PROJECT_TAG_DISCHARGE = 'PROJECT_TAG_DISCHARGE';
+export const PROJECT_TAG_ASSIGN = 'PROJECT_TAG_ASSIGN';
 
 // setters
 export const PROJECTS_SET_ALL = 'PROJECTS_SET_ALL';
@@ -24,12 +26,12 @@ export class TagDefalult {
     public useCount: number = 0;
 }
 
-export interface ITag extends TagDefalult {}
+export interface ITag extends TagDefalult { }
 
 export class ProjectDefault {
     public id: string = '';
     public name: string = '';
-    public tags?: ITag[] = [];
+    public tags: ITag[] = [];
     public shortDescription?: string = '';
     public description?: string = '';
 }

@@ -116,6 +116,60 @@
               </b-row>
             </div>
           </template>
+
+          <hr />
+          <h4>Участие в событиях</h4>
+          <hr />
+          <br />
+          <v-md-date-range-picker
+            :start-date="startDate"
+            :end-date="endDate"
+            opens="right"
+            @change="changeDateRange"
+            :presets="presets"
+          ></v-md-date-range-picker>
+          <br />
+          <br />
+          <template v-if="userEvents.length !== 0">
+            <div class="equipment-card" v-for="event in userEvents" :key="event.key">
+              <b-row>
+                <b-col cols="12" sm="8" md="7" lg="8">
+                  <a :href="`/events/${event.data.id}`">
+                    <b>{{event.data.title}}</b>
+                  </a>
+                </b-col>
+                <b-col cols="12" sm="4" md="5" lg="4">
+                  <b-button
+                    v-if="!event.isShown"
+                    variant="secondary"
+                    class="w-100 mt-2"
+                    size="sm"
+                    @click="event.isShown = true"
+                  >Подробнее</b-button>
+                  <b-button
+                    v-else
+                    variant="warning"
+                    class="w-100 mt-2"
+                    size="sm"
+                    @click="event.isShown = false"
+                  >Свернуть</b-button>
+                </b-col>
+              </b-row>
+              <template v-if="event.isShown">
+                <br />
+                Время начала: {{event.data.beginTime}}
+                <br />
+                Тип события: {{event.data.eventType.title}}
+                <br />
+                Адрес: {{event.data.address}}
+                <br />
+                Роль: {{event.data.role.title}}
+              </template>
+            </div>
+          </template>
+          <template v-else>
+            <div>Нет событий за данный период</div>
+          </template>
         </b-col>
       </b-row>
     </page-content>
@@ -153,6 +207,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment, { isMoment } from 'moment-timezone';
+import axios from 'axios';
 
 import CMailLink from '@/components/stuff/MailLink.vue';
 import CPhoneLink from '@/components/stuff/PhoneLink.vue';
@@ -185,6 +240,7 @@ import {
 import { IEquipment, EQUIPMENT_FETCH_ASSIGNED_TO } from '@/modules/equipment';
 import { copyToClipboard } from '../../stuff';
 import configuration from '../../stuff/configuration';
+import { IEvent, EventDefault } from '../../modules/events';
 
 enum FormState {
   Default,
@@ -240,6 +296,17 @@ export default class ProfilePage extends Vue {
 
   public userPropertiesModalVisible: boolean = false;
 
+  public dateRange: any[] = [];
+  public presets: any[] = [];
+
+  public allUserEvents: IEvent[] = [];
+  public userEvents: any[] = [];
+
+  public startDate: string = '';
+  public endDate: string = '';
+
+  public canEditRoles: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
@@ -261,6 +328,89 @@ export default class ProfilePage extends Vue {
 
       this.loadingInProcess = false;
     });
+
+    // Date Picker Presets //
+    /////////////////////////
+
+    this.presets = [
+      {
+        label: 'За последнюю неделю',
+        range: [
+          moment()
+            .subtract(7, 'day')
+            .startOf('day'),
+          moment().endOf('day')
+        ]
+      },
+      {
+        label: 'За последние 30 дней',
+        range: [
+          moment()
+            .subtract(29, 'day')
+            .startOf('day'),
+          moment().endOf('day')
+        ]
+      },
+      {
+        label:
+          'За ' +
+          moment()
+            .subtract(1, 'month')
+            .startOf('month')
+            .format('MMMM'),
+        range: [
+          moment()
+            .subtract(1, 'month')
+            .startOf('month'),
+          moment()
+            .subtract(1, 'month')
+            .endOf('month')
+        ]
+      }
+    ];
+
+    // Date Picker Settings //
+    //////////////////////////
+
+    this.startDate = moment()
+      .subtract(7, 'day')
+      .format('YYYY-MM-DD');
+    this.endDate = moment()
+      .subtract(0, 'day')
+      .format('YYYY-MM-DD');
+
+    this.dateRange.push(
+      moment()
+        .utc()
+        .subtract(7, 'day')
+        .startOf('day')
+    );
+    this.dateRange.push(moment().utc());
+
+    axios.get(`/event/user/${userId}`).then((response) => {
+      this.allUserEvents = response.data;
+      let key: number = 0;
+      this.userEvents = this.allUserEvents
+        .filter((i: any) => {
+          if (
+            i.beginTime >=
+              this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
+            i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+          ) {
+            i.beginTime = i.beginTime.substring(11, 19);
+            return i;
+          }
+        })
+        .map((event) => {
+          return {
+            key: ++key,
+            isShown: false,
+            data: event
+          };
+        });
+    });
+
+    this.canEditRoles = await this.$userManager.userHasRole('CanEditRoles');
   }
 
   // Methods //
@@ -319,15 +469,39 @@ export default class ProfilePage extends Vue {
     copyToClipboard(this.profileData.vkData);
   }
 
+  public changeDateRange(dateRange: []) {
+    this.dateRange = dateRange;
+    this.changeUserEvents();
+  }
+
+  public changeUserEvents() {
+    let key: number = 0;
+    this.dateRange[1] = this.dateRange[1].subtract(0, 'day').endOf('day');
+    this.userEvents = this.allUserEvents
+      .filter((i: any) => {
+        if (
+          i.beginTime >=
+            this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
+          i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+        ) {
+          i.beginTime = i.beginTime.substring(11, 19);
+          return i;
+        }
+      })
+      .map((event) => {
+        return {
+          key: ++key,
+          isShown: false,
+          data: event
+        };
+      });
+  }
+
   // Computed data //
   //////////////////
 
   get isProfileFormInProcess(): boolean {
     return this.profileFormState === FormState.InProcess;
-  }
-
-  get canEditRoles() {
-    return this.$userManager.userHasRole('CanEditRoles');
   }
 
   get vkGroupDialogUrl(): string {

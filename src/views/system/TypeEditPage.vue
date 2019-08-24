@@ -352,7 +352,7 @@ export default class TypeEditPage extends Vue {
       'CanEditEquipmentType'
     );
     this.canEditUserPropertyTypes = await this.$userManager.userHasRole(
-      'canEditUserPropertyTypes'
+      'CanEditUserPropertyTypes'
     );
   }
 
