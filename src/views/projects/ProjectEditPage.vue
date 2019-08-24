@@ -2,13 +2,13 @@
 <template>
   <div class="equipment-edit-page">
     <page-content :loading="loadingInProcess" :not-found="notFound">
-      <template slot="header">Оборудование</template>
+      <template slot="header">Проект</template>
 
       <b-row>
         <b-col>
           <b-form>
             <b-form-group id="equipment-type-group" label="Название проекта">
-              <b-form-input v-model="project.name"></b-form-input>
+              <b-form-input v-model="project.name" :state="!$v.project.name.$invalid"></b-form-input>
             </b-form-group>
 
             <b-form-group label="Краткое описание">
@@ -19,7 +19,7 @@
               <b-form-input v-model="project.description"></b-form-input>
             </b-form-group>
 
-            <b-form-group label="Теги">
+            <b-form-group label="Теги" v-if="!isNewProject">
               <div v-for="tag in project.tags" :key="tag.id" style="display: inline-block">
                 <span class="tag-color" :style="{ background: tag.color}"></span>
                 <span>
@@ -41,7 +41,7 @@
                 <b-button
                   class="w-100 submit-button"
                   variant="primary"
-                  :disabled="isPageInProcess"
+                  :disabled="$v.project.$invalid || isPageInProcess"
                   @click="onSubmit"
                 >Подтвердить</b-button>
               </b-col>
@@ -84,7 +84,8 @@ import {
   ProjectDefault,
   PROJECT_FETCH_ONE,
   PROJECT_COMMIT,
-  PROJECT_DELETE
+  PROJECT_DELETE,
+  PROJECTS_FETCH_ALL
 } from '@/modules/projects';
 
 import { IPageMeta } from '@/modules/layout';
@@ -102,6 +103,17 @@ enum State {
     'page-content': CPageContent,
     'user-selection': CUserSelection,
     'projects-tags-modal': CProjectsTagsModal
+  },
+  mixins: [validationMixin],
+  validations() {
+    return {
+      project: {
+        name: {
+          required,
+          minLength: minLength(1)
+        }
+      }
+    };
   }
 })
 export default class ProjectEditPage extends Vue {
@@ -144,7 +156,7 @@ export default class ProjectEditPage extends Vue {
   //////////////////////
 
   public onSubmit() {
-    // if (this.$v.equipment && this.$v.equipment.$invalid) {
+    // if (this.$v.project && this.$v.project.$invalid) {
     //   return;
     // }
 

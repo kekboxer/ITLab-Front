@@ -102,7 +102,7 @@ export const state: ILayoutState = {
         },
         {
           name: 'projects',
-          title: 'Проекты',
+          title: 'Проекты (в разработке)',
           homeURL: '/projects',
           pages: [projectsPageRoute, projectEditPageRoute]
         }

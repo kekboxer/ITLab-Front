@@ -1,5 +1,5 @@
 import { ActionTree } from 'vuex';
-import { RootState } from '@/store';
+import store, { RootState } from '@/store';
 import axios from 'axios';
 
 import { getResponseData } from '@/stuff';
@@ -15,8 +15,11 @@ import {
   PROJECT_FETCH_ONE,
   PROJECT_COMMIT,
   TAGS_FETCH,
+  PROJECT_TAG_DISCHARGE,
+  PROJECT_TAG_ASSIGN,
   ITag
 } from './types';
+import { SSL_OP_NO_SSLv2 } from 'constants';
 
 export const actions: ActionTree<IProjectState, RootState> = {
   [PROJECTS_FETCH_ALL]: ({ commit }) => {
@@ -102,6 +105,48 @@ export const actions: ActionTree<IProjectState, RootState> = {
         })
         .catch((error) => {
           console.log(TAGS_FETCH, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROJECT_TAG_ASSIGN]: (
+    { },
+    { projectId, tagId }: { projectId: string; tagId: string }
+  ) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`projects/${projectId}/tags/${tagId}`)
+        .then((response) => {
+          if (response.status === 200 || response.status === 204) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(PROJECT_TAG_ASSIGN, error);
+          reject(error);
+        });
+    });
+  },
+
+  [PROJECT_TAG_DISCHARGE]: (
+    { },
+    { projectId, tagId }: { projectId: string; tagId: string }
+  ) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(`projects/${projectId}/tags/${tagId}`)
+        .then((response) => {
+          if (response.status === 200 || response.status === 204) {
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(PROJECT_TAG_DISCHARGE, error);
           reject(error);
         });
     });
