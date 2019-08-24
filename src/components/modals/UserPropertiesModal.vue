@@ -165,7 +165,6 @@ export default class CUserPropertiesModal extends Vue {
   }
 
   get userPropertyTypes(): IUserPropertyType[] {
-    console.log('TEST');
     return this.$store.getters[USER_PROPERTY_TYPES_GET_ALL];
   }
 }
