@@ -157,7 +157,9 @@
               </b-row>
               <template v-if="event.isShown">
                 <br />
-                Время начала: {{event.data.beginTime}}
+                Дата: {{event.beginDate}}
+                <br />
+                Время начала: {{event.beginTime}}
                 <br />
                 Тип события: {{event.data.eventType.title}}
                 <br />
@@ -397,7 +399,6 @@ export default class ProfilePage extends Vue {
               this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
             i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
           ) {
-            i.beginTime = i.beginTime.substring(11, 19);
             return i;
           }
         })
@@ -405,7 +406,9 @@ export default class ProfilePage extends Vue {
           return {
             key: ++key,
             isShown: false,
-            data: event
+            data: event,
+            beginDate: moment(event.beginTime).local().format('DD.MM.YYYY'),
+            beginTime: moment(event.beginTime).local().format('HH:mm:ss')
           };
         });
     });
@@ -484,7 +487,6 @@ export default class ProfilePage extends Vue {
             this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
           i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
         ) {
-          i.beginTime = i.beginTime.substring(11, 19);
           return i;
         }
       })
@@ -492,9 +494,11 @@ export default class ProfilePage extends Vue {
         return {
           key: ++key,
           isShown: false,
-          data: event
+          data: event,
+          beginDate: moment(event.beginTime).local().format('DD.MM.YYYY'),
+          beginTime: moment(event.beginTime).local().format('HH:mm:ss')
         };
-      });
+      })
   }
 
   // Computed data //
