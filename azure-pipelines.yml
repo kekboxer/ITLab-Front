@@ -27,13 +27,15 @@ steps:
   inputs:
     command: 'custom'
     customCommand: 'ci'
+
 - task: Npm@1
   displayName: npm run build
   inputs:
     command: 'custom'
     customCommand: 'run build'
+
 - task: PublishBuildArtifacts@1
-  displayName: publish build artifact itlab-front-$(Build.SourceBranchName)
+  displayName: publish build artifact itlab-front-build
   inputs:
     PathtoPublish: 'dist'
-    ArtifactName: 'itlab-front-$(Build.SourceBranchName)'
+    ArtifactName: 'itlab-front-build'
