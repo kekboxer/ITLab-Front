@@ -38,6 +38,13 @@ import VueNotifications from 'vue-notification';
 
 Vue.use(VueNotifications);
 
+// DateRangePicker
+
+import VMdDateRangePicker from 'v-md-date-range-picker';
+// import 'v-md-date-range-picker/dist/v-md-date-range-picker.css';
+
+Vue.use(VMdDateRangePicker);
+
 // VueMarkdown //
 ////////////////
 
@@ -51,14 +58,45 @@ Vue.component('vue-markdown', VueMarkdown);
 ///////////////////
 
 import globals from '@/globals';
-import router from '@/router';
 import store from '@/store';
+import router from '@/router';
 import App from './App.vue';
+import axios from 'axios';
+import configuration from './stuff/configuration';
+import { UserManager } from './UserManager';
+import Oidc from 'oidc-client';
 
 Vue.prototype.$g = globals;
 
-new Vue({
-  store,
-  router,
-  render: (h) => h(App)
-}).$mount('#app');
+function initConfiguration(data: any): void {
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const element = data[key];
+      configuration[key] = element;
+    }
+  }
+}
+
+// Loading runtime configuration
+axios.get(`${window.location.origin}/config.json`)
+  .then((a: any) => {
+
+    initConfiguration(a.data);
+    const userManager = new UserManager(new Oidc.UserManager({
+      authority: configuration.VUE_APP_AUTHORITY,
+      client_id: configuration.VUE_APP_CLIENT_ID,
+      redirect_uri: configuration.VUE_APP_REDIRECT_URI,
+      response_type: configuration.VUE_APP_RESPONSE_TYPE,
+      scope: configuration.VUE_APP_SCOPE,
+      post_logout_redirect_uri: configuration.VUE_APP_POST_LOGOUT_REDIRECT_URI,
+      automaticSilentRenew: true,
+      silent_redirect_uri: configuration.VUE_APP_SILENT_REDIRECT_URI
+    }));
+
+    Vue.prototype.$userManager = userManager;
+    new Vue({
+      store,
+      router: router(userManager),
+      render: (h) => h(App)
+    }).$mount('#app');
+  });

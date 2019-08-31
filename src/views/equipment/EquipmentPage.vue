@@ -222,8 +222,8 @@ export default class EquipmentPage extends Vue {
     );
   }
 
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEquipment');
+  get canEdit() {
+    return this.$userManager.userHasRole('CanEditEquipment');
   }
 
   get filterProperty() {

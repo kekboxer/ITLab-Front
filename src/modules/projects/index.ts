@@ -4,17 +4,16 @@ import { RootState } from '@/store';
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { IUsersState } from './types';
+import { IProjectState } from './types';
 
 export * from './types';
 
-export const state: IUsersState = {
-  users: [],
-  userRoles: [],
-  userPropertyTypes: []
+export const state: IProjectState = {
+  projects: [],
+  tags: []
 };
 
-export const users: Module<IUsersState, RootState> = {
+export const projects: Module<IProjectState, RootState> = {
   state,
   getters,
   actions,

@@ -3,14 +3,6 @@ import axios, { AxiosResponse } from 'axios';
 
 export const createAxiosAuthHeader = (token: string) => `Bearer ${token}`;
 
-export const setAxiosAuthHeader = (token?: string) => {
-  if (token) {
-    axios.defaults.headers.common.Authorization = createAxiosAuthHeader(token);
-  } else {
-    axios.defaults.headers.common.Authorization = undefined;
-  }
-};
-
 export const getResponseData = <T>(
   response: AxiosResponse<any>
 ): Promise<T> => {

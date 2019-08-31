@@ -1,7 +1,13 @@
 import { GetterTree } from 'vuex';
 import { RootState } from '@/store';
 
-import { IUsersState, USERS_GET_ALL, USERS_GET_ONE, USER_ROLES_GET_ALL } from './types';
+import {
+  IUsersState,
+  USERS_GET_ALL,
+  USERS_GET_ONE,
+  USER_ROLES_GET_ALL,
+  USER_PROPERTY_TYPES_GET_ALL
+} from './types';
 
 export const getters: GetterTree<IUsersState, RootState> = {
   [USERS_GET_ALL]: (state) => {
@@ -16,5 +22,10 @@ export const getters: GetterTree<IUsersState, RootState> = {
 
   [USER_ROLES_GET_ALL]: (state) => {
     return state.userRoles;
+  },
+
+  [USER_PROPERTY_TYPES_GET_ALL]: (state) => {
+    return state.userPropertyTypes;
   }
+
 };

@@ -3,6 +3,8 @@ import { RootState } from '@/store';
 import globals from '@/globals';
 import moment from 'moment-timezone';
 import axios from 'axios';
+import Vue from 'vue';
+
 
 import { getResponseData } from '@/stuff';
 
@@ -159,10 +161,12 @@ export const actions: ActionTree<INotificationsState, RootState> = {
   },
 
   [NOTIFICATIONS_FETCH]: ({ dispatch }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise( async (resolve, reject) => {
       const requests = [dispatch(NOTIFICATION_INVITATIONS_FETCH)];
 
-      if (globals.hasRole('CanEditEvent')) {
+      const tmp = await Vue.prototype.$userManager.userHasRole('CanEditEvent');
+
+      if (tmp) {
         requests.push(dispatch(NOTIFICATION_WISHES_FETCH));
       }
 

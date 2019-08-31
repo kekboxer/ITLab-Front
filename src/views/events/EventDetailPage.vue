@@ -155,8 +155,8 @@ export default class EventDetailPage extends Vue {
     return result;
   }
 
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEvent');
+  get canEdit() {
+    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 

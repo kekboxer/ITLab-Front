@@ -108,8 +108,7 @@ import {
   PROFILE_SESSIONS_FETCH,
   PROFILE_SESSIONS_DELETE,
   PROFILE_SETTINGS_THEME_SET,
-  PROFILE_SETTINGS_THEME_GET,
-  PROFILE_REFRESH_TOKEN
+  PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
 
 import {
@@ -230,11 +229,15 @@ export default class SettingsPage extends Vue {
   }
 
   public isCurrentSession(session: IUserSession): boolean {
+    /*
     const currentSessionId = extractUserSessionId(
       this.$store.getters[PROFILE_REFRESH_TOKEN]
     );
+    */
 
-    return session.id === currentSessionId;
+    // TODO: get session id from oidc
+
+    return false;
   }
 
   set theme(themeName: string) {

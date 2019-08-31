@@ -1,30 +1,34 @@
 <!-- TEMPLATE BEGIN -->
 <template>
-  <div class="c-equipment-type-modal">
+  <div class="c-user-property-type-modal">
     <b-modal v-model="isModalVisible" @keydown.native.enter="onSubmitModal">
-      <template slot="modal-title">
-        Тип оборудования
-      </template>
+      <template slot="modal-title">Тип параметра пользователя</template>
 
       <b-form-group label="Название">
-        <b-form-input type="text" v-model.trim="modalData.title" :state="!$v.modalData.title.$invalid">
-        </b-form-input>
+        <b-form-input
+          type="text"
+          v-model.trim="modalData.title"
+          :state="!$v.modalData.title.$invalid"
+        ></b-form-input>
       </b-form-group>
 
       <b-form-group label="Описание">
-        <b-form-input type="text" v-model.trim="modalData.description">
-        </b-form-input>
+        <b-form-input type="text" v-model.trim="modalData.description"></b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
         <button type="button" class="btn btn-secondary" @click="isModalVisible = false">Отменить</button>
-        <button type="button" class="btn btn-primary" :disabled="$v.modalData.$invalid || isModalInProcess" @click="onSubmitModal">Подтвердить</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="$v.modalData.$invalid || isModalInProcess"
+          @click="onSubmitModal"
+        >Подтвердить</button>
       </template>
     </b-modal>
   </div>
 </template>
 <!-- TEMPLATE END -->
-
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
@@ -34,11 +38,11 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 
 import {
-  IEquipmentType,
-  EquipmentTypeDefault,
-  EQUIPMENT_TYPE_COMMIT,
-  EQUIPMENT_TYPES_FETCH_ALL
-} from '@/modules/equipment';
+  IUserPropertyType,
+  UserPropertyTypeDefault,
+  USER_PROPERTY_TYPE_COMMIT,
+  USER_PROPERTY_TYPES_FETCH_ALL
+} from '@/modules/users';
 
 @Component({
   mixins: [validationMixin],
@@ -51,7 +55,7 @@ import {
     }
   }
 })
-export default class CEquipmentTypeModal extends Vue {
+export default class CUserPropertyTypeModal extends Vue {
   // v-modal //
   ////////////
 
@@ -64,14 +68,14 @@ export default class CEquipmentTypeModal extends Vue {
   ///////////////
 
   @Prop({
-    default: new EquipmentTypeDefault()
+    default: new UserPropertyTypeDefault()
   })
-  public data!: IEquipmentType;
+  public data!: IUserPropertyType;
 
   @Prop({
-    default: (equipmentType: IEquipmentType) => undefined
+    default: (userPropertyType: IUserPropertyType) => undefined
   })
-  public onSubmit!: (equipmentType: IEquipmentType) => void;
+  public onSubmit!: (userPropertyType: IUserPropertyType) => void;
 
   @Prop({
     default: (error: any) => undefined
@@ -79,7 +83,7 @@ export default class CEquipmentTypeModal extends Vue {
   public onError!: (error: any) => void;
 
   public isModalInProcess: boolean = false;
-  public modalData: IEquipmentType = new EquipmentTypeDefault();
+  public modalData: IUserPropertyType = new UserPropertyTypeDefault();
 
   private visibilityStuff: boolean = false;
 
@@ -91,7 +95,7 @@ export default class CEquipmentTypeModal extends Vue {
       this.visibilityStuff = value;
     });
 
-    this.$watch('data', (data: IEquipmentType) => {
+    this.$watch('data', (data: IUserPropertyType) => {
       this.modalData = data;
     });
   }
@@ -109,16 +113,16 @@ export default class CEquipmentTypeModal extends Vue {
 
     this.isModalInProcess = true;
     this.$store
-      .dispatch(EQUIPMENT_TYPE_COMMIT, this.modalData)
-      .then((equipmentType: IEquipmentType) => {
+      .dispatch(USER_PROPERTY_TYPE_COMMIT, this.modalData)
+      .then((userPropertyType: IUserPropertyType) => {
         this.$notify({
           title: 'Изменения успешно сохранены',
           duration: 500
         });
-        this.onSubmit(equipmentType);
+        this.onSubmit(userPropertyType);
         // Fetch all types, because after the change an empty element is created (temporarily?)
-        this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL),
-        this.isModalInProcess = false;
+        this.$store.dispatch(USER_PROPERTY_TYPES_FETCH_ALL),
+          (this.isModalInProcess = false);
       })
       .catch((error) => {
         this.$notify({
@@ -144,7 +148,6 @@ export default class CEquipmentTypeModal extends Vue {
 }
 </script>
 <!-- SCRIPT END -->
-
 
 <!-- STYLE BEGIN -->
 <style lang="scss">

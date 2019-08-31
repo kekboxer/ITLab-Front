@@ -34,6 +34,9 @@
               Телефон:
               <phone-link :phone="user.phoneNumber" /><br>
             </template>
+            <div v-for="property in user.properties" :key="property.id">
+              {{property.userPropertyType.title}} : {{property.value}}
+            </div>
           </b-card-body>
         </b-card>
       </b-card-group>
@@ -199,8 +202,8 @@ export default class UsersPage extends Vue {
     return this.$store.getters[PROFILE_GET];
   }
 
-  get canInvite(): boolean {
-    return this.$g.hasRole('CanInviteToSystem');
+  get canInvite() {
+    return this.$userManager.userHasRole('CanInviteToSystem');
   }
 }
 

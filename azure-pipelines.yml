@@ -22,18 +22,20 @@ steps:
      VUE_APP_AZURE_ORGANIZATION=https://dev.azure.com/rtuitlab/ITLab/
      VUE_APP_BUILD_ID=$(Build.BuildId)
 
-     VUE_APP_VK_GROUP_DIALOG_URL=$(VkGroupDialogUrl)
 - task: Npm@1
-  displayName: npm install
+  displayName: npm ci
   inputs:
-    command: 'install'
+    command: 'custom'
+    customCommand: 'ci'
+
 - task: Npm@1
   displayName: npm run build
   inputs:
     command: 'custom'
     customCommand: 'run build'
+
 - task: PublishBuildArtifacts@1
-  displayName: publish build artifact itlab-front-$(Build.SourceBranchName)
+  displayName: publish build artifact itlab-front-build
   inputs:
     PathtoPublish: 'dist'
-    ArtifactName: 'itlab-front-$(Build.SourceBranchName)'
+    ArtifactName: 'itlab-front-build'

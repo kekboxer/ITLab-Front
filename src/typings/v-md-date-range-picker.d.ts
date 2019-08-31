@@ -1,0 +1,1 @@
+declare module 'v-md-date-range-picker';

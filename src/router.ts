@@ -4,15 +4,8 @@ import axios from 'axios';
 
 import store from '@/store';
 
-import {
-  PROFILE_REFRESH_ACCESS,
-  PROFILE_AUTHORIZED,
-  PROFILE_REFRESH_TOKEN,
-  PROFILE_HAS_ROLE,
-  PROFILE_ACCESS_TOKEN
-} from '@/modules/profile';
 import { LAYOUT_PAGES_GET } from '@/modules/layout';
-import { createAxiosAuthHeader, AccessToken } from './stuff';
+import { UserManager } from './UserManager';
 
 Vue.use(Router);
 
@@ -22,143 +15,114 @@ axios.defaults.baseURL =
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 // Initialize router
-const router: Router = new Router({
-  mode: 'history',
-  routes: store.getters[LAYOUT_PAGES_GET],
-  scrollBehavior: (to, from, savedPosition) => {
-    return { x: 0, y: 0 };
-  }
-});
 
-// Initialize authorization
-let refreshingToken: boolean = false;
-let subscribers: Array<(accessToken?: AccessToken) => void> = [];
+export default (userManager: UserManager): Router => {
 
-const getBaseUrl = () => {
-  return '/';
-};
+  const router: Router = new Router({
+    mode: 'history',
+    routes: store.getters[LAYOUT_PAGES_GET],
+    scrollBehavior: () => {
+      return { x: 0, y: 0 };
+    }
+  });
 
-const getRedirectionPage = (originPath?: string) => {
-  return {
-    name: 'LoginPage',
-    params: { to: originPath }
-  } as RawLocation;
-};
+  // Initialize authorization
 
-const refreshAccessToken = () => {
-  if (refreshingToken) {
-    return;
-  }
-
-  refreshingToken = true;
-
-  const notifySubscribers = (accessToken?: AccessToken) => {
-    subscribers.map((cb) => cb(accessToken));
-    subscribers = [];
+  const getBaseUrl = () => {
+    return '/';
   };
 
-  store
-    .dispatch(PROFILE_REFRESH_ACCESS, store.getters[PROFILE_REFRESH_TOKEN])
-    .then(() => {
-      notifySubscribers(store.getters[PROFILE_ACCESS_TOKEN]);
-      refreshingToken = false;
-    })
-    .catch(() => {
-      notifySubscribers();
-      router.push(getRedirectionPage(router.currentRoute.path));
-      refreshingToken = false;
-    });
+  axios.interceptors.request.use(
+    async (request) => {
+      const accessToken = await userManager.accessToken();
+      if (accessToken == null) {
+        router.push('/login');
+      }
+      request.headers.Authorization = `Bearer ${accessToken}`;
+      return request;
+    }
+  );
+
+  axios.interceptors.response.use(
+    (response) => {
+      const body = response.data;
+      if (Math.floor(response.status / 100) === 2) {
+        return response;
+      } else {
+        throw { error: body };
+      }
+
+    },
+    (error) => {
+      if (!error.response) {
+        return;
+      }
+      if (error.response.status === 401) {
+        userManager.signInSilent()
+          .then(() => {
+            const originalRequest = error.response.config;
+            originalRequest.baseURL = '';
+            axios(originalRequest);
+          });
+      } else if (Math.floor(error.response.status / 100) === 5) {
+        const originalRequest = error.response.config;
+        setTimeout(() => {
+          originalRequest.baseURL = '';
+          axios(originalRequest);
+        }, 4000);
+      } else {
+        console.log(error);
+        throw error;
+      }
+    }
+  );
+
+  router.beforeEach(async (to, from, next) => {
+    const secure: boolean = to.matched.some(
+      (record) => record.meta.secure !== false
+    );
+    const development: boolean = to.matched.some(
+      (record) => record.meta.development === true
+    );
+    const allow: boolean = to.matched.some(
+      (record) =>
+        record.meta.allow == null ||
+        (typeof record.meta.allow === 'string' &&
+          userManager.userHasRole(record.meta.allow)) ||
+        (Array.isArray(record.meta.allow) &&
+          record.meta.allow.every((role: string) =>
+            userManager.userHasRole(role)
+          ))
+    );
+
+    if (!allow) {
+      next(false);
+      return;
+    }
+
+    if (development) {
+      if (process.env.NODE_ENV === 'development') {
+        next();
+      } else {
+        next(getBaseUrl());
+      }
+      return;
+    }
+
+    if (secure) {
+
+      if (await userManager.signedIn()) {
+        next();
+      } else {
+        next('/login');
+      }
+    } else {
+      next();
+    }
+  });
+
+  function createRouter(userManager: UserManager): Router {
+    return new Router();
+  }
+  return router;
 };
-
-axios.interceptors.response.use(
-  (response) => {
-    const body = response.data;
-
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      return response;
-    } else {
-      throw { error: body };
-    }
-
-  },
-  (error) => {
-
-    const body = error.response.data;
-    if (error.response.status === 401) {
-      const originalRequest = error.response.config;
-      return new Promise((resolve, reject) => {
-        subscribers.push((accessToken?: AccessToken) => {
-          if (accessToken) {
-            originalRequest.baseURL = ''; // prevent axios from double url concatenation
-            originalRequest.headers.Authorization = createAxiosAuthHeader(accessToken.original);
-            resolve(axios(originalRequest));
-
-          } else {
-            reject({ error: body });
-          }
-        });
-
-        refreshAccessToken();
-
-      });
-    } else {
-      console.log(error);
-      throw error;
-    }
-  }
-);
-
-router.beforeEach((to, from, next) => {
-  const secure: boolean = to.matched.some(
-    (record) => record.meta.secure !== false
-  );
-  const development: boolean = to.matched.some(
-    (record) => record.meta.development === true
-  );
-  const allow: boolean = to.matched.some(
-    (record) =>
-      record.meta.allow == null ||
-      (typeof record.meta.allow === 'string' &&
-        store.getters[PROFILE_HAS_ROLE](record.meta.allow)) ||
-      (Array.isArray(record.meta.allow) &&
-        record.meta.allow.every((role: string) =>
-          store.getters[PROFILE_HAS_ROLE](role)
-        ))
-  );
-
-  if (!allow) {
-    next(false);
-    return;
-  }
-
-  if (development) {
-    if (process.env.NODE_ENV === 'development') {
-      next();
-    } else {
-      next(getBaseUrl());
-    }
-    return;
-  }
-
-  if (secure) {
-    if (store.getters[PROFILE_AUTHORIZED]) {
-      next();
-    } else if (store.getters[PROFILE_REFRESH_TOKEN] != null) {
-      subscribers.push((accessToken?: AccessToken) => {
-        if (accessToken) {
-          next();
-        } else {
-          router.push(getRedirectionPage(to.path));
-        }
-      });
-
-      refreshAccessToken();
-    } else {
-      router.push(getRedirectionPage(to.path));
-    }
-  } else {
-    next();
-  }
-});
-
-export default router;

@@ -23,7 +23,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import CSidebar from '@/components/layout/Sidebar.vue';
 
 import {
-  PROFILE_AUTHORIZED,
   PROFILE_SETTINGS_THEME_GET
 } from '@/modules/profile';
 
@@ -36,12 +35,16 @@ export default class App extends Vue {
   // Component methods //
   //////////////////////
 
+  private isAuthorized = false;
   public created() {
     this.$watch('theme', (theme: string) => this.updateBrowserTitleColor());
 
     this.updateBrowserTitleColor();
   }
 
+  public async mounted() {
+    this.isAuthorized = await this.$userManager.signedIn();
+  }
   // Methods //
   ////////////
 
@@ -68,10 +71,6 @@ export default class App extends Vue {
   get theme(): string {
     const themeName = this.$store.getters[PROFILE_SETTINGS_THEME_GET];
     return `theme-${themeName}`;
-  }
-
-  get isAuthorized(): boolean {
-    return this.$store.getters[PROFILE_AUTHORIZED];
   }
 }
 </script>
