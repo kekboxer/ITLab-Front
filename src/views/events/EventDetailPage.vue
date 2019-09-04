@@ -4,7 +4,7 @@
     <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">Событие</template>
       <template slot="header-button">
-        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEdit">Изменить</b-button>
+        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEditEvent">Изменить</b-button>
       </template>
 
       <b-row>
@@ -82,10 +82,12 @@ export default class EventDetailPage extends Vue {
   public notFound: boolean = false;
   public event: IEvent = new EventDefault();
 
+  public canEditEvent: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.loadingInProcess = true;
 
     const eventId = this.$route.params.id;
@@ -101,6 +103,8 @@ export default class EventDetailPage extends Vue {
           this.loadingInProcess = false;
         });
     }
+
+    this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
   }
 
   // Methods //
@@ -153,10 +157,6 @@ export default class EventDetailPage extends Vue {
     }
 
     return result;
-  }
-
-  get canEdit() {
-    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 

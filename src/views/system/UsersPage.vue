@@ -133,15 +133,18 @@ export default class UsersPage extends Vue {
   } = { email: null };
   public modalState: ModalState = ModalState.Hidden;
 
+  public canInvite: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.loadingInProcess = this.$store.getters[USERS_GET_ALL].lenth === 0;
 
     this.$store.dispatch(USERS_FETCH_ALL).then((result) => {
       this.loadingInProcess = false;
     });
+    this.canInvite = await this.$userManager.userHasRole('CanInviteToSystem');
   }
 
   // Modal window methods //
@@ -202,9 +205,6 @@ export default class UsersPage extends Vue {
     return this.$store.getters[PROFILE_GET];
   }
 
-  get canInvite() {
-    return this.$userManager.userHasRole('CanInviteToSystem');
-  }
 }
 
 export const usersPageRoute: RouteConfig = {

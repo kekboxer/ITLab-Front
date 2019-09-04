@@ -199,13 +199,13 @@
                     class="ml-md-auto d-flex align-content-between align-items-start"
                   >
                     <b-button
-                      v-if="!userPropertyType.isLocked"
+                      v-if="!userPropertyType.isLocked && canEditUserPropertyTypes"
                       variant="warning"
                       class="btn-sm w-100 mr-md-1 order-3 order-md-2"
                       @click="showUserPropertyTypeModal(userPropertyType)"
                     >Изменить</b-button>
                     <b-button
-                      v-if="!userPropertyType.isLocked"
+                      v-if="!userPropertyType.isLocked && canEditUserPropertyTypes"
                       variant="outline-danger"
                       class="btn-sm w-100 mr-1 mr-md-0 order-1 order-md-3"
                       @click="onRemoveUserPropertyType(userPropertyType)"
