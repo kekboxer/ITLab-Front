@@ -153,7 +153,10 @@ export default class EquipmentEditPage extends Vue {
   public equipmentOwnerModalData: IUser | null = null;
   public equipmentOwnerModalState: State = State.Default;
 
-  public mounted() {
+  public canEditEquipment: boolean | null = false;
+  public canEditEquipmentOwner: boolean | null = false;
+
+  public async mounted() {
     this.loadingInProcess = true;
 
     const equipmentId = this.$route.params.id;
@@ -172,6 +175,9 @@ export default class EquipmentEditPage extends Vue {
       this.isNewEquipment = true;
       this.loadingInProcess = false;
     }
+
+    this.canEditEquipment = await this.$userManager.userHasRole('CanEditEquipment');
+    this.canEditEquipmentOwner = await this.$userManager.userHasRole('CanEditEquipmentOwner');
   }
 
   // Equipment methods //
@@ -308,14 +314,6 @@ export default class EquipmentEditPage extends Vue {
 
   get isModalInProcess(): boolean {
     return this.equipmentOwnerModalState === State.InProcess;
-  }
-
-  get canEditEquipment() {
-    return this.$userManager.userHasRole('CanEditEquipment');
-  }
-
-  get canEditEquipmentOwner() {
-    return this.$userManager.userHasRole('CanEditEquipmentOwner');
   }
 }
 

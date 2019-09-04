@@ -4,32 +4,19 @@
     <page-content :loading="loadingInProcess">
       <template slot="header">События</template>
       <template slot="header-button">
-        <b-button
-          variant="success"
-          to="events/edit/new"
-          v-if="canEdit"
-        >Добавить</b-button>
+        <b-button variant="success" to="events/edit/new" v-if="canEditEvent">Добавить</b-button>
       </template>
 
       <b-row>
-        <b-col
-          cols="12"
-          md="auto"
-          class="ml-md-auto mr-md-3"
-        >
-          <b-button
-            variant="secondary"
-            style="width: 100%"
-            @click="summaryVisible = true"
-          >Итоги для повышки <icon name="table"></icon>
+        <b-col cols="12" md="auto" class="ml-md-auto mr-md-3">
+          <b-button variant="secondary" style="width: 100%" @click="summaryVisible = true">
+            Итоги для повышки
+            <icon name="table"></icon>
           </b-button>
         </b-col>
       </b-row>
 
-      <b-row
-        v-for="event in eventsCurrent"
-        :key="event.id"
-      >
+      <b-row v-for="event in eventsCurrent" :key="event.id">
         <b-col>
           <event-item :event="event"></event-item>
         </b-col>
@@ -37,28 +24,19 @@
 
       <b-row>
         <b-col>
-          <div
-            class="load-more"
-            @click="togglePastEvents"
-          >
-            <strong>
-              {{ eventsShowPast ? "Скрыть" : "Показать" }} прошедшие события
-            </strong>
+          <div class="load-more" @click="togglePastEvents">
+            <strong>{{ eventsShowPast ? "Скрыть" : "Показать" }} прошедшие события</strong>
           </div>
         </b-col>
       </b-row>
 
       <div v-if="eventsShowPast">
-        <b-row
-          v-for="event in eventsPast"
-          :key="event.id"
-        >
+        <b-row v-for="event in eventsPast" :key="event.id">
           <b-col>
             <event-item :event="event"></event-item>
           </b-col>
         </b-row>
       </div>
-
     </page-content>
 
     <summary-modal v-model="summaryVisible" />
@@ -122,10 +100,12 @@ export default class EventsPage extends Vue {
 
   public summaryVisible: boolean = false;
 
+  public canEditEvent: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length === 0;
 
     this.$store
@@ -135,6 +115,7 @@ export default class EventsPage extends Vue {
       .then((result) => {
         this.loadingInProcess = false;
       });
+    this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
   }
 
   // Methods //
@@ -163,10 +144,6 @@ export default class EventsPage extends Vue {
       beginTime: this.currentDate,
       invert: true
     }).sort(createEventSortPredicate(false));
-  }
-
-  get canEdit() {
-    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 

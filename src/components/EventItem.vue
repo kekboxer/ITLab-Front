@@ -18,17 +18,27 @@
             </span>
           </strong>
         </b-col>
-        <b-col cols="auto" v-if="canEdit">
-          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + event.id">Изменить</b-button>
+        <b-col cols="auto" v-if="canEditEvent">
+          <b-button
+            variant="outline-warning"
+            class="btn-sm button-edit"
+            :to="'events/edit/' + event.id"
+          >Изменить</b-button>
         </b-col>
       </b-row>
-      <hr>
+      <hr />
       <b-row>
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
-          <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
+          <small
+            style="position: relative; top: -5px"
+            v-if="event.eventType"
+          >{{ event.eventType.title }}</small>
           <p>
-            <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
+            <a
+              :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`"
+              target="_blank"
+            >{{ event.address }}</a>
           </p>
         </b-col>
         <b-col md="4">
@@ -99,8 +109,14 @@ export default class CEventItem extends Vue {
 
   public dateHovered: boolean = false;
 
+  public canEditEvent: boolean | null = false;
+
   // Methods //
   ////////////
+
+  public async mounted() {
+    this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
+  }
 
   public checkDateHover() {
     if (
@@ -195,10 +211,6 @@ export default class CEventItem extends Vue {
         'дней'
       ])}`;
     }
-  }
-
-  get canEdit() {
-    return this.$userManager.userHasRole('CanEditEvent');
   }
 }
 </script>
