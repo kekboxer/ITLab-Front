@@ -498,7 +498,7 @@ export default class ProfilePage extends Vue {
           beginDate: moment(event.beginTime).local().format('DD.MM.YYYY'),
           beginTime: moment(event.beginTime).local().format('HH:mm:ss')
         };
-      })
+      });
   }
 
   // Computed data //

@@ -4,7 +4,7 @@
     <page-content :loading="loadingInProcess">
       <template slot="header">Оборудование</template>
       <template slot="header-button">
-        <b-button variant="success" to="equipment/new" v-if="canEdit">Добавить</b-button>
+        <b-button variant="success" to="equipment/new" v-if="canEditEquipment">Добавить</b-button>
       </template>
 
       <b-row>
@@ -39,7 +39,7 @@
             </template>
             <template slot="actions" slot-scope="data" style="overflow: auto">
               <span class="actions-cell">
-                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right" v-if="canEdit">
+                <b-button variant="warning" size="sm" :to="'equipment/' + data.item.id" class="mr-2" style="float: right" v-if="canEditEquipment">
                   Изменить
                 </b-button>
                 <b-button size="sm" @click.stop="data.toggleDetails" class="mr-2" style="float: right">
@@ -125,6 +125,8 @@ export default class EquipmentPage extends Vue {
   public equipmentFilterString: string = '';
   public onlyFree: boolean = false;
 
+  public canEditEquipment: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
@@ -140,6 +142,10 @@ export default class EquipmentPage extends Vue {
       .then((result) => {
         this.loadingInProcess = false;
       });
+  }
+
+  public async mounted() {
+    this.canEditEquipment = await this.$userManager.userHasRole('CanEditEquipment');
   }
 
   // Methods //
@@ -220,10 +226,6 @@ export default class EquipmentPage extends Vue {
         };
       }
     );
-  }
-
-  get canEdit() {
-    return this.$userManager.userHasRole('CanEditEquipment');
   }
 
   get filterProperty() {
