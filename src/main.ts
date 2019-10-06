@@ -45,6 +45,12 @@ import VMdDateRangePicker from 'v-md-date-range-picker';
 
 Vue.use(VMdDateRangePicker);
 
+import Default from '@/components/layout/Default.vue';
+import NoSidebar from '@/components/layout/NoSidebar.vue';
+
+Vue.component('default-layout', Default);
+Vue.component('no-sidebar-layout', NoSidebar);
+
 // VueMarkdown //
 ////////////////
 

@@ -110,11 +110,16 @@ export default (userManager: UserManager): Router => {
     }
 
     if (secure) {
-
       if (await userManager.signedIn()) {
         next();
       } else {
-        next('/login');
+        userManager.signInSilent()
+          .then(() => {
+            next();
+          })
+          .catch(() => {
+            next('/login');
+          });
       }
     } else {
       next();

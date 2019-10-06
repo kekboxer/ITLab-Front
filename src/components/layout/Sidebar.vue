@@ -72,8 +72,6 @@ export default class CSidebar extends Vue {
         });
       }
     );
-
-    this.$store.dispatch(NOTIFICATIONS_FETCH);
   }
 
   // Methods //

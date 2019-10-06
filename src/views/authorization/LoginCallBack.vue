@@ -33,6 +33,7 @@ export const loginCallBackPageRoute: RouteConfig = {
   name: 'LoginCallBack',
   component: LoginCallBack,
   meta: {
+    layout: 'no-sidebar',
     secure: false,
     hideNavigation: true
   }
