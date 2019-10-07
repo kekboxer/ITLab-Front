@@ -28,6 +28,7 @@ export const silentCallBackPageRoute: RouteConfig = {
   name: 'SilentCallBack',
   component: SilentCallBack,
   meta: {
+    layout: 'no-sidebar',
     secure: false,
     hideNavigation: true
   }
