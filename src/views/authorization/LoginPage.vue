@@ -151,6 +151,7 @@ export const loginPageRoute: RouteConfig = {
   name: 'LoginPage',
   component: LoginPage,
   meta: {
+    layout: 'no-sidebar',
     secure: false,
     hideNavigation: true
   }
