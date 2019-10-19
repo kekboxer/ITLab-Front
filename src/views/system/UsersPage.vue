@@ -153,20 +153,20 @@ export default class UsersPage extends Vue {
     this.$store.dispatch(USERS_FETCH_ALL).then((users) => {
       this.users = users;
       this.filtredUsers = this.users;
-      console.log(this.users);
       this.loadingInProcess = false;
     });
     this.canInvite = await this.$userManager.userHasRole('CanInviteToSystem');
   }
 
   @Watch('usersFilterString')
-  onUsersFilter() {
-    let regExp = RegExp('^'+this.usersFilterString, 'i');
+  public onUsersFilter() {
+
+    const regExp = RegExp('^' + this.usersFilterString, 'i');
     this.filtredUsers = this.users.filter((user) => {
-      let firstNameLastName = user.firstName + ' ' + user.lastName;
-      let lastNameFirstName = user.lastName + ' ' + user.firstName;
+      const firstNameLastName = user.firstName + ' ' + user.lastName;
+      const lastNameFirstName = user.lastName + ' ' + user.firstName;
       return firstNameLastName.match(regExp) || lastNameFirstName.match(regExp);
-    })
+    });
   }
 
   // Modal window methods //
