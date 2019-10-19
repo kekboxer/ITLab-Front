@@ -20,6 +20,8 @@
         </b-col>
       </b-row>
 
+      <h6 v-if="filtredUsers.length === 0">По данному запросу пользователи не найдены.</h6>
+
       <b-card-group columns class="mb-3">
         <b-card
           v-for="user in filtredUsers"
