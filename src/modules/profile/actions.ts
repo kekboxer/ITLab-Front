@@ -10,7 +10,6 @@ import {
 
 import {
   IProfileState,
-  LoginEvent,
   IRegistrationData,
   IPasswordChangeData,
   IPasswordRestoreData,
@@ -25,13 +24,13 @@ import {
   PROFILE_SET,
   PROFILE_COMMIT,
   IPasswordRequestData,
-  PROFILE_ROLES_SET,
+  PROFILE_EVENTS_FETCH,
   PROFILE_VK_ACCOUNT
 } from './types';
 
 import { IUser, UserRoleName } from '@/modules/users';
 
-import { IEventPlace, IEventRole } from '@/modules/events';
+import { IEventPlace, IEventRole, IEvent } from '@/modules/events';
 
 export const actions: ActionTree<IProfileState, RootState> = {
 
@@ -136,6 +135,18 @@ export const actions: ActionTree<IProfileState, RootState> = {
         .then((response) => getResponseData<IUserSession[]>(response))
         .then(resolve)
         .catch(createErrorDataHandler(PROFILE_SESSIONS_FETCH, reject));
+    });
+  },
+
+  [PROFILE_EVENTS_FETCH]: ({ }, data) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`/event/user/${data.login}`, { params: { begin: data.begin, end: data.end } })
+        .then((response) => getResponseData<IEvent[]>(response))
+        .then(events => {
+          resolve(events);
+        })
+        .catch(createErrorDataHandler(PROFILE_EVENTS_FETCH, reject));
     });
   },
 
