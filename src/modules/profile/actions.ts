@@ -143,7 +143,7 @@ export const actions: ActionTree<IProfileState, RootState> = {
       axios
         .get(`/event/user/${data.login}`, { params: { begin: data.begin, end: data.end } })
         .then((response) => getResponseData<IEvent[]>(response))
-        .then(events => {
+        .then((events) => {
           resolve(events);
         })
         .catch(createErrorDataHandler(PROFILE_EVENTS_FETCH, reject));
