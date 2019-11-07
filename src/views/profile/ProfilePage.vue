@@ -228,7 +228,8 @@ import { required, minLength } from 'vuelidate/lib/validators';
 import {
   PROFILE_COMMIT,
   PROFILE_ROLES_GET,
-  PROFILE_VK_ACCOUNT
+  PROFILE_VK_ACCOUNT,
+  PROFILE_EVENTS_FETCH
 } from '@/modules/profile';
 import {
   USERS_FETCH_ONE,
@@ -286,6 +287,7 @@ export default class ProfilePage extends Vue {
 
   public loadingInProcess: boolean = true;
   public isCurrentUser: boolean = false;
+  public userId: string = '';
 
   public profileData: IUser = new UserDefault();
   public profileFormState: FormState = FormState.Default;
@@ -313,20 +315,39 @@ export default class ProfilePage extends Vue {
   //////////////////////
 
   public async mounted() {
+
+    this.startDate = moment()
+      .subtract(7, 'day')
+      .startOf('day')
+      .format();
+    this.endDate = moment()
+      .subtract(0, 'day')
+      .format();
+
+    this.dateRange.push(
+      this.startDate,
+      this.endDate
+    );
+
     this.isCurrentUser = this.$route.params.id == null;
-    let userId = '';
     if (this.isCurrentUser) {
-      userId = (await this.$userManager.getUserId()) || '';
+      this.userId = (await this.$userManager.getUserId()) || '';
     } else {
-      userId = this.$route.params.id;
+      this.userId = this.$route.params.id;
     }
 
     Promise.all([
-      this.$store.dispatch(USERS_FETCH_ONE, userId),
-      this.$store.dispatch(EQUIPMENT_FETCH_ASSIGNED_TO, userId)
-    ]).then(([profile, equipment]: [IUser, IEquipment[]]) => {
+      this.$store.dispatch(USERS_FETCH_ONE, this.userId),
+      this.$store.dispatch(EQUIPMENT_FETCH_ASSIGNED_TO, this.userId),
+      this.$store.dispatch(PROFILE_EVENTS_FETCH, {
+        login: this.userId,
+        begin: this.startDate,
+        end: this.endDate
+      })
+    ]).then(([profile, equipment, events]: [IUser, IEquipment[], []]) => {
       this.profileData = profile;
       this.equipment = equipment;
+      this.userEvents = this.mapEventsToEventsRange(events);
 
       this.loadingInProcess = false;
     });
@@ -370,48 +391,6 @@ export default class ProfilePage extends Vue {
         ]
       }
     ];
-
-    // Date Picker Settings //
-    //////////////////////////
-
-    this.startDate = moment()
-      .subtract(7, 'day')
-      .format('YYYY-MM-DD');
-    this.endDate = moment()
-      .subtract(0, 'day')
-      .format('YYYY-MM-DD');
-
-    this.dateRange.push(
-      moment()
-        .utc()
-        .subtract(7, 'day')
-        .startOf('day')
-    );
-    this.dateRange.push(moment().utc());
-
-    axios.get(`/event/user/${userId}`).then((response) => {
-      this.allUserEvents = response.data;
-      let key: number = 0;
-      this.userEvents = this.allUserEvents
-        .filter((i: any) => {
-          if (
-            i.beginTime >=
-              this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
-            i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-          ) {
-            return i;
-          }
-        })
-        .map((event) => {
-          return {
-            key: ++key,
-            isShown: false,
-            data: event,
-            beginDate: moment(event.beginTime).local().format('DD.MM.YYYY'),
-            beginTime: moment(event.beginTime).local().format('HH:mm:ss')
-          };
-        });
-    });
 
     this.canEditRoles = await this.$userManager.userHasRole('CanEditRoles');
   }
@@ -477,28 +456,31 @@ export default class ProfilePage extends Vue {
     this.changeUserEvents();
   }
 
-  public changeUserEvents() {
+  public mapEventsToEventsRange(events: IEvent[]) {
     let key: number = 0;
-    this.dateRange[1] = this.dateRange[1].subtract(0, 'day').endOf('day');
-    this.userEvents = this.allUserEvents
-      .filter((i: any) => {
-        if (
-          i.beginTime >=
-            this.dateRange[0].format('YYYY-MM-DDTHH:mm:ss') + 'Z' &&
-          i.beginTime < this.dateRange[1].format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-        ) {
-          return i;
-        }
+    return events.map((event) => {
+      return {
+        key: key++,
+        isShown: false,
+        data: event,
+        beginDate: moment(event.beginTime)
+          .local()
+          .format('DD.MM.YYYY'),
+        beginTime: moment(event.beginTime)
+          .local()
+          .format('HH:mm:ss')
+      };
+    });
+  }
+
+  public changeUserEvents() {
+    this.$store
+      .dispatch(PROFILE_EVENTS_FETCH, {
+        login: this.userId,
+        begin: this.dateRange[0].startOf('day').format(),
+        end: this.dateRange[1].endOf('day').format()
       })
-      .map((event) => {
-        return {
-          key: ++key,
-          isShown: false,
-          data: event,
-          beginDate: moment(event.beginTime).local().format('DD.MM.YYYY'),
-          beginTime: moment(event.beginTime).local().format('HH:mm:ss')
-        };
-      });
+      .then((events) => this.userEvents = this.mapEventsToEventsRange(events));
   }
 
   // Computed data //

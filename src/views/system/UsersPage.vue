@@ -4,69 +4,73 @@
     <page-content :loading="loadingInProcess">
       <template slot="header">Пользователи</template>
       <template slot="header-button">
-        <b-button
-          variant="success"
-          @click="showModal"
-          v-if="canInvite"
-        >Пригласить</b-button>
+        <b-button variant="success" @click="showModal" v-if="canInvite">Пригласить</b-button>
       </template>
 
-      <b-card-group
-        columns
-        class="mb-3"
-      >
+      <b-row>
+        <b-col cols="12" md="12" lg="6" class="order-1 order-md-2">
+          <b-input-group class="mb-2 pr-3">
+            <input class="form-control" v-model="usersFilterString" placeholder="Поиск" type="text" />
+            <b-input-group-append>
+              <b-btn :disabled="!usersFilterString" @click="usersFilterString=''">
+                <icon name="times"/>
+              </b-btn>
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+      </b-row>
+
+      <h6 v-if="filtredUsers.length === 0">По данному запросу пользователи не найдены.</h6>
+
+      <b-card-group columns class="mb-3">
         <b-card
-          v-for="user in users"
+          v-for="user in filtredUsers"
           :key="user.id"
           v-bind:class="{ 'border-primary': user.id === profileId }"
           no-body
         >
           <b-card-body>
-            <b-link
-              :to="getProfileLink(user)"
-              class="profile-link"
-            >
-              <h4>{{user.lastName}} {{user.firstName}}<template v-if="user.middleName && user.middleName.length > 0"><br>{{user.middleName}}</template></h4>
-            </b-link>
-            Email:
-            <mail-link :email="user.email" /><br>
+            <b-link :to="getProfileLink(user)" class="profile-link">
+              <h4>
+                {{user.lastName}} {{user.firstName}}
+                <template
+                  v-if="user.middleName && user.middleName.length > 0"
+                >
+                  <br />
+                  {{user.middleName}}
+                </template>
+              </h4>
+            </b-link>Email:
+            <mail-link :email="user.email" />
+            <br />
             <template v-if="user.phoneNumber">
               Телефон:
-              <phone-link :phone="user.phoneNumber" /><br>
+              <phone-link :phone="user.phoneNumber" />
+              <br />
             </template>
-            <div v-for="property in user.properties" :key="property.id">
-              {{property.userPropertyType.title}} : {{property.value}}
-            </div>
+            <div
+              v-for="property in user.properties"
+              :key="property.id"
+            >{{property.userPropertyType.title}} : {{property.value}}</div>
           </b-card-body>
         </b-card>
       </b-card-group>
     </page-content>
 
     <b-modal v-model="modalVisible">
-      <template slot="modal-title">
-        Приглашение пользователя
-      </template>
+      <template slot="modal-title">Приглашение пользователя</template>
 
-      <b-form-group
-        id="type-title-group"
-        label="Email"
-        label-for="email-input"
-      >
+      <b-form-group id="type-title-group" label="Email" label-for="email-input">
         <b-form-input
           id="email-input"
           type="email"
           v-model="modalData.email"
           :state="!$v.modalData.email.$invalid"
-        >
-        </b-form-input>
+        ></b-form-input>
       </b-form-group>
 
       <template slot="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click="modalVisible = false"
-        >Отменить</button>
+        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Отменить</button>
         <button
           type="button"
           class="btn btn-primary"
@@ -82,7 +86,7 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Watch } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 
 import CMailLink from '@/components/stuff/MailLink.vue';
@@ -91,6 +95,7 @@ import CPageContent from '@/components/layout/PageContent.vue';
 
 import { validationMixin } from 'vuelidate';
 import { required, email } from 'vuelidate/lib/validators';
+import Icon from 'vue-awesome/components/Icon';
 
 import {
   IUser,
@@ -108,6 +113,7 @@ enum ModalState {
 
 @Component({
   components: {
+    Icon,
     'mail-link': CMailLink,
     'phone-link': CPhoneLink,
     'page-content': CPageContent
@@ -133,6 +139,11 @@ export default class UsersPage extends Vue {
   } = { email: null };
   public modalState: ModalState = ModalState.Hidden;
 
+  public users: IUser[] = [];
+  public filtredUsers: IUser[] = [];
+
+  public usersFilterString: string = '';
+
   public canInvite: boolean | null = false;
 
   // Component methods //
@@ -141,10 +152,23 @@ export default class UsersPage extends Vue {
   public async mounted() {
     this.loadingInProcess = this.$store.getters[USERS_GET_ALL].lenth === 0;
 
-    this.$store.dispatch(USERS_FETCH_ALL).then((result) => {
+    this.$store.dispatch(USERS_FETCH_ALL).then((users) => {
+      this.users = users;
+      this.filtredUsers = this.users;
       this.loadingInProcess = false;
     });
     this.canInvite = await this.$userManager.userHasRole('CanInviteToSystem');
+  }
+
+  @Watch('usersFilterString')
+  public onUsersFilter() {
+
+    const regExp = RegExp('^' + this.usersFilterString, 'i');
+    this.filtredUsers = this.users.filter((user) => {
+      const firstNameLastName = user.firstName + ' ' + user.lastName;
+      const lastNameFirstName = user.lastName + ' ' + user.firstName;
+      return firstNameLastName.match(regExp) || lastNameFirstName.match(regExp);
+    });
   }
 
   // Modal window methods //
@@ -197,14 +221,13 @@ export default class UsersPage extends Vue {
   // Computed data //
   //////////////////
 
-  get users(): IUser[] {
-    return this.$store.getters[USERS_GET_ALL];
-  }
+  // get users(): IUser[] {
+  //   return this.$store.getters[USERS_GET_ALL];
+  // }
 
   get profileId(): string {
     return this.$store.getters[PROFILE_GET];
   }
-
 }
 
 export const usersPageRoute: RouteConfig = {
