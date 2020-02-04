@@ -120,16 +120,34 @@
           <hr />
           <h4>Участие в событиях</h4>
           <hr />
-          <br />
-          <v-md-date-range-picker
-            :start-date="startDate"
-            :end-date="endDate"
-            opens="right"
-            @change="changeDateRange"
-            :presets="presets"
-          ></v-md-date-range-picker>
-          <br />
-          <br />
+          <b-form-group label="Выберите период:">
+            <b-row>
+              <b-col cols="12" sm="6" md="12" lg="6" class="mt-3">
+                <date-picker class="w-100" v-model="startDate" lang="ru" type="date" format="DD.MM.YYYY"></date-picker>
+              </b-col>
+              <b-col cols="12" sm="6" md="12" lg="6" class="mt-3">
+                <date-picker class="w-100" v-model="endDate" lang="ru" type="date" format="DD.MM.YYYY"></date-picker>
+              </b-col>
+              <b-col  class="mt-3">
+                <b-button
+                  type="submit"
+                  variant="primary"
+                  class="w-100"
+                  :disabled="!isDateChanged || startDate == null || endDate == null"
+                  @click="changeUserEvents"
+                >
+                <template v-if="isDatePickerInProcess">
+                  <icon name="spinner" pulse/>
+                </template>
+                <template v-else>
+                  Показать события
+                </template>
+                </b-button>
+                
+              </b-col>
+            </b-row>
+          </b-form-group>
+              
           <template v-if="userEvents.length !== 0">
             <div class="equipment-card" v-for="event in userEvents" :key="event.key">
               <b-row>
@@ -206,10 +224,12 @@
 
 <!-- SCRIPT BEGIN -->
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment, { isMoment } from 'moment-timezone';
 import axios from 'axios';
+
+import DatePicker from 'vue2-datepicker';
 
 import CMailLink from '@/components/stuff/MailLink.vue';
 import CPhoneLink from '@/components/stuff/PhoneLink.vue';
@@ -221,6 +241,7 @@ import CUserPropertiesModal from '@/components/modals/UserPropertiesModal.vue';
 
 import 'vue-awesome/icons/times';
 import 'vue-awesome/icons/copy';
+import 'vue-awesome/icons/spinner';
 
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
@@ -258,7 +279,8 @@ enum FormState {
     'phone-link': CPhoneLink,
     'page-content': CPageContent,
     'user-roles-modal': CUserRolesModal,
-    'user-properties-modal': CUserPropertiesModal
+    'user-properties-modal': CUserPropertiesModal,
+    'date-picker': DatePicker
   },
   mixins: [validationMixin],
   validations() {
@@ -301,13 +323,15 @@ export default class ProfilePage extends Vue {
   public userPropertiesModalVisible: boolean = false;
 
   public dateRange: any[] = [];
-  public presets: any[] = [];
 
   public allUserEvents: IEvent[] = [];
   public userEvents: any[] = [];
 
   public startDate: string = '';
   public endDate: string = '';
+
+  public isDateChanged: boolean = false;
+  public isDatePickerInProcess: boolean = true;
 
   public canEditRoles: boolean | null = false;
 
@@ -323,7 +347,6 @@ export default class ProfilePage extends Vue {
     this.endDate = moment()
       .subtract(0, 'day')
       .format();
-
     this.dateRange.push(
       this.startDate,
       this.endDate
@@ -348,49 +371,47 @@ export default class ProfilePage extends Vue {
       this.profileData = profile;
       this.equipment = equipment;
       this.userEvents = this.mapEventsToEventsRange(events);
-
+      this.isDateChanged = false;
+      this.isDatePickerInProcess = false;
       this.loadingInProcess = false;
     });
 
-    // Date Picker Presets //
-    /////////////////////////
-
-    this.presets = [
-      {
-        label: 'За последнюю неделю',
-        range: [
-          moment()
-            .subtract(7, 'day')
-            .startOf('day'),
-          moment().endOf('day')
-        ]
-      },
-      {
-        label: 'За последние 30 дней',
-        range: [
-          moment()
-            .subtract(29, 'day')
-            .startOf('day'),
-          moment().endOf('day')
-        ]
-      },
-      {
-        label:
-          'За ' +
-          moment()
-            .subtract(1, 'month')
-            .startOf('month')
-            .format('MMMM'),
-        range: [
-          moment()
-            .subtract(1, 'month')
-            .startOf('month'),
-          moment()
-            .subtract(1, 'month')
-            .endOf('month')
-        ]
-      }
-    ];
+    // this.presets = [
+    //   {
+    //     label: 'За последнюю неделю',
+    //     range: [
+    //       moment()
+    //         .subtract(7, 'day')
+    //         .startOf('day'),
+    //       moment().endOf('day')
+    //     ]
+    //   },
+    //   {
+    //     label: 'За последние 30 дней',
+    //     range: [
+    //       moment()
+    //         .subtract(29, 'day')
+    //         .startOf('day'),
+    //       moment().endOf('day')
+    //     ]
+    //   },
+    //   {
+    //     label:
+    //       'За ' +
+    //       moment()
+    //         .subtract(1, 'month')
+    //         .startOf('month')
+    //         .format('MMMM'),
+    //     range: [
+    //       moment()
+    //         .subtract(1, 'month')
+    //         .startOf('month'),
+    //       moment()
+    //         .subtract(1, 'month')
+    //         .endOf('month')
+    //     ]
+    //   }
+    // ];
 
     this.canEditRoles = await this.$userManager.userHasRole('CanEditRoles');
   }
@@ -474,13 +495,24 @@ export default class ProfilePage extends Vue {
   }
 
   public changeUserEvents() {
+    this.isDatePickerInProcess = true;
     this.$store
       .dispatch(PROFILE_EVENTS_FETCH, {
         login: this.userId,
-        begin: this.dateRange[0].startOf('day').format(),
-        end: this.dateRange[1].endOf('day').format()
+        begin: this.startDate,
+        end: this.endDate
       })
-      .then((events) => this.userEvents = this.mapEventsToEventsRange(events));
+      .then((events) => {
+        this.userEvents = this.mapEventsToEventsRange(events);
+        this.isDateChanged = false;
+        this.isDatePickerInProcess = false;
+      });
+  }
+
+  @Watch('startDate')
+  @Watch('endDate')
+  public onDateChange() {
+    this.isDateChanged = true;
   }
 
   // Computed data //
