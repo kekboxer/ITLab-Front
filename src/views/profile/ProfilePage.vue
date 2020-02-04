@@ -450,7 +450,7 @@ export default class ProfilePage extends Vue {
       .dispatch(PROFILE_EVENTS_FETCH, {
         login: this.userId,
         begin: this.startDate,
-        end: this.endDate
+        end: moment(this.endDate).endOf('day').format()
       })
       .then((events) => {
         this.userEvents = this.mapEventsToEventsRange(events);
@@ -463,7 +463,6 @@ export default class ProfilePage extends Vue {
   @Watch('endDate')
   public onDateChange() {
     this.isDateChanged = true;
-    
   }
 
   // Computed data //
