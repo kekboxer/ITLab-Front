@@ -5,7 +5,7 @@ trigger:
 name: $(BuildID)-$(Build.SourceBranchName)
 
 pool:
-  name: Default
+  vmImage: 'ubuntu-latest'
 steps:
 - task: eliostruyf.build-task.custom-build-task.file-creator@2
   displayName: 'File Creator'
