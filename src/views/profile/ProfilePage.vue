@@ -322,8 +322,6 @@ export default class ProfilePage extends Vue {
 
   public userPropertiesModalVisible: boolean = false;
 
-  public dateRange: any[] = [];
-
   public allUserEvents: IEvent[] = [];
   public userEvents: any[] = [];
 
@@ -347,11 +345,6 @@ export default class ProfilePage extends Vue {
     this.endDate = moment()
       .subtract(0, 'day')
       .format();
-    this.dateRange.push(
-      this.startDate,
-      this.endDate
-    );
-
     this.isCurrentUser = this.$route.params.id == null;
     if (this.isCurrentUser) {
       this.userId = (await this.$userManager.getUserId()) || '';
@@ -375,44 +368,6 @@ export default class ProfilePage extends Vue {
       this.isDatePickerInProcess = false;
       this.loadingInProcess = false;
     });
-
-    // this.presets = [
-    //   {
-    //     label: 'За последнюю неделю',
-    //     range: [
-    //       moment()
-    //         .subtract(7, 'day')
-    //         .startOf('day'),
-    //       moment().endOf('day')
-    //     ]
-    //   },
-    //   {
-    //     label: 'За последние 30 дней',
-    //     range: [
-    //       moment()
-    //         .subtract(29, 'day')
-    //         .startOf('day'),
-    //       moment().endOf('day')
-    //     ]
-    //   },
-    //   {
-    //     label:
-    //       'За ' +
-    //       moment()
-    //         .subtract(1, 'month')
-    //         .startOf('month')
-    //         .format('MMMM'),
-    //     range: [
-    //       moment()
-    //         .subtract(1, 'month')
-    //         .startOf('month'),
-    //       moment()
-    //         .subtract(1, 'month')
-    //         .endOf('month')
-    //     ]
-    //   }
-    // ];
-
     this.canEditRoles = await this.$userManager.userHasRole('CanEditRoles');
   }
 
@@ -470,11 +425,6 @@ export default class ProfilePage extends Vue {
       type: 'info'
     });
     copyToClipboard(this.profileData.vkData);
-  }
-
-  public changeDateRange(dateRange: []) {
-    this.dateRange = dateRange;
-    this.changeUserEvents();
   }
 
   public mapEventsToEventsRange(events: IEvent[]) {
