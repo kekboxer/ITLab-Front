@@ -463,6 +463,7 @@ export default class ProfilePage extends Vue {
   @Watch('endDate')
   public onDateChange() {
     this.isDateChanged = true;
+    
   }
 
   // Computed data //
