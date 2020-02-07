@@ -55,7 +55,7 @@ export class UserManager {
     if (!user) {
       return null;
     }
-    if(!user.profile.role) {
+    if (!user.profile.role) {
       return null;
     }
     return user.profile.role.includes(userRoleName);
