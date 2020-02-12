@@ -1,6 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="about-page d-flex flex-column justify-content-center align-items-center fullscreen-height">
+    <vue-headful title="О системе"></vue-headful>
     <b-row>
       <b-col>
         <b class="system-name">ITLab-Front</b>

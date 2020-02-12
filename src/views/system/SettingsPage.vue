@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="settings-page">
+    <vue-headful title="Настройки"></vue-headful>
     <page-content>
       <template slot="header">
         Настройки

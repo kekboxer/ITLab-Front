@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-edit-page">
+    <vue-headful :title="isNewEquipment ? 'Новое оборудование' : 'Редактирование'"></vue-headful>
     <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Оборудование
@@ -93,7 +94,8 @@ import {
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_COMMIT,
-  EQUIPMENT_DELETE
+  EQUIPMENT_DELETE,
+  equipment
 } from '@/modules/equipment';
 
 import {
@@ -161,7 +163,7 @@ export default class EquipmentEditPage extends Vue {
 
     const equipmentId = this.$route.params.id;
     if (equipmentId && equipmentId !== 'new') {
-      this.$store
+      await this.$store
         .dispatch(EQUIPMENT_FETCH_ONE, equipmentId)
         .then((equipment) => {
           this.setEquipment(equipment);
@@ -175,7 +177,6 @@ export default class EquipmentEditPage extends Vue {
       this.isNewEquipment = true;
       this.loadingInProcess = false;
     }
-
     this.canEditEquipment = await this.$userManager.userHasRole('CanEditEquipment');
     this.canEditEquipmentOwner = await this.$userManager.userHasRole('CanEditEquipmentOwner');
   }

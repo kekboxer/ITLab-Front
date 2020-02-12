@@ -1,6 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="event-edit-page">
+    <vue-headful :title="isNewEvent ? 'Новое событие' : event.title + ' | Редактирование'"></vue-headful>
     <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">Событие</template>
       <template slot="header-button">

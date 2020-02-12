@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="profile-page">
+    <vue-headful :title="profileData.lastName + ' ' + profileData.firstName"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">Профиль</template>
 

@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="users-page">
+    <vue-headful title="Пользователи"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">Пользователи</template>
       <template slot="header-button">

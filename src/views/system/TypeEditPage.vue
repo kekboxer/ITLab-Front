@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="type-edit-page">
+    <vue-headful title="Типы"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">Типы</template>
 
