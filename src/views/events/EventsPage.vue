@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="events-page">
+    <vue-headful title="События"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">События</template>
       <template slot="header-button">

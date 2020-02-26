@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-page">
+    <vue-headful title="Оборудование"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">Оборудование</template>
       <template slot="header-button">

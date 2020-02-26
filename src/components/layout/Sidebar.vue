@@ -60,9 +60,15 @@ export default class CSidebar extends Vue {
   // Component methods //
   //////////////////////
 
+  public mounted() {
+    this.$store.dispatch(NOTIFICATIONS_FETCH);
+  }
+
   public created() {
     document.body.style.userSelect = 'text';
-
+    setInterval(() => {
+      this.$store.dispatch(NOTIFICATIONS_FETCH);
+    }, 10000);
     this.$watch(
       () => this.$store.getters[NOTIFICATIONS_GET_COUNT],
       (n: number, o: number) => {

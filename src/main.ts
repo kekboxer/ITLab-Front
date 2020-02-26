@@ -38,18 +38,13 @@ import VueNotifications from 'vue-notification';
 
 Vue.use(VueNotifications);
 
-// DateRangePicker
-
-import VMdDateRangePicker from 'v-md-date-range-picker';
-// import 'v-md-date-range-picker/dist/v-md-date-range-picker.css';
-
-Vue.use(VMdDateRangePicker);
-
 import Default from '@/components/layout/Default.vue';
 import NoSidebar from '@/components/layout/NoSidebar.vue';
+import vueHeadful from 'vue-headful';
 
 Vue.component('default-layout', Default);
 Vue.component('no-sidebar-layout', NoSidebar);
+Vue.component('vue-headful', vueHeadful);
 
 // VueMarkdown //
 ////////////////
