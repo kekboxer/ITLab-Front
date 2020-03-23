@@ -68,7 +68,7 @@
           <b-col>
             <div
               v-for="(place, placeIndex) in shift.places"
-              :key="`place-${placeIndex}`"
+              :key="place.id"
               class="place"
               v-if="!place.delete"
             >
