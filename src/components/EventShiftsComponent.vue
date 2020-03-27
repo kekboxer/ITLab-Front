@@ -416,9 +416,6 @@ export default class EventShiftsComponent extends Vue {
     this.$watch('value', (shifts?: IEventShift[]) => {
       this.value = shifts ? shifts : [];
     });
-    console.log(this.shiftSalaries);
-    
-
     if (!this.value) {
       this.value = [];
     }

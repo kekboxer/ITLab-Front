@@ -21,24 +21,24 @@
       </template>
 
       &nbsp;
-      <div v-if="salary.count" :id="`tooltip-${id}`" class="salary__info">
+      <div v-if="salary.description || editable" :id="`tooltip-${id}`" class="salary__info">
         <button type="button">
           <icon name="info-circle" class="salary__info__icon"></icon>
         </button>
       </div>
 
-      <b-tooltip v-if="salary.count" :target="`tooltip-${id}`" custom-class="my-tooltip-class">
+      <b-tooltip v-if="salary.description || editable" :target="`tooltip-${id}`" custom-class="my-tooltip-class">
         <template v-if="!descriptionToggler">{{salary.description}}</template>
         <template v-else>
           <input type="text" v-model="salary.description" class="salary__input" />
-          <!-- &nbsp;
+          &nbsp;
           <div
             @click="salaryUpdate()"
             v-if="canEditEvent"
             class="salary__edit_toggler salary__check"
           >
             <icon name="check"></icon>
-          </div>&nbsp; -->
+          </div>&nbsp;
         </template>
 
         <template v-if="canEditEvent && editable">
