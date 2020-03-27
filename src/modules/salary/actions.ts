@@ -11,11 +11,6 @@ import {
     EVENT_SALARY_FETCH_ONE,
     EVENT_SALARY_COMMIT,
     EVENT_SALARY_DELETE,
-    EVENT_SHIFT_SALARY_COMMIT,
-    EVENT_SHIFT_SALARY_DELETE,
-    EVENT_PLACE_SALARY_COMMIT,
-    EVENT_PLACE_SALARY_DELETE,
-    EVENT_SALARY_COMMIT_NEW
 } from './types';
 
 export const actions: ActionTree<IEventSalaryState, RootState> = {
@@ -39,7 +34,6 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
             axios.get(`/salary/v1/event/${eventId}`)
                 .then((response) => getResponseData<IEventSalary>(response))
                 .then((eventSalary) => {
-                    // console.log(eventSalary);
                     resolve(eventSalary);
                 })
                 .catch((error) => {
@@ -76,23 +70,14 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
 
     [EVENT_SALARY_COMMIT]: ({ }, eventSalary: IEventSalary | any) => {
         return new Promise((resolve, reject) => {
-            let request;
-            if (eventSalary.isNew) {
-                delete eventSalary.isNew;
-                request = axios.post(`/salary/v1/event/${eventSalary.eventId}`, eventSalary);
-            } else if (eventSalary.isNew === undefined) {
-                request = axios.put(`/salary/v1/event/${eventSalary.eventId}`, eventSalary);
-            }
-            if (request) {
-                request
-                    .then((response) => {
-                        resolve(response);
-                    })
-                    .catch((error) => {
-                        console.log(EVENT_SALARY_COMMIT_NEW, error);
-                        reject(error);
-                    });
-            }
+            axios.put(`/salary/v1/event/${eventSalary.eventId}`, eventSalary)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((error) => {
+                    console.log(EVENT_SALARY_COMMIT, error);
+                    reject(error);
+                });
         });
     }
 };

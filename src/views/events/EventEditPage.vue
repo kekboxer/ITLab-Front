@@ -57,7 +57,12 @@
               ></b-form-textarea>
             </b-form-group>
 
-            <b-form-group label="Зарплата">
+            <b-form-group label="Оплата">
+              <salary-item :editable="true" :salary="eventSalary"></salary-item>
+            </b-form-group>
+            
+            
+            <!-- <b-form-group label="Оплата">
               <b-row>
                 <b-col cols="3">
                   <b-form-input
@@ -80,10 +85,18 @@
                   ></b-form-input>
                 </b-col>
               </b-row>
-            </b-form-group>
+            </b-form-group> -->
 
             <b-form-group label="Смены">
-              <event-shifts-component v-model="eventShifts" :editable="true"></event-shifts-component>
+              <event-shifts-component v-model="eventShifts" 
+              :editable="true" 
+              :eventSalaryCount="eventSalary.count" 
+              :shiftSalaries="eventSalary.shiftSalaries" 
+              :placeSalaries="eventSalary.placeSalaries"
+              @salaryShiftCommit="salaryShiftCommit"
+              @salaryPlaceCommit="salaryPlaceCommit"
+              >
+              </event-shifts-component>
             </b-form-group>
 
             <b-row class="mt-2 buttons">
@@ -123,6 +136,7 @@ import axios from 'axios';
 import Icon from 'vue-awesome/components/Icon';
 import CPageContent from '@/components/layout/PageContent.vue';
 import CEventTypeSelection from '@/components/selectors/EventTypeSelection.vue';
+import CSalaryItem from '@/components/SalaryItem.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { validationMixin } from 'vuelidate';
@@ -144,7 +158,9 @@ import {
   IEventSalary,
   EventSalaryDefault,
   EVENT_SALARY_FETCH_ONE,
-  EVENT_SALARY_COMMIT
+  EVENT_SALARY_COMMIT,
+  IShiftSalary,
+  IPlaceSalary
 } from '@/modules/salary';
 
 import { IPageMeta } from '@/modules/layout';
@@ -163,7 +179,8 @@ enum State {
     Icon,
     'page-content': CPageContent,
     'event-type-selection': CEventTypeSelection,
-    'event-shifts-component': EventShiftsComponent
+    'event-shifts-component': EventShiftsComponent,
+    'salary-item': CSalaryItem,
   },
   mixins: [validationMixin],
   validations() {
@@ -221,7 +238,7 @@ export default class EventEditPage extends Vue {
 
   public event: IEvent = new EventDefault();
   public eventShifts: IEventShift[] = [];
-  public eventSalary: IEventSalary = new EventSalaryDefault();
+  public eventSalary: IEventSalary | any = new EventSalaryDefault();
 
   // Component methods //
   //////////////////////
@@ -236,7 +253,14 @@ export default class EventEditPage extends Vue {
            if (eventSalary) {
             this.eventSalary = eventSalary;
           }
-         });
+         })
+         .catch(() => {
+           this.eventSalary = {
+              count: null,
+              description: '',
+              eventId: eventId
+            }
+         })
       this.$store.dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
           this.setEvent(event);
@@ -246,21 +270,6 @@ export default class EventEditPage extends Vue {
           this.notFound = true;
           this.loadingInProcess = false;
         });
-      // Promise.all([
-      //   this.$store.dispatch(EVENTS_FETCH_ONE, eventId),
-      //   this.$store.dispatch(EVENT_SALARY_FETCH_ONE, eventId)
-      // ])
-      //   .then(([event, eventSalary]: [IEvent, IEventSalary]) => {
-      //     if (eventSalary) {
-      //       this.eventSalary = eventSalary;
-      //     }
-      //     this.setEvent(event);
-      //     this.loadingInProcess = false;
-      //   })
-      //   .catch((error) => {
-      //     this.notFound = true;
-      //     this.loadingInProcess = false;
-      //   });
     } else {
       this.isNewEvent = true;
       this.loadingInProcess = false;
@@ -285,6 +294,10 @@ export default class EventEditPage extends Vue {
       .then((event) => {
         this.setEvent(event);
 
+        this.eventSalary.eventId = event.id;
+
+        this.$store.dispatch(EVENT_SALARY_COMMIT, this.eventSalary);
+
         this.pageState = State.Default;
 
         this.$notify({
@@ -303,11 +316,6 @@ export default class EventEditPage extends Vue {
           duration: 1500
         });
       });
-
-    this.$store
-      .dispatch(EVENT_SALARY_COMMIT, this.eventSalary)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
   }
 
   public onDelete() {
@@ -339,6 +347,26 @@ export default class EventEditPage extends Vue {
     ) {
       e.preventDefault();
     }
+  }
+
+  public salaryShiftCommit(salary: any) {
+    const isSalaryAlready = this.eventSalary.shiftSalaries.find((shiftSalary: IShiftSalary) => {
+      return shiftSalary.shiftId === salary.shiftId;
+    });
+    if (!isSalaryAlready) {
+      this.eventSalary.shiftSalaries.push(salary);
+    }
+  }
+
+  public salaryPlaceCommit(salary: any) {
+    const isSalaryAlready = this.eventSalary.placeSalaries.find((placeSalary: IPlaceSalary) => {
+      return placeSalary.placeId === salary.placeId;
+    });
+    if (!isSalaryAlready) {
+      this.eventSalary.placeSalaries.push(salary);
+    }
+    console.log(this.eventSalary);
+    
   }
 
   // Computed data //

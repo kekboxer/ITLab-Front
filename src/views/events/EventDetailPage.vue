@@ -39,13 +39,19 @@
                 <br>
                 <b>Адрес:</b><br>
                 <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
+                <salary-item :salary="eventSalary" :editable="false"></salary-item>
                 <hr class="d-block d-md-none">
             </b-col>
           </b-row>
           <hr>
           <b-row>
             <b-col>
-              <event-shifts-component v-model="event.shifts" :editable="false">
+              <event-shifts-component 
+              v-model="event.shifts" 
+              :editable="false" 
+              :eventSalaryCount="eventSalary.count" 
+              :shiftSalaries="eventSalary.shiftSalaries" 
+              :placeSalaries="eventSalary.placeSalaries">
               </event-shifts-component>
             </b-col>
           </b-row>
@@ -64,15 +70,18 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
 import CPageContent from '@/components/layout/PageContent.vue';
+import CSalaryItem from '@/components/SalaryItem.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
+import { IEventSalary, EventSalaryDefault, EVENT_SALARY_FETCH_ONE } from '../../modules/salary';
 
 @Component({
   components: {
     'page-content': CPageContent,
-    'event-shifts-component': EventShiftsComponent
+    'event-shifts-component': EventShiftsComponent,
+    'salary-item': CSalaryItem
   }
 })
 export default class EventDetailPage extends Vue {
@@ -84,6 +93,8 @@ export default class EventDetailPage extends Vue {
   public event: IEvent = new EventDefault();
 
   public canEditEvent: boolean | null = false;
+
+  public eventSalary: IEventSalary | any = new EventSalaryDefault();
 
   // Component methods //
   //////////////////////
@@ -103,6 +114,20 @@ export default class EventDetailPage extends Vue {
           this.notFound = true;
           this.loadingInProcess = false;
         });
+
+        this.$store.dispatch(EVENT_SALARY_FETCH_ONE, eventId)
+         .then((eventSalary) => {
+           if (eventSalary) {
+            this.eventSalary = eventSalary;
+          }
+         })
+         .catch(() => {
+           this.eventSalary = {
+              count: null,
+              description: '',
+              eventId: eventId
+            }
+         })
     }
 
     this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');

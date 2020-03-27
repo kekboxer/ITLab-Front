@@ -18,7 +18,7 @@
             </span>
           </strong>
         </b-col>
-        <salary-item :id="event.id" :salary="eventSalary" @salaryCommit="salaryCommit(eventSalary)"></salary-item>
+        <salary-item :id="event.id" :salary="eventSalary" :editable="false"></salary-item>
         <b-col cols="auto" v-if="canEditEvent">
           <b-button
             variant="outline-warning"
@@ -133,10 +133,6 @@ export default class CEventItem extends Vue {
     ) {
       this.dateHovered = !this.dateHovered;
     }
-  }
-
-  public salaryCommit(eventSalary: IEventSalary | any) {
-    this.$emit('salaryCommit', eventSalary);
   }
 
   // Computed data //

@@ -4,7 +4,8 @@
 
       <template v-if="!salaryToggler">
         <template v-if="salary.count !== null">
-          <span class="salary__count">{{ salary.count }}&#8381;</span>
+          <span v-if="salary.isNew" class="salary__count salary__count_new">{{ salary.count }}&#8381;</span>
+          <span v-else class="salary__count">{{ salary.count }}&#8381;</span>
         </template>
         <template v-else>
           <span>Стоимость не указана</span>
@@ -20,27 +21,27 @@
       </template>
 
       &nbsp;
-      <div v-if="salary.count" :id="`tooltip-${salary.eventId}`" class="salary__info">
-        <button>
+      <div v-if="salary.count" :id="`tooltip-${id}`" class="salary__info">
+        <button type="button">
           <icon name="info-circle" class="salary__info__icon"></icon>
         </button>
       </div>
 
-      <b-tooltip v-if="salary.count" :target="`tooltip-${salary.eventId}`" custom-class="my-tooltip-class">
+      <b-tooltip v-if="salary.count" :target="`tooltip-${id}`" custom-class="my-tooltip-class">
         <template v-if="!descriptionToggler">{{salary.description}}</template>
         <template v-else>
           <input type="text" v-model="salary.description" class="salary__input" />
-          &nbsp;
+          <!-- &nbsp;
           <div
             @click="salaryUpdate()"
             v-if="canEditEvent"
             class="salary__edit_toggler salary__check"
           >
             <icon name="check"></icon>
-          </div>&nbsp;
+          </div>&nbsp; -->
         </template>
 
-        <template v-if="canEditEvent">
+        <template v-if="canEditEvent && editable">
           <div @click="salaryDescriptionToggle()" class="salary__edit_toggler">
             &nbsp;
             <icon name="edit"></icon>
@@ -48,8 +49,9 @@
         </template>
       </b-tooltip>
 
+        
+      <template v-if="canEditEvent && editable">
         &nbsp;
-      <template v-if="canEditEvent">
         <div @click="salaryToggle()" class="salary__edit_toggler">
           <icon name="edit"></icon>
         </div>
@@ -73,7 +75,6 @@ import { IEvent } from '@/modules/events';
 import {
   IEventSalary,
   EVENT_SALARY_COMMIT,
-  EVENT_SALARY_COMMIT_NEW,
   salary
 } from '@/modules/salary';
 
@@ -90,6 +91,9 @@ export default class CSalaryItem extends Vue {
 
   @Prop()
   public id!: string;
+
+  @Prop()
+  public editable?: boolean;
 
   public canEditEvent: boolean | null = false;
 
@@ -120,6 +124,9 @@ export default class CSalaryItem extends Vue {
   }
 
   public salaryUpdate() {
+    if(this.salary.hasOwnProperty('isNew')){
+      delete this.salary.isNew
+    }
     this.$emit('salaryCommit', this.salary);
     //   if(this.salary !== undefined) {
     //       console.log('salary');
@@ -178,5 +185,8 @@ export default class CSalaryItem extends Vue {
 }
 .salary__input {
   width: 100px;
+}
+.salary__count_new {
+  color: rgba($color: #000000, $alpha: 0.5);
 }
 </style>

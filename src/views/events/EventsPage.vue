@@ -22,7 +22,6 @@
           <event-item
             :event="event"
             :eventSalary="getEventSalary(event.id)"
-            @salaryCommit="salaryCommit"
           ></event-item>
         </b-col>
       </b-row>
@@ -41,7 +40,6 @@
             <event-item
               :event="event"
               :eventSalary="getEventSalary(event.id)"
-              @salaryCommit="salaryCommit"
             ></event-item>
           </b-col>
         </b-row>
@@ -79,7 +77,6 @@ import {
   IEventSalary,
   EVENT_SALARY_FETCH_ALL,
   EVENT_SALARY_COMMIT,
-  EVENT_SALARY_COMMIT_NEW,
   salary
 } from '@/modules/salary';
 
@@ -176,24 +173,24 @@ export default class EventsPage extends Vue {
     // });
   }
 
-  public salaryCommit(eventSalary: IEventSalary | any) {
-    this.$store
-      .dispatch(EVENT_SALARY_COMMIT, eventSalary)
-      .then(() => {
-        this.$notify({
-          title: 'Изменения успешно сохранены',
-          duration: 500
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.$notify({
-          title: 'Невозможно сохранить изменения',
-          type: 'error',
-          duration: 1500
-        });
-      });
-  }
+  // public salaryCommit(eventSalary: IEventSalary | any) {
+  //   this.$store
+  //     .dispatch(EVENT_SALARY_COMMIT, eventSalary)
+  //     .then(() => {
+  //       this.$notify({
+  //         title: 'Изменения успешно сохранены',
+  //         duration: 500
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       this.$notify({
+  //         title: 'Невозможно сохранить изменения',
+  //         type: 'error',
+  //         duration: 1500
+  //       });
+  //     });
+  // }
 
   // Computed data //
   //////////////////
