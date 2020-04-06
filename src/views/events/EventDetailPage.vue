@@ -37,6 +37,14 @@
                   cols="9"
                 >{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
               </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <b>Оплата:</b>
+                </b-col>
+                <b-col
+                  cols="9"
+                ><salary-item :salary="event.eventSalary" :editable="false"></salary-item></b-col>
+              </b-row>
 
               <template v-if="showElapsed && elapsedTime">
                 (До события {{ elapsedTime }})
@@ -49,7 +57,6 @@
                 :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`"
                 target="_blank"
               >{{ event.address }}</a>
-              <salary-item :salary="event.eventSalary" :editable="false"></salary-item>
               <hr class="d-block d-md-none" />
             </b-col>
           </b-row>

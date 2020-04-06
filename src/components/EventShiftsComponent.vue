@@ -36,8 +36,8 @@
           class="ml-md-1 mt-2 mt-md-0 d-flex align-content-end align-items-start"
         >
           <salary-item
-          class="ml-auto"
-          v-if="eventSalaryCount !== null"
+          class="ml-auto mr-2"
+          v-if="eventSalaryCount !== null && eventSalaryCount !== ''"
           :salary="getShiftSalary(shiftIndex)"
           :id="`${shiftIndex + 1}`"
           :editable="editable"
@@ -112,8 +112,8 @@
                     class="ml-md-1 mt-2 mt-md-0 pr-0 d-flex align-content-end align-items-start"
                   >
                     <salary-item
-                      class="ml-auto"
-                      v-if="eventSalaryCount !== null"
+                      class="ml-auto mr-2"
+                      v-if="eventSalaryCount !== null && eventSalaryCount !== ''"
                       :salary="getPlaceSalary(placeIndex, shiftIndex)"
                       :id="`${shiftIndex}${placeIndex}`"
                       :editable="editable"

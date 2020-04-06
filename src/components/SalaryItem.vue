@@ -1,12 +1,12 @@
 <template>
-  <b-col cols="auto">
+  <div>
     <template>
       <template v-if="!salaryToggler">
         <template v-if="salaryForm.count !== null">
           <span
             :id="`tooltip-${id}`"
             :class="[salaryForm.isNew ? 'salary__count_new': '', [salaryForm.description ? 'salary__count__description' : '', 'salary__count']]"
-          >{{ salaryForm.count }}&#8381;</span>
+          >{{ salaryForm.count }} &#8381;</span>
 
           <b-tooltip
             v-if="salaryForm.description"
@@ -51,7 +51,7 @@
 
       </template>
     </template>
-  </b-col>
+  </div>
 </template>
 
 <script lang="ts">

@@ -140,7 +140,8 @@ import {
   IShiftSalary,
   IPlaceSalary,
   ShiftSalaryDefault,
-  PlaceSalaryDefault
+  PlaceSalaryDefault,
+  EVENT_SALARY_DELETE
 } from '@/modules/salary';
 
 import { IPageMeta } from '@/modules/layout';
@@ -266,14 +267,17 @@ export default class EventEditPage extends Vue {
     this.$store
       .dispatch(EVENT_COMMIT, this.event)
       .then((event) => {
-        this.$store.dispatch(EVENT_SALARY_COMMIT, event[1]).then(() => {
-          this.pageState = State.Default;
-          this.$notify({
-            title: 'Изменения успешно сохранены',
-            duration: 500
-          });
-          this.$router.push({ path: '/events/' + event[0].id });
+        if (event[1].count) {
+          this.$store.dispatch(EVENT_SALARY_COMMIT, event[1]);
+        } else if (!event[1].count && this.$route.params.id !== 'new') {
+          this.$store.dispatch(EVENT_SALARY_DELETE, event[1].eventId);
+        }
+        this.pageState = State.Default;
+        this.$notify({
+          title: 'Изменения успешно сохранены',
+          duration: 500
         });
+        this.$router.push({ path: '/events/' + event[0].id });
       })
       .catch((error) => {
         this.pageState = State.Error;
@@ -357,6 +361,10 @@ export default class EventEditPage extends Vue {
   }
 
   public eventSalaryCommit(salary: IEventSalary) {
+    if (!salary.count) {
+      this.eventSalaryReset();
+      return;
+    }
     this.event.eventSalary = salary;
     this.eventShifts.map((shift) => {
       if (shift.shiftSalary!.isNew === true) {

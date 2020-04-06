@@ -42,31 +42,6 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
         });
     },
 
-    // [EVENT_SALARY_COMMIT]: ({ }, eventSalary: IEventSalary) => {
-    //     console.log(eventSalary);
-    //     // const requestData = {
-    //     //     eventSalary: eventSalary.eventId,
-    //     //     shiftSalaries: eventSalary.shiftSalaries,
-    //     //     placeSalaries: eventSalary.placeSalaries,
-    //     //     count: eventSalary.count,
-    //     //     description: eventSalary.description
-    //     // };
-    //     return new Promise((resolve, reject) => {
-    //         const request = axios.put(`/salary/v1/event/${eventSalary.eventId}`, eventSalary);
-    //         // : axios.put(`https://dev.rtuitlab.ru/salary/v1/event/${data.eventId}`,
-    //         //     {count: data.eventSalary.count, description: data.eventSalary.description});
-    //         request
-    //             .then((response) => {
-    //                 // console.log(response);
-    //                 resolve(response);
-    //             })
-    //             .catch((error) => {
-    //                 console.log(EVENT_SALARY_COMMIT, error);
-    //                 reject(error);
-    //             });
-    //     });
-    // },
-
     [EVENT_SALARY_COMMIT]: ({ }, eventSalary: IEventSalary | any) => {
 
         const id = eventSalary.eventId;
@@ -81,6 +56,19 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
                     console.log(EVENT_SALARY_COMMIT, error);
                     reject(error);
                 });
+        });
+    },
+
+    [EVENT_SALARY_DELETE]: ({ }, id: string) => {
+        return new Promise((resolve, reject) => {
+            axios.delete(`/salary/v1/event/${id}`)
+            .then((response) => {
+                resolve(response);
+            })
+            .catch((error) => {
+                console.log(EVENT_SALARY_DELETE, error);
+                reject(error);
+            });
         });
     }
 };
