@@ -8,6 +8,7 @@ import { profile } from '@/modules/profile';
 import { users } from '@/modules/users';
 import { notifications } from '@/modules/notifications';
 import { projects } from '@/modules/projects';
+import { salary } from '@/modules/salary';
 
 Vue.use(Vuex);
 
@@ -21,7 +22,8 @@ const store: StoreOptions<RootState> = {
     profile,
     users,
     notifications,
-    projects
+    projects,
+    salary
   }
 };
 

@@ -18,6 +18,7 @@
             </span>
           </strong>
         </b-col>
+        <salary-item :id="event.id" :salary="eventSalary" :editable="false"></salary-item>
         <b-col cols="auto" v-if="canEditEvent">
           <b-button
             variant="outline-warning"
@@ -81,6 +82,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Icon from 'vue-awesome/components/Icon';
 import moment from 'moment';
 
+import CSalaryItem from '@/components/SalaryItem.vue';
+
 import 'vue-awesome/icons/clock';
 import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/eye-slash';
@@ -88,6 +91,8 @@ import 'vue-awesome/icons/eye-slash';
 import { IEvent } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 import { getNounDeclension } from '@/stuff';
+
+import { IEventSalary, EVENT_SALARY_FETCH_ONE } from '@/modules/salary';
 
 enum State {
   Default,
@@ -97,7 +102,8 @@ enum State {
 
 @Component({
   components: {
-    icon: Icon
+    icon: Icon,
+    'salary-item': CSalaryItem,
   }
 })
 export default class CEventItem extends Vue {
@@ -107,8 +113,10 @@ export default class CEventItem extends Vue {
   @Prop()
   public event!: IEvent;
 
-  public dateHovered: boolean = false;
+  @Prop()
+  public eventSalary!: IEventSalary | any;
 
+  public dateHovered: boolean = false;
   public canEditEvent: boolean | null = false;
 
   // Methods //

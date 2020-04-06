@@ -19,7 +19,10 @@
 
       <b-row v-for="event in eventsCurrent" :key="event.id">
         <b-col>
-          <event-item :event="event"></event-item>
+          <event-item
+            :event="event"
+            :eventSalary="getEventSalary(event.id)"
+          ></event-item>
         </b-col>
       </b-row>
 
@@ -34,7 +37,10 @@
       <div v-if="eventsShowPast">
         <b-row v-for="event in eventsPast" :key="event.id">
           <b-col>
-            <event-item :event="event"></event-item>
+            <event-item
+              :event="event"
+              :eventSalary="getEventSalary(event.id)"
+            ></event-item>
           </b-col>
         </b-row>
       </div>
@@ -66,6 +72,13 @@ import {
   EVENTS_FETCH_ALL,
   EVENTS_GET_ALL
 } from '@/modules/events';
+
+import {
+  IEventSalary,
+  EVENT_SALARY_FETCH_ALL,
+  EVENT_SALARY_COMMIT,
+  salary
+} from '@/modules/salary';
 
 const createEventSortPredicate = (asc: boolean = true) => (
   a: IEvent,
@@ -103,12 +116,24 @@ export default class EventsPage extends Vue {
 
   public canEditEvent: boolean | null = false;
 
+  public eventSalary: IEventSalary[] = [];
+
+  public newSalary: any = {
+    count: null,
+    description: '',
+    isNew: true
+  };
+
   // Component methods //
   //////////////////////
 
   public async mounted() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length === 0;
-
+    this.$store
+      .dispatch(EVENT_SALARY_FETCH_ALL)
+      .then((response: IEventSalary[]) => {
+        this.eventSalary = response;
+      });
     this.$store
       .dispatch(EVENTS_FETCH_ALL, {
         dateBegin: this.eventsShowPast ? undefined : this.currentDate
@@ -129,6 +154,14 @@ export default class EventsPage extends Vue {
     }
 
     this.eventsShowPast = !this.eventsShowPast;
+  }
+
+  public getEventSalary(id: string) {
+    if (this.eventSalary.find((salary) => salary.eventId === id)) {
+      return this.eventSalary.find((salary) => salary.eventId === id);
+    } else {
+      return Object.assign({ eventId: id }, this.newSalary);
+    }
   }
 
   // Computed data //

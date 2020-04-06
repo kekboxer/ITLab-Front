@@ -1,13 +1,8 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-shifts-component">
-    <div
-      class="shift"
-      v-for="(shift, shiftIndex) in eventShifts"
-      :key="`shift-${shiftIndex}`"
-      v-if="!shift.delete"
-    >
-      <b-row>
+    <div class="shift" v-for="(shift, shiftIndex) in eventShifts" :key="`shift-${shiftIndex}`">
+      <b-row v-if="!shift.delete">
         <b-col
           cols="auto"
           class="noselect"
@@ -38,6 +33,23 @@
         <b-col
           cols="12"
           md="auto"
+          class="ml-md-1 mt-2 mt-md-0 d-flex align-content-end align-items-start"
+        >
+          <salary-item
+          class="ml-auto mr-2"
+          v-if="eventSalaryCount !== null && eventSalaryCount !== ''"
+          :salary="getShiftSalary(shiftIndex)"
+          :id="`${shiftIndex + 1}`"
+          :editable="editable"
+          @salaryCommit="(salary) => salaryShiftCommit(salary, shiftIndex)"
+          @salaryReset="salaryShiftReset(shiftIndex)"
+          @salaryInProcess="salaryInProcess"
+        ></salary-item>
+        </b-col>
+        
+        <b-col
+          cols="12"
+          md="auto"
           class="ml-md-1 mt-2 mt-md-0 d-flex align-content-between align-items-start"
           v-if="editable"
         >
@@ -63,16 +75,11 @@
         </b-col>
       </b-row>
       <template v-if="!isShiftCollapsed(shift)">
-        <hr>
+        <hr />
         <b-row>
           <b-col>
-            <div
-              v-for="(place, placeIndex) in shift.places"
-              :key="`place-${placeIndex}`"
-              class="place"
-              v-if="!place.delete"
-            >
-              <div class="place-title drag-handle">
+            <div v-for="(place, placeIndex) in shift.places" :key="placeIndex" class="place">
+              <div class="place-title drag-handle" v-if="!place.delete">
                 <b-row>
                   <b-col
                     cols="auto"
@@ -98,6 +105,22 @@
                     <b-row v-if="place.description">
                       <b-col>{{ place.description }}</b-col>
                     </b-row>
+                  </b-col>
+                  <b-col
+                    cols="12"
+                    md="auto"
+                    class="ml-md-1 mt-2 mt-md-0 pr-0 d-flex align-content-end align-items-start"
+                  >
+                    <salary-item
+                      class="ml-auto mr-2"
+                      v-if="eventSalaryCount !== null && eventSalaryCount !== ''"
+                      :salary="getPlaceSalary(placeIndex, shiftIndex)"
+                      :id="`${shiftIndex}${placeIndex}`"
+                      :editable="editable"
+                      @salaryCommit="(salary) => salaryPlaceCommit(salary, placeIndex, shiftIndex)"
+                      @salaryReset="salaryPlaceReset(placeIndex, shiftIndex)"
+                      @salaryInProcess="salaryInProcess"
+                    ></salary-item>
                   </b-col>
                   <b-col
                     cols="12"
@@ -159,8 +182,8 @@
                               v-b-tooltip.hover
                               title="Подтверждённый"
                             >{{ participant.eventRole.title }}</span>
-                            <br>
-                            <mail-link :email="participant.user.email"/>
+                            <br />
+                            <mail-link :email="participant.user.email" />
                           </b-col>
                           <b-col cols="auto" v-if="editable">
                             <div
@@ -189,8 +212,8 @@
                               v-b-tooltip.hover
                               title="Не подтверждённый"
                             >{{ participant.eventRole.title }}</span>
-                            <br>
-                            <mail-link :email="participant.user.email"/>
+                            <br />
+                            <mail-link :email="participant.user.email" />
                           </b-col>
                           <b-col cols="auto" v-if="editable">
                             <div
@@ -219,8 +242,8 @@
                               v-b-tooltip.hover
                               title="Подал заявку"
                             >{{ participant.eventRole.title }}</span>
-                            <br>
-                            <mail-link :email="participant.user.email"/>
+                            <br />
+                            <mail-link :email="participant.user.email" />
                           </b-col>
                         </b-row>
                       </li>
@@ -238,12 +261,11 @@
                         class="list-group-item"
                         v-for="(equipment, equipmentIndex) in place.equipment"
                         :key="`place-${placeIndex}-equipment-${equipmentIndex}`"
-                        v-if="!equipment.delete"
                       >
-                        <b-row>
+                        <b-row v-if="!equipment.delete">
                           <b-col cols="auto mr-auto">
                             <b>{{ equipment.equipmentType.title }}</b>
-                            <br>
+                            <br />
                             {{ equipment.serialNumber }}
                           </b-col>
                           <b-col cols="auto" v-if="editable">
@@ -294,11 +316,11 @@
       </b-col>
     </b-row>
 
-    <event-shift-modal v-model="shiftModalData" @onSubmit="onSubmitShift"/>
-    <event-place-modal v-model="placeModalData" @onSubmit="onSubmitPlace"/>
-    <event-equipment-modal v-model="equipmentModalData" @onSubmit="onSubmitEquipment"/>
-    <event-participant-modal v-model="participantModalData" @onSubmit="onSubmitParticipant"/>
-    <event-application-modal v-model="applicationModalData"/>
+    <event-shift-modal v-model="shiftModalData" @onSubmit="onSubmitShift" />
+    <event-place-modal v-model="placeModalData" @onSubmit="onSubmitPlace" />
+    <event-equipment-modal v-model="equipmentModalData" @onSubmit="onSubmitEquipment" />
+    <event-participant-modal v-model="participantModalData" @onSubmit="onSubmitParticipant" />
+    <event-application-modal v-model="applicationModalData" />
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -313,6 +335,7 @@ import axios from 'axios';
 import Icon from 'vue-awesome/components/Icon';
 import CMailLink from '@/components/stuff/MailLink.vue';
 import CUserSelection from '@/components/selectors/UserSelection.vue';
+import CSalaryItem from '@/components/SalaryItem.vue';
 
 import CEventShiftModal, {
   EventShiftModalData
@@ -348,6 +371,13 @@ import {
   cloneEventPlace
 } from '@/modules/events';
 
+import {
+  IShiftSalary,
+  IPlaceSalary,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault
+} from '@/modules/salary';
+
 import { getNounDeclension } from '@/stuff';
 
 //  ⛧             \_/       ⛧            ⛧
@@ -364,7 +394,8 @@ import { getNounDeclension } from '@/stuff';
     'event-place-modal': CEventPlaceModal,
     'event-equipment-modal': CEventEquipmentModal,
     'event-participant-modal': CEventParticipantModalData,
-    'event-application-modal': CEventApplicationModal
+    'event-application-modal': CEventApplicationModal,
+    'salary-item': CSalaryItem
   }
 })
 export default class EventShiftsComponent extends Vue {
@@ -379,6 +410,9 @@ export default class EventShiftsComponent extends Vue {
 
   @Prop()
   public editable?: boolean;
+
+  @Prop()
+  public eventSalaryCount?: any;
 
   // Modal data //
   ///////////////
@@ -395,7 +429,6 @@ export default class EventShiftsComponent extends Vue {
     this.$watch('value', (shifts?: IEventShift[]) => {
       this.value = shifts ? shifts : [];
     });
-
     if (!this.value) {
       this.value = [];
     }
@@ -578,9 +611,7 @@ export default class EventShiftsComponent extends Vue {
       ]);
       return `${nounNeed} ${place.targetParticipantsCount} ${nounParticipant}`;
     }
-    return `Участников: ${countParticipant} из ${
-      place.targetParticipantsCount
-    }`;
+    return `Участников: ${countParticipant} из ${place.targetParticipantsCount}`;
   }
 
   public onSubmitPlace() {
@@ -761,7 +792,77 @@ export default class EventShiftsComponent extends Vue {
   }
 
   public isAnyTextSelected(): boolean {
-    return window.getSelection() != null && window.getSelection()!.toString().length > 0;
+    return (
+      window.getSelection() != null &&
+      window.getSelection()!.toString().length > 0
+    );
+  }
+
+  public getShiftSalary(shiftIndex: number) {
+    if (this.eventShifts[shiftIndex].shiftSalary!.isNew === true) {
+      this.eventShifts[shiftIndex].shiftSalary!.count = this.eventSalaryCount;
+    }
+    return Object.assign({}, this.eventShifts[shiftIndex].shiftSalary);
+  }
+
+  public getPlaceSalary(placeIndex: number, shiftIndex: number) {
+    if (
+      this.eventShifts[shiftIndex].places[placeIndex].placeSalary!.isNew ===
+      true
+    ) {
+      this.eventShifts[shiftIndex].places[
+        placeIndex
+      ].placeSalary!.count = this.eventShifts[shiftIndex].shiftSalary!.count;
+    }
+    return Object.assign({}, this.eventShifts[shiftIndex].places[placeIndex].placeSalary);
+  }
+
+  public salaryShiftCommit(salary: any, shiftIndex: number) {
+    Vue.set(this.value![shiftIndex], 'shiftSalary', salary);
+    this.value![shiftIndex].places.map((place) => {
+      if (place.placeSalary!.hasOwnProperty('isNew')) {
+        Vue.set(place.placeSalary!, 'count', salary.count);
+      }
+      return place;
+    });
+    this.$forceUpdate();
+  }
+
+  public salaryShiftReset(shiftIndex: number) {
+    this.value![shiftIndex].shiftSalary = {
+      shiftId: this.value![shiftIndex].shiftSalary!.shiftId,
+      count: this.eventSalaryCount,
+      description: '',
+      isNew: true
+    };
+    this.$forceUpdate();
+  }
+
+  public salaryPlaceCommit(
+    salary: any,
+    placeIndex: number,
+    shiftIndex: number
+  ) {
+    Vue.set(
+      this.value![shiftIndex].places[placeIndex],
+      'placeSalary',
+      salary
+    );
+    this.$forceUpdate();
+  }
+
+  public salaryPlaceReset(placeIndex: number, shiftIndex: number) {
+    this.value![shiftIndex].places[placeIndex].placeSalary = {
+      placeId: this.value![shiftIndex].places[placeIndex].placeSalary!.placeId,
+      count: this.value![shiftIndex].shiftSalary!.count,
+      description: '',
+      isNew: true
+    };
+    this.$forceUpdate();
+  }
+
+  public salaryInProcess(isSalaryInProcess: boolean) {
+    this.$emit('salaryInProcess', isSalaryInProcess);
   }
 
   // Computed data //

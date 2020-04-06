@@ -16,15 +16,21 @@
             </b-form-group>
 
             <b-form-group label="Название">
-              <b-form-input type="text" v-model.trim="event.title" :state="!$v.event.title.$invalid">
-              </b-form-input>
+              <b-form-input
+                type="text"
+                v-model.trim="event.title"
+                :state="!$v.event.title.$invalid"
+              ></b-form-input>
             </b-form-group>
 
             <b-form-group label="Описание">
               <b-tabs>
                 <b-tab title="Markdown" active>
-                  <b-form-textarea style="font-family: monospace; resize: none" v-autosize="event.description" v-model="event.description">
-                  </b-form-textarea>
+                  <b-form-textarea
+                    style="font-family: monospace; resize: none"
+                    v-autosize="event.description"
+                    v-model="event.description"
+                  ></b-form-textarea>
                 </b-tab>
                 <b-tab title="Просмотр">
                   <div class="markdown markdown-preview">
@@ -34,27 +40,59 @@
               </b-tabs>
               <div class="w-100" align="right">
                 <small>
-                  <a target="_blank" href="https://guides.github.com/features/mastering-markdown">Markdown guide</a>
+                  <a
+                    target="_blank"
+                    href="https://guides.github.com/features/mastering-markdown"
+                  >Markdown guide</a>
                 </small>
               </div>
             </b-form-group>
 
             <b-form-group label="Адрес">
-              <b-form-textarea v-autosize="event.address" v-model="event.address" @keydown.native="handleAddressInput" :state="!$v.event.address.$invalid">
-              </b-form-textarea>
+              <b-form-textarea
+                v-autosize="event.address"
+                v-model="event.address"
+                @keydown.native="handleAddressInput"
+                :state="!$v.event.address.$invalid"
+              ></b-form-textarea>
+            </b-form-group>
+
+            <b-form-group label="Оплата">
+              <salary-item
+                :editable="true"
+                :id="event.id"
+                :salary="getEventSalary()"
+                @salaryCommit="eventSalaryCommit"
+                @salaryReset="eventSalaryReset"
+                @salaryInProcess="salaryInProcess"
+              ></salary-item>
             </b-form-group>
 
             <b-form-group label="Смены">
-              <event-shifts-component v-model="eventShifts" :editable="true">
-              </event-shifts-component>
+              <event-shifts-component
+                :value="eventShifts"
+                :editable="true"
+                :eventSalaryCount="event.eventSalary.count"
+                @salaryInProcess="salaryInProcess"
+              ></event-shifts-component>
             </b-form-group>
 
             <b-row class="mt-2 buttons">
               <b-col cols="12" md="auto">
-                <b-button variant="primary" class="w-100" :disabled="$v.event.$invalid || isPageInProcess" @click="onSubmitEvent">Подтвердить</b-button>
+                <b-button
+                  variant="primary"
+                  class="w-100"
+                  :disabled="$v.event.$invalid || isPageInProcess || isSalaryInProcess"
+                  @click="onSubmitEvent"
+                >Подтвердить</b-button>
               </b-col>
               <b-col cols="12" md="auto" v-if="!isNewEvent">
-                <b-button variant="outline-danger" class="w-100" @click="onDelete()" :disabled="isPageInProcess">Удалить</b-button>
+                <b-button
+                  variant="outline-danger"
+                  class="w-100"
+                  @click="onDelete()"
+                  :disabled="isPageInProcess"
+                >Удалить</b-button>
               </b-col>
             </b-row>
           </b-form>
@@ -73,8 +111,10 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 import axios from 'axios';
 
+import Icon from 'vue-awesome/components/Icon';
 import CPageContent from '@/components/layout/PageContent.vue';
 import CEventTypeSelection from '@/components/selectors/EventTypeSelection.vue';
+import CSalaryItem from '@/components/SalaryItem.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { validationMixin } from 'vuelidate';
@@ -91,6 +131,19 @@ import {
   EVENT_DELETE,
   EventShiftDefault
 } from '@/modules/events';
+
+import {
+  IEventSalary,
+  EventSalaryDefault,
+  EVENT_SALARY_FETCH_ONE,
+  EVENT_SALARY_COMMIT,
+  IShiftSalary,
+  IPlaceSalary,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault,
+  EVENT_SALARY_DELETE
+} from '@/modules/salary';
+
 import { IPageMeta } from '@/modules/layout';
 
 const ADDRESS_ROWS_MAX = 4;
@@ -104,9 +157,11 @@ enum State {
 
 @Component({
   components: {
+    Icon,
     'page-content': CPageContent,
     'event-type-selection': CEventTypeSelection,
-    'event-shifts-component': EventShiftsComponent
+    'event-shifts-component': EventShiftsComponent,
+    'salary-item': CSalaryItem
   },
   mixins: [validationMixin],
   validations() {
@@ -157,6 +212,10 @@ export default class EventEditPage extends Vue {
   public pageState: State = State.Default;
   public isNewEvent: boolean = false;
 
+  public isSalaryInProcess: boolean = false;
+  // public salaryDescription: boolean = false;
+  // public salaryPlaceholder: string = 'Сумма, \u20BD';
+
   // Event properties //
   /////////////////////
 
@@ -168,13 +227,20 @@ export default class EventEditPage extends Vue {
 
   public mounted() {
     this.loadingInProcess = true;
-
     const eventId = this.$route.params.id;
     if (eventId && eventId !== 'new') {
       this.$store
         .dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
-          this.setEvent(event);
+          this.event = { ...event, eventSalary: new EventSalaryDefault() };
+        })
+        .then(() => {
+          this.$store
+            .dispatch(EVENT_SALARY_FETCH_ONE, eventId)
+            .then((eventSalary) => {
+              this.setEventSalary(eventSalary);
+              this.loadingInProcess = false;
+            });
           this.loadingInProcess = false;
         })
         .catch((error) => {
@@ -199,24 +265,23 @@ export default class EventEditPage extends Vue {
 
     // assign all edited data
     this.event.shifts = this.eventShifts;
-
     this.$store
       .dispatch(EVENT_COMMIT, this.event)
       .then((event) => {
-        this.setEvent(event);
-
+        if (event[1].count) {
+          this.$store.dispatch(EVENT_SALARY_COMMIT, event[1]);
+        } else if (!event[1].count && this.$route.params.id !== 'new') {
+          this.$store.dispatch(EVENT_SALARY_DELETE, event[1].eventId);
+        }
         this.pageState = State.Default;
-
         this.$notify({
           title: 'Изменения успешно сохранены',
           duration: 500
         });
-
-        this.$router.push({ path: '/events/' + event.id });
+        this.$router.push({ path: '/events/' + event[0].id });
       })
       .catch((error) => {
         this.pageState = State.Error;
-
         this.$notify({
           title: 'Невозможно сохранить изменения',
           type: 'error',
@@ -230,6 +295,7 @@ export default class EventEditPage extends Vue {
       this.$store
         .dispatch(EVENT_DELETE, this.event.id)
         .then(() => {
+          this.$store.dispatch(EVENT_SALARY_DELETE, this.event.id);
           this.$notify({
             title: 'Событие удалено',
             duration: 500
@@ -242,7 +308,47 @@ export default class EventEditPage extends Vue {
 
   public setEvent(event: IEvent) {
     this.event = event;
-    this.eventShifts = event.shifts || [];
+  }
+
+  public setEventSalary(eventSalary: IEventSalary) {
+    if (eventSalary) {
+      this.event.eventSalary = Object.assign({}, eventSalary);
+      delete this.event.eventSalary.shiftSalaries;
+      delete this.event.eventSalary.placeSalaries;
+    } else {
+      this.event.eventSalary = new EventSalaryDefault();
+      eventSalary = Object.assign({}, new EventSalaryDefault());
+      eventSalary.shiftSalaries = [];
+      eventSalary.placeSalaries = [];
+    }
+    this.event.shifts.map((shift) => {
+      if (eventSalary.shiftSalaries && this.event.eventSalary) {
+        const shiftSalary = eventSalary.shiftSalaries.find((salary) => {
+          return salary.shiftId === shift.id;
+        });
+        if (shiftSalary) {
+          shift.shiftSalary = shiftSalary;
+        } else {
+          shift.shiftSalary = new ShiftSalaryDefault();
+          shift.shiftSalary.count = this.event.eventSalary.count;
+        }
+      }
+
+      shift.places.map((place) => {
+        if (eventSalary.placeSalaries && shift.shiftSalary) {
+          const placeSalary = eventSalary.placeSalaries.find((salary) => {
+            return salary.placeId === place.id;
+          });
+          if (placeSalary) {
+            place.placeSalary = placeSalary;
+          } else {
+            place.placeSalary = new PlaceSalaryDefault();
+            place.placeSalary.count = shift.shiftSalary.count;
+          }
+        }
+      });
+    });
+    this.eventShifts = this.event.shifts || [];
   }
 
   public handleAddressInput(e: KeyboardEvent) {
@@ -254,6 +360,56 @@ export default class EventEditPage extends Vue {
     ) {
       e.preventDefault();
     }
+  }
+
+  public eventSalaryCommit(salary: IEventSalary) {
+    if (!salary.count) {
+      this.eventSalaryReset();
+      return;
+    }
+    this.event.eventSalary = salary;
+    this.eventShifts.map((shift) => {
+      if (shift.shiftSalary!.isNew === true) {
+        shift.shiftSalary!.count = salary.count;
+      }
+      return shift;
+    });
+  }
+
+  public eventSalaryReset() {
+    this.event.eventSalary = {
+      count: null,
+      description: '',
+      eventId: this.event.id,
+      isNew: true
+    };
+    this.event.shifts.map((shift) => {
+      shift.shiftSalary = {
+        shiftId: shift.id,
+        count: null,
+        description: '',
+        isNew: true
+      };
+      shift.places.map((place) => {
+        place.placeSalary = {
+          placeId: place.id,
+          count: null,
+          description: '',
+          isNew: true
+        };
+        return place;
+      });
+      return shift;
+    });
+    this.$forceUpdate();
+  }
+
+  public getEventSalary() {
+    return this.event.eventSalary;
+  }
+
+  public salaryInProcess(isSalaryInProcess: boolean) {
+    this.isSalaryInProcess = isSalaryInProcess;
   }
 
   // Computed data //
@@ -281,6 +437,9 @@ export const eventEditPageRoute: RouteConfig = {
 @import '@/styles/general.scss';
 
 .event-edit-page {
+  .add-button {
+    cursor: pointer;
+  }
   .mx-input-append {
     @include theme-specific() {
       background-color: getstyle(form-control-background-color);
