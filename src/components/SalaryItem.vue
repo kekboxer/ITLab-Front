@@ -17,7 +17,7 @@
           </b-tooltip>
         </template>
         <template v-else>
-          <span>Стоимость не указана</span>
+          <span>Оплата не указана</span>
         </template>
       </template>
 

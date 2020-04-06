@@ -241,6 +241,7 @@ export default class EventEditPage extends Vue {
               this.setEventSalary(eventSalary);
               this.loadingInProcess = false;
             });
+          this.loadingInProcess = false;
         })
         .catch((error) => {
           this.notFound = true;
@@ -294,7 +295,7 @@ export default class EventEditPage extends Vue {
       this.$store
         .dispatch(EVENT_DELETE, this.event.id)
         .then(() => {
-          this.$store.dispatch(EVENT_SALARY_DELETE, this.event.id)
+          this.$store.dispatch(EVENT_SALARY_DELETE, this.event.id);
           this.$notify({
             title: 'Событие удалено',
             duration: 500
