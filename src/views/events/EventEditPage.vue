@@ -58,45 +58,23 @@
             </b-form-group>
 
             <b-form-group label="Оплата">
-              <salary-item :editable="true" :salary="eventSalary"></salary-item>
+              <salary-item
+                :editable="true"
+                :id="event.id"
+                :salary="getEventSalary()"
+                @salaryCommit="eventSalaryCommit"
+                @salaryReset="eventSalaryReset"
+                @salaryInProcess="salaryInProcess"
+              ></salary-item>
             </b-form-group>
-            
-            
-            <!-- <b-form-group label="Оплата">
-              <b-row>
-                <b-col cols="3">
-                  <b-form-input
-                    type="number"
-                    :placeholder="salaryPlaceholder"
-                    v-model.number="eventSalary.count"
-                  ></b-form-input>
-                </b-col>
-                <b-col cols="1">
-                  <div class="add-button" @click="salaryDescription = !salaryDescription">
-                    <icon name="edit" class="d-md-inline" style="position: relative; top: 5px;"></icon>
-                  </div>
-                </b-col>
-                <b-col cols="8">
-                  <b-form-input
-                    v-if="salaryDescription"
-                    type="text"
-                    placeholder="Описание"
-                    v-model="eventSalary.description"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-            </b-form-group> -->
 
             <b-form-group label="Смены">
-              <event-shifts-component v-model="eventShifts" 
-              :editable="true" 
-              :eventSalaryCount="eventSalary.count" 
-              :shiftSalaries="eventSalary.shiftSalaries" 
-              :placeSalaries="eventSalary.placeSalaries"
-              @salaryShiftCommit="salaryShiftCommit"
-              @salaryPlaceCommit="salaryPlaceCommit"
-              >
-              </event-shifts-component>
+              <event-shifts-component
+                :value="eventShifts"
+                :editable="true"
+                :eventSalaryCount="event.eventSalary.count"
+                @salaryInProcess="salaryInProcess"
+              ></event-shifts-component>
             </b-form-group>
 
             <b-row class="mt-2 buttons">
@@ -104,7 +82,7 @@
                 <b-button
                   variant="primary"
                   class="w-100"
-                  :disabled="$v.event.$invalid || isPageInProcess"
+                  :disabled="$v.event.$invalid || isPageInProcess || isSalaryInProcess"
                   @click="onSubmitEvent"
                 >Подтвердить</b-button>
               </b-col>
@@ -160,7 +138,9 @@ import {
   EVENT_SALARY_FETCH_ONE,
   EVENT_SALARY_COMMIT,
   IShiftSalary,
-  IPlaceSalary
+  IPlaceSalary,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault
 } from '@/modules/salary';
 
 import { IPageMeta } from '@/modules/layout';
@@ -180,7 +160,7 @@ enum State {
     'page-content': CPageContent,
     'event-type-selection': CEventTypeSelection,
     'event-shifts-component': EventShiftsComponent,
-    'salary-item': CSalaryItem,
+    'salary-item': CSalaryItem
   },
   mixins: [validationMixin],
   validations() {
@@ -230,41 +210,36 @@ export default class EventEditPage extends Vue {
   public notFound: boolean = false;
   public pageState: State = State.Default;
   public isNewEvent: boolean = false;
-  public salaryDescription: boolean = false;
-  public salaryPlaceholder: string = 'Сумма, \u20BD';
+
+  public isSalaryInProcess: boolean = false;
+  // public salaryDescription: boolean = false;
+  // public salaryPlaceholder: string = 'Сумма, \u20BD';
 
   // Event properties //
   /////////////////////
 
   public event: IEvent = new EventDefault();
   public eventShifts: IEventShift[] = [];
-  public eventSalary: IEventSalary | any = new EventSalaryDefault();
 
   // Component methods //
   //////////////////////
 
   public mounted() {
     this.loadingInProcess = true;
-
     const eventId = this.$route.params.id;
     if (eventId && eventId !== 'new') {
-      this.$store.dispatch(EVENT_SALARY_FETCH_ONE, eventId)
-         .then((eventSalary) => {
-           if (eventSalary) {
-            this.eventSalary = eventSalary;
-          }
-         })
-         .catch(() => {
-           this.eventSalary = {
-              count: null,
-              description: '',
-              eventId: eventId
-            }
-         })
-      this.$store.dispatch(EVENTS_FETCH_ONE, eventId)
+      this.$store
+        .dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
-          this.setEvent(event);
-          this.loadingInProcess = false;
+          this.event = { ...event, eventSalary: new EventSalaryDefault() };
+        })
+        .then(() => {
+          this.$store
+            .dispatch(EVENT_SALARY_FETCH_ONE, eventId)
+            .then((eventSalary) => {
+              this.setEventSalary(eventSalary);
+              this.loadingInProcess = false;
+            });
         })
         .catch((error) => {
           this.notFound = true;
@@ -288,28 +263,20 @@ export default class EventEditPage extends Vue {
 
     // assign all edited data
     this.event.shifts = this.eventShifts;
-
     this.$store
       .dispatch(EVENT_COMMIT, this.event)
       .then((event) => {
-        this.setEvent(event);
-
-        this.eventSalary.eventId = event.id;
-
-        this.$store.dispatch(EVENT_SALARY_COMMIT, this.eventSalary);
-
-        this.pageState = State.Default;
-
-        this.$notify({
-          title: 'Изменения успешно сохранены',
-          duration: 500
+        this.$store.dispatch(EVENT_SALARY_COMMIT, event[1]).then(() => {
+          this.pageState = State.Default;
+          this.$notify({
+            title: 'Изменения успешно сохранены',
+            duration: 500
+          });
+          this.$router.push({ path: '/events/' + event[0].id });
         });
-
-        this.$router.push({ path: '/events/' + event.id });
       })
       .catch((error) => {
         this.pageState = State.Error;
-
         this.$notify({
           title: 'Невозможно сохранить изменения',
           type: 'error',
@@ -335,7 +302,47 @@ export default class EventEditPage extends Vue {
 
   public setEvent(event: IEvent) {
     this.event = event;
-    this.eventShifts = event.shifts || [];
+  }
+
+  public setEventSalary(eventSalary: IEventSalary) {
+    if (eventSalary) {
+      this.event.eventSalary = Object.assign({}, eventSalary);
+      delete this.event.eventSalary.shiftSalaries;
+      delete this.event.eventSalary.placeSalaries;
+    } else {
+      this.event.eventSalary = new EventSalaryDefault();
+      eventSalary = Object.assign({}, new EventSalaryDefault());
+      eventSalary.shiftSalaries = [];
+      eventSalary.placeSalaries = [];
+    }
+    this.event.shifts.map((shift) => {
+      if (eventSalary.shiftSalaries && this.event.eventSalary) {
+        const shiftSalary = eventSalary.shiftSalaries.find((salary) => {
+          return salary.shiftId === shift.id;
+        });
+        if (shiftSalary) {
+          shift.shiftSalary = shiftSalary;
+        } else {
+          shift.shiftSalary = new ShiftSalaryDefault();
+          shift.shiftSalary.count = this.event.eventSalary.count;
+        }
+      }
+
+      shift.places.map((place) => {
+        if (eventSalary.placeSalaries && shift.shiftSalary) {
+          const placeSalary = eventSalary.placeSalaries.find((salary) => {
+            return salary.placeId === place.id;
+          });
+          if (placeSalary) {
+            place.placeSalary = placeSalary;
+          } else {
+            place.placeSalary = new PlaceSalaryDefault();
+            place.placeSalary.count = shift.shiftSalary.count;
+          }
+        }
+      });
+    });
+    this.eventShifts = this.event.shifts || [];
   }
 
   public handleAddressInput(e: KeyboardEvent) {
@@ -349,24 +356,50 @@ export default class EventEditPage extends Vue {
     }
   }
 
-  public salaryShiftCommit(salary: any) {
-    const isSalaryAlready = this.eventSalary.shiftSalaries.find((shiftSalary: IShiftSalary) => {
-      return shiftSalary.shiftId === salary.shiftId;
+  public eventSalaryCommit(salary: IEventSalary) {
+    this.event.eventSalary = salary;
+    this.eventShifts.map((shift) => {
+      if (shift.shiftSalary!.isNew === true) {
+        shift.shiftSalary!.count = salary.count;
+      }
+      return shift;
     });
-    if (!isSalaryAlready) {
-      this.eventSalary.shiftSalaries.push(salary);
-    }
   }
 
-  public salaryPlaceCommit(salary: any) {
-    const isSalaryAlready = this.eventSalary.placeSalaries.find((placeSalary: IPlaceSalary) => {
-      return placeSalary.placeId === salary.placeId;
+  public eventSalaryReset() {
+    this.event.eventSalary = {
+      count: null,
+      description: '',
+      eventId: this.event.id,
+      isNew: true
+    };
+    this.event.shifts.map((shift) => {
+      shift.shiftSalary = {
+        shiftId: shift.id,
+        count: null,
+        description: '',
+        isNew: true
+      };
+      shift.places.map((place) => {
+        place.placeSalary = {
+          placeId: place.id,
+          count: null,
+          description: '',
+          isNew: true
+        };
+        return place;
+      });
+      return shift;
     });
-    if (!isSalaryAlready) {
-      this.eventSalary.placeSalaries.push(salary);
-    }
-    console.log(this.eventSalary);
-    
+    this.$forceUpdate();
+  }
+
+  public getEventSalary() {
+    return this.event.eventSalary;
+  }
+
+  public salaryInProcess(isSalaryInProcess: boolean) {
+    this.isSalaryInProcess = isSalaryInProcess;
   }
 
   // Computed data //

@@ -37,8 +37,7 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
                     resolve(eventSalary);
                 })
                 .catch((error) => {
-                    console.log(EVENT_SALARY_FETCH_ONE, error);
-                    reject(error);
+                    resolve(false);
                 });
         });
     },
@@ -69,8 +68,12 @@ export const actions: ActionTree<IEventSalaryState, RootState> = {
     // },
 
     [EVENT_SALARY_COMMIT]: ({ }, eventSalary: IEventSalary | any) => {
+
+        const id = eventSalary.eventId;
+        delete eventSalary.eventId;
+
         return new Promise((resolve, reject) => {
-            axios.put(`/salary/v1/event/${eventSalary.eventId}`, eventSalary)
+            axios.put(`/salary/v1/event/${id}`, eventSalary)
                 .then((response) => {
                     resolve(response);
                 })

@@ -1,13 +1,8 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="event-shifts-component">
-    <div
-      class="shift"
-      v-for="(shift, shiftIndex) in eventShifts"
-      :key="`shift-${shiftIndex}`"
-      v-if="!shift.delete"
-    >
-      <b-row>
+    <div class="shift" v-for="(shift, shiftIndex) in eventShifts" :key="`shift-${shiftIndex}`">
+      <b-row v-if="!shift.delete">
         <b-col
           cols="auto"
           class="noselect"
@@ -35,14 +30,29 @@
             <b-col>{{ shift.description }}</b-col>
           </b-row>
         </b-col>
-        <salary-item :id="shift.id" :editable="editable" :salary="getShiftSalary(shift.id)" @salaryCommit="salaryShiftCommit"></salary-item>
+        <b-col
+          cols="12"
+          md="auto"
+          class="ml-md-1 mt-2 mt-md-0 d-flex align-content-end align-items-start"
+        >
+          <salary-item
+          class="ml-auto"
+          v-if="eventSalaryCount !== null"
+          :salary="getShiftSalary(shiftIndex)"
+          :id="`${shiftIndex + 1}`"
+          :editable="editable"
+          @salaryCommit="(salary) => salaryShiftCommit(salary, shiftIndex)"
+          @salaryReset="salaryShiftReset(shiftIndex)"
+          @salaryInProcess="salaryInProcess"
+        ></salary-item>
+        </b-col>
+        
         <b-col
           cols="12"
           md="auto"
           class="ml-md-1 mt-2 mt-md-0 d-flex align-content-between align-items-start"
           v-if="editable"
         >
-          
           <b-button
             variant="outline-secondary"
             class="btn-sm w-100 mr-1 order-2 order-md-1"
@@ -68,13 +78,8 @@
         <hr />
         <b-row>
           <b-col>
-            <div
-              v-for="(place, placeIndex) in shift.places"
-              :key="place.id"
-              class="place"
-              v-if="!place.delete"
-            >
-              <div class="place-title drag-handle">
+            <div v-for="(place, placeIndex) in shift.places" :key="placeIndex" class="place">
+              <div class="place-title drag-handle" v-if="!place.delete">
                 <b-row>
                   <b-col
                     cols="auto"
@@ -104,14 +109,24 @@
                   <b-col
                     cols="12"
                     md="auto"
+                    class="ml-md-1 mt-2 mt-md-0 pr-0 d-flex align-content-end align-items-start"
+                  >
+                    <salary-item
+                      class="ml-auto"
+                      v-if="eventSalaryCount !== null"
+                      :salary="getPlaceSalary(placeIndex, shiftIndex)"
+                      :id="`${shiftIndex}${placeIndex}`"
+                      :editable="editable"
+                      @salaryCommit="(salary) => salaryPlaceCommit(salary, placeIndex, shiftIndex)"
+                      @salaryReset="salaryPlaceReset(placeIndex, shiftIndex)"
+                      @salaryInProcess="salaryInProcess"
+                    ></salary-item>
+                  </b-col>
+                  <b-col
+                    cols="12"
+                    md="auto"
                     class="ml-md-1 mt-1 mt-md-0 d-flex align-content-between align-items-start"
                   >
-                  <salary-item
-                        :id="place.id"
-                        :editable="editable"
-                        :salary="getPlaceSalary(place.id, getShiftSalary(shift.id))"
-                        @salaryCommit="salaryPlaceCommit"
-                      ></salary-item>
                     <template v-if="editable">
                       <b-button
                         variant="outline-secondary"
@@ -246,9 +261,8 @@
                         class="list-group-item"
                         v-for="(equipment, equipmentIndex) in place.equipment"
                         :key="`place-${placeIndex}-equipment-${equipmentIndex}`"
-                        v-if="!equipment.delete"
                       >
-                        <b-row>
+                        <b-row v-if="!equipment.delete">
                           <b-col cols="auto mr-auto">
                             <b>{{ equipment.equipmentType.title }}</b>
                             <br />
@@ -357,7 +371,12 @@ import {
   cloneEventPlace
 } from '@/modules/events';
 
-import { IShiftSalary, IPlaceSalary } from '@/modules/salary';
+import {
+  IShiftSalary,
+  IPlaceSalary,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault
+} from '@/modules/salary';
 
 import { getNounDeclension } from '@/stuff';
 
@@ -391,12 +410,6 @@ export default class EventShiftsComponent extends Vue {
 
   @Prop()
   public editable?: boolean;
-
-  @Prop()
-  public shiftSalaries?: IShiftSalary[];
-
-  @Prop()
-  public placeSalaries?: IPlaceSalary[];
 
   @Prop()
   public eventSalaryCount?: any;
@@ -785,52 +798,72 @@ export default class EventShiftsComponent extends Vue {
     );
   }
 
-  public getShiftSalary(id: string) {
-    if (this.shiftSalaries) {
-      if (this.shiftSalaries.find((salary) => salary.shiftId === id)) {
-        return this.shiftSalaries.find((salary) => salary.shiftId === id);
-      }
+  public getShiftSalary(shiftIndex: number) {
+    if (this.eventShifts[shiftIndex].shiftSalary!.isNew === true) {
+      this.eventShifts[shiftIndex].shiftSalary!.count = this.eventSalaryCount;
     }
-    const newSalary: any = {
-      shiftId: id,
+    return Object.assign({}, this.eventShifts[shiftIndex].shiftSalary);
+  }
+
+  public getPlaceSalary(placeIndex: number, shiftIndex: number) {
+    if (
+      this.eventShifts[shiftIndex].places[placeIndex].placeSalary!.isNew ===
+      true
+    ) {
+      this.eventShifts[shiftIndex].places[
+        placeIndex
+      ].placeSalary!.count = this.eventShifts[shiftIndex].shiftSalary!.count;
+    }
+    return Object.assign({}, this.eventShifts[shiftIndex].places[placeIndex].placeSalary);
+  }
+
+  public salaryShiftCommit(salary: any, shiftIndex: number) {
+    Vue.set(this.value![shiftIndex], 'shiftSalary', salary);
+    this.value![shiftIndex].places.map((place) => {
+      if (place.placeSalary!.hasOwnProperty('isNew')) {
+        Vue.set(place.placeSalary!, 'count', salary.count);
+      }
+      return place;
+    });
+    this.$forceUpdate();
+  }
+
+  public salaryShiftReset(shiftIndex: number) {
+    this.value![shiftIndex].shiftSalary = {
+      shiftId: this.value![shiftIndex].shiftSalary!.shiftId,
       count: this.eventSalaryCount,
       description: '',
       isNew: true
     };
-
-    return newSalary;
-    // Object.assign({ shiftId: id, count: 100 }, this.newSalary);
+    this.$forceUpdate();
   }
 
-  public getPlaceSalary(id: string, salary: any) {
-    if (this.placeSalaries) {
-      if (this.placeSalaries.find((salary) => salary.placeId === id)) {
-        return this.placeSalaries.find((salary) => salary.placeId === id);
-      }
-    }
-    // const shift = this.shiftSalaries.find((shift) => {
-    //   return shift.shiftId === shiftId;
-    // })
-    //console.log(shift);
-    
-    const newSalary: any = {
-      placeId: id,
-      count: salary.count,
+  public salaryPlaceCommit(
+    salary: any,
+    placeIndex: number,
+    shiftIndex: number
+  ) {
+    Vue.set(
+      this.value![shiftIndex].places[placeIndex],
+      'placeSalary',
+      salary
+    );
+    this.$forceUpdate();
+  }
+
+  public salaryPlaceReset(placeIndex: number, shiftIndex: number) {
+    this.value![shiftIndex].places[placeIndex].placeSalary = {
+      placeId: this.value![shiftIndex].places[placeIndex].placeSalary!.placeId,
+      count: this.value![shiftIndex].shiftSalary!.count,
       description: '',
       isNew: true
     };
-
-    return newSalary;
-    // return Object.assign({ placeId: id }, this.newSalary);
+    this.$forceUpdate();
   }
 
-  public salaryShiftCommit(salary: any) {
-    this.$emit('salaryShiftCommit', salary);
+  public salaryInProcess(isSalaryInProcess: boolean) {
+    this.$emit('salaryInProcess', isSalaryInProcess);
   }
-
- public salaryPlaceCommit(salary: any) {
-   this.$emit('salaryPlaceCommit', salary);
- }
 
   // Computed data //
   //////////////////

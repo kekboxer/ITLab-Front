@@ -10,10 +10,11 @@
 
       <b-row>
         <b-col>
-          <h3>{{ event.title }}
+          <h3>
+            {{ event.title }}
             <small>{{ event.eventType && event.eventType.title }}</small>
           </h3>
-          <hr>
+          <hr />
 
           <b-row>
             <b-col cols="12" md="8" class="order-2 order-md-1 markdown">
@@ -24,35 +25,42 @@
                 <b-col cols="3">
                   <b>Начало:</b>
                 </b-col>
-                <b-col cols="9">{{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}</b-col>
+                <b-col
+                  cols="9"
+                >{{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="3">
                   <b>Конец:</b>
                 </b-col>
-                <b-col cols="9">{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
+                <b-col
+                  cols="9"
+                >{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
               </b-row>
 
               <template v-if="showElapsed && elapsedTime">
-                (До события {{ elapsedTime }})<br>
+                (До события {{ elapsedTime }})
+                <br />
               </template>
-                <br>
-                <b>Адрес:</b><br>
-                <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
-                <salary-item :salary="eventSalary" :editable="false"></salary-item>
-                <hr class="d-block d-md-none">
+              <br />
+              <b>Адрес:</b>
+              <br />
+              <a
+                :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`"
+                target="_blank"
+              >{{ event.address }}</a>
+              <salary-item :salary="event.eventSalary" :editable="false"></salary-item>
+              <hr class="d-block d-md-none" />
             </b-col>
           </b-row>
-          <hr>
+          <hr />
           <b-row>
             <b-col>
-              <event-shifts-component 
-              v-model="event.shifts" 
-              :editable="false" 
-              :eventSalaryCount="eventSalary.count" 
-              :shiftSalaries="eventSalary.shiftSalaries" 
-              :placeSalaries="eventSalary.placeSalaries">
-              </event-shifts-component>
+              <event-shifts-component
+                v-model="event.shifts"
+                :editable="false"
+                :eventSalaryCount="event.eventSalary.count"
+              ></event-shifts-component>
             </b-col>
           </b-row>
         </b-col>
@@ -75,7 +83,13 @@ import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TOD
 
 import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
-import { IEventSalary, EventSalaryDefault, EVENT_SALARY_FETCH_ONE } from '../../modules/salary';
+import {
+  IEventSalary,
+  EventSalaryDefault,
+  EVENT_SALARY_FETCH_ONE,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault,
+} from '../../modules/salary';
 
 @Component({
   components: {
@@ -104,32 +118,27 @@ export default class EventDetailPage extends Vue {
 
     const eventId = this.$route.params.id;
     if (eventId) {
-      this.$store
+      await this.$store
         .dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
-          this.event = event;
-          this.loadingInProcess = false;
+          this.event = {...event, eventSalary: new EventSalaryDefault()};
+        })
+        .then(() => {
+          this.$store
+            .dispatch(EVENT_SALARY_FETCH_ONE, eventId)
+            .then((eventSalary) => {
+              this.setEventSalary(eventSalary);
+              this.loadingInProcess = false;
+            })
+            .catch((error) => {
+              this.loadingInProcess = false;
+            });
         })
         .catch((error) => {
           this.notFound = true;
           this.loadingInProcess = false;
         });
-
-        this.$store.dispatch(EVENT_SALARY_FETCH_ONE, eventId)
-         .then((eventSalary) => {
-           if (eventSalary) {
-            this.eventSalary = eventSalary;
-          }
-         })
-         .catch(() => {
-           this.eventSalary = {
-              count: null,
-              description: '',
-              eventId: eventId
-            }
-         })
     }
-
     this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
   }
 
@@ -138,6 +147,44 @@ export default class EventDetailPage extends Vue {
 
   public formatDate(date: Date): string {
     return moment(date).format(this.$g.DATETIME_FORMAT);
+  }
+
+  public setEventSalary(eventSalary: IEventSalary) {
+    if (eventSalary) {
+      this.event.eventSalary = Object.assign({}, eventSalary);
+      delete this.event.eventSalary.shiftSalaries;
+      delete this.event.eventSalary.placeSalaries;
+    } else {
+      this.event.eventSalary = new EventSalaryDefault();
+    }
+    this.event.shifts.map((shift) => {
+      if (eventSalary.shiftSalaries && this.event.eventSalary) {
+        const shiftSalary = eventSalary.shiftSalaries.find((salary) => {
+          return salary.shiftId === shift.id;
+        });
+        if (shiftSalary) {
+          shift.shiftSalary = shiftSalary;
+        } else {
+          shift.shiftSalary = new ShiftSalaryDefault();
+          shift.shiftSalary!.count = this.event.eventSalary.count;
+        }
+      }
+
+      shift.places.map((place) => {
+        if (eventSalary.placeSalaries && shift.shiftSalary) {
+          const placeSalary = eventSalary.placeSalaries.find((salary) => {
+            return salary.placeId === place.id;
+          });
+          if (placeSalary) {
+            place.placeSalary = placeSalary;
+          } else {
+            place.placeSalary = new PlaceSalaryDefault();
+            place.placeSalary!.count = shift.shiftSalary.count;
+          }
+        }
+      });
+
+    });
   }
 
   // Computed data //

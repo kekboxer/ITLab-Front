@@ -6,9 +6,12 @@ export const EVENT_SALARY_DELETE = 'EVENT_SALARY_DELETE';
 // Shift Salary//
 
 export class ShiftSalaryDefault {
+    public clientId?: number;
     public shiftId: string = '';
     public count: number | null = null;
     public description: string = '';
+
+    public isNew?: boolean = true;
 }
 
 export interface IShiftSalary extends ShiftSalaryDefault {}
@@ -16,9 +19,11 @@ export interface IShiftSalary extends ShiftSalaryDefault {}
 // Place Salary//
 
 export class PlaceSalaryDefault {
+    public clientId?: number;
     public placeId: string = '';
-    public count: number = 0;
+    public count: number | null = null;
     public description: string = '';
+    public isNew?: boolean = true;
 }
 
 export interface IPlaceSalary extends PlaceSalaryDefault {}
@@ -27,10 +32,11 @@ export interface IPlaceSalary extends PlaceSalaryDefault {}
 
 export class EventSalaryDefault {
     public eventId?: string = '';
-    public shiftSalaries?: IShiftSalary[] = [];
-    public placeSalaries?: IPlaceSalary[] = [];
-    public count: number = 0;
+    public count: number | null = null;
+    public shiftSalaries?: IShiftSalary[];
+    public placeSalaries?: IPlaceSalary[];
     public description: string = '';
+    public isNew?: boolean = true;
 }
 
 export interface IEventSalary extends EventSalaryDefault {}

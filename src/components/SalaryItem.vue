@@ -1,11 +1,20 @@
 <template>
   <b-col cols="auto">
     <template>
-
       <template v-if="!salaryToggler">
-        <template v-if="salary.count !== null">
-          <span v-if="salary.isNew" class="salary__count salary__count_new">{{ salary.count }}&#8381;</span>
-          <span v-else class="salary__count">{{ salary.count }}&#8381;</span>
+        <template v-if="salaryForm.count !== null">
+          <span
+            :id="`tooltip-${id}`"
+            :class="[salaryForm.isNew ? 'salary__count_new': '', [salaryForm.description ? 'salary__count__description' : '', 'salary__count']]"
+          >{{ salaryForm.count }}&#8381;</span>
+
+          <b-tooltip
+            v-if="salaryForm.description"
+            :target="`tooltip-${id}`"
+            custom-class="my-tooltip-class"
+          >
+            {{salaryForm.description}}
+          </b-tooltip>
         </template>
         <template v-else>
           <span>Стоимость не указана</span>
@@ -13,52 +22,35 @@
       </template>
 
       <template v-else>
-        <input type="number" v-model.number="salary.count" class="salary__input" />
+        <span :id="`input-tooltip-${id}`"><input  type="number" v-model.number="salaryForm.count" class="salary__input" /></span>
+        <b-popover
+            :target="`input-tooltip-${id}`"
+            placement="top"
+            show
+          >
+          <template v-slot:title>Описание</template>
+          <input type="text" v-model="salaryForm.description" />
+          </b-popover>
+
         &nbsp;
-        <div @click="salaryUpdate()" class="salary__edit_toggler salary__check">
+        <div @click="salaryUpdate()" class="salary__edit_toggler salary__check" v-b-tooltip.hover title="Подтвердить">
           <icon name="check"></icon>
         </div>
       </template>
-
-      &nbsp;
-      <div v-if="salary.description || editable" :id="`tooltip-${id}`" class="salary__info">
-        <button type="button">
-          <icon name="info-circle" class="salary__info__icon"></icon>
-        </button>
-      </div>
-
-      <b-tooltip v-if="salary.description || editable" :target="`tooltip-${id}`" custom-class="my-tooltip-class">
-        <template v-if="!descriptionToggler">{{salary.description}}</template>
-        <template v-else>
-          <input type="text" v-model="salary.description" class="salary__input" />
-          &nbsp;
-          <div
-            @click="salaryUpdate()"
-            v-if="canEditEvent"
-            class="salary__edit_toggler salary__check"
-          >
-            <icon name="check"></icon>
-          </div>&nbsp;
-        </template>
-
-        <template v-if="canEditEvent && editable">
-          <div @click="salaryDescriptionToggle()" class="salary__edit_toggler">
-            &nbsp;
-            <icon name="edit"></icon>
-          </div>
-        </template>
-      </b-tooltip>
-
-        
       <template v-if="canEditEvent && editable">
         &nbsp;
-        <div @click="salaryToggle()" class="salary__edit_toggler">
+        <div v-if="!salaryToggler" @click="salaryToggle()" class="salary__edit_toggler" v-b-tooltip.hover title="Редактировать">
           <icon name="edit"></icon>
         </div>
+        <div v-else class="salary__cancel" @click="salaryCancel()" v-b-tooltip.hover title="Отменить">
+          <icon name="undo"></icon>
+        </div>
+        <div @click="salaryReset()" v-if="!salaryForm.isNew && !salaryToggler" class="salary__reset" v-b-tooltip.hover title="Сбросить">
+          <icon name="times"></icon>
+        </div>
+
       </template>
     </template>
-
-    
   </b-col>
 </template>
 
@@ -69,14 +61,12 @@ import Icon from 'vue-awesome/components/Icon';
 import 'vue-awesome/icons/check';
 import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/info-circle';
+import 'vue-awesome/icons/times';
+import 'vue-awesome/icons/undo';
 
 import { IEvent } from '@/modules/events';
 
-import {
-  IEventSalary,
-  EVENT_SALARY_COMMIT,
-  salary
-} from '@/modules/salary';
+import { IEventSalary, EVENT_SALARY_COMMIT, salary } from '@/modules/salary';
 
 @Component({
   components: {
@@ -97,66 +87,51 @@ export default class CSalaryItem extends Vue {
 
   public canEditEvent: boolean | null = false;
 
+  public salaryForm: any = {
+    count: null,
+    description: '',
+    isNew: true
+  };
+
   public salaryToggler: boolean = false;
-  public isSalaryCountChanged: boolean = false;
 
-  public isSalaryDescriptionChanged: boolean = false;
-  public descriptionToggler: boolean = false;
-
-  //   public newSalary: any = {
-  //     eventId: this.id,
-  //     count: null,
-  //     description: '',
-  //     isNew: true
-  //   };
   // Methods //
   ////////////
 
   public async mounted() {
-    // if (this.salary === undefined) {
-    // }
-    this.isSalaryCountChanged = false;
+    this.salaryForm = { ...this.salary };
     this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
   }
 
   public salaryToggle() {
     this.salaryToggler = !this.salaryToggler;
+    this.$emit('salaryInProcess', this.salaryToggler);
   }
 
   public salaryUpdate() {
-    if(this.salary.hasOwnProperty('isNew')){
-      delete this.salary.isNew
+    if (this.salaryForm.count === this.salary.count && this.salaryForm.description === this.salary.description) {
+      this.salaryToggle();
+      return;
     }
-    this.$emit('salaryCommit', this.salary);
-    //   if(this.salary !== undefined) {
-    //       console.log('salary');
-    //     this.$emit('salaryCommit', this.salary);
-    //   } else {
-    //       console.log(this.newSalary);
-
-    //     this.$emit('salaryCommit', this.newSalary);
-    //   }
-    this.descriptionToggler = false;
-    this.salaryToggler = false;
-    this.isSalaryCountChanged = false;
-    this.isSalaryDescriptionChanged = false;
+    if (this.salaryForm.hasOwnProperty('isNew')) {
+      delete this.salaryForm.isNew;
+    }
+    this.salaryToggle();
+    this.$emit('salaryCommit', this.salaryForm);
   }
 
-  public salaryDescriptionToggle() {
-    this.descriptionToggler = !this.descriptionToggler;
+  public salaryCancel() {
+    this.salaryForm = {...this.salary};
+    this.salaryToggle();
   }
 
-  @Watch('salary.count')
+  public salaryReset() {
+    this.$emit('salaryReset');
+  }
+
+  @Watch('salary', {deep: true})
   public onSalaryCountChanged() {
-    this.isSalaryCountChanged = true;
-  }
-  @Watch('salary.description')
-  public onSalaryDescriptionChanged() {
-    this.isSalaryDescriptionChanged = true;
-  }
-  @Watch('newSalary.count')
-  public onNewSalaryCountChanged() {
-    this.isSalaryCountChanged = true;
+    this.salaryForm = {...this.salary};
   }
 }
 </script>
@@ -181,12 +156,27 @@ export default class CSalaryItem extends Vue {
   cursor: pointer;
 }
 .salary__check {
-  color: #42f542;
+  color: #28a745;
 }
 .salary__input {
   width: 100px;
 }
 .salary__count_new {
+  font-weight: bolder;
   color: rgba($color: #000000, $alpha: 0.5);
+}
+.salary__reset,
+.salary__cancel {
+  display: inline !important;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.salary__reset {
+  margin-left: 8px;
+}
+
+.salary__count__description {
+  color: #007bff;
 }
 </style>

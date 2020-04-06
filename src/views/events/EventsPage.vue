@@ -162,35 +162,7 @@ export default class EventsPage extends Vue {
     } else {
       return Object.assign({ eventId: id }, this.newSalary);
     }
-    // const eventsSalaries = this.events
-    // this.eventSalary.forEach(salary => {
-    //   console.log(salary)
-    //   if(salary.eventId === id) {
-    //     return salary;
-    //   } else {
-    //
-    //   }
-    // });
   }
-
-  // public salaryCommit(eventSalary: IEventSalary | any) {
-  //   this.$store
-  //     .dispatch(EVENT_SALARY_COMMIT, eventSalary)
-  //     .then(() => {
-  //       this.$notify({
-  //         title: 'Изменения успешно сохранены',
-  //         duration: 500
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       this.$notify({
-  //         title: 'Невозможно сохранить изменения',
-  //         type: 'error',
-  //         duration: 1500
-  //       });
-  //     });
-  // }
 
   // Computed data //
   //////////////////
