@@ -163,7 +163,7 @@ export default class EquipmentEditPage extends Vue {
 
     const equipmentId = this.$route.params.id;
     if (equipmentId && equipmentId !== 'new') {
-      await this.$store
+      this.$store
         .dispatch(EQUIPMENT_FETCH_ONE, equipmentId)
         .then((equipment) => {
           this.setEquipment(equipment);
@@ -235,7 +235,7 @@ export default class EquipmentEditPage extends Vue {
     if (equipment.ownerId) {
       axios.get('user/' + equipment.ownerId).then((result) => {
         const body = result && result.data;
-        this.equipmentOwner = body.data;
+        this.equipmentOwner = body;
         this.equipmentOwnerModalData = body.data;
       });
     }
