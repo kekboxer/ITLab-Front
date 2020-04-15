@@ -17,9 +17,7 @@ import {
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
 export const actions: ActionTree<IEventSalaryState, RootState> = {
-    [EVENT_SALARY_FETCH_ALL]: ({ },
-        range: | { dateBegin: Date | undefined; dateEnd: Date | undefined }
-            | undefined
+    [EVENT_SALARY_FETCH_ALL]: ({ }, range: | { dateBegin: Date | undefined; dateEnd: Date | undefined } | undefined
     ) => {
         return new Promise((resolve, reject) => {
             let url: string = '/salary/v1/event/';
