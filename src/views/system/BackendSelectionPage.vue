@@ -85,7 +85,6 @@ export const backendSelectionPageRoute: RouteConfig = {
   name: 'BackendSelection',
   component: BackendSelectionPage,
   meta: {
-    development: true,
     secure: false,
     hideNavigation: true
   }

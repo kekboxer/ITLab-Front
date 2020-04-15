@@ -9,6 +9,7 @@ interface Configuration {
     VUE_APP_POST_LOGOUT_REDIRECT_URL: string;
     VUE_APP_SILENT_REDIRECT_URI: string;
     VUE_APP_VK_GROUP_DIALOG_URL: string;
+    VUE_APP_DEV_FUNC_ENABLED: string;
 }
 
 export default {} as Configuration;

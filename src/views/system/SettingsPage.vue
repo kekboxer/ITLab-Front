@@ -17,10 +17,6 @@
               <b-form-radio-group v-model="theme" class="pt-2" :options="themes" />
             </b-form-group>
           </b-form>
-
-          <template v-if="environment === 'development'">
-            <a href="/backend_selection" v-if="environment === 'development'" target="blank">Смена API URL</a><br>
-          </template>
             <a href="/about" target="blank">О системе</a>
         </b-col>
         <b-col cols="12" md="6" class="mt-5 mt-md-0">
@@ -75,6 +71,15 @@
             </b-row>
           </div>
         </b-col>
+        <template v-if="DEV_ENABLED">
+          <b-col cols="12">
+            <h4>Для разработчиков</h4>
+            <hr>
+            <template >
+              <a href="/backend_selection" target="blank">Смена API URL</a><br>
+            </template>
+          </b-col>
+        </template>
       </b-row>
     </page-content>
   </div>
@@ -87,6 +92,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
+import configuration from '@/stuff/configuration';
 
 import Icon from 'vue-awesome/components/Icon';
 import CPageContent from '@/components/layout/PageContent.vue';
@@ -157,6 +163,8 @@ export default class SettingsPage extends Vue {
   public sessions: IUserSession[] = [];
 
   public sessionsState: FormState = FormState.Default;
+
+  public DEV_ENABLED = configuration.VUE_APP_DEV_FUNC_ENABLED;
 
   // Component methods //
   //////////////////////

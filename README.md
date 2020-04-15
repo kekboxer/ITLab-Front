@@ -10,10 +10,17 @@ Develop | Master
 npm install
 ```
 
-Then create config file with name `.env` in the project root with the following minimal sample content
+Then create config file with name `config.json` in the project root with the following content
 ```
-NODE_ENV=development                          # or production
-VUE_APP_API_URL=https://path.to.backend/api/  # should be an instance of itlab-back
+VUE_APP_AUTHORITY=https://path.to.authrorization.service # path to your authority OIDC service
+VUE_APP_CLIENT_ID="id"                                   # client application's identifier as registered with the OIDC
+VUE_APP_REDIRECT_URI=https://path.to.login.callback.page # redirect page that will receive a response from OIDC service
+VUE_APP_RESPONSE_TYPE="type"                             # the type of response desired from the OIDC
+VUE_APP_SCOPE="scope1 scope2..."                         # the scopes being requested from the OIDC
+VUE_APP_POST_LOGOUT_REDIRECT_URL=https://path.to.logout  # path to page after logout
+VUE_APP_SILENT_REDIRECT_URI=https://path.to.silent.login # path to page when silent login
+VUE_APP_VK_GROUP_DIALOG_URL="https://vk.com/...          # url to dialog with group at vk.com
+VUE_APP_DEV_FUNC_ENABLED=true/false                      # enable/disable development settings
 ```
 
 ### Compiles and hot-reloads for development

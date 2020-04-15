@@ -130,7 +130,9 @@ export default class EventsPage extends Vue {
   public async mounted() {
     this.loadingInProcess = this.$store.getters[EVENTS_GET_ALL].length === 0;
     this.$store
-      .dispatch(EVENT_SALARY_FETCH_ALL)
+      .dispatch(EVENT_SALARY_FETCH_ALL, {
+        dateBegin: this.eventsShowPast ? undefined : this.currentDate
+      })
       .then((response: IEventSalary[]) => {
         this.eventSalary = response;
       });
@@ -150,9 +152,14 @@ export default class EventsPage extends Vue {
   public togglePastEvents() {
     if (!this.pastEventsLoaded && !this.eventsShowPast) {
       this.$store.dispatch(EVENTS_FETCH_ALL);
-      this.pastEventsLoaded = true;
+      this.$store
+      .dispatch(EVENT_SALARY_FETCH_ALL)
+      .then((response: IEventSalary[]) => {
+        this.eventSalary = response;
+        this.pastEventsLoaded = true;
+      });
     }
-
+    this.$forceUpdate();
     this.eventsShowPast = !this.eventsShowPast;
   }
 
