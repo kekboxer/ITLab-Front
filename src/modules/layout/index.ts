@@ -57,7 +57,9 @@ import {
   // @ts-ignore,
   typeEditPageRoute,
   // @ts-ignore
-  backendSelectionPageRoute
+  backendSelectionPageRoute,
+  // @ts-ignore
+  reportsPageRoute
 } from '@/views/system';
 
 export const state: ILayoutState = {
@@ -105,6 +107,12 @@ export const state: ILayoutState = {
           title: 'Проекты (в разработке)',
           homeURL: '/projects',
           pages: [projectsPageRoute, projectEditPageRoute]
+        },
+        {
+          name: 'reports',
+          title: 'Отчеты (тестирование)',
+          homeURL: `/reports`,
+          pages: [reportsPageRoute]
         }
       ]
     },
