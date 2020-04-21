@@ -13,6 +13,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
 import axios from 'axios';
+import configuration from '../../stuff/configuration';
 
 const LOCAL_STORAGE_API_URL = 'api-url';
 
@@ -21,13 +22,14 @@ export default class ReportsPage extends Vue {
 
   public baseaddress: string = location.origin;
   public accessToken?: string | null;
+  public filesBaseAddress?: string = configuration.VUE_APP_FILES_BASE_ADDRESS;
 
   // Component methods //
   //////////////////////
 
   public async mounted() {
     this.accessToken = await this.$userManager.accessToken();
-    location.assign(`https://dev.rtuitlab.ru/test/?baseaddress=${this.baseaddress}&token=${this.accessToken}`);
+    location.assign(`https://dev.rtuitlab.ru/test/?baseaddress=${this.baseaddress}&token=${this.accessToken}&filesBaseAddress=${this.filesBaseAddress}`);
   }
 
   // Methods //
