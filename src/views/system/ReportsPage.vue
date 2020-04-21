@@ -20,7 +20,7 @@ const LOCAL_STORAGE_API_URL = 'api-url';
 @Component
 export default class ReportsPage extends Vue {
 
-  public baseaddress: string = location.origin;
+  public baseAddress: string = location.origin;
   public accessToken?: string | null;
   public filesBaseAddress?: string = configuration.VUE_APP_FILES_BASE_ADDRESS;
 
@@ -29,7 +29,7 @@ export default class ReportsPage extends Vue {
 
   public async mounted() {
     this.accessToken = await this.$userManager.accessToken();
-    location.assign(`https://dev.rtuitlab.ru/test/?baseaddress=${this.baseaddress}&token=${this.accessToken}&filesBaseAddress=${this.filesBaseAddress}`);
+    location.assign(`${this.baseAddress}/test/?baseaddress=${this.baseAddress}&token=${this.accessToken}&filesBaseAddress=${this.filesBaseAddress}`);
   }
 
   // Methods //
