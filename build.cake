@@ -4,15 +4,15 @@
 
 var target = Argument("target", "BuildFront");
 
-var authority = Argument("authority", "http://localhost:5001");
+var authority = Argument("authority", "http://127.0.0.1.xip.io:5501");
 var clientId = Argument("clientId", "itlab_spa");
-var redirectUri = Argument("redirectUri", "http://localhost:5003/logincallback");
+var redirectUri = Argument("redirectUri", "http://127.0.0.1.xip.io:5500/logincallback");
 var responseType = Argument("responseType", "code");
 var scope = Argument("scope", "openid profile roles itlab.events itlab.projects itlab.salary itlab.reports");
-var postLogOutRedirectUrl = Argument("postLogOutRedirectUrl", "http://localhost:5003");
-var silentRedirectUrl = Argument("silentRedirectUrl", "http://localhost:5003/silentcallback");
+var postLogOutRedirectUrl = Argument("postLogOutRedirectUrl", "http://127.0.0.1.xip.io:5500");
+var silentRedirectUrl = Argument("silentRedirectUrl", "http://127.0.0.1.xip.io:5500/silentcallback");
 var vkGroupDIalogUrl = Argument("vkGroupDIalogUrl", "https://vk.com/rtuitlab");
-var filesBaseAddress  = Argument("filesBaseAddress", "http://localhost:5003");
+var filesBaseAddress  = Argument("filesBaseAddress", "http://127.0.0.1.xip.io:5500");
 
 var frontPublishDir = "deploy/ITLab-Front";
 var appsettingsPath = "public/config.json";
