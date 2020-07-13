@@ -18,7 +18,11 @@ import {
   // @ts-ignore
   passwordRestorePageRoute,
   // @ts-ignore
-  processingAgreementPageRoute
+  processingAgreementPageRoute,
+  // @ts-ignore
+  loginCallBackPageRoute,
+  // @ts-ignore
+  silentCallBackPageRoute,
 } from '@/views/authorization';
 
 // @ts-ignore
@@ -37,10 +41,11 @@ import {
 import { equipmentPageRoute, equipmentEditPageRoute } from '@/views/equipment';
 
 // @ts-ignore
-import { projectsPageRoute } from '@/views/projects';
+import { projectsPageRoute, projectEditPageRoute } from '@/views/projects';
 
 // @ts-ignore
 import { profilePageRoute } from '@/views/profile';
+
 
 import {
   // @ts-ignore
@@ -52,13 +57,17 @@ import {
   // @ts-ignore,
   typeEditPageRoute,
   // @ts-ignore
-  backendSelectionPageRoute
+  backendSelectionPageRoute,
+  // @ts-ignore
+  reportsPageRoute
 } from '@/views/system';
 
 export const state: ILayoutState = {
   stuff: [
     aboutPageRoute,
     loginPageRoute,
+    loginCallBackPageRoute,
+    silentCallBackPageRoute,
     registrationPageRoute,
     passwordRestorePageRoute,
     processingAgreementPageRoute,
@@ -95,9 +104,15 @@ export const state: ILayoutState = {
         },
         {
           name: 'projects',
-          title: 'Проекты',
+          title: 'Проекты (в разработке)',
           homeURL: '/projects',
-          pages: [projectsPageRoute]
+          pages: [projectsPageRoute, projectEditPageRoute]
+        },
+        {
+          name: 'reports',
+          title: 'Отчеты (тестирование)',
+          homeURL: `/reports`,
+          pages: [reportsPageRoute]
         }
       ]
     },

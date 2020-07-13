@@ -1,7 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="c-event-type-selection">
-    <autocomplete-input :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEventType()" v-model="eventTypeSelected" @input="onInput">
+    <autocomplete-input :stringify="onStringify" :fetch="onChange" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEventType" v-model="eventTypeSelected" @input="onInput">
       <template slot="result-item" slot-scope="data">
         {{ data.item.title }}
       </template>
@@ -54,15 +54,18 @@ export default class EventTypeSelectionComponent extends Vue {
   public modalVisible: boolean = false;
   public modalData: IEventType = new EventTypeDefault();
 
+  public canEditEventType: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.$watch('value', (value?: IEventType) => {
       this.eventTypeSelected = value ? value : new EventTypeDefault();
     });
 
     this.eventTypeSelected = this.value ? this.value : new EventTypeDefault();
+    this.canEditEventType = await this.$userManager.userHasRole('CanEditEventType');
   }
 
   public onInput() {
@@ -100,13 +103,6 @@ export default class EventTypeSelectionComponent extends Vue {
     this.modalData.title = search;
 
     this.modalVisible = true;
-  }
-
-  // Computed data //
-  //////////////////
-
-  public canEditEventType(): boolean {
-    return this.$g.hasRole('CanEditEventType');
   }
 }
 </script>

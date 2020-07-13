@@ -19,13 +19,26 @@ import {
   USER_ROLE_DISCHARGE,
   USERS_SET_ALL,
   USERS_SET_ONE,
-  USER_ROLES_SET_ALL
+  USER_ROLES_SET_ALL,
+  USER_PROPERTY_TYPE_COMMIT,
+  USER_PROPERTY_TYPES_SET_ONE,
+  USER_PROPERTY_TYPES_FETCH_ALL,
+  USER_PROPERTY_TYPES_SET_ALL,
+  USER_PROPERTIES_FETCH_ALL,
+  USER_PROPERTY_COMMIT,
+  USER_PROPERTY_DELETE,
+  IUserPropertyType,
+  USER_PROPERTY_TYPES_REMOVE_ONE,
+  IUserProperty,
+  USER_PROPERTY_TYPE_DELETE
 } from './types';
 
 import { IEquipment } from '@/modules/equipment';
+import { resolve } from 'path';
+import { rejects } from 'assert';
 
 export const actions: ActionTree<IUsersState, RootState> = {
-  [USER_INVITE]: ({}, { email }: { email: string }) => {
+  [USER_INVITE]: ({ }, { email }: { email: string }) => {
     return new Promise((resolve, reject) => {
       axios
         .post('user', {
@@ -35,7 +48,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();
@@ -49,7 +62,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_SEARCH]: (
-    {},
+    { },
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
@@ -97,7 +110,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ASSIGN_EQUIPMENT]: (
-    {},
+    { },
     { equipment, user }: { equipment: IEquipment; user: IUser | string | null }
   ) => {
     return new Promise((resolve, reject) => {
@@ -122,7 +135,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_REMOVE_EQUIPMENT]: (
-    {},
+    { },
     {
       equipment,
       owner
@@ -174,7 +187,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ROLE_ASSIGN]: (
-    {},
+    { },
     { user, role }: { user: IUser | string; role: IUserRole | string }
   ) => {
     return new Promise((resolve, reject) => {
@@ -185,7 +198,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();
@@ -199,7 +212,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
   },
 
   [USER_ROLE_DISCHARGE]: (
-    {},
+    { },
     { user, role }: { user: IUser | string; role: IUserRole | string }
   ) => {
     return new Promise((resolve, reject) => {
@@ -210,7 +223,7 @@ export const actions: ActionTree<IUsersState, RootState> = {
         .then((response) => {
           const body = response.data;
 
-          if (body.statusCode === 1) {
+          if (response.status === 200 || response.status === 204) {
             resolve();
           } else {
             reject();
@@ -218,6 +231,119 @@ export const actions: ActionTree<IUsersState, RootState> = {
         })
         .catch((error) => {
           console.log(USER_ROLE_DISCHARGE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_TYPE_COMMIT]: ({ commit }, userPropertyType: IUserPropertyType) => {
+    return new Promise((resolve, reject) => {
+      const url = 'account/property/type';
+
+      const request =
+        userPropertyType.id === ''
+          ? axios.post(url, userPropertyType)
+          : axios.put(`account/property/type/${userPropertyType.id}`, {
+            title: userPropertyType.title,
+            description: userPropertyType.description
+          });
+
+      request
+        .then((response) => getResponseData<IUserPropertyType>(response))
+        .then((userPropertyType) => {
+          commit(USER_PROPERTY_TYPES_SET_ONE, userPropertyType);
+          resolve(userPropertyType);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPE_COMMIT, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_TYPES_FETCH_ALL]: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('account/property/type')
+        .then((response: any) => getResponseData<IUserPropertyType[]>(response))
+        .then((userPropertyTypes) => {
+          commit(USER_PROPERTY_TYPES_SET_ALL, userPropertyTypes);
+          resolve(userPropertyTypes);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_TYPE_DELETE]: (
+    { commit },
+    userPropertyType: IUserPropertyType
+  ) => {
+    return new Promise((resolve, reject) => {
+      const id = userPropertyType.id;
+      axios
+        .delete(`account/property/type/${id}`)
+        .then((response) => {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
+            commit(USER_PROPERTY_TYPES_REMOVE_ONE, id);
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPE_DELETE, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTIES_FETCH_ALL]: () => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('account/property')
+        .then((response: any) => getResponseData<IUserProperty[]>(response))
+        .then((userProperties) => {
+          resolve(userProperties);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_COMMIT]: ({ commit }, {
+    userPropertyValue,
+    userPropertyId,
+  }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put('account/property', { value: userPropertyValue, id: userPropertyId })
+        .then((response) => getResponseData<IUserProperty>(response))
+        .then((userProperty) => {
+          resolve(userProperty);
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
+          reject(error);
+        });
+    });
+  },
+
+  [USER_PROPERTY_DELETE]: ({ }, {
+    userPropertyId
+  }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete('account/property', { data: { id: userPropertyId } })
+        .then((response) => {
+          resolve();
+        })
+        .catch((error) => {
+          console.log(USER_PROPERTY_TYPES_SET_ALL, error);
           reject(error);
         });
     });

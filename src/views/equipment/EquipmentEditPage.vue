@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="equipment-edit-page">
+    <vue-headful :title="isNewEquipment ? 'Новое оборудование' : 'Редактирование'"></vue-headful>
     <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">
         Оборудование
@@ -93,7 +94,8 @@ import {
   EquipmentTypeDefault,
   EQUIPMENT_FETCH_ONE,
   EQUIPMENT_COMMIT,
-  EQUIPMENT_DELETE
+  EQUIPMENT_DELETE,
+  equipment
 } from '@/modules/equipment';
 
 import {
@@ -153,7 +155,10 @@ export default class EquipmentEditPage extends Vue {
   public equipmentOwnerModalData: IUser | null = null;
   public equipmentOwnerModalState: State = State.Default;
 
-  public mounted() {
+  public canEditEquipment: boolean | null = false;
+  public canEditEquipmentOwner: boolean | null = false;
+
+  public async mounted() {
     this.loadingInProcess = true;
 
     const equipmentId = this.$route.params.id;
@@ -172,6 +177,8 @@ export default class EquipmentEditPage extends Vue {
       this.isNewEquipment = true;
       this.loadingInProcess = false;
     }
+    this.canEditEquipment = await this.$userManager.userHasRole('CanEditEquipment');
+    this.canEditEquipmentOwner = await this.$userManager.userHasRole('CanEditEquipmentOwner');
   }
 
   // Equipment methods //
@@ -228,7 +235,7 @@ export default class EquipmentEditPage extends Vue {
     if (equipment.ownerId) {
       axios.get('user/' + equipment.ownerId).then((result) => {
         const body = result && result.data;
-        this.equipmentOwner = body.data;
+        this.equipmentOwner = body;
         this.equipmentOwnerModalData = body.data;
       });
     }
@@ -308,14 +315,6 @@ export default class EquipmentEditPage extends Vue {
 
   get isModalInProcess(): boolean {
     return this.equipmentOwnerModalState === State.InProcess;
-  }
-
-  get canEditEquipment(): boolean {
-    return this.$g.hasRole('CanEditEquipment');
-  }
-
-  get canEditEquipmentOwner(): boolean {
-    return this.$g.hasRole('CanEditEquipmentOwner');
   }
 }
 

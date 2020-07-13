@@ -2,15 +2,9 @@
 <template>
   <div id="app" v-bind:class="theme">
     <notifications position="top right"></notifications>
-    <div class="layout" v-bind:class="{ 'with-sidebar': ($route.meta.hideNavigation !== true) }">
-      <template v-if="$route.meta.hideNavigation !== true">
-        <sidebar v-if="isAuthorized"></sidebar>
-      </template>
-
-      <div class="content-wrapper">
-        <router-view />
-      </div>
-    </div>
+    <component :is="layout">
+      <router-view />
+    </component>
   </div>
 </template>
 <!-- TEMPLATE END -->
@@ -20,18 +14,10 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-import CSidebar from '@/components/layout/Sidebar.vue';
+import { PROFILE_SETTINGS_THEME_GET } from '@/modules/profile';
 
-import {
-  PROFILE_AUTHORIZED,
-  PROFILE_SETTINGS_THEME_GET
-} from '@/modules/profile';
+const defaultLayout = 'default';
 
-@Component({
-  components: {
-    sidebar: CSidebar
-  }
-})
 export default class App extends Vue {
   // Component methods //
   //////////////////////
@@ -70,8 +56,8 @@ export default class App extends Vue {
     return `theme-${themeName}`;
   }
 
-  get isAuthorized(): boolean {
-    return this.$store.getters[PROFILE_AUTHORIZED];
+  get layout(): string {
+    return (this.$route.meta.layout || defaultLayout) + '-layout';
   }
 }
 </script>

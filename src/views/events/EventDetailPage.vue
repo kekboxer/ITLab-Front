@@ -1,18 +1,20 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="event-detail-page">
+    <vue-headful :title="event.title"></vue-headful>
     <page-content :loading="loadingInProcess" :not-found="notFound">
       <template slot="header">Событие</template>
       <template slot="header-button">
-        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEdit">Изменить</b-button>
+        <b-button variant="warning" :to="'/events/edit/' + event.id" v-if="canEditEvent">Изменить</b-button>
       </template>
 
       <b-row>
         <b-col>
-          <h3>{{ event.title }}
+          <h3>
+            {{ event.title }}
             <small>{{ event.eventType && event.eventType.title }}</small>
           </h3>
-          <hr>
+          <hr />
 
           <b-row>
             <b-col cols="12" md="8" class="order-2 order-md-1 markdown">
@@ -23,29 +25,49 @@
                 <b-col cols="3">
                   <b>Начало:</b>
                 </b-col>
-                <b-col cols="9">{{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}</b-col>
+                <b-col
+                  cols="9"
+                >{{ eventRange.beginTime ? formatDate(eventRange.beginTime) : "Неизвестно" }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="3">
                   <b>Конец:</b>
                 </b-col>
-                <b-col cols="9">{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
+                <b-col
+                  cols="9"
+                >{{ eventRange.endTime ? formatDate(eventRange.endTime) : "Неизвестно" }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <b>Оплата:</b>
+                </b-col>
+                <b-col
+                  cols="9"
+                ><salary-item :salary="event.eventSalary" :editable="false"></salary-item></b-col>
               </b-row>
 
               <template v-if="showElapsed && elapsedTime">
-                (До события {{ elapsedTime }})<br>
+                (До события {{ elapsedTime }})
+                <br />
               </template>
-                <br>
-                <b>Адрес:</b><br>
-                <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
-                <hr class="d-block d-md-none">
+              <br />
+              <b>Адрес:</b>
+              <br />
+              <a
+                :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`"
+                target="_blank"
+              >{{ event.address }}</a>
+              <hr class="d-block d-md-none" />
             </b-col>
           </b-row>
-          <hr>
+          <hr />
           <b-row>
             <b-col>
-              <event-shifts-component v-model="event.shifts" :editable="false">
-              </event-shifts-component>
+              <event-shifts-component
+                v-model="event.shifts"
+                :editable="false"
+                :eventSalaryCount="event.eventSalary.count"
+              ></event-shifts-component>
             </b-col>
           </b-row>
         </b-col>
@@ -63,15 +85,24 @@ import { RouteConfig } from 'vue-router';
 import moment from 'moment-timezone';
 
 import CPageContent from '@/components/layout/PageContent.vue';
+import CSalaryItem from '@/components/SalaryItem.vue';
 import EventShiftsComponent from '@/components/EventShiftsComponent.vue'; // TODO: refactor
 
 import { IEvent, EventDefault, EVENTS_FETCH_ONE } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
+import {
+  IEventSalary,
+  EventSalaryDefault,
+  EVENT_SALARY_FETCH_ONE,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault,
+} from '../../modules/salary';
 
 @Component({
   components: {
     'page-content': CPageContent,
-    'event-shifts-component': EventShiftsComponent
+    'event-shifts-component': EventShiftsComponent,
+    'salary-item': CSalaryItem
   }
 })
 export default class EventDetailPage extends Vue {
@@ -82,25 +113,40 @@ export default class EventDetailPage extends Vue {
   public notFound: boolean = false;
   public event: IEvent = new EventDefault();
 
+  public canEditEvent: boolean | null = false;
+
+  public eventSalary: IEventSalary | any = new EventSalaryDefault();
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.loadingInProcess = true;
 
     const eventId = this.$route.params.id;
     if (eventId) {
-      this.$store
+      await this.$store
         .dispatch(EVENTS_FETCH_ONE, eventId)
         .then((event) => {
-          this.event = event;
-          this.loadingInProcess = false;
+          this.event = {...event, eventSalary: new EventSalaryDefault()};
+        })
+        .then(() => {
+          this.$store
+            .dispatch(EVENT_SALARY_FETCH_ONE, eventId)
+            .then((eventSalary) => {
+              this.setEventSalary(eventSalary);
+              this.loadingInProcess = false;
+            })
+            .catch((error) => {
+              this.loadingInProcess = false;
+            });
         })
         .catch((error) => {
           this.notFound = true;
           this.loadingInProcess = false;
         });
     }
+    this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
   }
 
   // Methods //
@@ -108,6 +154,44 @@ export default class EventDetailPage extends Vue {
 
   public formatDate(date: Date): string {
     return moment(date).format(this.$g.DATETIME_FORMAT);
+  }
+
+  public setEventSalary(eventSalary: IEventSalary) {
+    if (eventSalary) {
+      this.event.eventSalary = Object.assign({}, eventSalary);
+      delete this.event.eventSalary.shiftSalaries;
+      delete this.event.eventSalary.placeSalaries;
+    } else {
+      this.event.eventSalary = new EventSalaryDefault();
+    }
+    this.event.shifts.map((shift) => {
+      if (eventSalary.shiftSalaries && this.event.eventSalary) {
+        const shiftSalary = eventSalary.shiftSalaries.find((salary) => {
+          return salary.shiftId === shift.id;
+        });
+        if (shiftSalary) {
+          shift.shiftSalary = shiftSalary;
+        } else {
+          shift.shiftSalary = new ShiftSalaryDefault();
+          shift.shiftSalary!.count = this.event.eventSalary.count;
+        }
+      }
+
+      shift.places.map((place) => {
+        if (eventSalary.placeSalaries && shift.shiftSalary) {
+          const placeSalary = eventSalary.placeSalaries.find((salary) => {
+            return salary.placeId === place.id;
+          });
+          if (placeSalary) {
+            place.placeSalary = placeSalary;
+          } else {
+            place.placeSalary = new PlaceSalaryDefault();
+            place.placeSalary!.count = shift.shiftSalary.count;
+          }
+        }
+      });
+
+    });
   }
 
   // Computed data //
@@ -153,10 +237,6 @@ export default class EventDetailPage extends Vue {
     }
 
     return result;
-  }
-
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEvent');
   }
 }
 

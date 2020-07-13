@@ -36,7 +36,8 @@ import { required, minLength } from 'vuelidate/lib/validators';
 import {
   IEquipmentType,
   EquipmentTypeDefault,
-  EQUIPMENT_TYPE_COMMIT
+  EQUIPMENT_TYPE_COMMIT,
+  EQUIPMENT_TYPES_FETCH_ALL
 } from '@/modules/equipment';
 
 @Component({
@@ -115,6 +116,8 @@ export default class CEquipmentTypeModal extends Vue {
           duration: 500
         });
         this.onSubmit(equipmentType);
+        // Fetch all types, because after the change an empty element is created (temporarily?)
+        this.$store.dispatch(EQUIPMENT_TYPES_FETCH_ALL),
         this.isModalInProcess = false;
       })
       .catch((error) => {

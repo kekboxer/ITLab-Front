@@ -40,7 +40,6 @@ import Hammer from 'hammerjs';
 import '@/icons/bars';
 
 import { IGroup, LAYOUT_GROUPS_GET } from '@/modules/layout';
-import { PROFILE_LOGOUT } from '@/modules/profile';
 
 import {
   NOTIFICATIONS_FETCH,
@@ -61,9 +60,15 @@ export default class CSidebar extends Vue {
   // Component methods //
   //////////////////////
 
+  public mounted() {
+    this.$store.dispatch(NOTIFICATIONS_FETCH);
+  }
+
   public created() {
     document.body.style.userSelect = 'text';
-
+    setInterval(() => {
+      this.$store.dispatch(NOTIFICATIONS_FETCH);
+    }, 10000);
     this.$watch(
       () => this.$store.getters[NOTIFICATIONS_GET_COUNT],
       (n: number, o: number) => {
@@ -73,8 +78,6 @@ export default class CSidebar extends Vue {
         });
       }
     );
-
-    this.$store.dispatch(NOTIFICATIONS_FETCH);
   }
 
   // Methods //
@@ -92,10 +95,8 @@ export default class CSidebar extends Vue {
     document.body.classList.toggle('sidebar-open', !value);
   }
 
-  public logout() {
-    this.$store.dispatch(PROFILE_LOGOUT).then((result) => {
-      this.$router.push({ name: 'LoginPage' });
-    });
+  public async logout() {
+    await this.$userManager.signout();
   }
 
   // Computed data //

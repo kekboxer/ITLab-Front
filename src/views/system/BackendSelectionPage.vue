@@ -1,6 +1,7 @@
 <!-- TEMPALTE BEGIN -->
 <template>
   <div class="backend-selection-page">
+    <vue-headful title="Смена API"></vue-headful>
     <b-container class="content">
       <br>
       <b-form>
@@ -84,7 +85,6 @@ export const backendSelectionPageRoute: RouteConfig = {
   name: 'BackendSelection',
   component: BackendSelectionPage,
   meta: {
-    development: true,
     secure: false,
     hideNavigation: true
   }

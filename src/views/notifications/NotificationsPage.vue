@@ -1,6 +1,7 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="notifications-page">
+    <vue-headful title="Уведомления"></vue-headful>
     <page-content :loading="loadingInProcess">
       <template slot="header">
         Уведомления

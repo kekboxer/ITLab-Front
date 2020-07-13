@@ -1,5 +1,13 @@
 import { IEquipment } from '@/modules/equipment';
 import { IUser, UserDefault } from '@/modules/users';
+import {
+  IPlaceSalary,
+  IShiftSalary,
+  IEventSalary,
+  ShiftSalaryDefault,
+  PlaceSalaryDefault,
+  EventSalaryDefault
+} from '@/modules/salary';
 import moment from 'moment-timezone';
 
 // actions
@@ -50,7 +58,7 @@ export class EventTypeDefault {
   public description: string = '';
 }
 
-export interface IEventType extends EventTypeDefault {}
+export interface IEventType extends EventTypeDefault { }
 
 // EventRole //
 //////////////
@@ -61,7 +69,7 @@ export class EventRoleDefault {
   public description: string = '';
 }
 
-export interface IEventRole extends EventRoleDefault {}
+export interface IEventRole extends EventRoleDefault { }
 
 // EventParticipant //
 /////////////////////
@@ -74,7 +82,7 @@ export class EventParticipantDefault {
   public new?: boolean;
 }
 
-export interface IEventParticipant extends EventParticipantDefault {}
+export interface IEventParticipant extends EventParticipantDefault { }
 
 // EventEquipment //
 ///////////////////
@@ -92,6 +100,10 @@ export class EventPlaceDefault {
   public targetParticipantsCount: number = 0;
   public description: string = '';
 
+  public clientId?: number;
+
+  public placeSalary?: IPlaceSalary = new PlaceSalaryDefault();
+
   public equipment: IEventEquipment[] = [];
 
   public participants: IEventParticipant[] = [];
@@ -104,7 +116,7 @@ export class EventPlaceDefault {
   public collapsed?: boolean;
 }
 
-export interface IEventPlace extends EventPlaceDefault {}
+export interface IEventPlace extends EventPlaceDefault { }
 
 // EventShift //
 ///////////////
@@ -122,13 +134,17 @@ export class EventShiftDefault {
   public description: string = '';
   public places: IEventPlace[] = [new EventPlaceDefault()];
 
+  public shiftSalary?: IShiftSalary = new ShiftSalaryDefault();
+
+  public clientId?: number;
+
   public delete?: boolean;
   public new?: boolean;
 
   public collapsed?: boolean;
 }
 
-export interface IEventShift extends EventShiftDefault {}
+export interface IEventShift extends EventShiftDefault { }
 
 // Event //
 //////////
@@ -139,6 +155,8 @@ export class EventDefault {
   public description: string = '';
   public address: string = '';
   public eventType?: IEventType;
+
+  public eventSalary?: IEventSalary = new EventSalaryDefault();
 
   // List data
   public beginTime?: Date;
@@ -152,7 +170,7 @@ export class EventDefault {
   public shifts: IEventShift[] = [new EventShiftDefault()];
 }
 
-export interface IEvent extends EventDefault {}
+export interface IEvent extends EventDefault { }
 
 // State //
 //////////

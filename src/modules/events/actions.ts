@@ -32,6 +32,7 @@ import {
   EVENT_ROLES_SET_ONE,
   EVENT_ROLES_REMOVE_ONE
 } from './types';
+import { IEventSalary, ShiftSalaryDefault, IEventSalaryState } from '../salary';
 
 const DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -119,6 +120,8 @@ export const actions: ActionTree<IEventsState, RootState> = {
 
       const isNewEvent = event.id === '';
 
+      let clientIdCounter = 0;
+
       const eventData = {
         id: isNewEvent ? undefined : event.id,
         title: event.title,
@@ -132,12 +135,16 @@ export const actions: ActionTree<IEventsState, RootState> = {
             beginTime: shift.beginTime,
             endTime: shift.endTime,
             description: shift.description,
+            clientId: clientIdCounter,
+            shiftSalary: {...shift.shiftSalary, clientId: clientIdCounter++},
             places: shift.places.map((place) => {
               return {
                 delete: place.delete,
                 id: place.id === '' ? undefined : place.id,
                 targetParticipantsCount: place.targetParticipantsCount,
                 description: place.description,
+                clientId: clientIdCounter,
+                placeSalary: {...place.placeSalary, clientId: clientIdCounter++},
                 equipment: place.equipment.map((equipment) => {
                   if (isNewEvent) {
                     return equipment.id;
@@ -174,6 +181,26 @@ export const actions: ActionTree<IEventsState, RootState> = {
         })
       };
 
+      const eventSalary = {
+        eventId: '',
+        count: event.eventSalary!.count,
+        description: event.eventSalary!.description,
+        shiftSalaries: [] as any,
+        placeSalaries: [] as any,
+      };
+
+      eventData.shifts.forEach((shift) => {
+        if (!shift.shiftSalary.hasOwnProperty('isNew')) {
+          eventSalary.shiftSalaries!.push(shift.shiftSalary);
+        }
+        delete shift.shiftSalary;
+        shift.places.forEach((place) => {
+          if (!place.placeSalary.hasOwnProperty('isNew')) {
+            eventSalary.placeSalaries.push(place.placeSalary);
+          }
+          delete place.placeSalary;
+        });
+      });
       const url = 'event';
 
       const request = isNewEvent
@@ -184,7 +211,39 @@ export const actions: ActionTree<IEventsState, RootState> = {
         .then((response) => getResponseData<IEvent>(response))
         .then((event) => {
           commit(EVENTS_SET_ONE, event);
-          resolve(event);
+          const shifts = event.shifts.map((shift) => {
+            return shift;
+          });
+
+          const places = [] as any;
+
+          shifts.forEach((shift) => {
+            shift.places.forEach((place: any) => {
+              places.push(place);
+            });
+          });
+
+          eventSalary.shiftSalaries.map((shiftSalary: any) => {
+            const currentShift = shifts.find((shift) => {
+              return shift.clientId === shiftSalary.clientId;
+            });
+            if (currentShift) {
+              shiftSalary.shiftId = currentShift.id;
+              delete shiftSalary.clientId;
+            }
+          });
+
+          eventSalary.placeSalaries.map((placeSalary: any) => {
+            const currentPlace = places.find((place: any) => {
+              return place.clientId === placeSalary.clientId;
+            });
+            if (currentPlace) {
+              placeSalary.placeId = currentPlace.id;
+              delete placeSalary.clientId;
+            }
+          });
+          eventSalary.eventId = event.id;
+          resolve([event, eventSalary]);
         })
         .catch((error) => {
           console.log(EVENT_COMMIT, error);
@@ -200,9 +259,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete(`event/${id}`)
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENTS_REMOVE_ONE, id);
             resolve();
           } else {
@@ -293,9 +352,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete('eventType', { data: { id } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENT_TYPES_REMOVE_ONE, id);
             resolve();
           } else {
@@ -354,9 +413,9 @@ export const actions: ActionTree<IEventsState, RootState> = {
       axios
         .delete('eventRole', { data: { id } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EVENT_ROLES_REMOVE_ONE, id);
             resolve();
           } else {

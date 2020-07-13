@@ -1,10 +1,17 @@
 <!-- TEMPLATE BEGIN -->
 <template>
   <div class="c-equipment-type-selection">
-    <autocomplete-input :stringify="onStringify" :fetch="onFetch" :add="showModal" :state="state" :filter="filter" :without-adding="!canEditEquipmentType()" v-model="equipmentTypeSelected" @input="onInput">
-      <template slot="result-item" slot-scope="data">
-        {{ data.item.title }}
-      </template>
+    <autocomplete-input
+      :stringify="onStringify"
+      :fetch="onFetch"
+      :add="showModal"
+      :state="state"
+      :filter="filter"
+      :without-adding="!canEditEquipmentType"
+      v-model="equipmentTypeSelected"
+      @input="onInput"
+    >
+      <template slot="result-item" slot-scope="data">{{ data.item.title }}</template>
     </autocomplete-input>
 
     <equipment-type-modal v-model="modalVisible" :data="modalData" :onSubmit="onSubmitModal" />
@@ -54,10 +61,12 @@ export default class CEquipmentTypeSelection extends Vue {
   public modalVisible: boolean = false;
   public modalData: IEquipmentType = new EquipmentTypeDefault();
 
+  public canEditEquipmentType: boolean | null = false;
+
   // Component methods //
   //////////////////////
 
-  public mounted() {
+  public async mounted() {
     this.$watch('value', (value?: IEquipmentType) => {
       this.equipmentTypeSelected = value ? value : new EquipmentTypeDefault();
     });
@@ -65,6 +74,9 @@ export default class CEquipmentTypeSelection extends Vue {
     this.equipmentTypeSelected = this.value
       ? this.value
       : new EquipmentTypeDefault();
+    this.canEditEquipmentType = await this.$userManager.userHasRole(
+      'CanEditEquipmentType'
+    );
   }
 
   public onInput() {
@@ -101,13 +113,6 @@ export default class CEquipmentTypeSelection extends Vue {
     this.onInput();
 
     this.modalVisible = false;
-  }
-
-  // Computed data //
-  //////////////////
-
-  public canEditEquipmentType(): boolean {
-    return this.$g.hasRole('CanEditEquipmentType');
   }
 }
 </script>

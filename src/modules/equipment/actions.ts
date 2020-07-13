@@ -27,10 +27,9 @@ import {
   EQUIPMENT_TYPES_SET_ONE,
   EQUIPMENT_TYPES_REMOVE_ONE
 } from './types';
-import { IUser } from '@/modules/users';
 
 export const actions: ActionTree<IEquipmentState, RootState> = {
-  [EQUIPMENT_SEARCH]: ({}, match: string = '') => {
+  [EQUIPMENT_SEARCH]: ({ }, match: string = '') => {
     return new Promise((resolve, reject) => {
       axios
         .get(`equipment?match=${encodeURIComponent(match)}`)
@@ -88,10 +87,8 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
     });
   },
 
-  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({}, user: IUser | string) => {
+  [EQUIPMENT_FETCH_ASSIGNED_TO]: ({ }, userId: string) => {
     return new Promise((resolve, reject) => {
-      const userId = typeof user === 'string' ? user : user.id;
-
       axios
         .get(`equipment/user/${userId}`)
         .then((response) => getResponseData<IEquipment>(response))
@@ -133,9 +130,9 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
       axios
         .delete('equipment', { data: { id: equipmentId } })
         .then((response) => {
-          const body = response && response.data;
+          const body = response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EQUIPMENT_REMOVE_ONE, equipmentId);
             resolve();
           } else {
@@ -150,7 +147,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
   },
 
   [EQUIPMENT_TYPE_SEARCH]: (
-    {},
+    { },
     { match = '', all = false }: { match?: string; all?: boolean }
   ) => {
     return new Promise((resolve, reject) => {
@@ -204,7 +201,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
       const request =
         equipmentType.id === ''
           ? axios.post(url, equipmentType)
-          : axios.put(url, equipmentType);
+          : axios.put(url, [equipmentType]);
 
       request
         .then((response) => getResponseData<IEquipmentType>(response))
@@ -232,7 +229,7 @@ export const actions: ActionTree<IEquipmentState, RootState> = {
         .then((response) => {
           const body = response && response.data;
 
-          if (body.statusCode && body.statusCode === 1) {
+          if (response.status === 200 || response.status === 201 || response.status === 204) {
             commit(EQUIPMENT_TYPES_REMOVE_ONE, equipmentTypeId);
             resolve();
           } else {

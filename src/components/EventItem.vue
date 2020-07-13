@@ -18,17 +18,28 @@
             </span>
           </strong>
         </b-col>
-        <b-col cols="auto" v-if="canEdit">
-          <b-button variant="outline-warning" class="btn-sm button-edit" :to="'events/edit/' + event.id">Изменить</b-button>
+        <salary-item :id="event.id" :salary="eventSalary" :editable="false"></salary-item>
+        <b-col cols="auto" v-if="canEditEvent">
+          <b-button
+            variant="outline-warning"
+            class="btn-sm button-edit"
+            :to="'events/edit/' + event.id"
+          >Изменить</b-button>
         </b-col>
       </b-row>
-      <hr>
+      <hr />
       <b-row>
         <b-col md="8">
           <h3 style="margin-bottom: 0">{{ event.title }}</h3>
-          <small style="position: relative; top: -5px" v-if="event.eventType">{{ event.eventType.title }}</small>
+          <small
+            style="position: relative; top: -5px"
+            v-if="event.eventType"
+          >{{ event.eventType.title }}</small>
           <p>
-            <a :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`" target="_blank">{{ event.address }}</a>
+            <a
+              :href="`https://maps.yandex.ru/?text=${ encodeURIComponent(event.address) }`"
+              target="_blank"
+            >{{ event.address }}</a>
           </p>
         </b-col>
         <b-col md="4">
@@ -71,6 +82,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Icon from 'vue-awesome/components/Icon';
 import moment from 'moment';
 
+import CSalaryItem from '@/components/SalaryItem.vue';
+
 import 'vue-awesome/icons/clock';
 import 'vue-awesome/icons/edit';
 import 'vue-awesome/icons/eye-slash';
@@ -78,6 +91,8 @@ import 'vue-awesome/icons/eye-slash';
 import { IEvent } from '@/modules/events';
 import { PROFILE_HAS_ROLE } from '@/modules/profile';
 import { getNounDeclension } from '@/stuff';
+
+import { IEventSalary, EVENT_SALARY_FETCH_ONE } from '@/modules/salary';
 
 enum State {
   Default,
@@ -87,7 +102,8 @@ enum State {
 
 @Component({
   components: {
-    icon: Icon
+    icon: Icon,
+    'salary-item': CSalaryItem,
   }
 })
 export default class CEventItem extends Vue {
@@ -97,10 +113,18 @@ export default class CEventItem extends Vue {
   @Prop()
   public event!: IEvent;
 
+  @Prop()
+  public eventSalary!: IEventSalary | any;
+
   public dateHovered: boolean = false;
+  public canEditEvent: boolean | null = false;
 
   // Methods //
   ////////////
+
+  public async mounted() {
+    this.canEditEvent = await this.$userManager.userHasRole('CanEditEvent');
+  }
 
   public checkDateHover() {
     if (
@@ -195,10 +219,6 @@ export default class CEventItem extends Vue {
         'дней'
       ])}`;
     }
-  }
-
-  get canEdit(): boolean {
-    return this.$g.hasRole('CanEditEvent');
   }
 }
 </script>

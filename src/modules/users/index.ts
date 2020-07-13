@@ -10,7 +10,8 @@ export * from './types';
 
 export const state: IUsersState = {
   users: [],
-  userRoles: []
+  userRoles: [],
+  userPropertyTypes: []
 };
 
 export const users: Module<IUsersState, RootState> = {
