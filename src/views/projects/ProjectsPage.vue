@@ -49,6 +49,7 @@ export default class ProjectsPage extends Vue {
   //////////////////////
 
   public async mounted() {
+    window.localStorage.access_token = await this.$userManager.accessToken();
   }
 }
 
